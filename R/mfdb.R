@@ -45,16 +45,17 @@ mfdb_meanlength <- function (mdb,
               "AND", col, if (max_exclusive) "<" else "<=", max)
     }
     group_to_table <- function(db, name, group, datatype = "INT") {
+        table_name <- paste0("temp_", name)
         # Remove the table if it exists, and recreate it
-        tryCatch(dbSendQuery(db, paste("DROP TABLE", name)), error = function (e) {})
+        tryCatch(dbSendQuery(db, paste("DROP TABLE", table_name)), error = function (e) {})
         dbSendQuery(db, paste(
-                "CREATE TEMPORARY TABLE", name, "(name VARCHAR(10), value ", datatype, ")",
-                "ON COMMIT DROP")),
+                "CREATE TEMPORARY TABLE", table_name, "(name VARCHAR(10), value ", datatype, ")",
+                "ON COMMIT DROP"))
 
         # Flatten out into multiple key:value rows, populate table in one hit
-        flat <- denormalize(group, function(key, value) { paste("(", key, ",", value, ")") })
-        dbSendQuery(db, paste(
-                "INSERT INTO TABLE", name, "VALUES", paste(flat, collapse = ",")))
+        flat <- denormalize(group, prefix = name, collapse = ",")
+        flat <- paste(sapply(flat, function (x) {paste0("(",x,")")}), collapse = ",")
+        dbSendQuery(db, paste("INSERT INTO TABLE", table_name, "VALUES", flat))
     }
 
     params <- c(params, mdb$defaultparams)
@@ -77,8 +78,8 @@ mfdb_meanlength <- function (mdb,
     }
 
     # Store timestep data as a table, so we can join to it
-    group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT")
-    group_to_table(mdb$db, "temp_age", params$age, datatype = "INT")
+    group_to_table(mdb$db, "ts", params$timestep, datatype = "INT")
+    group_to_table(mdb$db, "age", params$age, datatype = "INT")
 
     # Should have cols year,step,area,age,number,mean,stddev
     query <- paste(
@@ -91,7 +92,7 @@ mfdb_meanlength <- function (mdb,
         ", 0 AS stddev", # TODO: Really need to define a weighted stddev aggregate function
         "FROM sample sam, species spe, catchsample cas, lengthcell lec, age age",
         ", temp_ts tts",
-        ", temp_age tage"
+        ", temp_age tage",
         "WHERE sam.sampleid = spe.sampleid AND spe.speciesid = cas.speciesid AND cas.catchsampleid = lec.catchsampleid AND lec.lengthcellid = age.lengthcellid",
         "AND sam.month = tts.value",
         "AND age.age = tage.value",
