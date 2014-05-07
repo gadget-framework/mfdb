@@ -2,7 +2,7 @@ library(DBI)
 library(RPostgreSQL)
 
 #        areas = c(),	# c('101', '101:1001'), e.g. Will group at most granular
-#        timesteps = timestep(c(1,2,3),c(4,5,6)), groupings of months,
+#        timesteps = mfdb_group(c(1,2,3),c(4,5,6)), groupings of months,
 #        todo = NULL) {
 mfdb <- function(db_connection = NULL, defaultparams = list()) {
     if (is.null(db_connection)) {
@@ -49,13 +49,14 @@ mfdb_meanlength <- function (mdb,
         # Remove the table if it exists, and recreate it
         tryCatch(dbSendQuery(db, paste("DROP TABLE", table_name)), error = function (e) {})
         dbSendQuery(db, paste(
-                "CREATE TEMPORARY TABLE", table_name, "(name VARCHAR(10), value ", datatype, ")",
-                "ON COMMIT DROP"))
+                "CREATE TEMPORARY TABLE", table_name, "(name VARCHAR(10), value ", datatype, ")"))
 
         # Flatten out into multiple key:value rows, populate table in one hit
-        flat <- denormalize(group, prefix = name, collapse = ",")
-        flat <- paste(sapply(flat, function (x) {paste0("(",x,")")}), collapse = ",")
-        dbSendQuery(db, paste("INSERT INTO TABLE", table_name, "VALUES", flat))
+        flat <- denormalize(group, prefix = name)
+        for (v in flat) {
+            #NB: Once we upgrade postgresql can use multi-row insert form
+            dbSendQuery(db, paste0("INSERT INTO ", table_name, " (name, value) VALUES ('", v[1], "','", v[2], "')"))
+        }
     }
 
     params <- c(params, mdb$defaultparams)
