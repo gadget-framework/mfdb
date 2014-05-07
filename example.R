@@ -1,20 +1,19 @@
 library(DBI, lib.loc="./Rpackages/")
 library(RPostgreSQL, lib.loc="./Rpackages/")
+library(devtools, lib.loc="./Rpackages/")
 load_all()
 
 # Connect to the given dst2dw database, and set some default
 # parameters to use when querying
-mdb<-(
-    db_connection = dbConnect(dbDriver("PostgreSQL"), dbname="dw0605", host="/tmp/"),
+mdb <- mfdb(dbConnect(dbDriver("PostgreSQL"), dbname="dw0605", host="/tmp/"),
     defaultparams = list(
         areas = c("101", "102", "103", "104", "105"),
         timestep = mfdb_group(c(1,2,3,4,5,6), c(7,8,9,10,11,12)), # Group months to create 2 timesteps for each year
-        areastep = mfdb_group('area1' = c('101', '102'), 'area2' = c('103', 104)), # Group areas (NB: We've added a name)
-        ))
+        areastep = mfdb_group('area1' = c('101', '102'), 'area2' = c('103', 104)))) # Group areas (NB: We've added a name)
 # NB: Any of these parameters can be overriden when performing a query
 
-# Initalise a gadget directory for output. Will create a main file if it doesn't exist.
-gd <- gadget_directory("./out", timestep = ts)
+# Initalise a gadget directory for output.
+gd <- gadget_directory("./out")
 
 # Fetch sizes and temperatures for areas, and turn them into an areafile.
 sizes <- mfdb_area_sizes(mdb)
@@ -36,7 +35,7 @@ gadget_likelihood_component(gd, "penalty",
 # Get the mean length data from the database, override the areas set in
 # defaultparams above and add a few more.
 ml <- mfdb_meanlength(mdb,
-        sd = TRUE,
+        generate_stddev = TRUE,
         params = list(
             years = c(2000),
             areas = c("101", "102", "103"),
@@ -63,3 +62,6 @@ gadget_likelihood_component(gd, "catchstatistics",
         name = "codstatistics",
         weight = 0.8,
         data = ml)
+
+# Create a mainfile with everything that has been created so far
+gadget_mainfile(gd)

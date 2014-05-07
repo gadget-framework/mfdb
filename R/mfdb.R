@@ -14,13 +14,20 @@ mfdb <- function(db_connection = NULL, defaultparams = list()) {
     structure(list(
             defaultparams = c(defaultparams, list(
                     lengthcellsize = 20, # TODO: Do we have to hardcode this? Could use lag()
-                    timesteps = timestep(c(1,2,3,4,5,6,7,8,9,10,11,12)))),
+                    timesteps = mfdb_group(c(1,2,3,4,5,6,7,8,9,10,11,12)))),
             db = db_connection), class = "mfdb")
 }
 
+mfdb_area_sizes <- function (mdb, params = list()) {
+    #TODO:
+}
+
+mfdb_temperatures <- function (mdb, params = list()) {
+    #TODO:
+}
+
 # Return year,step,area,age,number,mean,stddev
-mfdb_meanlength <- function (mdb,
-        params = list()) {
+mfdb_meanlength <- function (mdb, params = list(), generate_stddev = TRUE) {
     # Turn vector into a SQL IN condition, NA = NULL, optionally go via a lookup table.
     sql_col_condition <- function(col, v, lookup = NULL) {
         if (!is.vector(v)) return("")
@@ -85,12 +92,12 @@ mfdb_meanlength <- function (mdb,
     # Should have cols year,step,area,age,number,mean,stddev
     query <- paste(
         "SELECT sam.year",
-        ", tts.key",
+        ", tts.name AS step",
         ", ", paste(if (length(area_group) == 0) "'allareas'" else area_group, collapse = "||':'||"), " AS area",
-        ", tage.key age",
+        ", tage.name AS age",
         ", SUM(age.agenum) AS number",
         ", AVG(age.agenum * (lec.lengthcell + ", params$lengthcellsize/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean",
-        ", 0 AS stddev", # TODO: Really need to define a weighted stddev aggregate function
+        if (generate_stddev) ", 0 AS stddev" else "", # TODO: Really need to define a weighted stddev aggregate function
         "FROM sample sam, species spe, catchsample cas, lengthcell lec, age age",
         ", temp_ts tts",
         ", temp_age tage",
@@ -114,9 +121,9 @@ mfdb_meanlength <- function (mdb,
         sql_col_condition("cas.samplingstrategy", params$samplingstrategy, lookup="l_samplingstrategy"),
         sql_col_condition("lec.maturitystage", params$maturitystage, lookup="l_maturitystage"),
         sql_col_condition("lec.sexcode", params$sex, lookup="l_sexcode"),
-        "GROUP BY sam.year, tts.key",
+        "GROUP BY sam.year, tts.name",
         paste(lapply(area_group, function (x) { paste(",", x) }), collapse = ""),
-        ", tage.key",
+        ", tage.name",
         "ORDER BY 1,2,3,4")
     print(query)  # TODO:
     fetch(dbSendQuery(mdb$db, query), -1)

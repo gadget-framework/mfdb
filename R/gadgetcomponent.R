@@ -65,7 +65,7 @@ componenttype.gadgetunderstockingcomponent <- function (x) { "understocking" }
 # function:		"lengthgivensd", etc. Gadget function.
 gadgetcatchstatisticscomponent <- function (weight = 0,
         name = "catchstatistics",
-        function = 'lengthgivensd',
+        cs_function = 'lengthgivensd',
         meanlength = NULL) {
     # Break out aggregates
     meanlength <- 
