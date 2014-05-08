@@ -14,16 +14,19 @@ mdb <- mfdb(dbConnect(dbDriver("PostgreSQL"), dbname="dw0605", host="/tmp/"),
 
 # Initalise a gadget directory for output.
 gd <- gadget_directory("./out")
+# NB: Could have a "remove everything" option here.
 
 # Fetch sizes and temperatures for areas, and turn them into an areafile.
-sizes <- mfdb_area_sizes(mdb)
-temps <- mfdb_temperatures(mdb)
-gadget_areafile(gd,
-        sizes = sizes,
-        temperatures = temps)
+# sizes <- mfdb_area_sizes(mdb)
+# temps <- mfdb_temperatures(mdb)
+# gadget_dir_write(gadget_areafile(gd,
+#         sizes = sizes,
+#        temperatures = temps))
 
 # Add a likelihood component for penalty, based on a data.frame
-# NB: We're not supporting more than one likelihood file, just dumping everything ehre.
+# NB: This only allows you to append components to an existing single
+# likelihood file. This allows for simple memory-efficient scripts but at the
+# cost of flexibility (e.g. just replacing a component).
 gadget_dir_write(gd, gadget_likelihood_component("penalty",
         name = "bounds",
         weight = "0.5",
@@ -43,17 +46,16 @@ mean_len <- mfdb_meanlength(mdb,
             lengthcellmin = 250,
             lengthcellmax = 500,
             agestep = mfdb_group('age', 'young' = c(1,2,3), 'old' = c(4,5,6)),
-            # NB: We could just keep it unaggregated with mfdb_group("age", 4:6),
+            # NB: We could just keep it unaggregated with mfdb_group("age", c(4), c(5), c(6)), possibly this needs a shortcut
             lengthcell = 30)) # NB: I don't like specifying lengthcell, but I don't see how to derive it from the existing database.
 
 # NB: At this point mean_len is essentially a data.frame that contains the final
 # data. The database will be a lot faster if all aggregation happens before the
 # data leaves the database, especially when the aggregation is lost. That said,
-# adding unaggregated versions would also be reasonably easy. We could allow
-# SQL to be tweaked, but we then risk not being able to abstract the DB.
+# adding unaggregated versions would also be reasonably easy. Another option is
+# allowing SQL to be tweaked, but we then risk not being able to abstract the DB.
 
-# NB: Any modification to the data frame could be done here, the area and age
-# fields are using raw values at this point
+# NB: The groups used for aggregation are attributes attached to mean_len
 
 # Write this data out into a datafile, as well as age and area files. Add the
 # component entry to the bottom of the likelihood file
@@ -65,6 +67,7 @@ gadget_dir_write(gd, gadget_likelihood_component("catchstatistics",
         data = mean_len,
         area = attr(mean_len, "area"),
         age = attr(mean_len, "age")))
+rm(mean_len) # Free up memory before moving on to the next component
 
 # Create a mainfile with everything that has been created so far
 gadget_mainfile(gd)
