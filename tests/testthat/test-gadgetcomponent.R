@@ -1,18 +1,18 @@
 context("Gadget components")
 
-test_that("Can generate gadgetcomponent objects", {
+test_that("Can generate gadget_likelihood_component objects", {
     expect_error(
-        gadgetcomponent("aardvark"),
+        gadget_likelihood_component("aardvark"),
         "Unknown likelihood component aardvark")
 
     expect_equal(
-        class(gadgetcomponent("penalty")),
-        c("gadgetpenaltycomponent", "gadgetcomponent"))
+        class(gadget_likelihood_component("penalty")),
+        c("gadgetpenaltycomponent", "gadget_likelihood_component"))
 })
 
-test_that("Can use as.character on gadgetcomponents", {
+test_that("Can use as.character on gadget_likelihood_components", {
     expect_equal(
-        strsplit(as.character(gadgetcomponent("penalty", name = "wibble", weight = 0.5)), "\n"),
+        strsplit(as.character(gadget_likelihood_component("penalty", name = "wibble", weight = 0.5)), "\n"),
         list(
             "[component]",
             "type\tpenalty",

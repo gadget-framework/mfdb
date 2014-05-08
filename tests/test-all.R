@@ -1,7 +1,10 @@
 library(testthat)
 
-library(gadgetfile)
-test_check("gadgetfile")
+library(gadget_file)
+test_check("gadget_file")
 
-library(gadgetcomponent)
-test_check("gadgetcomponent")
+library(gadget_component)
+test_check("gadget_component")
+
+library(mfdb_group)
+test_check("mfdb_group")

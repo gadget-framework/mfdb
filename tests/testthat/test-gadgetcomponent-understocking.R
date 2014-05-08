@@ -2,7 +2,7 @@ context("Gadget understocking component")
 
 test_that("Can generate an understocking component with default parameters", {
     expect_equal(
-        strsplit(as.character(gadgetcomponent("understocking")), "\n"),
+        strsplit(as.character(gadget_likelihood_component("understocking")), "\n"),
         list(
             "[component]",
             "type\tunderstocking",
@@ -12,7 +12,7 @@ test_that("Can generate an understocking component with default parameters", {
 
 test_that("Can customise it", {
     expect_equal(
-        strsplit(as.character(gadgetcomponent("understocking", name = "alfred", weight = 0.3)), "\n"),
+        strsplit(as.character(gadget_likelihood_component("understocking", name = "alfred", weight = 0.3)), "\n"),
         list(
             "[component]",
             "type\tunderstocking",

@@ -1,4 +1,4 @@
-gadgetcomponent <- function (type, ...) {
+gadget_likelihood_component <- function (type, ...) {
     if (type == 'penalty') {
         return(gadgetpenaltycomponent(...))
     }
@@ -11,13 +11,13 @@ gadgetcomponent <- function (type, ...) {
     stop(paste("Unknown likelihood component", type))
 }
 
-print.gadgetcomponent <- function(x, ...) {
+print.gadget_likelihood_component <- function(x, ...) {
     #TODO: Output commented version
-    cat("[component]\n")
+    cat(";\n;\n[component]\n")
     cat(paste0("type\t", componenttype(x), "\n"))
     for (k in names(x)) {
         v = x[[k]]
-        if ("gadgetfile" %in% class(v)) {
+        if ("gadget_file" %in% class(v)) {
             # Don't paste the gadget object in, leave the filename
             v = v[['filename']]
         }
@@ -25,8 +25,8 @@ print.gadgetcomponent <- function(x, ...) {
     }
 }
 
-as.character.gadgetcomponent <- function(object, ...) {
-    capture.output(print.gadgetcomponent(object))
+as.character.gadget_likelihood_component <- function(object, ...) {
+    capture.output(print.gadget_likelihood_component(object))
 }
 
 componenttype <- function(x) UseMethod("componenttype")
@@ -42,10 +42,10 @@ gadgetpenaltycomponent <- function (weight = 0, name = "bounds", data = NULL) {
     }
     structure(list(
         name = name,
-        datafile = gadgetfile(
+        datafile = gadget_file(
             filename = paste0(name, '.penaltyfile'),
             data = data),
-        weight = weight), class = c("gadgetpenaltycomponent", "gadgetcomponent"))
+        weight = weight), class = c("gadgetpenaltycomponent", "gadget_likelihood_component"))
 }
 componenttype.gadgetpenaltycomponent <- function (x) { "penalty" }
 
@@ -54,7 +54,7 @@ componenttype.gadgetpenaltycomponent <- function (x) { "penalty" }
 gadgetunderstockingcomponent <- function (weight = 0, name = "understocking") {
     structure(list(
         name = name,
-        weight = weight), class = c("gadgetunderstockingcomponent", "gadgetcomponent"))
+        weight = weight), class = c("gadgetunderstockingcomponent", "gadget_likelihood_component"))
 }
 componenttype.gadgetunderstockingcomponent <- function (x) { "understocking" }
 

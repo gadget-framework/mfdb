@@ -2,17 +2,17 @@ context("Gadget data files")
 
 test_that("Can generate gadgefile objects", {
     expect_error(
-        gadgetfile(),
+        gadget_file(),
         "filename")
 
     expect_equal(
-        class(gadgetfile("wibble")),
-        c("gadgetfile"))
+        class(gadget_file("wibble")),
+        c("gadget_file"))
 })
 
 test_that("Can get a string representation", {
     expect_equal(
-        strsplit(as.character(gadgetfile("wobble", properties = list(
+        strsplit(as.character(gadget_file("wobble", properties = list(
             cabbage = "yes",
             potatoes = "2 please",
             sprouts = 'Like, "Eeeew!"'))), "\n"),
