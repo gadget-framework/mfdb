@@ -8,8 +8,8 @@ load_all()
 mdb <- mfdb(dbConnect(dbDriver("PostgreSQL"), dbname="dw0605", host="/tmp/"),
     defaultparams = list(
         areas = c("101", "102", "103", "104", "105"),
-        timestep = mfdb_group(c(1,2,3,4,5,6), c(7,8,9,10,11,12)), # Group months to create 2 timesteps for each year
-        areastep = mfdb_group('area1' = c('101', '102'), 'area2' = c('103', 104)))) # Group areas (NB: We've added a name)
+        timestep = mfdb_group("ts", c(1,2,3,4,5,6), c(7,8,9,10,11,12)), # Group months to create 2 timesteps for each year
+        areastep = mfdb_group("area", 'area1' = c('101', '102'), 'area2' = c('103', 104)))) # Group areas (NB: We've added a name)
 # NB: Any of these parameters can be overriden when performing a query
 
 # Initalise a gadget directory for output.
@@ -42,11 +42,11 @@ ml <- mfdb_meanlength(mdb,
             species = "COD",
             lengthcellmin = 250,
             lengthcellmax = 500,
-            agestep = mfdb_group('young' = c(1,2,3), 'old' = c(4,5,6)),
-            # NB: We could just keep it unaggregated with mfdb_group(4:6),
+            agestep = mfdb_group('age', 'young' = c(1,2,3), 'old' = c(4,5,6)),
+            # NB: We could just keep it unaggregated with mfdb_group("age", 4:6),
             lengthcell = 30)) # NB: I don't like specifying lengthcell, but I don't see how to derive it from the existing database.
 
-# NB: At this point ml is essentially a data.frame that contains the final
+# NB: At this point mean_len is essentially a data.frame that contains the final
 # data. The database will be a lot faster if all aggregation happens before the
 # data leaves the database, especially when the aggregation is lost. That said,
 # adding unaggregated versions would also be reasonably easy. We could allow

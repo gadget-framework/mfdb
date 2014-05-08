@@ -2,7 +2,7 @@ library(DBI)
 library(RPostgreSQL)
 
 #        areas = c(),	# c('101', '101:1001'), e.g. Will group at most granular
-#        timesteps = mfdb_group(c(1,2,3),c(4,5,6)), groupings of months,
+#        timesteps = mfdb_group("ts", c(1,2,3),c(4,5,6)), groupings of months,
 #        todo = NULL) {
 mfdb <- function(db_connection = NULL, defaultparams = list()) {
     if (is.null(db_connection)) {
@@ -14,7 +14,7 @@ mfdb <- function(db_connection = NULL, defaultparams = list()) {
     structure(list(
             defaultparams = c(defaultparams, list(
                     lengthcellsize = 20, # TODO: Do we have to hardcode this? Could use lag()
-                    timesteps = mfdb_group(c(1,2,3,4,5,6,7,8,9,10,11,12)))),
+                    timesteps = mfdb_group("ts", c(1,2,3,4,5,6,7,8,9,10,11,12)))),
             db = db_connection), class = "mfdb")
 }
 
@@ -59,8 +59,7 @@ mfdb_meanlength <- function (mdb, params = list(), generate_stddev = TRUE) {
                 "CREATE TEMPORARY TABLE", table_name, "(name VARCHAR(10), value ", datatype, ")"))
 
         # Flatten out into multiple key:value rows, populate table in one hit
-        flat <- denormalize(group, prefix = name)
-        for (v in flat) {
+        for (v in denormalize(group)) {
             #NB: Once we upgrade postgresql can use multi-row insert form
             dbSendQuery(db, paste0("INSERT INTO ", table_name, " (name, value) VALUES ('", v[1], "','", v[2], "')"))
         }
