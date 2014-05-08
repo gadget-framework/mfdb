@@ -125,5 +125,11 @@ mfdb_meanlength <- function (mdb, params = list(), generate_stddev = TRUE) {
         ", tage.name",
         "ORDER BY 1,2,3,4")
     print(query)  # TODO:
-    fetch(dbSendQuery(mdb$db, query), -1)
+
+    # Make data.table object, annotate with generation information
+    out <- fetch(dbSendQuery(mdb$db, query), -1)
+    attr(out, "generator") <- "mfdb_meanlength"
+    attr(out, "area") <- params$area
+    attr(out, "age") <- params$age
+    out
 }

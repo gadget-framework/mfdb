@@ -65,18 +65,34 @@ componenttype.gadgetunderstockingcomponent <- function (x) { "understocking" }
 # function:		"lengthgivensd", etc. Gadget function.
 gadgetcatchstatisticscomponent <- function (weight = 0,
         name = "catchstatistics",
-        cs_function = 'lengthgivensd',
-        meanlength = NULL) {
-    # Break out aggregates
-    meanlength <- 
+        data_function = NULL,
+        data = NULL, area = NULL, age = NULL) {
+
+    prefix <- paste0('catchstatistics.', name, '.')
+
+    # Work out data_function based how data was generated
+    if (!is.null(data_function)) {
+        # It's already set, so nothing to do
+    } else if (attr(data, "generator") == "mfdb_meanlength" && data$stddev) {
+        data_function <- 'lengthgivenstddev'
+    } else if (attr(data, "generator") == "mfdb_meanlength"){
+        data_function <- 'lengthnostddev'
+    } else if (attr(data, "generator") == "mfdb_meanweight" && data$stddev) {
+        data_function <- 'weightgivenstddev'
+    } else if (attr(data, "generator") == "mfdb_meanweight"){
+        data_function <- 'weightnostddev'
+    } else {
+        stop("Cannot work out the required function, and data_function not provided")
+    }
+
     structure(list(
         name = name,
         weight = weight,
-        datafile = 'TODO:',
-        "function" = 'lengthgivensd',
-        areaaggfile = NULL,
-        ageaggfile = NULL,
-        fleetnames = if (is_survey) surveynames[[0]] else fleetnames[[0]],
-        stocknames = stocknames), class = c("gadgetcatchstatisticscomponent", "gadgetcomponent"))
+        datafile = gadget_file(paste0(prefix, data_function), data=data),
+        "function" = data_function,
+        areaaggfile = gadget_file(paste0(prefix, 'area.agg'), properties=area),
+        ageaggfile = gadget_file(paste0(prefix, 'age.agg'), properties=age),
+        fleetnames = "TODO: if (is_survey) surveynames[[0]] else fleetnames[[0]]",
+        stocknames = "TODO: stocknames"), class = c("gadgetcatchstatisticscomponent", "gadget_likelihood_component"))
 }
 componenttype.gadgetcatchstatisticscomponent <- function (x) { "catchstatistics" }

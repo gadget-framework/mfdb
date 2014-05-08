@@ -8,16 +8,33 @@ gadget_directory <- function (dir) {
 
 # Create a mainfile to go in the gadget directory
 gadget_mainfile <- function (gd) {
-    # TODO:
+    # TODO: These shouldn't be here, they're specialisms of gadget_file
 }
 
 # Create the main areafile
 gadget_areafile <- function (gd, sizes = NULL, temperatures = NULL) {
-    # TODO:
+    # TODO: These shouldn't be here, they're specialisms of gadget_file
 }
 
-# Add a likelihood component to the likelihood file, and write data files the
-# component requires
-gadget_likelihood_component <- function (gd, type, ...) {
-    # TODO:
+gadget_dir_write <- function(gd, obj) UseMethod("gadget_dir_write", obj)
+gadget_dir_write.gadget_file <- function(gd, obj) {
+    fh = file(file.path(gd$dir, obj$filename), "w")
+    tryCatch(
+        capture.output(print(obj), file = fh),
+        finally = close(fh))
+}
+
+gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
+    # Append the component to the likelihood file
+    fh = file(file.path(gd$dir, "likelihood"), "a")
+    tryCatch(
+        capture.output(print(obj), file = fh),
+        finally = close(fh))
+
+    # Write out each file-based component
+    for (x in obj) {
+        if ("gadget_file" %in% class(x)) {
+            gadget_dir_write(gd, x)
+        }
+    }
 }

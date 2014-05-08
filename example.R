@@ -24,17 +24,17 @@ gadget_areafile(gd,
 
 # Add a likelihood component for penalty, based on a data.frame
 # NB: We're not supporting more than one likelihood file, just dumping everything ehre.
-gadget_likelihood_component(gd, "penalty",
+gadget_dir_write(gd, gadget_likelihood_component("penalty",
         name = "bounds",
         weight = "0.5",
         data = data.frame(
             switch = c("default"),
             power = c(2),
-            stringsAsFactors = FALSE))
+            stringsAsFactors = FALSE)))
 
 # Get the mean length data from the database, override the areas set in
 # defaultparams above and add a few more.
-ml <- mfdb_meanlength(mdb,
+mean_len <- mfdb_meanlength(mdb,
         generate_stddev = TRUE,
         params = list(
             years = c(2000),
@@ -58,10 +58,13 @@ ml <- mfdb_meanlength(mdb,
 # Write this data out into a datafile, as well as age and area files. Add the
 # component entry to the bottom of the likelihood file
 # NB: function is worked out from the input data, although can be overridden.
-gadget_likelihood_component(gd, "catchstatistics",
+
+gadget_dir_write(gd, gadget_likelihood_component("catchstatistics",
         name = "codstatistics",
         weight = 0.8,
-        data = ml)
+        data = mean_len,
+        area = attr(mean_len, "area"),
+        age = attr(mean_len, "age")))
 
 # Create a mainfile with everything that has been created so far
 gadget_mainfile(gd)
