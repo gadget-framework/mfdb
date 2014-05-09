@@ -1,7 +1,10 @@
 library(DBI, lib.loc="./Rpackages/")
 library(RPostgreSQL, lib.loc="./Rpackages/")
+library(logging, lib.loc="./Rpackages/")
 library(devtools, lib.loc="./Rpackages/")
 load_all()
+
+addHandler(writeToConsole, logger='mfdb', level='DEBUG')
 
 # Connect to the given dst2dw database, and set some default
 # parameters to use when querying

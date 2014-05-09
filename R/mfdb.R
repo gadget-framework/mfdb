@@ -1,3 +1,4 @@
+library(logging)
 library(DBI)
 library(RPostgreSQL)
 
@@ -12,6 +13,7 @@ mfdb <- function(db_connection = NULL, defaultparams = list()) {
                 host="/srv/devel/work/mareframe.mfdb/sock/")
     }
     structure(list(
+            logger = getLogger('mfdb'),
             defaultparams = c(defaultparams, list(
                     lengthcellsize = 20, # TODO: Do we have to hardcode this? Could use lag()
                     timesteps = mfdb_group("ts", c(1,2,3,4,5,6,7,8,9,10,11,12)))),
@@ -66,7 +68,7 @@ mfdb_meanlength <- function (mdb, params = list(), generate_stddev = TRUE) {
     }
 
     params <- c(params, mdb$defaultparams)
-    print(params)  #TODO:
+    mdb$logger$info(params)
 
     # Sort area array into division, subdivision and gridcell conditions
     area_group <- 0
@@ -124,7 +126,7 @@ mfdb_meanlength <- function (mdb, params = list(), generate_stddev = TRUE) {
         paste(lapply(area_group, function (x) { paste(",", x) }), collapse = ""),
         ", tage.name",
         "ORDER BY 1,2,3,4")
-    print(query)  # TODO:
+    mdb$logger$debug(query)
 
     # Make data.table object, annotate with generation information
     out <- fetch(dbSendQuery(mdb$db, query), -1)
