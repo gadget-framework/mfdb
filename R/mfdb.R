@@ -5,8 +5,7 @@ mfdb <- function(db_connection = NULL, defaultparams = list()) {
     if (is.null(db_connection)) {
         db_connection <- dbConnect(dbDriver("PostgreSQL"),
                 dbname="dw0605",
-                user="mfdb",
-                host="/srv/devel/work/mareframe.mfdb/sock/")
+                host="/tmp/")
     }
     structure(list(
             logger = getLogger('mfdb'),
