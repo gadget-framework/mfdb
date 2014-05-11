@@ -6,6 +6,10 @@ library(RPostgreSQL)
 
 addHandler(writeToConsole, logger='mfdb', level='DEBUG')
 
+# Define options we need to add to get catch data
+opt_catch <- list(
+    samplingtype = c(101, 102, 103))
+
 # Connect to the given dst2dw database, and set some default
 # parameters to use when querying
 mdb <- mfdb(dbConnect(dbDriver("PostgreSQL"), dbname="dw0605", host="/tmp/"),
@@ -42,7 +46,7 @@ gadget_dir_write(gd, gadget_likelihood_component("penalty",
 # defaultparams above and add a few more.
 mean_len <- mfdb_meanlength(mdb,
         generate_stddev = TRUE,
-        params = list(
+        params = c(list(
             years = c(2000),
             areas = c("101", "102", "103"),
             species = "COD",
@@ -50,7 +54,7 @@ mean_len <- mfdb_meanlength(mdb,
             lengthcellmax = 500,
             agestep = mfdb_group('age', 'young' = c(1,2,3), 'old' = c(4,5,6)),
             # NB: We could just keep it unaggregated with mfdb_group("age", c(4), c(5), c(6)), possibly this needs a shortcut
-            lengthcell = 30)) # NB: I don't like specifying lengthcell, but I don't see how to derive it from the existing database.
+            lengthcell = 30)), opt_catch) # NB: I don't like specifying lengthcell, but I don't see how to derive it from the existing database.
 
 # NB: At this point mean_len is essentially a data.frame that contains the final
 # data. The database will be a lot faster if all aggregation happens before the
