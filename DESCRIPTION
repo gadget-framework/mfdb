@@ -7,4 +7,8 @@ Author: Jamie Lentin
 Maintainer: Jamie Lentin <jamie.lentin@shuttlethread.com>
 Description: Assist in the creation of GADGET input files
 License: GPL-3
+Imports:
+    logging,
+    DBI,
+    RPostgreSQL
 Suggests: testthat

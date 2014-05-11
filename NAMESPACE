@@ -1,1 +1,5 @@
 exportPattern("^[[:alpha:]]+")
+
+importFrom(DBI, dbConnect, dbDriver, dbSendQuery)
+importFrom(RPostgreSQL, PostgreSQL)
+importFrom(logging, getLogger)

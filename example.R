@@ -1,8 +1,8 @@
-library(DBI, lib.loc="./Rpackages/")
-library(RPostgreSQL, lib.loc="./Rpackages/")
-library(logging, lib.loc="./Rpackages/")
-library(devtools, lib.loc="./Rpackages/")
-load_all()
+# options(error=utils::recover)
+library(mfdb)
+library(logging)
+library(DBI)
+library(RPostgreSQL)
 
 addHandler(writeToConsole, logger='mfdb', level='DEBUG')
 

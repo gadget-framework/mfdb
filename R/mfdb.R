@@ -1,7 +1,3 @@
-library(logging)
-library(DBI)
-library(RPostgreSQL)
-
 #        areas = c(),	# c('101', '101:1001'), e.g. Will group at most granular
 #        timesteps = mfdb_group("ts", c(1,2,3),c(4,5,6)), groupings of months,
 #        todo = NULL) {
