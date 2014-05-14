@@ -17,11 +17,12 @@ mdb <- mfdb(dbConnect(dbDriver("PostgreSQL"), dbname="dw0605", host="/tmp/"),
     defaultparams = list(
         areas = mfdb_areas("101"), # NB: mfdb_areas a shortcut to generating the mfdb_group for an area
         timestep = mfdb_group("ts", c(1,2,3,4,5,6), c(7,8,9,10,11,12)), # Group months to create 2 timesteps for each year
+        null = NULL))
 # NB: Any of these parameters can be overriden when performing a query
 
 # Initalise a gadget directory for output.
 gd <- gadget_directory("./out")
-# NB: Could have a "remove everything" option here.
+# NB: Could have a "remove everything" option here, but it doesn't yet exist.
 
 # Fetch sizes and temperatures for areas, and turn them into an areafile.
 # sizes <- mfdb_area_sizes(mdb)
@@ -29,11 +30,14 @@ gd <- gadget_directory("./out")
 # gadget_dir_write(gadget_areafile(gd,
 #         sizes = sizes,
 #        temperatures = temps))
+# NB: I haven't implemented the above, but it's an example of how it might work
 
 # Add a likelihood component for penalty, based on a data.frame
-# NB: This only allows you to append components to an existing single
-# likelihood file. This allows for simple memory-efficient scripts but at the
-# cost of flexibility (e.g. just replacing a component).
+# NB: Currently this just appends components to the likelihood file, however
+# an improvement would be to parse the likelihood file, find any existing components
+# with the same name/type combination, and replace them if they exist.
+# This allows you to regenerate the sections that need regenerating, and leave the
+# others untouched.
 gadget_dir_write(gd, gadget_likelihood_component("penalty",
         name = "bounds",
         weight = "0.5",
