@@ -73,11 +73,11 @@ gadgetcatchstatisticscomponent <- function (weight = 0,
     # Work out data_function based how data was generated
     if (!is.null(data_function)) {
         # It's already set, so nothing to do
-    } else if (attr(data, "generator") == "mfdb_meanlength" && data$stddev) {
+    } else if (attr(data, "generator") == "mfdb_meanlength_stddev") {
         data_function <- 'lengthgivenstddev'
     } else if (attr(data, "generator") == "mfdb_meanlength"){
         data_function <- 'lengthnostddev'
-    } else if (attr(data, "generator") == "mfdb_meanweight" && data$stddev) {
+    } else if (attr(data, "generator") == "mfdb_meanweight_stddev") {
         data_function <- 'weightgivenstddev'
     } else if (attr(data, "generator") == "mfdb_meanweight"){
         data_function <- 'weightnostddev'

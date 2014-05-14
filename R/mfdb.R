@@ -23,8 +23,35 @@ mfdb_temperatures <- function (mdb, params = list()) {
     #TODO:
 }
 
-# Return year,step,area,age,number,mean,stddev
-mfdb_meanlength <- function (mdb, params = list(), generate_stddev = TRUE) {
+# Return year,step,area,age,number (# of samples),mean (length), stddev (length)
+mfdb_meanlength_stddev <- function (mdb, params = list()) {
+    params <- c(params, mdb$defaultparams)
+    mdb$logger$info(params)
+
+    # TODO: Really need to define a weighted stddev aggregate function
+    out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
+        ", SUM(age.agenum) AS number",
+        ", AVG(age.agenum * (lec.lengthcell + ", params$lengthcellsize/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean",
+        ", 0 AS stddev"))
+    attr(out, "generator") <- "mfdb_meanlength_stddev"
+    out
+}
+
+# Return year,step,area,age,number (# of samples),mean (length), stddev (length)
+mfdb_meanlength <- function (mdb, params = list()) {
+    params <- c(params, mdb$defaultparams)
+    mdb$logger$info(params)
+
+    # TODO: Really need to define a weighted stddev aggregate function
+    out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
+        ", SUM(age.agenum) AS number",
+        ", AVG(age.agenum * (lec.lengthcell + ", params$lengthcellsize/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean"))
+    attr(out, "generator") <- "mfdb_meanlength"
+    out
+}
+
+# Group up sample data by area, age or length
+mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c()) {
     # Turn vector into a SQL IN condition, NA = NULL, optionally go via a lookup table.
     sql_col_condition <- function(col, v, lookup = NULL) {
         if (!is.vector(v)) return("")
@@ -62,9 +89,6 @@ mfdb_meanlength <- function (mdb, params = list(), generate_stddev = TRUE) {
         }
     }
 
-    params <- c(params, mdb$defaultparams)
-    mdb$logger$info(params)
-
     # Sort area array into division, subdivision and gridcell conditions
     area_group <- 0
     division <- c() ; subdivision <- c() ; gridcell <- c()
@@ -83,17 +107,14 @@ mfdb_meanlength <- function (mdb, params = list(), generate_stddev = TRUE) {
 
     # Store timestep data as a table, so we can join to it
     group_to_table(mdb$db, "ts", params$timestep, datatype = "INT")
-    group_to_table(mdb$db, "age", params$age, datatype = "INT")
+    group_to_table(mdb$db, "age", params$ages, datatype = "INT")
 
-    # Should have cols year,step,area,age,number,mean,stddev
-    query <- paste(
+    query <- paste(c(
         "SELECT sam.year",
         ", tts.name AS step",
         ", ", paste(if (length(area_group) == 0) "'allareas'" else area_group, collapse = "||':'||"), " AS area",
         ", tage.name AS age",
-        ", SUM(age.agenum) AS number",
-        ", AVG(age.agenum * (lec.lengthcell + ", params$lengthcellsize/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean",
-        if (generate_stddev) ", 0 AS stddev" else "", # TODO: Really need to define a weighted stddev aggregate function
+        calc_cols,
         "FROM sample sam, species spe, catchsample cas, lengthcell lec, age age",
         ", temp_ts tts",
         ", temp_age tage",
@@ -120,13 +141,13 @@ mfdb_meanlength <- function (mdb, params = list(), generate_stddev = TRUE) {
         "GROUP BY sam.year, tts.name",
         paste(lapply(area_group, function (x) { paste(",", x) }), collapse = ""),
         ", tage.name",
-        "ORDER BY 1,2,3,4")
+        "ORDER BY 1,2,3,4"), collapse = " ")
     mdb$logger$debug(query)
 
     # Make data.table object, annotate with generation information
     out <- fetch(dbSendQuery(mdb$db, query), -1)
-    attr(out, "generator") <- "mfdb_meanlength"
-    attr(out, "area") <- params$area
-    attr(out, "age") <- params$age
+    attr(out, "generator") <- "mfdb_grouping"
+    attr(out, "areas") <- params$areas
+    attr(out, "ages") <- params$ages
     out
 }

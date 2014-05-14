@@ -4,6 +4,7 @@ library(logging)
 library(DBI)
 library(RPostgreSQL)
 
+options(error=utils::recover)
 addHandler(writeToConsole, logger='mfdb', level='DEBUG')
 
 # Define options we need to add to get catch data
@@ -14,9 +15,8 @@ opt_catch <- list(
 # parameters to use when querying
 mdb <- mfdb(dbConnect(dbDriver("PostgreSQL"), dbname="dw0605", host="/tmp/"),
     defaultparams = list(
-        areas = c("101", "102", "103", "104", "105"),
+        areas = mfdb_areas("101"), # NB: mfdb_areas a shortcut to generating the mfdb_group for an area
         timestep = mfdb_group("ts", c(1,2,3,4,5,6), c(7,8,9,10,11,12)), # Group months to create 2 timesteps for each year
-        areastep = mfdb_group("area", 'area1' = c('101', '102'), 'area2' = c('103', 104)))) # Group areas (NB: We've added a name)
 # NB: Any of these parameters can be overriden when performing a query
 
 # Initalise a gadget directory for output.
@@ -44,17 +44,15 @@ gadget_dir_write(gd, gadget_likelihood_component("penalty",
 
 # Get the mean length data from the database, override the areas set in
 # defaultparams above and add a few more.
-mean_len <- mfdb_meanlength(mdb,
-        generate_stddev = TRUE,
+mean_len <- mfdb_meanlength_stddev(mdb,
         params = c(list(
             years = c(2000),
-            areas = c("101", "102", "103"),
-            species = "COD",
-            lengthcellmin = 250,
-            lengthcellmax = 500,
-            agestep = mfdb_group('age', 'young' = c(1,2,3), 'old' = c(4,5,6)),
+            areas = mfdb_areas("101", "101:1"),  # NB: Added one extra area, overriding default
+            ages = mfdb_group('age', 'young' = c(1,2,3), 'old' = c(4,5,6)),
             # NB: We could just keep it unaggregated with mfdb_group("age", c(4), c(5), c(6)), possibly this needs a shortcut
-            lengthcell = 30)), opt_catch) # NB: I don't like specifying lengthcell, but I don't see how to derive it from the existing database.
+            lengths = mfdb_interval(250, 500, 30),
+             # NB: I don't like specifying lengthcell, but I don't see how to derive it from the existing database.
+            species = "COD"), opt_catch))
 
 # NB: At this point mean_len is essentially a data.frame that contains the final
 # data. The database will be a lot faster if all aggregation happens before the
@@ -72,8 +70,8 @@ gadget_dir_write(gd, gadget_likelihood_component("catchstatistics",
         name = "codstatistics",
         weight = 0.8,
         data = mean_len,
-        area = attr(mean_len, "area"),
-        age = attr(mean_len, "age")))
+        area = attr(mean_len, "areas"),
+        age = attr(mean_len, "ages")))
 rm(mean_len) # Free up memory before moving on to the next component
 
 # Create a mainfile with everything that has been created so far
