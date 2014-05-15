@@ -25,8 +25,10 @@ gadget_dir_write.gadget_file <- function(gd, obj) {
 }
 
 gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
+    #TODO: Should parse the file, and add it in
     # Append the component to the likelihood file
-    fh = file(file.path(gd$dir, "likelihood"), "a")
+    fname <- file.path(gd$dir, "likelihood")
+    fh = file(fname, if (file.exists(fname)) "a" else "w")
     tryCatch(
         capture.output(print(obj), file = fh),
         finally = close(fh))
