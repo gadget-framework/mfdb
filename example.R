@@ -8,14 +8,16 @@ options(error=utils::recover)
 addHandler(writeToConsole, logger='mfdb', level='DEBUG')
 
 # Define options we need to add to get catch data
-opt_catch <- list(
-    samplingtype = c(101, 102, 103))
+opt_catch <- list()
+    samplingtype = c(130, 131, 133))
 
 # Connect to the given dst2dw database, and set some default
 # parameters to use when querying
 mdb <- mfdb(dbConnect(dbDriver("PostgreSQL"), dbname="dw0605", host="/tmp/"),
     defaultparams = list(
-        areas = mfdb_areas("101"), # NB: mfdb_areas a shortcut to generating the mfdb_group for an area
+        areas = mfdb_group("area",
+            "101" = c(1011, 1012, 1013, 1014, 1015),
+            "102" = c(1021, 1022, 1023)),
         timestep = mfdb_group("ts", c(1,2,3,4,5,6), c(7,8,9,10,11,12)), # Group months to create 2 timesteps for each year
         null = NULL))
 # NB: Any of these parameters can be overriden when performing a query
@@ -50,13 +52,15 @@ gadget_dir_write(gd, gadget_likelihood_component("penalty",
 # defaultparams above and add a few more.
 mean_len <- mfdb_meanlength_stddev(mdb,
         params = c(list(
-            years = c(2000),
-            areas = mfdb_areas("101", "101:1"),  # NB: Added one extra area, overriding default
+            years = c(1990, 1991, 1992, 1993),
+            areas = mfdb_group("area",
+                "101" = c(1011, 1012, 1013, 1014, 1015),
+                "102" = c(1021, 1022, 1023)), # NB: Add one more, overriding default
             ages = mfdb_group('age', 'young' = c(1,2,3), 'old' = c(4,5,6)),
             # NB: We could just keep it unaggregated with mfdb_group("age", c(4), c(5), c(6)), possibly this needs a shortcut
-            lengths = mfdb_interval(250, 500, 30),
-             # NB: I don't like specifying lengthcell, but I don't see how to derive it from the existing database.
-            species = "COD"), opt_catch))
+            lengths = mfdb_group_interval("len", 0, 50000, 30), # NB: I don't like specifying lengthcell, but I don't see how to derive it from the existing database.
+            # species = "COD",
+            null = NULL), opt_catch))
 
 # NB: At this point mean_len is essentially a data.frame that contains the final
 # data. The database will be a lot faster if all aggregation happens before the

@@ -18,3 +18,14 @@ denormalize.mfdb_group <- function (group) {
         lapply(group[[i]], function (value) { c(names(group)[[i]], value) })
     }), recursive = FALSE)
 }
+
+# Numeric intervals, for length e.g.
+mfdb_group_interval <- function (prefix, int_min, int_max, int_step = 20) {
+    group <- structure(list(
+                int_min = int_min,
+                int_max = int_max,
+                int_step = int_step),
+            prefix = prefix,
+            class = "mfdb_group_interval")
+    group
+}

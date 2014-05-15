@@ -33,6 +33,7 @@ mfdb_meanlength_stddev <- function (mdb, params = list()) {
         ", SUM(age.agenum) AS number",
         ", AVG(age.agenum * (lec.lengthcell + ", params$lengthcellsize/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean",
         ", 0 AS stddev"))
+    # TODO: Return list of columns that should be displayed as attribute too
     attr(out, "generator") <- "mfdb_meanlength_stddev"
     out
 }
@@ -49,6 +50,55 @@ mfdb_meanlength <- function (mdb, params = list()) {
     attr(out, "generator") <- "mfdb_meanlength"
     out
 }
+
+# Useful indexes:-
+# CREATE INDEX age_lengthcellid ON age (lengthcellid);
+
+# == mean-length
+# area
+# label1
+# label2
+#
+# == mean-length.areaagg
+# label1	101 102
+# label2	103
+# ==> Labels --> areas (subdivisions or divisions in DSTDW)
+#
+# == area
+# areas 101 102 103
+# size 100 200 300
+# ==> Numeric areas --> size/temp over time
+
+# mfdb_group(label1 = c(101, 102), label2 = c(103))
+# ==> Table
+#   key  	value
+#   label1	101.1
+#   label1	101.2
+#   label1	101.3
+#   label1	102.1
+#   label1	102.2
+#   label2	103.1
+#   label2	103.2
+
+
+# Aggregators
+# time: label -> list
+#   mfdb_group() is fine
+# age:  label -> list
+#   mfdb_group() is fine.
+# area: label -> list
+#   mfdb_areas('COD:101' => c('COD:101:1', 'COD:101:3'))
+#   mfdb_group_like('101', '104')
+#   * Group by values, display anothing relating to these
+#   * Do I make an explicit table? Sample only has 70 areas down to gridcell
+#     ==> Make explicit table (keys, everything that starts with that)
+#      SELECT key1, value FROM areas WHERE key1 LIKE ? UNION ...
+#      SELECT * FROM (SELECT DISTINCT division AS key, division || ':' || SUBSTRING(subdivision FROM 4 FOR 1) || ':'|| coalesce(gridcell, '') AS value FROM sample) moo WHERE value LIKE '101:%';
+# length: label -> min < max
+#   How does this interact with lengthstep?
+#   mfdb_group_interval(min, max_non_inclusive, step)
+#   Do we want to label them?
+#   ==> No extra table, BETWEEN condition for min, max, then divide/floor by step
 
 # Group up sample data by area, age or length
 mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c()) {
@@ -69,14 +119,14 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c()) {
             ")")
     }
     # Generate interval condition given 2 values
-    sql_interval_condition <- function(col, min, max, min_exclusive = FALSE, max_exclusive = FALSE) {
-        if(is.null(min) || is.null(max)) return("")
+    sql_interval_condition <- function(col, int_group, min_exclusive = FALSE, max_exclusive = FALSE) {
+        if(is.null(int_group)) return("")
         #TODO: Not sql-safe
-        paste("AND", col, if (min_exclusive) ">" else ">=", min,
-              "AND", col, if (max_exclusive) "<" else "<=", max)
+        paste("AND", col, if (min_exclusive) ">" else ">=", int_group$int_min,
+              "AND", col, if (max_exclusive) "<" else "<=", int_group$int_max)
     }
-    group_to_table <- function(db, name, group, datatype = "INT") {
-        table_name <- paste0("temp_", name)
+    group_to_table <- function(db, table_name, group, datatype = "INT") {
+        #TODO: Assign random ID attribute to group, use this as table name or re-use table if it already has one
         # Remove the table if it exists, and recreate it
         tryCatch(dbSendQuery(db, paste("DROP TABLE", table_name)), error = function (e) {})
         dbSendQuery(db, paste(
@@ -89,44 +139,29 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c()) {
         }
     }
 
-    # Sort area array into division, subdivision and gridcell conditions
-    area_group <- 0
-    division <- c() ; subdivision <- c() ; gridcell <- c()
-    for (parts in sapply(params$areas, function (x) { unlist(strsplit(x, ":")) })) {
-        area_group <- max(area_group, length(parts))
-        # TODO: This isn't AND'ing the conditions, but not sure we care?
-        if(!is.na(parts[1])) division <- c(division, parts[1])
-        if(!is.na(parts[2])) subdivision <- c(subdivision, parts[1])
-        if(!is.na(parts[3])) gridcell <- c(gridcell, parts[1])
-    }
-    if (area_group == 0) {
-        area_group <- c()
-    } else {
-        area_group <- c("sam.division", "sam.subdivision", "sam.gridcell")[1:area_group]
-    }
-
     # Store timestep data as a table, so we can join to it
-    group_to_table(mdb$db, "ts", params$timestep, datatype = "INT")
-    group_to_table(mdb$db, "age", params$ages, datatype = "INT")
+    group_to_table(mdb$db, "temp_area", params$areas, datatype = "INT")
+    group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT")
+    group_to_table(mdb$db, "temp_age", params$ages, datatype = "INT")
 
+    # TODO: Add in indrection, so a gridcell can be in multiple subdivisions
     query <- paste(c(
         "SELECT sam.year",
         ", tts.name AS step",
-        ", ", paste(if (length(area_group) == 0) "'allareas'" else area_group, collapse = "||':'||"), " AS area",
+        ", tarea.name AS area",
         ", tage.name AS age",
         calc_cols,
         "FROM sample sam, species spe, catchsample cas, lengthcell lec, age age",
         ", temp_ts tts",
         ", temp_age tage",
+        ", temp_area tarea",
         "WHERE sam.sampleid = spe.sampleid AND spe.speciesid = cas.speciesid AND cas.catchsampleid = lec.catchsampleid AND lec.lengthcellid = age.lengthcellid",
         "AND sam.month = tts.value",
         "AND age.age = tage.value",
-        sql_interval_condition("lengthcell", params$lengthcellmin, params$lengthcellmax, max_exclusive = TRUE),
+        "AND sam.subdivision = tarea.value",
+        sql_interval_condition("lengthcell", params$lengths, max_exclusive = TRUE),
         sql_col_condition("sam.institute", params$institute, lookup="l_institute"),
         sql_col_condition("sam.year", params$year),
-        sql_col_condition("sam.division", division),
-        sql_col_condition("sam.subdivision", subdivision),
-        sql_col_condition("sam.gridcell", gridcell),
         sql_col_condition("sam.gearclass", params$gearclass, lookup="l_gearclass"),
         sql_col_condition("sam.gearsubclass", params$gearsubclass, lookup="l_gearsubclass"),
         sql_col_condition("sam.vesselclass", params$vesselclass, lookup="l_vesselclass"),
@@ -138,9 +173,8 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c()) {
         sql_col_condition("cas.samplingstrategy", params$samplingstrategy, lookup="l_samplingstrategy"),
         sql_col_condition("lec.maturitystage", params$maturitystage, lookup="l_maturitystage"),
         sql_col_condition("lec.sexcode", params$sex, lookup="l_sexcode"),
-        "GROUP BY sam.year, tts.name",
-        paste(lapply(area_group, function (x) { paste(",", x) }), collapse = ""),
-        ", tage.name",
+        "GROUP BY sam.year",
+        ", tts.name, tage.name, tarea.name",
         "ORDER BY 1,2,3,4"), collapse = " ")
     mdb$logger$debug(query)
 
