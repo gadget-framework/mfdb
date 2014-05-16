@@ -12,11 +12,20 @@ mfdb_group <- function (prefix, ...) {
 }
 
 # Denormalise the nesting and convert into a list of strings
-denormalize <- function(group) UseMethod("denormalize")
-denormalize.mfdb_group <- function (group) {
-    unlist(lapply(1:length(group), function (i) {
-        lapply(group[[i]], function (value) { c(names(group)[[i]], value) })
-    }), recursive = FALSE)
+denormalize <- function(group, bootstrap = 0) UseMethod("denormalize")
+denormalize.mfdb_group <- function (group, bootstrap = 0) {
+    # Apply function to each members of list, return as a combined list
+    moosh <- function(x, fun) {
+        unlist(lapply(x, fun), recursive = FALSE)
+    }
+
+    moosh(if (bootstrap > 0) 1:bootstrap else 0, function (bs) {
+        moosh(1:length(group), function (i) {
+            lapply(
+                if (bs > 0 & length(group[[i]]) > 1) sample(group[[i]], replace = TRUE) else group[[i]],
+                function (value) { c(bs, names(group)[[i]], value) })
+        })
+    })
 }
 
 # Numeric intervals, for length e.g.

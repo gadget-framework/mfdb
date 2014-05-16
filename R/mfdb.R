@@ -125,17 +125,17 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c()) {
         paste("AND", col, if (min_exclusive) ">" else ">=", int_group$int_min,
               "AND", col, if (max_exclusive) "<" else "<=", int_group$int_max)
     }
-    group_to_table <- function(db, table_name, group, datatype = "INT") {
+    group_to_table <- function(db, table_name, group, datatype = "INT", bootstrap = 0) {
         #TODO: Assign random ID attribute to group, use this as table name or re-use table if it already has one
         # Remove the table if it exists, and recreate it
         tryCatch(dbSendQuery(db, paste("DROP TABLE", table_name)), error = function (e) {})
         dbSendQuery(db, paste(
-                "CREATE TEMPORARY TABLE", table_name, "(name VARCHAR(10), value ", datatype, ")"))
+                "CREATE TEMPORARY TABLE", table_name, "(sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value ", datatype, ")"))
 
         # Flatten out into multiple key:value rows, populate table in one hit
-        for (v in denormalize(group)) {
+        for (v in denormalize(group, bootstrap = bootstrap)) {
             #NB: Once we upgrade postgresql can use multi-row insert form
-            dbSendQuery(db, paste0("INSERT INTO ", table_name, " (name, value) VALUES ('", v[1], "','", v[2], "')"))
+            dbSendQuery(db, paste0("INSERT INTO ", table_name, " (sample, name, value) VALUES ('", v[1], "', '", v[2], "','", v[3], "')"))
         }
     }
 

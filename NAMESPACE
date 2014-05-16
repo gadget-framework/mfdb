@@ -1,4 +1,8 @@
-exportPattern("^[[:alpha:]]+")
+# mfdb_group.R
+export(mfdb_group)
+export(denormalize)
+S3method(denormalize, mfdb_group)
+export(mfdb_group_interval)
 
 importFrom(DBI, dbConnect, dbDriver, dbSendQuery)
 importFrom(RPostgreSQL, PostgreSQL)
