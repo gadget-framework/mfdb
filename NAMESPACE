@@ -4,6 +4,34 @@ export(denormalize)
 S3method(denormalize, mfdb_group)
 export(mfdb_group_interval)
 
+# mfdb.R
 importFrom(DBI, dbConnect, dbDriver, dbSendQuery)
 importFrom(RPostgreSQL, PostgreSQL)
 importFrom(logging, getLogger)
+export(mfdb)
+export(mfdb_area_sizes)
+export(mfdb_temperatures)
+export(mfdb_meanlength_stddev)
+export(mfdb_meanlength)
+
+# gadget_directory.R
+export(gadget_directory)
+export(gadget_dir_write)
+export(gadget_mainfile)
+export(gadget_areafile)
+S3method(gadget_dir_write, gadget_file)
+S3method(gadget_dir_write, gadget_likelihood_component)
+
+# gadget_file.R
+export(gadget_file)
+S3method(print, gadget_file)
+S3method(as.character, gadget_file)
+export(read.gadget_file) # TODO: Surely this is supposed to be an S3 method?
+
+# gadget_likelihood_component.R
+export(gadget_likelihood_component)
+S3method(print, gadget_likelihood_component)
+S3method(as.character, gadget_likelihood_component)
+export(gadgetpenaltycomponent)
+export(gadgetunderstockingcomponent)
+export(gadgetcatchstatisticscomponent)
