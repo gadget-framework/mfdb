@@ -15,10 +15,10 @@ opt_catch <- list()
 # parameters to use when querying
 mdb <- mfdb(dbConnect(dbDriver("PostgreSQL"), dbname="dw0605", host="/tmp/"),
     defaultparams = list(
-        areas = mfdb_group("area",
+        areas = mfdb_group(
             "101" = c(1011, 1012, 1013, 1014, 1015),
             "102" = c(1021, 1022, 1023)),
-        timestep = mfdb_group("ts", c(1,2,3,4,5,6), c(7,8,9,10,11,12)), # Group months to create 2 timesteps for each year
+        timestep = mfdb_group_numbered("ts", c(1,2,3,4,5,6), c(7,8,9,10,11,12)), # Group months to create 2 timesteps for each year
         null = NULL))
 # NB: Any of these parameters can be overriden when performing a query
 
@@ -53,10 +53,10 @@ gadget_dir_write(gd, gadget_likelihood_component("penalty",
 mean_len <- mfdb_meanlength_stddev(mdb,
         params = c(list(
             years = c(1990, 1991, 1992, 1993),
-            areas = mfdb_group("area",
+            areas = mfdb_bootstrap_group(10, mfdb_group(
                 "101" = c(1011, 1012, 1013, 1014, 1015),
-                "102" = c(1021, 1022, 1023)), # NB: Add one more, overriding default
-            ages = mfdb_group('age', 'young' = c(1,2,3), 'old' = c(4,5,6)),
+                "102" = c(1021, 1022, 1023))), # NB: Add one more & bootstrap, overriding default
+            ages = mfdb_group('young' = c(1,2,3), 'old' = c(4,5,6)),
             # NB: We could just keep it unaggregated with mfdb_group("age", c(4), c(5), c(6)), possibly this needs a shortcut
             lengths = mfdb_group_interval("len", 0, 50000, 30), # NB: I don't like specifying lengthcell, but I don't see how to derive it from the existing database.
             # species = "COD",

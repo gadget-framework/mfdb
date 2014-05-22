@@ -1,31 +1,56 @@
-mfdb_group <- function (prefix, ...) {
+# list(
+#     list(camels = c(1,2), aardvarks = c(3,4)),
+#     list(camels = c(2,2), aardvarks = c(4,4))
+# )
+mfdb_group <- function (...) {
+    #TODO: Check each value is a vector
     group <- structure(list(...),
-            prefix = prefix,
             class = "mfdb_group")
 
-    # If elements of our list don't have a label, set one
-    if (is.null(names(group))) names(group) <- rep("", length(group))
-    names(group) <- mapply(function (i, x) {
-        if (nchar(x) > 0) x else paste0(prefix, i)
-    }, seq_along(group), names(group))
-    group
+    invisible(group)
+}
+
+# Shortcut, return group of form prefix1 = c(1,2)
+mfdb_group_numbered <- function (prefix, ...) {
+    # Set label for items based on prefix
+    items <- list(...)
+    names(items) <- mapply(function (i) {
+        paste0(prefix, i)
+    }, seq_along(items))
+
+    do.call(mfdb_group, items)
+}
+
+mfdb_bootstrap_group <- function (count, group) {
+    if (class(group) != 'mfdb_group') {
+        stop("Second argument should be a mfdb_group")
+    }
+    if (count < 1) {
+        stop("Count should be equal or greater than 1")
+    }
+
+    bs_group <- structure(
+            lapply(1:count, function(i) { lapply(group, function (g) { if (length(g) == 1) g else sample(g, replace = TRUE) }) }),
+            class = "mfdb_bootstrap_group")
+    invisible(bs_group)
 }
 
 # Denormalise the nesting and convert into a list of strings
 denormalize <- function(group, bootstrap = 0) UseMethod("denormalize")
-denormalize.mfdb_group <- function (group, bootstrap = 0) {
-    # Apply function to each members of list, return as a combined list
-    moosh <- function(x, fun) {
-        unlist(lapply(x, fun), recursive = FALSE)
-    }
-
-    moosh(if (bootstrap > 0) 1:bootstrap else 0, function (bs) {
-        moosh(1:length(group), function (i) {
-            lapply(
-                if (bs > 0 & length(group[[i]]) > 1) sample(group[[i]], replace = TRUE) else group[[i]],
-                function (value) { c(bs, names(group)[[i]], value) })
-        })
-    })
+# Break down each sample
+denormalize.mfdb_bootstrap_group <- function (bs_group) {
+    do.call(rbind, lapply(1:length(bs_group), function (i) {
+        denormalize.mfdb_group(bs_group[[i]], samp_count = i)
+    }))
+}
+# Break down nested vectors into data.frame
+denormalize.mfdb_group <- function (group, samp_count = 0) {
+    do.call(rbind, lapply(1:length(group), function (i) {
+        data.frame(
+            samp = samp_count,
+            key = names(group)[[i]],
+            value = I(group[[i]]))
+    }))
 }
 
 # Numeric intervals, for length e.g.

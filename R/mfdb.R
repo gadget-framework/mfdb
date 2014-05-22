@@ -125,7 +125,7 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c()) {
         paste("AND", col, if (min_exclusive) ">" else ">=", int_group$int_min,
               "AND", col, if (max_exclusive) "<" else "<=", int_group$int_max)
     }
-    group_to_table <- function(db, table_name, group, datatype = "INT", bootstrap = 0) {
+    group_to_table <- function(db, table_name, group, datatype = "INT") {
         #TODO: Assign random ID attribute to group, use this as table name or re-use table if it already has one
         # Remove the table if it exists, and recreate it
         tryCatch(dbSendQuery(db, paste("DROP TABLE", table_name)), error = function (e) {})
@@ -133,10 +133,11 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c()) {
                 "CREATE TEMPORARY TABLE", table_name, "(sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value ", datatype, ")"))
 
         # Flatten out into multiple key:value rows, populate table in one hit
-        for (v in denormalize(group, bootstrap = bootstrap)) {
+        group_table <- denormalize(group)
+        by(group_table, 1:nrow(group_table), function(v) {
             #NB: Once we upgrade postgresql can use multi-row insert form
-            dbSendQuery(db, paste0("INSERT INTO ", table_name, " (sample, name, value) VALUES ('", v[1], "', '", v[2], "','", v[3], "')"))
-        }
+            dbSendQuery(db, paste0("INSERT INTO ", table_name, " (sample, name, value) VALUES ('", v[[1]], "','", v[[2]], "','", v[[3]], "')"))
+        })
     }
 
     # Store timestep data as a table, so we can join to it
@@ -146,7 +147,8 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c()) {
 
     # TODO: Add in indrection, so a gridcell can be in multiple subdivisions
     query <- paste(c(
-        "SELECT sam.year",
+        "SELECT MAX(tts.sample) ||'-'|| MAX(tarea.sample) ||'-'|| MAX(tage.sample) AS sample",
+        ", sam.year",
         ", tts.name AS step",
         ", tarea.name AS area",
         ", tage.name AS age",
@@ -175,7 +177,7 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c()) {
         sql_col_condition("lec.sexcode", params$sex, lookup="l_sexcode"),
         "GROUP BY sam.year",
         ", tts.name, tage.name, tarea.name",
-        "ORDER BY 1,2,3,4"), collapse = " ")
+        "ORDER BY year, step, area, age"), collapse = " ")
     mdb$logger$debug(query)
 
     # Make data.table object, annotate with generation information
