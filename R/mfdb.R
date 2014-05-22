@@ -32,9 +32,9 @@ mfdb_meanlength_stddev <- function (mdb, params = list()) {
     out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
         ", SUM(age.agenum) AS number",
         ", AVG(age.agenum * (lec.lengthcell + ", params$lengthcellsize/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean",
-        ", 0 AS stddev"))
+        ", 0 AS stddev"),
+        generator = "mfdb_meanlength_stddev")
     # TODO: Return list of columns that should be displayed as attribute too
-    attr(out, "generator") <- "mfdb_meanlength_stddev"
     out
 }
 
@@ -46,8 +46,8 @@ mfdb_meanlength <- function (mdb, params = list()) {
     # TODO: Really need to define a weighted stddev aggregate function
     out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
         ", SUM(age.agenum) AS number",
-        ", AVG(age.agenum * (lec.lengthcell + ", params$lengthcellsize/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean"))
-    attr(out, "generator") <- "mfdb_meanlength"
+        ", AVG(age.agenum * (lec.lengthcell + ", params$lengthcellsize/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean"),
+        generator = "mfdb_meanlength")
     out
 }
 
@@ -101,7 +101,7 @@ mfdb_meanlength <- function (mdb, params = list()) {
 #   ==> No extra table, BETWEEN condition for min, max, then divide/floor by step
 
 # Group up sample data by area, age or length
-mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c()) {
+mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c(), generator = "mfdb_sample_grouping") {
     # Turn vector into a SQL IN condition, NA = NULL, optionally go via a lookup table.
     sql_col_condition <- function(col, v, lookup = NULL) {
         if (!is.vector(v)) return("")
@@ -147,7 +147,7 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c()) {
 
     # TODO: Add in indrection, so a gridcell can be in multiple subdivisions
     query <- paste(c(
-        "SELECT MAX(tts.sample) ||'-'|| MAX(tarea.sample) ||'-'|| MAX(tage.sample) AS sample",
+        "SELECT tts.sample ||'-'|| tarea.sample ||'-'|| tage.sample AS sample",
         ", sam.year",
         ", tts.name AS step",
         ", tarea.name AS area",
@@ -176,14 +176,19 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c()) {
         sql_col_condition("lec.maturitystage", params$maturitystage, lookup="l_maturitystage"),
         sql_col_condition("lec.sexcode", params$sex, lookup="l_sexcode"),
         "GROUP BY sam.year",
-        ", tts.name, tage.name, tarea.name",
-        "ORDER BY year, step, area, age"), collapse = " ")
+        ", tts.sample, tarea.sample, tage.sample",
+        ", tts.name, tarea.name, tage.name",
+        "ORDER BY sample, year, step, area, age"), collapse = " ")
     mdb$logger$debug(query)
 
-    # Make data.table object, annotate with generation information
+    # Fetch all data, break it up by sample and annotate each
     out <- fetch(dbSendQuery(mdb$db, query), -1)
-    attr(out, "generator") <- "mfdb_grouping"
-    attr(out, "areas") <- params$areas
-    attr(out, "ages") <- params$ages
-    out
+    lapply(unique(out$sample), function (sample) {
+        structure(
+            out[out$sample == sample,names(out) != 'sample'],
+            generator = generator,
+            areas = params$areas,
+            ages = params$ages,
+            timestep = params$timestep)
+    })
 }

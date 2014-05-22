@@ -9,7 +9,7 @@ addHandler(writeToConsole, logger='mfdb', level='DEBUG')
 
 # Define options we need to add to get catch data
 opt_catch <- list()
-    samplingtype = c(130, 131, 133))
+#    samplingtype = c(130, 131, 133))
 
 # Connect to the given dst2dw database, and set some default
 # parameters to use when querying
@@ -62,24 +62,21 @@ mean_len <- mfdb_meanlength_stddev(mdb,
             # species = "COD",
             null = NULL), opt_catch))
 
-# NB: At this point mean_len is essentially a data.frame that contains the final
-# data. The database will be a lot faster if all aggregation happens before the
-# data leaves the database, especially when the aggregation is lost. That said,
-# adding unaggregated versions would also be reasonably easy. Another option is
-# allowing SQL to be tweaked, but we then risk not being able to abstract the DB.
-
-# NB: The groups used for aggregation are attributes attached to mean_len
+# NB: Since we requested 10 bootstrap samples, mean_len is a vector of 10 items,
+# each is essentially a data.frame that contains the final data. The data here
+# has been wrapped up into divisions, ready to be outputted to a gadget file.
+# This is for speed, although there's no reason not to specify each individual
+# subdivision and then do the aggregation within R.
 
 # Write this data out into a datafile, as well as age and area files. Add the
 # component entry to the bottom of the likelihood file
 # NB: function is worked out from the input data, although can be overridden.
-
 gadget_dir_write(gd, gadget_likelihood_component("catchstatistics",
         name = "codstatistics",
         weight = 0.8,
-        data = mean_len,
-        area = attr(mean_len, "areas"),
-        age = attr(mean_len, "ages")))
+        data = mean_len[[1]],
+        area = attr(mean_len[[1]], "areas"),
+        age = attr(mean_len[[1]], "ages")))
 rm(mean_len) # Free up memory before moving on to the next component
 
 # Create a mainfile with everything that has been created so far
