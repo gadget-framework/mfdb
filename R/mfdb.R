@@ -60,7 +60,7 @@ mfdb_meanweight <- function (mdb, params = list()) {
     out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
         ", SUM(age.agenum) AS number",
         ", SUM(age.agenum * age.weightagemean) / SUM(age.agenum) AS mean"),
-        generator = "mfdb_meanlength")
+        generator = "mfdb_meanweight")
     out
 }
 
@@ -74,7 +74,7 @@ mfdb_meanweight_stddev <- function (mdb, params = list()) {
         ", SUM(age.agenum) AS number",
         ", SUM(age.agenum * age.weightagemean) / SUM(age.agenum) AS mean",
         ", 0 AS stddev"),
-        generator = "mfdb_meanlength")
+        generator = "mfdb_meanweight_stddev")
     out
 }
 
