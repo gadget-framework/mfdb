@@ -38,7 +38,7 @@ mfdb_meanlength_stddev <- function (mdb, params = list()) {
     out
 }
 
-# Return year,step,area,age,number (# of samples),mean (length), stddev (length)
+# Return year,step,area,age,number (# of samples),mean (length)
 mfdb_meanlength <- function (mdb, params = list()) {
     params <- c(params, mdb$defaultparams)
     mdb$logger$info(params)
@@ -47,6 +47,33 @@ mfdb_meanlength <- function (mdb, params = list()) {
     out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
         ", SUM(age.agenum) AS number",
         ", AVG(age.agenum * (lec.lengthcell + ", params$lengthcellsize/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean"),
+        generator = "mfdb_meanlength")
+    out
+}
+
+# Return year,step,area,age,number (# of samples),mean (weight)
+mfdb_meanweight <- function (mdb, params = list()) {
+    params <- c(params, mdb$defaultparams)
+    mdb$logger$info(params)
+
+    # TODO: Really need to define a weighted stddev aggregate function
+    out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
+        ", SUM(age.agenum) AS number",
+        ", SUM(age.agenum * age.weightagemean) / SUM(age.agenum) AS mean"),
+        generator = "mfdb_meanlength")
+    out
+}
+
+# Return year,step,area,age,number (# of samples),mean (weight), stddev (weight)
+mfdb_meanweight_stddev <- function (mdb, params = list()) {
+    params <- c(params, mdb$defaultparams)
+    mdb$logger$info(params)
+
+    # TODO: stddev doesn't exist in old schema
+    out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
+        ", SUM(age.agenum) AS number",
+        ", SUM(age.agenum * age.weightagemean) / SUM(age.agenum) AS mean",
+        ", 0 AS stddev"),
         generator = "mfdb_meanlength")
     out
 }

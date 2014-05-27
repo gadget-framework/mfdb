@@ -16,6 +16,8 @@ export(mfdb_area_sizes)
 export(mfdb_temperatures)
 export(mfdb_meanlength_stddev)
 export(mfdb_meanlength)
+export(mfdb_meanweight)
+export(mfdb_meanweight_stddev)
 
 # gadget_directory.R
 export(gadget_directory)

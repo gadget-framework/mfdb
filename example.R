@@ -50,7 +50,7 @@ gadget_dir_write(gd, gadget_likelihood_component("penalty",
 
 # Get the mean length data from the database, override the areas set in
 # defaultparams above and add a few more.
-mean_len <- mfdb_meanlength_stddev(mdb,
+agg_data <- mfdb_meanlength_stddev(mdb,
         params = c(list(
             years = c(1990, 1991, 1992, 1993),
             areas = mfdb_bootstrap_group(10, mfdb_group(
@@ -62,7 +62,7 @@ mean_len <- mfdb_meanlength_stddev(mdb,
             # species = "COD",
             null = NULL), opt_catch))
 
-# NB: Since we requested 10 bootstrap samples, mean_len is a vector of 10 items,
+# NB: Since we requested 10 bootstrap samples, agg_data is a vector of 10 items,
 # each is essentially a data.frame that contains the final data. The data here
 # has been wrapped up into divisions, ready to be outputted to a gadget file.
 # This is for speed, although there's no reason not to specify each individual
@@ -74,10 +74,26 @@ mean_len <- mfdb_meanlength_stddev(mdb,
 gadget_dir_write(gd, gadget_likelihood_component("catchstatistics",
         name = "codstatistics",
         weight = 0.8,
-        data = mean_len[[1]],
-        area = attr(mean_len[[1]], "areas"),
-        age = attr(mean_len[[1]], "ages")))
-rm(mean_len) # Free up memory before moving on to the next component
+        data = agg_data[[1]],
+        area = attr(agg_data[[1]], "areas"),
+        age = attr(agg_data[[1]], "ages")))
+rm(agg_data) # Free up memory before moving on to the next component
+
+agg_data <- mfdb_meanweight(mdb,
+        params = c(list(
+            years = c(1990, 1991, 1992, 1993),
+            ages = mfdb_group_numbered("age", c(1), c(2), c(3), c(4), c(5)),
+            lengths = mfdb_group_interval("len", 0, 50000, 30),
+            # species = "COD",
+            null = NULL), opt_catch))
+
+gadget_dir_write(gd, gadget_likelihood_component("catchstatistics",
+        name = "weightstatistics",
+        weight = 0.8,
+        data = agg_data[[1]],
+        area = attr(agg_data[[1]], "areas"),
+        age = attr(agg_data[[1]], "ages")))
+rm(agg_data) # Free up memory before moving on to the next component
 
 # Create a mainfile with everything that has been created so far
 gadget_mainfile(gd)
