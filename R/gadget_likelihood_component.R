@@ -21,7 +21,7 @@ print.gadget_likelihood_component <- function(x, ...) {
             # Don't paste the gadget object in, leave the filename
             v = v[['filename']]
         }
-        cat(paste0(k, "\t", v, "\n"))
+        cat(paste0(k, "\t", paste(v, collapse = "\t"), "\n"))
     }
 }
 
@@ -66,7 +66,8 @@ componenttype.gadgetunderstockingcomponent <- function (x) { "understocking" }
 gadgetcatchstatisticscomponent <- function (weight = 0,
         name = "catchstatistics",
         data_function = NULL,
-        data = NULL, area = NULL, age = NULL) {
+        data = NULL, area = NULL, age = NULL,
+        fleetnames = c(), stocknames = c()) {
 
     prefix <- paste0('catchstatistics.', name, '.')
 
@@ -92,7 +93,7 @@ gadgetcatchstatisticscomponent <- function (weight = 0,
         "function" = data_function,
         areaaggfile = gadget_file(paste0(prefix, 'area.agg'), properties=area),
         ageaggfile = gadget_file(paste0(prefix, 'age.agg'), properties=age),
-        fleetnames = "TODO: if (is_survey) surveynames[[0]] else fleetnames[[0]]",
-        stocknames = "TODO: stocknames"), class = c("gadgetcatchstatisticscomponent", "gadget_likelihood_component"))
+        fleetnames = fleetnames,
+        stocknames = stocknames), class = c("gadgetcatchstatisticscomponent", "gadget_likelihood_component"))
 }
 componenttype.gadgetcatchstatisticscomponent <- function (x) { "catchstatistics" }

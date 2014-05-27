@@ -76,7 +76,9 @@ gadget_dir_write(gd, gadget_likelihood_component("catchstatistics",
         weight = 0.8,
         data = agg_data[[1]],
         area = attr(agg_data[[1]], "areas"),
-        age = attr(agg_data[[1]], "ages")))
+        age = attr(agg_data[[1]], "ages"),
+        fleetnames = c("igfs"),
+        stocknames = c("codimm", "codmat")))
 rm(agg_data) # Free up memory before moving on to the next component
 
 agg_data <- mfdb_meanweight(mdb,
