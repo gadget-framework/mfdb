@@ -49,8 +49,6 @@ test_that("Can get a bootstrap sample", {
             value = I(c(44, 88, 44, 88))))
 
     dn <- denormalize(mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99))))
-    print(dn)
-    print(dn[1,]$key)
     expect_equal(dn$samp, c(1,1,1,1,2,2,2,2))
     expect_equal(dn$key, factor(c("g1", "g1", "g2", "g2", "g1", "g1", "g2", "g2")))
     expect_equal(vapply(dn[dn$key == "g1",]$value, function (x) { x %in% c("44", "55") }, logical(1)),
