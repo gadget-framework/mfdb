@@ -1,4 +1,4 @@
 library(testthat)
 
 library(mfdb)
-test_check("mfdb")
+test_package("mfdb")
