@@ -58,7 +58,7 @@ agg_data <- mfdb_meanlength_stddev(mdb,
                 "102" = c(1021, 1022, 1023))), # NB: Add one more & bootstrap, overriding default
             ages = mfdb_group('young' = c(1,2,3), 'old' = c(4,5,6)),
             # NB: We could just keep it unaggregated with mfdb_group("age", c(4), c(5), c(6)), possibly this needs a shortcut
-            lengths = mfdb_group_interval("len", 0, 50000, 30), # NB: I don't like specifying lengthcell, but I don't see how to derive it from the existing database.
+            lengths = mfdb_interval_group("len", 0, 50000, 30), # NB: I don't like specifying lengthcell, but I don't see how to derive it from the existing database.
             # species = "COD",
             null = NULL), opt_catch))
 
@@ -85,13 +85,27 @@ agg_data <- mfdb_meanweight(mdb,
         params = c(list(
             years = c(1990, 1991, 1992, 1993),
             ages = mfdb_group_numbered("age", c(1), c(2), c(3), c(4), c(5)),
-            lengths = mfdb_group_interval("len", 0, 50000, 30),
+            lengths = mfdb_interval_group("len", 0, 50000, 30),
             # species = "COD",
             null = NULL), opt_catch))
 
 gadget_dir_write(gd, gadget_likelihood_component("catchstatistics",
         name = "weightstatistics",
         weight = 0.8,
+        data = agg_data[[1]],
+        area = attr(agg_data[[1]], "areas"),
+        age = attr(agg_data[[1]], "ages")))
+rm(agg_data) # Free up memory before moving on to the next component
+
+agg_data <- mfdb_agelength(mdb,
+        params = c(list(
+            years = c(1990), 1991,
+            lengths = mfdb_interval_group("len", 0, 50000, 30),
+            ages = mfdb_group('young' = c(1,2,3)),
+            null = NULL), opt_catch))
+gadget_dir_write(gd, gadget_likelihood_component("catchdistribution",
+        name = "cdist",
+        weight = 0.9,
         data = agg_data[[1]],
         area = attr(agg_data[[1]], "areas"),
         age = attr(agg_data[[1]], "ages")))

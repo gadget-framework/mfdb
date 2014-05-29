@@ -5,7 +5,7 @@ export(mfdb_bootstrap_group)
 export(denormalize)
 S3method(denormalize, mfdb_group)
 S3method(denormalize, mfdb_bootstrap_group)
-export(mfdb_group_interval)
+export(mfdb_interval_group)
 
 # mfdb.R
 importFrom(DBI, dbConnect, dbDriver, dbSendQuery)
@@ -18,6 +18,7 @@ export(mfdb_meanlength_stddev)
 export(mfdb_meanlength)
 export(mfdb_meanweight)
 export(mfdb_meanweight_stddev)
+export(mfdb_agelength)
 
 # gadget_directory.R
 export(gadget_directory)

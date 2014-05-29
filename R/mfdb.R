@@ -78,6 +78,20 @@ mfdb_meanweight_stddev <- function (mdb, params = list()) {
     out
 }
 
+# Return year,step,area,age,length,number (# of samples)
+mfdb_agelength <- function (mdb, params = list()) {
+    params <- c(params, mdb$defaultparams)
+    mdb$logger$info(params)
+
+    out <- mfdb_sample_grouping(mdb,
+        params = params,
+        group_cols = c("timestep", "areas", "ages", "lengths"),
+        calc_cols = c(
+            ", SUM(age.agenum) AS number"),
+        generator = "mfdb_meanweight_stddev")
+    out
+}
+
 # Useful indexes:-
 # CREATE INDEX age_lengthcellid ON age (lengthcellid);
 
@@ -123,12 +137,16 @@ mfdb_meanweight_stddev <- function (mdb, params = list()) {
 #      SELECT * FROM (SELECT DISTINCT division AS key, division || ':' || SUBSTRING(subdivision FROM 4 FOR 1) || ':'|| coalesce(gridcell, '') AS value FROM sample) moo WHERE value LIKE '101:%';
 # length: label -> min < max
 #   How does this interact with lengthstep?
-#   mfdb_group_interval(min, max_non_inclusive, step)
+#   mfdb_interval_group(min, max_non_inclusive, step)
 #   Do we want to label them?
 #   ==> No extra table, BETWEEN condition for min, max, then divide/floor by step
 
 # Group up sample data by area, age or length
-mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c(), generator = "mfdb_sample_grouping") {
+mfdb_sample_grouping <- function (mdb,
+        params = list(),
+        group_cols = c("timestep", "areas", "ages"),
+        calc_cols = c(),
+        generator = "mfdb_sample_grouping") {
     # Turn vector into a SQL IN condition, NA = NULL, optionally go via a lookup table.
     sql_col_condition <- function(col, v, lookup = NULL) {
         if (!is.vector(v)) return("")
@@ -152,7 +170,14 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c(), generat
         paste("AND", col, if (min_exclusive) ">" else ">=", int_group$int_min,
               "AND", col, if (max_exclusive) "<" else "<=", int_group$int_max)
     }
+    # If interval has a step, condition should floor to that
+    sql_interval_group <- function(col, group, min_exclusive = FALSE, max_exclusive = FALSE) {
+        if (is.null(group)) stop(paste("You must provide a mfdb_interval_group"))
+        if (group$int_step > 0) c(", FLOOR(", col, "/ '", group$int_step, "') * '", group$int_step, "'") else c(",", col)
+    }
     group_to_table <- function(db, table_name, group, datatype = "INT") {
+        #TODO: This error message provides table name, not parameter
+        if (is.null(group)) stop(paste("You must provide a mfdb_group for", table_name))
         #TODO: Assign random ID attribute to group, use this as table name or re-use table if it already has one
         # Remove the table if it exists, and recreate it
         tryCatch(dbSendQuery(db, paste("DROP TABLE", table_name)), error = function (e) {})
@@ -166,28 +191,37 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c(), generat
             dbSendQuery(db, paste0("INSERT INTO ", table_name, " (sample, name, value) VALUES ('", v[[1]], "','", v[[2]], "','", v[[3]], "')"))
         })
     }
+    # True iff str is in the group_cols parameter
+    grouping_by <- function(str) {
+        str %in% group_cols
+    }
 
-    # Store timestep data as a table, so we can join to it
-    group_to_table(mdb$db, "temp_area", params$areas, datatype = "INT")
-    group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT")
-    group_to_table(mdb$db, "temp_age", params$ages, datatype = "INT")
+    # Store groups into temporary tables for joining
+    if (grouping_by("timestep")) group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT")
+    if (grouping_by("areas")) group_to_table(mdb$db, "temp_area", params$areas, datatype = "INT")
+    if (grouping_by("ages"))  group_to_table(mdb$db, "temp_age", params$ages, datatype = "INT")
 
     # TODO: Add in indrection, so a gridcell can be in multiple subdivisions
     query <- paste(c(
-        "SELECT tts.sample ||'-'|| tarea.sample ||'-'|| tage.sample AS sample",
+        "SELECT 's'",
+        if (grouping_by("timestep")) "|| '.' || tts.sample",
+        if (grouping_by("areas"))    "|| '.' || tarea.sample",
+        if (grouping_by("ages"))     "|| '.' || tage.sample",
+        " AS sample",
         ", sam.year",
-        ", tts.name AS step",
-        ", tarea.name AS area",
-        ", tage.name AS age",
+        if (grouping_by("timestep")) ", tts.name AS step",
+        if (grouping_by("areas"))    ", tarea.name AS area",
+        if (grouping_by("ages"))     ", tage.name AS age",
+        if (grouping_by("lengths"))  c(sql_interval_group("lec.lengthcell", params$lengths), " AS length"),
         calc_cols,
         "FROM sample sam, species spe, catchsample cas, lengthcell lec, age age",
-        ", temp_ts tts",
-        ", temp_age tage",
-        ", temp_area tarea",
+        if (grouping_by("timestep")) ", temp_ts tts",
+        if (grouping_by("areas"))    ", temp_area tarea",
+        if (grouping_by("ages"))     ", temp_age tage",
         "WHERE sam.sampleid = spe.sampleid AND spe.speciesid = cas.speciesid AND cas.catchsampleid = lec.catchsampleid AND lec.lengthcellid = age.lengthcellid",
-        "AND sam.month = tts.value",
-        "AND age.age = tage.value",
-        "AND sam.subdivision = tarea.value",
+        if (grouping_by("timestep")) "AND sam.month = tts.value",
+        if (grouping_by("areas"))    "AND sam.subdivision = tarea.value",
+        if (grouping_by("ages"))     "AND age.age = tage.value",
         sql_interval_condition("lengthcell", params$lengths, max_exclusive = TRUE),
         sql_col_condition("sam.institute", params$institute, lookup="l_institute"),
         sql_col_condition("sam.year", params$year),
@@ -202,10 +236,9 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c(), generat
         sql_col_condition("cas.samplingstrategy", params$samplingstrategy, lookup="l_samplingstrategy"),
         sql_col_condition("lec.maturitystage", params$maturitystage, lookup="l_maturitystage"),
         sql_col_condition("lec.sexcode", params$sex, lookup="l_sexcode"),
-        "GROUP BY sam.year",
-        ", tts.sample, tarea.sample, tage.sample",
-        ", tts.name, tarea.name, tage.name",
-        "ORDER BY sample, year, step, area, age"), collapse = " ")
+        "GROUP BY ", paste(1:(2 + length(group_cols)), collapse=","),
+        "ORDER BY ", paste(1:(2 + length(group_cols)), collapse=","),
+        ""), collapse = " ")
     mdb$logger$debug(query)
 
     # Fetch all data, break it up by sample and annotate each
@@ -216,6 +249,7 @@ mfdb_sample_grouping <- function (mdb, params = list(), calc_cols = c(), generat
             generator = generator,
             areas = params$areas,
             ages = params$ages,
+            lengths = params$lengths,
             timestep = params$timestep)
     })
 }
