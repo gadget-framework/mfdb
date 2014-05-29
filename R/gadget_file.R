@@ -29,8 +29,8 @@ print.gadget_file <- function (x, ...) {
 }
 
 # Return a character representation of the gadget file
-as.character.gadget_file <- function (object) {
-    capture.output(print.gadget_file(object))
+as.character.gadget_file <- function (x, ...) {
+    capture.output(print.gadget_file(x))
 }
 
 # Load gadget file into memory

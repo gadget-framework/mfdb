@@ -21,8 +21,8 @@ print.gadget_likelihood_component <- function(x, ...) {
     }
 }
 
-as.character.gadget_likelihood_component <- function(object, ...) {
-    capture.output(print.gadget_likelihood_component(object))
+as.character.gadget_likelihood_component <- function(x, ...) {
+    capture.output(print.gadget_likelihood_component(x))
 }
 
 componenttype <- function(x) UseMethod("componenttype")

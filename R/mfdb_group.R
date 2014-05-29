@@ -36,11 +36,11 @@ mfdb_bootstrap_group <- function (count, group) {
 }
 
 # Denormalise the nesting and convert into a list of strings
-denormalize <- function(group, bootstrap = 0) UseMethod("denormalize")
+denormalize <- function(group, samp_count = 0) UseMethod("denormalize")
 # Break down each sample
-denormalize.mfdb_bootstrap_group <- function (bs_group) {
-    do.call(rbind, lapply(1:length(bs_group), function (i) {
-        denormalize.mfdb_group(bs_group[[i]], samp_count = i)
+denormalize.mfdb_bootstrap_group <- function (group, samp_count = 0) {
+    do.call(rbind, lapply(1:length(group), function (i) {
+        denormalize.mfdb_group(group[[i]], samp_count = i)
     }))
 }
 # Break down nested vectors into data.frame
