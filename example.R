@@ -53,7 +53,7 @@ gadget_dir_write(gd, gadget_likelihood_component("penalty",
 agg_data <- mfdb_meanlength_stddev(mdb,
         params = c(list(
             years = c(1990, 1991, 1992, 1993),
-            areas = mfdb_bootstrap_group(10, mfdb_group(
+            areas = mfdb_bootstrap_group(2, mfdb_group(
                 "101" = c(1011, 1012, 1013, 1014, 1015),
                 "102" = c(1021, 1022, 1023))), # NB: Add one more & bootstrap, overriding default
             ages = mfdb_group('young' = c(1,2,3), 'old' = c(4,5,6)),
