@@ -2,9 +2,6 @@
 export(mfdb_group)
 export(mfdb_group_numbered)
 export(mfdb_bootstrap_group)
-export(denormalize)
-S3method(denormalize, mfdb_group)
-S3method(denormalize, mfdb_bootstrap_group)
 export(mfdb_interval_group)
 
 # mfdb.R
