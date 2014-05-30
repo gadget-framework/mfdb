@@ -65,19 +65,25 @@ gadgetcatchstatisticscomponent <- function (weight = 0,
 
     prefix <- paste0('catchstatistics.', name, '.')
 
+    if (is.null(data)) {
+        stop("No data provided")
+    }
+
     # Work out data_function based how data was generated
     if (!is.null(data_function)) {
         # It's already set, so nothing to do
+    } else if (is.null(attr(data, "generator"))) {
+        stop("Cannot work out the required function, and data_function not provided")
     } else if (attr(data, "generator") == "mfdb_meanlength_stddev") {
         data_function <- 'lengthgivenstddev'
-    } else if (attr(data, "generator") == "mfdb_meanlength"){
+    } else if (attr(data, "generator") == "mfdb_meanlength") {
         data_function <- 'lengthnostddev'
     } else if (attr(data, "generator") == "mfdb_meanweight_stddev") {
         data_function <- 'weightgivenstddev'
-    } else if (attr(data, "generator") == "mfdb_meanweight"){
+    } else if (attr(data, "generator") == "mfdb_meanweight") {
         data_function <- 'weightnostddev'
     } else {
-        stop("Cannot work out the required function, and data_function not provided")
+        stop(paste("Unknown generator function", attr(data, "generator")))
     }
 
     structure(list(
