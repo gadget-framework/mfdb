@@ -7,7 +7,7 @@
 }
 
 \usage{
-    mfdb(db_connection = dbConnect(\dots), defaultparams = list(...))
+    mfdb(db_connection = NULL, defaultparams = list())
 }
 \arguments{
     \item{db_connection}{
@@ -19,3 +19,6 @@
         \code{\link{mfdb_meanlength}()} for details of available options.
     }
 }
+\examples{\dontrun{
+    mfdb(db_connection = dbConnect(\dots), defaultparams = list(years = 2000:2005))
+}}
