@@ -99,7 +99,7 @@ rm(agg_data) # Free up memory before moving on to the next component
 
 agg_data <- mfdb_agelength(mdb,
         params = c(list(
-            years = c(1990), 1991,
+            years = c(1990, 1991),
             lengths = mfdb_interval_group("len", 0, 50000, 30),
             ages = mfdb_group('young' = c(1,2,3)),
             null = NULL), opt_catch))
