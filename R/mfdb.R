@@ -3,16 +3,16 @@
 #        todo = NULL) {
 mfdb <- function(db_connection = NULL, defaultparams = list()) {
     if (is.null(db_connection)) {
-        db_connection <- dbConnect(dbDriver("PostgreSQL"),
+        db_connection <- dbConnect(PostgreSQL(),
                 dbname="dw0605",
                 host="/tmp/")
     }
-    structure(list(
+    invisible(structure(list(
             logger = getLogger('mfdb'),
             defaultparams = c(defaultparams, list(
                     lengthcellsize = 20, # TODO: Do we have to hardcode this? Could use lag()
                     timesteps = mfdb_group("ts", c(1,2,3,4,5,6,7,8,9,10,11,12)))),
-            db = db_connection), class = "mfdb")
+            db = db_connection), class = "mfdb"))
 }
 
 mfdb_area_sizes <- function (mdb, params = list()) {
