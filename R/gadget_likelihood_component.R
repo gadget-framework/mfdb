@@ -1,17 +1,16 @@
 gadget_likelihood_component <- function (type, ...) {
     switch(type,
-        penalty = gadgetpenaltycomponent(...),
-        understocking = gadgetunderstockingcomponent(...),
-        catchstatistics = gadgetcatchstatisticscomponent(...),
-        catchdistribution = gadgetcatchdistributioncomponent(...),
-        stockdistribution = gadgetstockdistributioncomponent(...),
+        penalty = gadget_penalty_component(...),
+        understocking = gadget_understocking_component(...),
+        catchstatistics = gadget_catchstatistics_component(...),
+        catchdistribution = gadget_catchdistribution_component(...),
+        stockdistribution = gadget_stockdistribution_component(...),
         stop(paste("Unknown likelihood component", type)))
 }
 
 print.gadget_likelihood_component <- function(x, ...) {
     #TODO: Output commented version
     cat(";\n;\n[component]\n")
-    cat(paste0("type\t", componenttype(x), "\n"))
     for (k in names(x)) {
         v = x[[k]]
         if ("gadget_file" %in% class(v)) {
@@ -26,11 +25,9 @@ as.character.gadget_likelihood_component <- function(x, ...) {
     capture.output(print.gadget_likelihood_component(x))
 }
 
-componenttype <- function(x) UseMethod("componenttype")
-
 ### Penalty / bounds component
 
-gadgetpenaltycomponent <- function (weight = 0, name = "penalty", data = NULL) {
+gadget_penalty_component <- function (weight = 0, name = "penalty", data = NULL) {
     if (!length(data)) {
         data = data.frame(
             switch = c("default"),
@@ -39,26 +36,25 @@ gadgetpenaltycomponent <- function (weight = 0, name = "penalty", data = NULL) {
     }
     structure(list(
         name = name,
+        weight = weight,
+        type = "penalty",
         datafile = gadget_file(
             filename = paste0(name, '.penaltyfile'),
-            data = data),
-        weight = weight), class = c("gadgetpenaltycomponent", "gadget_likelihood_component"))
+            data = data)), class = c("gadget_penalty_component", "gadget_likelihood_component"))
 }
-componenttype.gadgetpenaltycomponent <- function (x) { "penalty" }
 
 ### Understocking component
 
-gadgetunderstockingcomponent <- function (weight = 0, name = "understocking") {
+gadget_understocking_component <- function (weight = 0, name = "understocking") {
     structure(list(
         name = name,
-        weight = weight), class = c("gadgetunderstockingcomponent", "gadget_likelihood_component"))
+        weight = weight,
+        type = "understocking"), class = c("gadget_understocking_component", "gadget_likelihood_component"))
 }
-componenttype.gadgetunderstockingcomponent <- function (x) { "understocking" }
 
 ### Catch statistics component
 
-# function:		"lengthgivensd", etc. Gadget function.
-gadgetcatchstatisticscomponent <- function (weight = 0,
+gadget_catchstatistics_component <- function (weight = 0,
         name = "catchstatistics",
         data_function = NULL,
         data = NULL, area = NULL, age = NULL,
@@ -90,16 +86,16 @@ gadgetcatchstatisticscomponent <- function (weight = 0,
     structure(list(
         name = name,
         weight = weight,
+        type = "catchstatistics",
         datafile = gadget_file(paste0(prefix, data_function), data=data),
         "function" = data_function,
         areaaggfile = gadget_file(paste0(prefix, 'area.agg'), properties=area),
         ageaggfile = gadget_file(paste0(prefix, 'age.agg'), properties=age),
         fleetnames = fleetnames,
-        stocknames = stocknames), class = c("gadgetcatchstatisticscomponent", "gadget_likelihood_component"))
+        stocknames = stocknames), class = c("gadget_catchstatistics_component", "gadget_likelihood_component"))
 }
-componenttype.gadgetcatchstatisticscomponent <- function (x) { "catchstatistics" }
 
-gadgetcatchdistributioncomponent <- function (weight = 0,
+gadget_catchdistribution_component <- function (weight = 0,
         name = "catchdistribution",
         data_function = 'sumofsquares',
         data_function_params = list(),
@@ -114,6 +110,7 @@ gadgetcatchdistributioncomponent <- function (weight = 0,
     structure(c(list(
         name = name,
         weight = weight,
+        type = "catchdistribution",
         datafile = gadget_file(paste0(prefix, data_function), data=data),
         "function" = data_function),
         data_function_params, list(
@@ -124,11 +121,10 @@ gadgetcatchdistributioncomponent <- function (weight = 0,
         ageaggfile = gadget_file(paste0(prefix, 'age.agg'), properties=age),
         lenaggfile = gadget_file(paste0(prefix, 'len.agg'), properties=len),
         fleetnames = fleetnames,
-        stocknames = stocknames)), class = c("gadgetcatchdistributioncomponent", "gadget_likelihood_component"))
+        stocknames = stocknames)), class = c("gadget_catchdistribution_component", "gadget_likelihood_component"))
 }
-componenttype.gadgetcatchdistributioncomponent <- function (x) { "catchdistribution" }
 
-gadgetstockdistributioncomponent <- function (weight = 0,
+gadget_stockdistribution_component <- function (weight = 0,
         name = "stockdistribution",
         data_function = 'sumofsquares',
         overconsumption = FALSE,
@@ -140,6 +136,7 @@ gadgetstockdistributioncomponent <- function (weight = 0,
     structure(c(list(
         name = name,
         weight = weight,
+        type = "stockdistribution",
         datafile = gadget_file(paste0(prefix, data_function), data=data),
         "function" = data_function,
         overconsumption = if (overconsumption) 1 else 0,
@@ -148,6 +145,5 @@ gadgetstockdistributioncomponent <- function (weight = 0,
         ageaggfile = gadget_file(paste0(prefix, 'age.agg'), properties=age),
         lenaggfile = gadget_file(paste0(prefix, 'len.agg'), properties=len),
         fleetnames = fleetnames,
-        stocknames = stocknames)), class = c("gadgetstockdistributioncomponent", "gadget_likelihood_component"))
+        stocknames = stocknames)), class = c("gadget_stockdistribution_component", "gadget_likelihood_component"))
 }
-componenttype.gadgetstockdistributioncomponent <- function (x) { "stockdistribution" }

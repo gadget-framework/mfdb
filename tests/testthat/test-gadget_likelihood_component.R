@@ -19,7 +19,7 @@ test_that("Can generate gadget_likelihood_component objects", {
 
     expect_equal(
         class(gadget_likelihood_component("penalty")),
-        c("gadgetpenaltycomponent", "gadget_likelihood_component"))
+        c("gadget_penalty_component", "gadget_likelihood_component"))
 })
 
 test_that("Can use as.character on gadget_likelihood_components", {
@@ -29,10 +29,10 @@ test_that("Can use as.character on gadget_likelihood_components", {
             ";",
             ";",
             "[component]",
-            "type\tpenalty",
             "name\twibble",
-            "datafile\twibble.penaltyfile",
-            "weight\t0.5"))
+            "weight\t0.5",
+            "type\tpenalty",
+            "datafile\twibble.penaltyfile"))
 })
 
 test_that("Name, type and weight behave the same with all components", {
@@ -43,6 +43,11 @@ test_that("Name, type and weight behave the same with all components", {
         } else {
             c <- gadget_likelihood_component(type)
         }
+
+        # Class should match type
+        expect_equal(class(c), c(
+            paste0("gadget_", type, "_component"),
+            "gadget_likelihood_component"))
 
         # Type and name should match the name we gave
         expect_contains(c, paste0("type\t", type))
@@ -73,9 +78,9 @@ test_that("Can generate an understocking component with default parameters", {
             ";",
             ";",
             "[component]",
-            "type\tunderstocking",
             "name\tunderstocking",
-            "weight\t0"))
+            "weight\t0",
+            "type\tunderstocking"))
 })
 
 test_that("Can customise it", {
@@ -85,9 +90,9 @@ test_that("Can customise it", {
             ";",
             ";",
             "[component]",
-            "type\tunderstocking",
             "name\talfred",
-            "weight\t0.3"))
+            "weight\t0.3",
+            "type\tunderstocking"))
 })
 
 ###############################################################################
