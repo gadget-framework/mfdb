@@ -42,12 +42,13 @@ mfdb_meanlength_stddev <- function (mdb, params = list()) {
     mdb$logger$info(params)
 
     # TODO: Really need to define a weighted stddev aggregate function
+    # SCHEMA: What we want is lengthmean, lengthstddev when grouping by area,age.
+    # SCHEMA: This isn't the same as length-as-a-group, unless you have multiple rows for each dimension or unaggregated data
     out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
         ", SUM(age.agenum) AS number",
-        ", AVG(age.agenum * (lec.lengthcell + ", params$lengthcellsize/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean",
+        ", AVG(age.agenum * (lec.lengthcell + ", params$lengths$int_step/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean",
         ", 0 AS stddev"),
         generator = "mfdb_meanlength_stddev")
-    # TODO: Return list of columns that should be displayed as attribute too
     out
 }
 
@@ -56,10 +57,9 @@ mfdb_meanlength <- function (mdb, params = list()) {
     params <- c(params, mdb$defaultparams)
     mdb$logger$info(params)
 
-    # TODO: Really need to define a weighted stddev aggregate function
     out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
         ", SUM(age.agenum) AS number",
-        ", AVG(age.agenum * (lec.lengthcell + ", params$lengthcellsize/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean"),
+        ", AVG(age.agenum * (lec.lengthcell + ", params$lengths$int_step/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean"),
         generator = "mfdb_meanlength")
     out
 }
@@ -82,7 +82,7 @@ mfdb_meanweight_stddev <- function (mdb, params = list()) {
     params <- c(params, mdb$defaultparams)
     mdb$logger$info(params)
 
-    # TODO: stddev doesn't exist in old schema
+    # SCHEMA: Don't have weightagestddev
     out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
         ", SUM(age.agenum) AS number",
         ", SUM(age.agenum * age.weightagemean) / SUM(age.agenum) AS mean",
@@ -105,54 +105,7 @@ mfdb_agelength <- function (mdb, params = list()) {
     out
 }
 
-# Useful indexes:-
-# CREATE INDEX age_lengthcellid ON age (lengthcellid);
-
-# == mean-length
-# area
-# label1
-# label2
-#
-# == mean-length.areaagg
-# label1	101 102
-# label2	103
-# ==> Labels --> areas (subdivisions or divisions in DSTDW)
-#
-# == area
-# areas 101 102 103
-# size 100 200 300
-# ==> Numeric areas --> size/temp over time
-
-# mfdb_group(label1 = c(101, 102), label2 = c(103))
-# ==> Table
-#   key  	value
-#   label1	101.1
-#   label1	101.2
-#   label1	101.3
-#   label1	102.1
-#   label1	102.2
-#   label2	103.1
-#   label2	103.2
-
-
-# Aggregators
-# time: label -> list
-#   mfdb_group() is fine
-# age:  label -> list
-#   mfdb_group() is fine.
-# area: label -> list
-#   mfdb_areas('COD:101' => c('COD:101:1', 'COD:101:3'))
-#   mfdb_group_like('101', '104')
-#   * Group by values, display anothing relating to these
-#   * Do I make an explicit table? Sample only has 70 areas down to gridcell
-#     ==> Make explicit table (keys, everything that starts with that)
-#      SELECT key1, value FROM areas WHERE key1 LIKE ? UNION ...
-#      SELECT * FROM (SELECT DISTINCT division AS key, division || ':' || SUBSTRING(subdivision FROM 4 FOR 1) || ':'|| coalesce(gridcell, '') AS value FROM sample) moo WHERE value LIKE '101:%';
-# length: label -> min < max
-#   How does this interact with lengthstep?
-#   mfdb_interval_group(min, max_non_inclusive, step)
-#   Do we want to label them?
-#   ==> No extra table, BETWEEN condition for min, max, then divide/floor by step
+# SCHEMA: CREATE INDEX age_lengthcellid ON age (lengthcellid);
 
 # Group up sample data by area, age or length
 mfdb_sample_grouping <- function (mdb,
