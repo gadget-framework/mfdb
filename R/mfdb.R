@@ -113,16 +113,18 @@ mfdb_sample_grouping <- function (mdb,
         group_cols = c("timestep", "areas", "ages"),
         calc_cols = c(),
         generator = "mfdb_sample_grouping") {
+    sql_quote <- function(v) {
+        paste0("'", gsub("'", "''", v) ,"'")
+    }
     # Turn vector into a SQL IN condition, NA = NULL, optionally go via a lookup table.
     sql_col_condition <- function(col, v, lookup = NULL) {
         if (!is.vector(v)) return("")
-        #TODO: Not sql-safe
         paste(
             "AND (", col, "IN (",
             if (!is.null(lookup)) paste(
                 "SELECT", sub('^[a-z]+\\.', '', col), "FROM", lookup, "WHERE code IN ("),
             paste(
-                sapply(v[!is.na(v)], function (x) { paste0("'", x, "'") }),
+                sapply(v[!is.na(v)], function (x) { sql_quote(x) }),
                 collapse = ","),
             if (!is.null(lookup)) ")",
             ")",
@@ -132,14 +134,13 @@ mfdb_sample_grouping <- function (mdb,
     # Generate interval condition given 2 values
     sql_interval_condition <- function(col, int_group, min_exclusive = FALSE, max_exclusive = FALSE) {
         if(is.null(int_group)) return("")
-        #TODO: Not sql-safe
-        paste("AND", col, if (min_exclusive) ">" else ">=", int_group$int_min,
-              "AND", col, if (max_exclusive) "<" else "<=", int_group$int_max)
+        paste("AND", col, if (min_exclusive) ">" else ">=", sql_quote(int_group$int_min),
+              "AND", col, if (max_exclusive) "<" else "<=", sql_quote(int_group$int_max))
     }
     # If interval has a step, condition should floor to that
     sql_interval_group <- function(col, group, min_exclusive = FALSE, max_exclusive = FALSE) {
         if (is.null(group)) stop(paste("You must provide a mfdb_interval_group"))
-        if (group$int_step > 0) c(", FLOOR(", col, "/ '", group$int_step, "') * '", group$int_step, "'") else c(",", col)
+        if (group$int_step > 0) c(", FLOOR(", col, "/", sql_quote(group$int_step), ") * ", sql_quote(group$int_step)) else c(",", col)
     }
     group_to_table <- function(db, table_name, group, datatype = "INT") {
         #TODO: This error message provides table name, not parameter
@@ -154,7 +155,7 @@ mfdb_sample_grouping <- function (mdb,
         group_table <- denormalize(group)
         by(group_table, 1:nrow(group_table), function(v) {
             #NB: Once we upgrade postgresql can use multi-row insert form
-            dbSendQuery(db, paste0("INSERT INTO ", table_name, " (sample, name, value) VALUES ('", v[[1]], "','", v[[2]], "','", v[[3]], "')"))
+            dbSendQuery(db, paste0("INSERT INTO ", table_name, " (sample, name, value) VALUES (", sql_quote(v[[1]]), ",", sql_quote(v[[2]]), ",", sql_quote(v[[3]]), ")"))
         })
     }
     # True iff str is in the group_cols parameter
