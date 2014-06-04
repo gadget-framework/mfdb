@@ -1,6 +1,7 @@
 \name{mfdb_queries}
 \alias{mfdb_area_sizes}
 \alias{mfdb_temperatures}
+\alias{mfdb_stock_count}
 \alias{mfdb_meanlength_stddev}
 \alias{mfdb_meanlength}
 \alias{mfdb_meanweight}
@@ -14,6 +15,7 @@
 }
 
 \usage{
+mfdb_stock_count(mdb, params = list())
 mfdb_meanlength(mdb, params = list())
 mfdb_meanlength_stddev(mdb, params = list())
 mfdb_meanweight(mdb, params = list())
@@ -72,7 +74,7 @@ returned as part of the query.
     \item{vesselclass}{A vector of vessel class}
     \item{vesselsubclass}{A vector of vessel subclass}
     \item{species}{A vector of species}
-    \item{stock}{A vector of stocks}
+    \item{stocks}{A vector of stocks}
     \item{marketcategory}{A vector of market category}
     \item{samplingtype}{A vector of sampling type}
     \item{samplingstrategy}{A vector of sampling strategy}
@@ -84,6 +86,9 @@ returned as part of the query.
     All will return a list of data.frame objects. Precisely what columns
     these will contain depends on the function called.
     \describe{
+        \item{mfdb_stock_count}{
+            Returns year,step,area,stock,age,length,number (of samples)
+        }
         \item{mfdb_meanlength}{
             Returns year,step,area,age,number (of samples),mean (length in group)
         }

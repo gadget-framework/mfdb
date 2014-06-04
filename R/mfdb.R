@@ -23,6 +23,19 @@ mfdb_temperatures <- function (mdb, params = list()) {
     #TODO:
 }
 
+# Return year,step,area,stock,age,length, number (of samples)
+mfdb_stock_count <- function (mdb, params = list()) {
+    params <- c(params, mdb$defaultparams)
+    mdb$logger$info(params)
+
+    mfdb_sample_grouping(mdb,
+        params = params,
+        group_cols = c("timestep", "stocks", "areas", "ages", "lengths"),
+        calc_cols = c(
+            ", SUM(age.agenum) AS number"),
+        generator = "mfdb_meanlength_stddev")
+}
+
 # Return year,step,area,age,number (# of samples),mean (length), stddev (length)
 mfdb_meanlength_stddev <- function (mdb, params = list()) {
     params <- c(params, mdb$defaultparams)
@@ -210,6 +223,7 @@ mfdb_sample_grouping <- function (mdb,
         " AS sample",
         ", sam.year",
         if (grouping_by("timestep")) ", tts.name AS step",
+        if (grouping_by("stocks"))   ", spe.stock AS stock",
         if (grouping_by("areas"))    ", tarea.name AS area",
         if (grouping_by("ages"))     ", tage.name AS age",
         if (grouping_by("lengths"))  c(sql_interval_group("lec.lengthcell", params$lengths), " AS length"),
@@ -230,7 +244,7 @@ mfdb_sample_grouping <- function (mdb,
         sql_col_condition("sam.vesselclass", params$vesselclass, lookup="l_vesselclass"),
         sql_col_condition("sam.vesselsubclass", params$vesselsubclass, lookup="l_vesselsubclass"),
         sql_col_condition("spe.species", params$species, lookup="l_species"),
-        sql_col_condition("spe.stock", params$stock, lookup="l_stock"),
+        sql_col_condition("spe.stock", params$stocks, lookup="l_stock"),
         sql_col_condition("spe.marketcategory", params$marketcategory, lookup="l_marketcategory"),
         sql_col_condition("cas.samplingtype", params$samplingtype, lookup="l_samplingtype"),
         sql_col_condition("cas.samplingstrategy", params$samplingstrategy, lookup="l_samplingstrategy"),
