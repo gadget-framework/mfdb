@@ -5,6 +5,13 @@ expect_contains <- function (actual, substr) {
 ###############################################################################
 context("Gadget components")
 
+all_components <- c(
+        "penalty",
+        "understocking",
+        "catchstatistics",
+        "catchdistribution",
+        "stockdistribution")
+
 test_that("Can generate gadget_likelihood_component objects", {
     expect_error(
         gadget_likelihood_component("aardvark"),
@@ -26,6 +33,34 @@ test_that("Can use as.character on gadget_likelihood_components", {
             "name\twibble",
             "datafile\twibble.penaltyfile",
             "weight\t0.5"))
+})
+
+test_that("Name, type and weight behave the same with all components", {
+    for (type in all_components) {
+        if (type == "catchstatistics") {
+            c <- gadget_likelihood_component(type,
+                data = data.frame(), data_function = "customfunction")
+        } else {
+            c <- gadget_likelihood_component(type)
+        }
+
+        # Type and name should match the name we gave
+        expect_contains(c, paste0("type\t", type))
+        expect_contains(c, paste0("name\t", type))
+        # Weight defaults to 0
+        expect_contains(c, "weight\t0$")
+
+        # Can customise name & weight
+        if (type == "catchstatistics") {
+            c <- gadget_likelihood_component(type,
+                name = "gerald", weight = 0.542,
+                data = data.frame(), data_function = "customfunction")
+        } else {
+            c <- gadget_likelihood_component(type, name = "gerald", weight = 0.542)
+        }
+        expect_contains(c, paste0("name\tgerald$"))
+        expect_contains(c, "weight\t0.542$")
+    }
 })
 
 ###############################################################################
