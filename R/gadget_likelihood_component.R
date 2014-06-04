@@ -25,7 +25,7 @@ as.character.gadget_likelihood_component <- function(x, ...) {
     capture.output(print.gadget_likelihood_component(x))
 }
 
-### Penalty / bounds component
+### Internal constructors for each component type
 
 gadget_penalty_component <- function (weight = 0, name = "penalty", data = NULL) {
     if (!length(data)) {
@@ -43,16 +43,12 @@ gadget_penalty_component <- function (weight = 0, name = "penalty", data = NULL)
             data = data)), class = c("gadget_penalty_component", "gadget_likelihood_component"))
 }
 
-### Understocking component
-
 gadget_understocking_component <- function (weight = 0, name = "understocking") {
     structure(list(
         name = name,
         weight = weight,
         type = "understocking"), class = c("gadget_understocking_component", "gadget_likelihood_component"))
 }
-
-### Catch statistics component
 
 gadget_catchstatistics_component <- function (weight = 0,
         name = "catchstatistics",
