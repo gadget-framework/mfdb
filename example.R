@@ -74,8 +74,6 @@ gadget_dir_write(gd, gadget_likelihood_component("catchstatistics",
         name = "codstatistics",
         weight = 0.8,
         data = agg_data[[1]],
-        area = attr(agg_data[[1]], "areas"),
-        age = attr(agg_data[[1]], "ages"),
         fleetnames = c("igfs"),
         stocknames = c("codimm", "codmat")))
 rm(agg_data) # Free up memory before moving on to the next component
@@ -91,9 +89,7 @@ agg_data <- mfdb_meanweight(mdb,
 gadget_dir_write(gd, gadget_likelihood_component("catchstatistics",
         name = "weightstatistics",
         weight = 0.8,
-        data = agg_data[[1]],
-        area = attr(agg_data[[1]], "areas"),
-        age = attr(agg_data[[1]], "ages")))
+        data = agg_data[[1]]))
 rm(agg_data) # Free up memory before moving on to the next component
 
 agg_data <- mfdb_agelength(mdb,
@@ -105,10 +101,7 @@ agg_data <- mfdb_agelength(mdb,
 gadget_dir_write(gd, gadget_likelihood_component("catchdistribution",
         name = "cdist",
         weight = 0.9,
-        data = agg_data[[1]],
-        area = attr(agg_data[[1]], "areas"),
-        age = attr(agg_data[[1]], "ages"),
-        len = attr(agg_data[[1]], "lengths")))
+        data = agg_data[[1]]))
 rm(agg_data) # Free up memory before moving on to the next component
 
 # Create a mainfile with everything that has been created so far
