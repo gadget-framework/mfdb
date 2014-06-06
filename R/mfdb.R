@@ -10,7 +10,6 @@ mfdb <- function(db_connection = NULL, defaultparams = list()) {
     invisible(structure(list(
             logger = getLogger('mfdb'),
             defaultparams = c(defaultparams, list(
-                    lengthcellsize = 20, # TODO: Do we have to hardcode this? Could use lag()
                     timesteps = mfdb_group(year = c(1,2,3,4,5,6,7,8,9,10,11,12)))),
             db = db_connection), class = "mfdb"))
 }
