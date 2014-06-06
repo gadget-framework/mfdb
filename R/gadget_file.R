@@ -1,7 +1,7 @@
 gadget_file <- function (filename, properties = NULL, data = NULL) {
     structure(list(
         filename = filename,
-        props = properties,
+        props = as.list(properties),
         data = data), class = "gadget_file")
 }
 
@@ -10,10 +10,8 @@ print.gadget_file <- function (x, ...) {
     #TODO: Output commented version
 
     # properties are in key\tvalue form
-    if (is.list(x$props)) {
-        for (k in names(x$props)) {
-            cat(paste0(k, "\t", paste(x$props[[k]], collapse = "\t"), "\n"))
-        }
+    for (k in names(x$props)) {
+        cat(paste0(k, "\t", paste(x$props[[k]], collapse = "\t"), "\n"))
     }
 
     if (!is.null(x$data)) {

@@ -2,7 +2,10 @@
 export(mfdb_group)
 export(mfdb_group_numbered)
 export(mfdb_bootstrap_group)
-export(mfdb_interval_group)
+
+# mfdb_interval.R
+export(mfdb_interval)
+S3method(as.list, mfdb_interval)
 
 # mfdb.R
 importFrom(DBI, dbConnect, dbDriver, dbSendQuery, fetch)

@@ -2,7 +2,6 @@
 \alias{mfdb_group}
 \alias{mfdb_group_numbered}
 \alias{mfdb_bootstrap_group}
-\alias{mfdb_interval_group}
 
 \title{MareFrame DB groups}
 \description{
@@ -19,9 +18,6 @@ mfdb_group_numbered(prefix, ...)
 
 # make (count) mfdb_groups, by sampling (count) times from (group)
 mfdb_bootstrap_group(count, group)
-
-# Grouping of a continuous interval (i.e. length)
-mfdb_interval_group(prefix, int_min, int_max, int_step)
 }
 \arguments{
     \item{...}{
@@ -41,12 +37,6 @@ mfdb_interval_group(prefix, int_min, int_max, int_step)
     \item{count}{
         For \code{mfdb_bootstrap_group}, How many times to sample each member
         of the given group.
-    }
-    \item{int_min, int_max}{
-        Minimum and maximum for an interval
-    }
-    \item{int_step}{
-        Step between groupings, defaults to 20
     }
 }
 

@@ -52,14 +52,3 @@ denormalize.mfdb_group <- function (group, samp_count = 0) {
             value = I(group[[i]]))
     }))
 }
-
-# Numeric intervals, for length e.g.
-mfdb_interval_group <- function (prefix, int_min, int_max, int_step = 20) {
-    group <- structure(list(
-                int_min = int_min,
-                int_max = int_max,
-                int_step = int_step),
-            prefix = prefix,
-            class = "mfdb_interval_group")
-    group
-}

@@ -53,9 +53,9 @@ groups it into larger chunks.
         to group ages into "young" (up to 3), or "old" (4--6 years)
     }
     \item{lengths}{
-        (required) An mfdb_interval_group representing which lengths to
+        (required) An mfdb_interval representing which lengths to
         include in the data, and how to group them. For example,
-        \code{mfdb_interval_group("len", 0, 500, 10)}
+        \code{mfdb_interval("len", seq(0, 500, by = 10))}
         to include lengths from 0--500, and group them into 0, 10, 20,...
         Note that in the case of \code{mfdb_meanlength}, there is no grouping
         by length (doesn't make sense), but this is still used to provide a
@@ -111,7 +111,7 @@ returned as part of the query.
 agg_data <- mfdb_agelength(mdb,
         params = c(list(
             years = c(1990, 1991),
-            lengths = mfdb_interval_group("len", 0, 50000, 30),
+            lengths = mfdb_interval("len", seq(0, 500, by = 30)),
             ages = mfdb_group('young' = c(1,2,3)),
             null = NULL), opt_catch))
 gadget_dir_write(gd, gadget_likelihood_component("catchdistribution",

@@ -44,9 +44,10 @@ mfdb_meanlength_stddev <- function (mdb, params = list()) {
     # TODO: Really need to define a weighted stddev aggregate function
     # SCHEMA: What we want is lengthmean, lengthstddev when grouping by area,age.
     # SCHEMA: This isn't the same as length-as-a-group, unless you have multiple rows for each dimension or unaggregated data
+    # TODO: Need to use the middle of the length group
     out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
         ", SUM(age.agenum) AS number",
-        ", AVG(age.agenum * (lec.lengthcell + ", params$lengths$int_step/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean",
+        ", AVG(age.agenum * lec.lengthcell) * (COUNT(*)::float / SUM(age.agenum)) AS mean",
         ", 0 AS stddev"),
         generator = "mfdb_meanlength_stddev")
     out
@@ -57,9 +58,10 @@ mfdb_meanlength <- function (mdb, params = list()) {
     params <- c(params, mdb$defaultparams)
     mdb$logger$info(params)
 
+    # TODO: Need to use the middle of the length group
     out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
         ", SUM(age.agenum) AS number",
-        ", AVG(age.agenum * (lec.lengthcell + ", params$lengths$int_step/2, ")) * (COUNT(*)::float / SUM(age.agenum)) AS mean"),
+        ", AVG(age.agenum * lec.lengthcell) * (COUNT(*)::float / SUM(age.agenum)) AS mean"),
         generator = "mfdb_meanlength")
     out
 }
@@ -107,15 +109,24 @@ mfdb_agelength <- function (mdb, params = list()) {
 
 # SCHEMA: CREATE INDEX age_lengthcellid ON age (lengthcellid);
 
+sql_quote <- function(v) {
+    paste0("'", gsub("'", "''", v) ,"'")
+}
+select_clause <- function(x, col, outputname) {
+    if (is.null(x)) return("")
+    UseMethod("select_clause")
+}
+where_clause <- function(x, col) {
+    if (is.null(x)) return("")
+    UseMethod("where_clause")
+}
+
 # Group up sample data by area, age or length
 mfdb_sample_grouping <- function (mdb,
         params = list(),
         group_cols = c("timestep", "areas", "ages"),
         calc_cols = c(),
         generator = "mfdb_sample_grouping") {
-    sql_quote <- function(v) {
-        paste0("'", gsub("'", "''", v) ,"'")
-    }
     # Turn vector into a SQL IN condition, NA = NULL, optionally go via a lookup table.
     sql_col_condition <- function(col, v, lookup = NULL) {
         if (!is.vector(v)) return("")
@@ -136,11 +147,6 @@ mfdb_sample_grouping <- function (mdb,
         if(is.null(int_group)) return("")
         paste("AND", col, if (min_exclusive) ">" else ">=", sql_quote(int_group$int_min),
               "AND", col, if (max_exclusive) "<" else "<=", sql_quote(int_group$int_max))
-    }
-    # If interval has a step, condition should floor to that
-    sql_interval_group <- function(col, group, min_exclusive = FALSE, max_exclusive = FALSE) {
-        if (is.null(group)) stop(paste("You must provide a mfdb_interval_group"))
-        if (group$int_step > 0) c(", FLOOR(", col, "/", sql_quote(group$int_step), ") * ", sql_quote(group$int_step)) else c(",", col)
     }
     group_to_table <- function(db, table_name, group, datatype = "INT") {
         #TODO: This error message provides table name, not parameter
@@ -180,7 +186,7 @@ mfdb_sample_grouping <- function (mdb,
         if (grouping_by("stocks"))   ", spe.stock AS stock",
         if (grouping_by("areas"))    ", tarea.name AS area",
         if (grouping_by("ages"))     ", tage.name AS age",
-        if (grouping_by("lengths"))  c(sql_interval_group("lec.lengthcell", params$lengths), " AS length"),
+        if (grouping_by("lengths"))  select_clause(params$lengths, "lec.lengthcell", "length"),
         calc_cols,
         "FROM sample sam, species spe, catchsample cas, lengthcell lec, age age",
         if (grouping_by("timestep")) ", temp_ts tts",
@@ -190,7 +196,7 @@ mfdb_sample_grouping <- function (mdb,
         if (grouping_by("timestep")) "AND sam.month = tts.value",
         if (grouping_by("areas"))    "AND sam.subdivision = tarea.value",
         if (grouping_by("ages"))     "AND age.age = tage.value",
-        sql_interval_condition("lengthcell", params$lengths, max_exclusive = TRUE),
+        where_clause(params$lengths, "lec.lengthcell"),
         sql_col_condition("sam.institute", params$institute, lookup="l_institute"),
         sql_col_condition("sam.year", params$year),
         sql_col_condition("sam.gearclass", params$gearclass, lookup="l_gearclass"),
