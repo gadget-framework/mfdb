@@ -23,10 +23,7 @@ mfdb_temperatures <- function (mdb, params = list()) {
 }
 
 # Return year,step,area,stock,age,length, number (of samples)
-mfdb_stock_count <- function (mdb, params = list()) {
-    params <- c(params, mdb$defaultparams)
-    mdb$logger$info(params)
-
+mfdb_stock_count <- function (mdb, params) {
     mfdb_sample_grouping(mdb,
         params = params,
         group_cols = c("timestep", "stocks", "areas", "ages", "lengths"),
@@ -36,67 +33,60 @@ mfdb_stock_count <- function (mdb, params = list()) {
 }
 
 # Return year,step,area,age,number (# of samples),mean (length), stddev (length)
-mfdb_meanlength_stddev <- function (mdb, params = list()) {
-    params <- c(params, mdb$defaultparams)
-    mdb$logger$info(params)
-
+mfdb_meanlength_stddev <- function (mdb, params) {
     # TODO: Really need to define a weighted stddev aggregate function
     # SCHEMA: What we want is lengthmean, lengthstddev when grouping by area,age.
     # SCHEMA: This isn't the same as length-as-a-group, unless you have multiple rows for each dimension or unaggregated data
     # TODO: Need to use the middle of the length group
-    out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
-        ", SUM(age.agenum) AS number",
-        ", AVG(age.agenum * lec.lengthcell) * (COUNT(*)::float / SUM(age.agenum)) AS mean",
-        ", 0 AS stddev"),
+    out <- mfdb_sample_grouping(mdb,
+        params = params,
+        calc_cols = c(
+            ", SUM(age.agenum) AS number",
+            ", AVG(age.agenum * lec.lengthcell) * (COUNT(*)::float / SUM(age.agenum)) AS mean",
+            ", 0 AS stddev"),
         generator = "mfdb_meanlength_stddev")
     out
 }
 
 # Return year,step,area,age,number (# of samples),mean (length)
-mfdb_meanlength <- function (mdb, params = list()) {
-    params <- c(params, mdb$defaultparams)
-    mdb$logger$info(params)
-
+mfdb_meanlength <- function (mdb, params) {
     # TODO: Need to use the middle of the length group
-    out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
-        ", SUM(age.agenum) AS number",
-        ", AVG(age.agenum * lec.lengthcell) * (COUNT(*)::float / SUM(age.agenum)) AS mean"),
+    out <- mfdb_sample_grouping(mdb,
+        params = params,
+        calc_cols = c(
+            ", SUM(age.agenum) AS number",
+            ", AVG(age.agenum * lec.lengthcell) * (COUNT(*)::float / SUM(age.agenum)) AS mean"),
         generator = "mfdb_meanlength")
     out
 }
 
 # Return year,step,area,age,number (# of samples),mean (weight)
-mfdb_meanweight <- function (mdb, params = list()) {
-    params <- c(params, mdb$defaultparams)
-    mdb$logger$info(params)
-
+mfdb_meanweight <- function (mdb, params) {
     # TODO: Really need to define a weighted stddev aggregate function
-    out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
-        ", SUM(age.agenum) AS number",
-        ", SUM(age.agenum * age.weightagemean) / SUM(age.agenum) AS mean"),
+    out <- mfdb_sample_grouping(mdb,
+        params = params,
+        calc_cols = c(
+            ", SUM(age.agenum) AS number",
+            ", SUM(age.agenum * age.weightagemean) / SUM(age.agenum) AS mean"),
         generator = "mfdb_meanweight")
     out
 }
 
 # Return year,step,area,age,number (# of samples),mean (weight), stddev (weight)
-mfdb_meanweight_stddev <- function (mdb, params = list()) {
-    params <- c(params, mdb$defaultparams)
-    mdb$logger$info(params)
-
+mfdb_meanweight_stddev <- function (mdb, params) {
     # SCHEMA: Don't have weightagestddev
-    out <- mfdb_sample_grouping(mdb, params = params, calc_cols = c(
-        ", SUM(age.agenum) AS number",
-        ", SUM(age.agenum * age.weightagemean) / SUM(age.agenum) AS mean",
-        ", 0 AS stddev"),
+    out <- mfdb_sample_grouping(mdb,
+        params = params,
+        calc_cols = c(
+            ", SUM(age.agenum) AS number",
+            ", SUM(age.agenum * age.weightagemean) / SUM(age.agenum) AS mean",
+            ", 0 AS stddev"),
         generator = "mfdb_meanweight_stddev")
     out
 }
 
 # Return year,step,area,age,length,number (# of samples)
-mfdb_agelength <- function (mdb, params = list()) {
-    params <- c(params, mdb$defaultparams)
-    mdb$logger$info(params)
-
+mfdb_agelength <- function (mdb, params) {
     out <- mfdb_sample_grouping(mdb,
         params = params,
         group_cols = c("timestep", "areas", "ages", "lengths"),
@@ -168,6 +158,8 @@ mfdb_sample_grouping <- function (mdb,
         str %in% group_cols
     }
 
+    params <- c(params, mdb$defaultparams)
+    mdb$logger$info(params)
     # Store groups into temporary tables for joining
     if (grouping_by("timestep")) group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT")
     if (grouping_by("areas")) group_to_table(mdb$db, "temp_area", params$areas, datatype = "INT")
