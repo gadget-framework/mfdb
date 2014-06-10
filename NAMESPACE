@@ -28,6 +28,7 @@ export(gadget_mainfile)
 export(gadget_areafile)
 S3method(gadget_dir_write, gadget_file)
 S3method(gadget_dir_write, gadget_likelihood_component)
+export(gadget_dir_read)
 
 # gadget_file.R
 export(gadget_file)

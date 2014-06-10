@@ -40,3 +40,14 @@ gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
         }
     }
 }
+
+gadget_dir_read <- function(gd, file_name, missing_okay = TRUE) {
+    path <- file.path(gd$dir, file_name)
+
+    if (missing_okay && !file.exists(path)) {
+        # Return empty file to read later
+        gadget_file(file_name)
+    } else {
+        read.gadget_file(path)
+    }
+}
