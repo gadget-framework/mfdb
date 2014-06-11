@@ -15,12 +15,12 @@
 }
 
 \usage{
-mfdb_stock_count(mdb, params = list())
-mfdb_meanlength(mdb, params = list())
-mfdb_meanlength_stddev(mdb, params = list())
-mfdb_meanweight(mdb, params = list())
-mfdb_meanweight_stddev(mdb, params = list())
-mfdb_agelength(mdb, params = list())
+mfdb_stock_count(mdb, params)
+mfdb_meanlength(mdb, params)
+mfdb_meanlength_stddev(mdb, params)
+mfdb_meanweight(mdb, params)
+mfdb_meanweight_stddev(mdb, params)
+mfdb_agelength(mdb, params)
 }
 
 \arguments{

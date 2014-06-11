@@ -9,7 +9,7 @@
 
 \usage{
 mfdb_interval(prefix, vect)
-as.list.mfdb_interval(x, ...)
+\method{as.list}{mfdb_interval}(x, ...)
 }
 
 \arguments{
@@ -20,7 +20,7 @@ as.list.mfdb_interval(x, ...)
         (required) A vector representing the minimum for each group, and the maximum
     }
     \item{x}{
-        The \code{mfdb_interval} to convert to a list for use in \c{gadget_file}
+        The \code{mfdb_interval} to convert to a list for use in \code{gadget_file}
     }
     \item{...}{
         Ignored.
