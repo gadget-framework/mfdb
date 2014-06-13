@@ -1,7 +1,7 @@
-gadget_file <- function (filename, properties = list(), components = list(), data = NULL) {
+gadget_file <- function (filename, components = list(), data = NULL) {
     structure(list(
         filename = filename,
-        components = c(list(as.list(properties)), as.list(components)),
+        components = as.list(components),
         data = data), class = "gadget_file")
 }
 
@@ -60,17 +60,23 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
     file <- file(file_name, "rt", encoding = fileEncoding)
     on.exit(close(file))
 
-    properties <- list()
     components <- list(list())
     data <- NULL
     comp_name <- NULL
     cur_comp <- list()
     cur_preamble <- list()
+
     while(TRUE) {
         line <- readLines(file, n = 1)
         # Got to end of file, stop here
         if (length(line) == 0) {
-            if(is.null(comp_name)) properties <- cur_comp else components[[comp_name]] <- cur_comp
+            if(is.null(comp_name)) {
+                components[[1]] <- cur_comp
+            } else {
+                new_comp <- list()
+                new_comp[[comp_name]] <- cur_comp
+                components <- c(components, new_comp)
+            }
             break
         }
 
@@ -81,7 +87,13 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
 
         # Switching to data mode
         if (length(grep("^; -- data --$", line)) > 0) {
-            if(is.null(comp_name)) properties <- cur_comp else components[[comp_name]] <- cur_comp
+            if(is.null(comp_name)) {
+                components[[1]] <- cur_comp
+            } else {
+                new_comp <- list()
+                new_comp[[comp_name]] <- cur_comp
+                components <- c(components, new_comp)
+            }
             header <- strsplit(readLines(file, n = 1), "\\s")[[1]]
             if(length(header) < 2) stop(paste("Not enough parts in data header", header))
             # TODO: error-check header
@@ -108,7 +120,13 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
         # Start of new component
         x <- extract("^\\[(\\w+)\\]", line)
         if (length(x) > 0) {
-            if(is.null(comp_name)) properties <- cur_comp else components[[comp_name]] <- cur_comp
+            if(is.null(comp_name)) {
+                components[[1]] <- cur_comp
+            } else {
+                new_comp <- list()
+                new_comp[[comp_name]] <- cur_comp
+                components <- c(components, new_comp)
+            }
             comp_name <- x[[1]]
             cur_comp <- list()
             next
@@ -126,5 +144,5 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
             next
         }
     }
-    gadget_file(basename(file_name), properties = properties, components = components, data = data)
+    gadget_file(basename(file_name), components = components, data = data)
 }
