@@ -38,5 +38,3 @@ export(read.gadget_file) # TODO: Surely this is supposed to be an S3 method?
 
 # gadget_likelihood_component.R
 export(gadget_likelihood_component)
-S3method(print, gadget_likelihood_component)
-S3method(as.character, gadget_likelihood_component)

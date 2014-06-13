@@ -8,23 +8,6 @@ gadget_likelihood_component <- function (type, ...) {
         stop(paste("Unknown likelihood component", type)))
 }
 
-print.gadget_likelihood_component <- function(x, ...) {
-    #TODO: Output commented version
-    cat(";\n;\n[component]\n")
-    for (k in names(x)) {
-        v = x[[k]]
-        if ("gadget_file" %in% class(v)) {
-            # Don't paste the gadget object in, leave the filename
-            v = v[['filename']]
-        }
-        cat(paste0(k, "\t", paste(v, collapse = "\t"), "\n"))
-    }
-}
-
-as.character.gadget_likelihood_component <- function(x, ...) {
-    capture.output(print.gadget_likelihood_component(x))
-}
-
 ### Internal constructors for each component type
 
 gadget_penalty_component <- function (weight = 0, name = "penalty", data = NULL) {

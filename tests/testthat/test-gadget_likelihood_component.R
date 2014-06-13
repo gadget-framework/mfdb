@@ -1,7 +1,3 @@
-expect_contains <- function (actual, substr) {
-    expect_true(TRUE %in% grepl(substr, actual))
-}
-
 ###############################################################################
 context("Gadget components")
 
@@ -23,16 +19,10 @@ test_that("Can generate gadget_likelihood_component objects", {
 })
 
 test_that("Can use as.character on gadget_likelihood_components", {
-    expect_equal(
-        strsplit(as.character(gadget_likelihood_component("penalty", name = "wibble", weight = 0.5)), "\n"),
-        list(
-            ";",
-            ";",
-            "[component]",
-            "name\twibble",
-            "weight\t0.5",
-            "type\tpenalty",
-            "datafile\twibble.penaltyfile"))
+    comp <- gadget_likelihood_component("penalty", name = "wibble", weight = 0.5)
+    expect_equal(comp$name, "wibble")
+    expect_equal(comp$weight, 0.5)
+    expect_equal(comp$type, "penalty")
 })
 
 test_that("Name, type and weight behave the same with all components", {
@@ -50,10 +40,10 @@ test_that("Name, type and weight behave the same with all components", {
             "gadget_likelihood_component"))
 
         # Type and name should match the name we gave
-        expect_contains(c, paste0("type\t", type))
-        expect_contains(c, paste0("name\t", type))
+        expect_equal(c$type, type)
+        expect_equal(c$name, type)
         # Weight defaults to 0
-        expect_contains(c, "weight\t0$")
+        expect_equal(c$weight, 0)
 
         # Can customise name & weight
         if (type == "catchstatistics") {
@@ -63,8 +53,8 @@ test_that("Name, type and weight behave the same with all components", {
         } else {
             c <- gadget_likelihood_component(type, name = "gerald", weight = 0.542)
         }
-        expect_contains(c, paste0("name\tgerald$"))
-        expect_contains(c, "weight\t0.542$")
+        expect_equal(c$name, "gerald")
+        expect_equal(c$weight, 0.542)
     }
 })
 
@@ -72,27 +62,17 @@ test_that("Name, type and weight behave the same with all components", {
 context("Gadget understocking component")
 
 test_that("Can generate an understocking component with default parameters", {
-    expect_equal(
-        strsplit(as.character(gadget_likelihood_component("understocking")), "\n"),
-        list(
-            ";",
-            ";",
-            "[component]",
-            "name\tunderstocking",
-            "weight\t0",
-            "type\tunderstocking"))
+    comp <- gadget_likelihood_component("understocking")
+    expect_equal(comp$name, "understocking")
+    expect_equal(comp$weight, 0)
+    expect_equal(comp$type, "understocking")
 })
 
 test_that("Can customise it", {
-    expect_equal(
-        strsplit(as.character(gadget_likelihood_component("understocking", name = "alfred", weight = 0.3)), "\n"),
-        list(
-            ";",
-            ";",
-            "[component]",
-            "name\talfred",
-            "weight\t0.3",
-            "type\tunderstocking"))
+    comp <- gadget_likelihood_component("understocking", name = "alfred", weight = 0.3)
+    expect_equal(comp$name, "alfred")
+    expect_equal(comp$weight, 0.3)
+    expect_equal(comp$type, "understocking")
 })
 
 ###############################################################################
@@ -109,13 +89,13 @@ test_that("Function either provided explicitly or based on generator", {
         gadget_likelihood_component("catchstatistics", data = structure(data.frame(), generator = "camel")),
         "Unknown generator function camel")
 
-    expect_contains(
+    expect_equal(
         gadget_likelihood_component("catchstatistics",
-            data = data.frame(), data_function = "customfunction"),
-        "function\tcustomfunction")
+            data = data.frame(), data_function = "customfunction")[['function']],
+        "customfunction")
 
-    expect_contains(
+    expect_equal(
         gadget_likelihood_component("catchstatistics",
-            data = structure(data.frame(), generator = "mfdb_meanlength_stddev")),
-        "function\tlengthgivenstddev")
+            data = structure(data.frame(), generator = "mfdb_meanlength_stddev"))[['function']],
+        "lengthgivenstddev")
 })
