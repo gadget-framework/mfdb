@@ -33,7 +33,7 @@ S3method(gadget_dir_read, gadget_directory)
 export(gadget_file)
 S3method(print, gadget_file)
 S3method(as.character, gadget_file)
-export(read.gadget_file) # TODO: Surely this is supposed to be an S3 method?
+export(read.gadget_file)
 
 # gadget_likelihood_component.R
 export(gadget_likelihood_component)
