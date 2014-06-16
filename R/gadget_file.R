@@ -1,6 +1,6 @@
-gadget_file <- function (filename, components = list(), data = NULL) {
+gadget_file <- function (file_name, components = list(), data = NULL) {
     structure(list(
-        filename = filename,
+        filename = file_name,
         components = as.list(components),
         data = data), class = "gadget_file")
 }

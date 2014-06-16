@@ -22,7 +22,7 @@ gadget_penalty_component <- function (weight = 0, name = "penalty", data = NULL)
         weight = weight,
         type = "penalty",
         datafile = gadget_file(
-            filename = paste0(name, '.penaltyfile'),
+            paste0(name, '.penaltyfile'),
             data = data)), class = c("gadget_penalty_component", "gadget_likelihood_component"))
 }
 
