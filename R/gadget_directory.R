@@ -1,7 +1,7 @@
 # Initalise a gadget output directory, including creating it if necessary
 gadget_directory <- function (dir) {
-    # TODO: Create directory if it doesn't exist
-    # TODO: Option to empty directory first?
+    if(!file_test("-d", dir)) dir.create(dir)
+    if(!file_test("-d", dir)) stop("Could not create output directory")
     structure(list(
         dir = dir), class = c("gadget_directory"))
 }
