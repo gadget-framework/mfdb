@@ -1,7 +1,9 @@
 # Initalise a gadget output directory, including creating it if necessary
 gadget_directory <- function (dir) {
-    if(!file_test("-d", dir)) dir.create(dir)
-    if(!file_test("-d", dir)) stop("Could not create output directory")
+    if(!utils::file_test("-d", dir)) tryCatch(dir.create(dir), warning = function(w) {
+        stop(paste("Could not create output directory:", conditionMessage(w)))
+    })
+    if(!utils::file_test("-d", dir)) stop(paste("Could not create output directory", dir))
     structure(list(
         dir = dir), class = c("gadget_directory"))
 }
