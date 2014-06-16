@@ -159,4 +159,12 @@ test_that("Can read gadget files", {
         "a\t45",
         "a\t46",
         "a\t47")
+
+    # Can have empty initial components
+    test_loopback(
+        ver_string,
+        "[component]",
+        "a\t46",
+        "[component]",
+        "a\t47")
 })
