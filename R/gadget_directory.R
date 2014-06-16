@@ -31,7 +31,8 @@ gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
     }
 }
 
-gadget_dir_read <- function(gd, file_name, missing_okay = TRUE) {
+gadget_dir_read <- function(gd, obj) UseMethod("gadget_dir_read", gd)
+gadget_dir_read.gadget_directory <- function(gd, file_name, missing_okay = TRUE) {
     path <- file.path(gd$dir, file_name)
 
     if (missing_okay && !file.exists(path)) {
