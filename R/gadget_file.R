@@ -18,8 +18,8 @@ print.gadget_file <- function (x, ...) {
         if (is.character(name) && nzchar(name)) cat(paste0('[', name,']\n'))
 
         # properties are in key\tvalue1\tvalue2... form
-        for (k in names(comp)) {
-            cat(paste0(k, "\t", paste(comp[[k]], collapse = "\t"), "\n", collapse = ""))
+        for (i in 1:length(comp)) {
+            cat(names(comp)[[i]], "\t", paste(comp[[i]], collapse = "\t"), "\n", sep = "")
         }
     }
 
@@ -137,7 +137,8 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
                 attr(cur_comp, 'preamble') <- cur_preamble
                 cur_preamble <- list()
             }
-            cur_comp[[x[[1]]]] <- if (length(x) > 1) x[2:length(x)] else ""
+            cur_comp[[length(cur_comp) + 1]] <- if (length(x) > 1) x[2:length(x)] else ""
+            names(cur_comp)[[length(cur_comp)]] <- x[[1]]
             next
         }
     }

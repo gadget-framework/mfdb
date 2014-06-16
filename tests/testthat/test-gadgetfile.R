@@ -152,4 +152,11 @@ test_that("Can read gadget files", {
         "; ",
         "[component]",
         "fish\tbattered")
+
+    # Can have multiple lines with the same key
+    test_loopback(
+        ver_string,
+        "a\t45",
+        "a\t46",
+        "a\t47")
 })
