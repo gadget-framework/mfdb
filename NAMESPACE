@@ -24,8 +24,6 @@ export(mfdb_agelength)
 # gadget_directory.R
 export(gadget_directory)
 export(gadget_dir_write)
-export(gadget_mainfile)
-export(gadget_areafile)
 S3method(gadget_dir_write, gadget_file)
 S3method(gadget_dir_write, gadget_likelihood_component)
 export(gadget_dir_read)

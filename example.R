@@ -105,4 +105,4 @@ gadget_dir_write(gd, gadget_likelihood_component("catchdistribution",
 rm(agg_data) # Free up memory before moving on to the next component
 
 # Create a mainfile with everything that has been created so far
-gadget_mainfile(gd)
+# gadget_mainfile(gd)

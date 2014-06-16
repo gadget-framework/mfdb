@@ -6,16 +6,6 @@ gadget_directory <- function (dir) {
         dir = dir), class = c("gadget_directory"))
 }
 
-# Create a mainfile to go in the gadget directory
-gadget_mainfile <- function (gd) {
-    # TODO: These shouldn't be here, they're specialisms of gadget_file
-}
-
-# Create the main areafile
-gadget_areafile <- function (gd, sizes = NULL, temperatures = NULL) {
-    # TODO: These shouldn't be here, they're specialisms of gadget_file
-}
-
 gadget_dir_write <- function(gd, obj) UseMethod("gadget_dir_write", obj)
 gadget_dir_write.gadget_file <- function(gd, obj) {
     fh = file(file.path(gd$dir, obj$filename), "w")
