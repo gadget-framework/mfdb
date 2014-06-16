@@ -137,7 +137,11 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
                 attr(cur_comp, 'preamble') <- cur_preamble
                 cur_preamble <- list()
             }
-            cur_comp[[length(cur_comp) + 1]] <- if (length(x) > 1) x[2:length(x)] else ""
+            if (length(x) > 1) {
+                cur_comp[[length(cur_comp) + 1]] <- tryCatch(as.numeric(x[2:length(x)]), warning = function (w) x[2:length(x)])
+            } else {
+                cur_comp[[length(cur_comp) + 1]] <- c("")
+            }
             names(cur_comp)[[length(cur_comp)]] <- x[[1]]
             next
         }
