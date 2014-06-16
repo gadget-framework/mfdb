@@ -15,13 +15,28 @@ gadget_dir_write.gadget_file <- function(gd, obj) {
 }
 
 gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
-    #TODO: Should parse the file, and add it in
-    # Append the component to the likelihood file
-    fname <- file.path(gd$dir, "likelihood")
-    fh = file(fname, if (file.exists(fname)) "a" else "w")
-    tryCatch(
-        capture.output(print(obj), file = fh),
-        finally = close(fh))
+    # Either replace component with matching name, or add to end
+    insert_component <- function(comps, cname, n) {
+        for (i in 1:(length(comps) + 1)) {
+            if (i > length(comps) || (names(comps)[[i]] == cname && comps[[i]]$type == n$type && comps[[i]]$name == n$name)) {
+                comps[[i]] <- n
+                names(comps)[[i]] <- cname
+                return(comps)
+            }
+        }
+        return(comps)
+    }
+
+    # Insert / Update component in likelihood file
+    likelihood <- gadget_dir_read(gd, 'likelihood')
+    likelihood$components <- insert_component(
+        as.list(likelihood$components),
+        "component",
+        lapply(obj, function (x) {
+            # Don't let gadget_file's leak out into lists for export
+            if ("gadget_file" %in% class(x)) x$filename else x
+        }))
+    gadget_dir_write(gd, likelihood)
 
     # Write out each file-based component
     for (x in obj) {
