@@ -24,10 +24,12 @@ mfdb_agelength(mdb, params)
 }
 
 \arguments{
-All functions take the folllowing:-
+All functions take the following:-
     \item{mdb}{An object created by \code{mfdb}()}
-    \item{params}{A list of parameters, described below.}
+    \item{params}{A list of parameters, see details.}
+}
 
+\details{
 All arguments could be provided in \code{defaultparams} to the
 \code{mfdb}() object as well as here. If provided in both, then the version
 given here will override it.
@@ -35,6 +37,7 @@ given here will override it.
 The following parameters both restrict what data is returned, and
 groups it into larger chunks.
 
+\describe{
     \item{timestep}{
         (required) An mfdb_group representing which months you want to
         include in the data, and how to group them. For example,
@@ -61,10 +64,12 @@ groups it into larger chunks.
         by length (doesn't make sense), but this is still used to provide a
         minimum and maximum length.
     }
+}
 
 In addition, you can use the following arguments to restrict data
 returned as part of the query.
 
+\describe{
     \item{years}{
         A vector of years, e.g. \code{c(2000,2001)}
     }
@@ -80,6 +85,7 @@ returned as part of the query.
     \item{samplingstrategy}{A vector of sampling strategy}
     \item{maturitystage}{A vector of maturity stage}
     \item{sex}{A vector of sexes, e.g. \code{c('M', 'F')}}
+}
 }
 
 \value{
