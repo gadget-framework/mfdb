@@ -110,10 +110,7 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
         # Add any comments as a preamble
         x <- extract("^;\\s*(.*)", line)
         if (length(x) > 0) {
-            # Ignore any initial blank comments
-            if(length(cur_preamble) > 0 || nchar(x[[1]]) > 0) {
-                cur_preamble <- c(cur_preamble, list(x[[1]]))
-            }
+            cur_preamble <- c(cur_preamble, list(x[[1]]))
             next
         }
 
