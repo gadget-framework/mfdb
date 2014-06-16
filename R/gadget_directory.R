@@ -20,12 +20,14 @@ gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
     # Either replace component with matching name, or add to end
     insert_component <- function(comps, cname, n) {
         for (i in 1:(length(comps) + 1)) {
-            if (i > length(comps) || (names(comps)[[i]] == cname && comps[[i]]$type == n$type && comps[[i]]$name == n$name)) {
-                comps[[i]] <- n
-                names(comps)[[i]] <- cname
-                return(comps)
-            }
+            if (i > length(comps)) break;
+            if (length(comps[[i]]) == 0) next;  # e.g. empty initial component
+            if (names(comps)[[i]] == cname
+                & comps[[i]]$type == n$type
+                & comps[[i]]$name == n$name) break;
         }
+        comps[[i]] <- n
+        names(comps)[[i]] <- cname
         return(comps)
     }
 
