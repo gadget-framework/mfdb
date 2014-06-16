@@ -208,7 +208,8 @@ mfdb_sample_grouping <- function (mdb,
 
     # Fetch all data, break it up by sample and annotate each
     out <- fetch(dbSendQuery(mdb$db, query), -1)
-    lapply(unique(out$sample), function (sample) {
+    samples <- unique(out$sample)
+    structure(lapply(samples, function (sample) {
         structure(
             out[out$sample == sample,names(out) != 'sample'],
             generator = generator,
@@ -216,5 +217,5 @@ mfdb_sample_grouping <- function (mdb,
             ages = params$ages,
             lengths = params$lengths,
             timestep = params$timestep)
-    })
+    }), names = samples)
 }
