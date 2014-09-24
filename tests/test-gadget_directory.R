@@ -1,6 +1,8 @@
-context("Gadget directories")
+library(mfdb)
+library(unittest, quietly = TRUE)
+source('utils/helpers.R')
 
-test_that("Will create a directory when creating gadget_directories", {
+section("Will create a directory when creating gadget_directories", function() {
     expect_error(
         gadget_directory("/dont-run-as-root"),
         "/dont-run-as-root")
@@ -11,7 +13,7 @@ test_that("Will create a directory when creating gadget_directories", {
     expect_true(file.exists(dir) && file_test("-d", dir))
 })
 
-test_that("Can write files", {
+section("Can write files", function() {
     # Create a temporary directory, starts off empty
     dir <- tempfile()
     gd <- gadget_directory(dir)
@@ -29,7 +31,7 @@ test_that("Can write files", {
     expect_equal(list.files(dir), c("animals", "plants"))
 })
 
-test_that("Can write likelihood components", {
+section("Can write likelihood components", function() {
     # Create a temporary directory, starts off empty
     dir <- tempfile()
     gd <- gadget_directory(dir)

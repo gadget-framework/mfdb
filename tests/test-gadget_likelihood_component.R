@@ -1,5 +1,6 @@
-###############################################################################
-context("Gadget components")
+library(mfdb)
+library(unittest, quietly = TRUE)
+source('utils/helpers.R')
 
 all_components <- c(
         "penalty",
@@ -8,7 +9,7 @@ all_components <- c(
         "catchdistribution",
         "stockdistribution")
 
-test_that("Can generate gadget_likelihood_component objects", {
+section("Can generate gadget_likelihood_component objects", function() {
     expect_error(
         gadget_likelihood_component("aardvark"),
         "Unknown likelihood component aardvark")
@@ -18,14 +19,14 @@ test_that("Can generate gadget_likelihood_component objects", {
         c("gadget_penalty_component", "gadget_likelihood_component"))
 })
 
-test_that("Can use as.character on gadget_likelihood_components", {
+section("Can use as.character on gadget_likelihood_components", function() {
     comp <- gadget_likelihood_component("penalty", name = "wibble", weight = 0.5)
     expect_equal(comp$name, "wibble")
     expect_equal(comp$weight, 0.5)
     expect_equal(comp$type, "penalty")
 })
 
-test_that("Name, type and weight behave the same with all components", {
+section("Name, type and weight behave the same with all components", function() {
     for (type in all_components) {
         if (type == "catchstatistics") {
             c <- gadget_likelihood_component(type,
@@ -59,16 +60,14 @@ test_that("Name, type and weight behave the same with all components", {
 })
 
 ###############################################################################
-context("Gadget understocking component")
-
-test_that("Can generate an understocking component with default parameters", {
+section("Can generate an understocking component with default parameters", function() {
     comp <- gadget_likelihood_component("understocking")
     expect_equal(comp$name, "understocking")
     expect_equal(comp$weight, 0)
     expect_equal(comp$type, "understocking")
 })
 
-test_that("Can customise it", {
+section("Can customise it", function() {
     comp <- gadget_likelihood_component("understocking", name = "alfred", weight = 0.3)
     expect_equal(comp$name, "alfred")
     expect_equal(comp$weight, 0.3)
@@ -76,9 +75,7 @@ test_that("Can customise it", {
 })
 
 ###############################################################################
-context("Gadget catchstatistics component")
-
-test_that("Function either provided explicitly or based on generator", {
+section("Function either provided explicitly or based on generator", function() {
     expect_error(
         gadget_likelihood_component("catchstatistics"),
         "No data provided")

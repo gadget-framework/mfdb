@@ -12,4 +12,4 @@ Imports:
     logging,
     DBI,
     RPostgreSQL
-Suggests: testthat
+Suggests: unittest

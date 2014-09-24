@@ -1,8 +1,8 @@
-library(testthat)
+library(mfdb)
+library(unittest, quietly = TRUE)
+source('utils/helpers.R')
 
-context("Mareframe intervals")
-
-test_that("Can generate objects", {
+section("Can generate objects", function() {
     expect_error(
         mfdb_interval("l", c()),
         "vect must at least be 2 items long")
@@ -15,7 +15,7 @@ test_that("Can generate objects", {
         c("mfdb_interval"))
 })
 
-test_that("Elements are named by prefixes", {
+section("Elements are named by prefixes", function() {
     expect_equal(
         as.list(mfdb_interval("l", c(10,20,25,30))),
         list(l10 = c(10,20), l20 = c(20,25), l25 = c(25,30)))
