@@ -12,6 +12,9 @@ importFrom(DBI, dbConnect, dbDriver, dbSendQuery, fetch)
 importFrom(RPostgreSQL, PostgreSQL)
 importFrom(logging, getLogger)
 export(mfdb)
+
+# mfdb_queries.R
+#alsoUses(logging, getLogger)
 export(mfdb_area_sizes)
 export(mfdb_temperatures)
 export(mfdb_stock_count)
