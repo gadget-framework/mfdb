@@ -143,7 +143,7 @@ mfdb_sample_grouping <- function (mdb,
     mdb$logger$debug(query)
 
     # Fetch all data, break it up by sample and annotate each
-    out <- fetch(dbSendQuery(mdb$db, query), -1)
+    out <- dbFetch(dbSendQuery(mdb$db, query), -1)
     samples <- unique(out$sample)
     structure(lapply(samples, function (sample) {
         structure(
