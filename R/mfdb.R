@@ -1,7 +1,7 @@
 #        areas = c(),	# c('101', '101:1001'), e.g. Will group at most granular
 #        timesteps = mfdb_group("ts", c(1,2,3),c(4,5,6)), groupings of months,
 #        todo = NULL) {
-mfdb <- function(db_connection = NULL, defaultparams = list()) {
+mfdb <- function(db_connection = NULL, defaultparams = list(), save_tables = FALSE) {
     if (is.null(db_connection)) {
         db_connection <- dbConnect(PostgreSQL(),
                 dbname="dw0605",
@@ -11,6 +11,7 @@ mfdb <- function(db_connection = NULL, defaultparams = list()) {
             logger = getLogger('mfdb'),
             defaultparams = c(defaultparams, list(
                     timesteps = mfdb_group(year = c(1,2,3,4,5,6,7,8,9,10,11,12)))),
+            save_tables = save_tables,
             db = db_connection), class = "mfdb"))
 }
 
@@ -137,14 +138,19 @@ mfdb_sample_grouping <- function (mdb,
         paste("AND", col, if (min_exclusive) ">" else ">=", sql_quote(int_group$int_min),
               "AND", col, if (max_exclusive) "<" else "<=", sql_quote(int_group$int_max))
     }
-    group_to_table <- function(db, table_name, group, datatype = "INT") {
+    group_to_table <- function(db, table_name, group, datatype = "INT", save_tables = FALSE) {
         #TODO: This error message provides table name, not parameter
         if (is.null(group)) stop(paste("You must provide a mfdb_group for", table_name))
         #TODO: Assign random ID attribute to group, use this as table name or re-use table if it already has one
         # Remove the table if it exists, and recreate it
         tryCatch(dbSendQuery(db, paste("DROP TABLE", table_name)), error = function (e) {})
         dbSendQuery(db, paste(
-                "CREATE TEMPORARY TABLE", table_name, "(sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value ", datatype, ")"))
+                "CREATE",
+                (if (!save_tables) "TEMPORARY"),
+                "TABLE",
+                table_name,
+                "(sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value ", datatype,
+                ")"))
 
         # Flatten out into multiple key:value rows, populate table in one hit
         group_table <- denormalize(group)
@@ -161,9 +167,9 @@ mfdb_sample_grouping <- function (mdb,
     params <- c(params, mdb$defaultparams)
     mdb$logger$info(params)
     # Store groups into temporary tables for joining
-    if (grouping_by("timestep")) group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT")
-    if (grouping_by("areas")) group_to_table(mdb$db, "temp_area", params$areas, datatype = "INT")
-    if (grouping_by("ages"))  group_to_table(mdb$db, "temp_age", params$ages, datatype = "INT")
+    if (grouping_by("timestep")) group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT", save_tables = mdb$save_tables)
+    if (grouping_by("areas")) group_to_table(mdb$db, "temp_area", params$areas, datatype = "INT", save_tables = mdb$save_tables)
+    if (grouping_by("ages"))  group_to_table(mdb$db, "temp_age", params$ages, datatype = "INT", save_tables = mdb$save_tables)
 
     # TODO: Add in indrection, so a gridcell can be in multiple subdivisions
     query <- paste(c(

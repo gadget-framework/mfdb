@@ -19,7 +19,8 @@ mdb <- mfdb(dbConnect(dbDriver("PostgreSQL"), dbname="dw0605", host="/tmp/"),
             "101" = c(1011, 1012, 1013, 1014, 1015),
             "102" = c(1021, 1022, 1023)),
         timestep = mfdb_group_numbered("ts", c(1,2,3,4,5,6), c(7,8,9,10,11,12)), # Group months to create 2 timesteps for each year
-        null = NULL))
+        null = NULL),
+    save_tables = FALSE)
 # NB: Any of these parameters can be overriden when performing a query
 
 # Initalise a gadget directory for output.
