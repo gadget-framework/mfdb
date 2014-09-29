@@ -61,14 +61,14 @@ create_tables <- function(mdb) {
 
     send_query(mdb, sql_create_table(
         "survey", "Description of survey",
-        "surveyId INT PRIMARY KEY", "",
+        "surveyId SERIAL PRIMARY KEY", "",
         "dataSource VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
         "year INT NOT NULL", "Year survey was undertaken",
         "instituteId INT REFERENCES institute(instituteId)", "Institute that undertook survey",
         "fleetId INT REFERENCES fleet(fleetId)", "Fleet name",
-        "gearId INT REFERENCES (gearId)", "Gear used",
-        "vesselId INT REFERENCES (vesselId)", "Vessel used",
-        "marketCategoryId INT REFERENCES (marketCategoryId)", "Market category",
+        "gearId INT REFERENCES gear(gearId)", "Gear used",
+        "vesselId INT REFERENCES vessel(vesselId)", "Vessel used",
+        "marketCategoryId INT REFERENCES marketCategory(marketCategoryId)", "Market category",
         "samplingTypeId INT REFERENCES samplingType(samplingTypeId)", "Sampling type"))
 
     # TODO: Should we have a numeric ID for areacell?
@@ -81,7 +81,7 @@ create_tables <- function(mdb) {
 
     send_query(mdb, sql_create_table(
         "sample", "Samples within survey",
-        "sampleId INT PRIMARY KEY", "",
+        "sampleId SERIAL PRIMARY KEY", "",
         "surveyId INT REFERENCES survey(surveyId)", "",
         "month INT NOT NULL", "Month survey was undertaken",
         "areacell VARCHAR(10)", "e.g. ICES gridcell",
