@@ -60,3 +60,26 @@ group_to_table <- function(db, table_name, group, datatype = "INT", save_tables 
         dbSendQuery(db, paste0("INSERT INTO ", table_name, " (sample, name, value) VALUES (", sql_quote(v[[1]]), ",", sql_quote(v[[2]]), ",", sql_quote(v[[3]]), ")"))
     })
 }
+
+# Return SQL to create a table, arguments of form
+#  * Name of table
+#  * Description of table
+#  * Column definition
+#  * Description of column
+#  (extra columns as required)
+sql_create_table <- function(name, desc, ...) {
+    cols <- matrix(c(...), nrow = 2)
+    row_to_string <- function (i) {
+        paste0("    ",
+            cols[1,i],
+            (if (i == ncol(cols)) "" else ","),
+            (if (nzchar(cols[2,i])) paste("\t--", cols[2,i])),
+            "\n")
+    }
+
+    paste0(
+        if (nzchar(desc)) paste0("-- ", desc, "\n", collapse = ""),
+        "CREATE TABLE ", name, " (\n",
+        paste(sapply(1:ncol(cols), row_to_string), collapse = ""),
+        ")")
+}
