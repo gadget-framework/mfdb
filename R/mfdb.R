@@ -53,14 +53,13 @@ create_tables <- function(mdb) {
             "description VARCHAR(1024) NOT NULL DEFAULT ''", "Long description",
             "UNIQUE(name)", ""))
     }
+
     create_lookup("institute", "")
     create_lookup("fleet", "")
     create_lookup("gear", "")
     create_lookup("vessel", "")
     create_lookup("marketCategory", "")
     create_lookup("samplingType", "")
-    create_lookup("species", "")
-
     send_query(mdb, sql_create_table(
         "survey", "Description of survey",
         "surveyId SERIAL PRIMARY KEY", "",
@@ -75,21 +74,32 @@ create_tables <- function(mdb) {
 
     # TODO: Should we have a numeric ID for areacell?
     send_query(mdb, sql_create_table(
-        "areas", "Mapping of areacells to divisions",
+        "area", "Mapping of areacells to divisions",
         "dataSource VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
         "division VARCHAR(10) NOT NULL", "",
         "areacell VARCHAR(10) NOT NULL", "e.g. ICES gridcell",
         "PRIMARY KEY(dataSource, division, areacell)", ""))
 
+    create_lookup("sex", "")
+    create_lookup("species", "")
     send_query(mdb, sql_create_table(
         "sample", "Samples within survey",
         "sampleId SERIAL PRIMARY KEY", "",
         "surveyId INT REFERENCES survey(surveyId)", "",
+        # Grouping columns
         "month INT NOT NULL", "Month survey was undertaken",
         "areacell VARCHAR(10)", "e.g. ICES gridcell",
         "speciesId INT REFERENCES species(speciesId)", "",
         "lengthCellMin INT", "Lower bound of lengthcell",
-        "lengthCellMax INT", "Upper bound of lengthcell"))
+        "lengthCellMax INT", "Upper bound of lengthcell",
+        # Aggregation columns
+        "age INT", "Age (years)",
+        "sexId INT", "Sex ",
+        "count INT", "Number of fish within the criteria",
+        "lengthMean REAL", "Mean length of fish within the criteria",
+        "lengthVar REAL", "Variance of fish length within the criteria",
+        "weightMean REAL", "Mean weight of fish within the criteria",
+        "weightVar REAL", "Variance of fish weight within the criteria"))
 }
 
 # Return the major version of the package
