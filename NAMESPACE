@@ -8,10 +8,13 @@ export(mfdb_interval)
 S3method(as.list, mfdb_interval)
 
 # mfdb.R
-importFrom(DBI, dbConnect, dbDriver, dbSendQuery, dbFetch)
+importFrom(DBI, dbConnect, dbDriver, dbSendQuery, dbFetch, dbGetQuery, dbCommit)
 importFrom(RPostgreSQL, PostgreSQL)
 importFrom(logging, getLogger)
 export(mfdb)
+
+# mfdb_import.R
+export(mfdb_import_identifiers)
 
 # mfdb_queries.R
 #alsoUses(logging, getLogger)

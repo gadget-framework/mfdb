@@ -48,8 +48,10 @@ create_tables <- function(mdb) {
     create_lookup <- function(name, desc) {
         send_query(mdb, sql_create_table(
             name, desc,
-            paste0(name, "Id INT PRIMARY KEY"), "",
-            "name VARCHAR(1024) NOT NULL", ""))
+            paste0(name, "Id SERIAL PRIMARY KEY"), "Numeric ID for this entry",
+            "name VARCHAR(1024) NOT NULL", "Short name used in data files",
+            "description VARCHAR(1024) NOT NULL DEFAULT ''", "Long description",
+            "UNIQUE(name)", ""))
     }
     create_lookup("institute", "")
     create_lookup("fleet", "")
