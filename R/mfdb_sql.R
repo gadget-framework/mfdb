@@ -1,6 +1,14 @@
 # Return v as a '-quoted SQL string
 sql_quote <- function(v) {
-    paste0("'", gsub("'", "''", v) ,"'")
+    if (length(v) == 1) {
+        if (is.na(v)) {
+            "NULL"
+        } else {
+            paste0("'", gsub("'", "''", v) ,"'")
+        }
+    } else {
+        paste0("(", paste0(Vectorize(sql_quote)(v), collapse = ","), ")")
+    }
 }
 
 # Generic for turning "col == x" into a SQL SELECT condition
