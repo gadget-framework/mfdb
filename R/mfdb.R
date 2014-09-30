@@ -48,7 +48,7 @@ create_tables <- function(mdb) {
     create_lookup <- function(name, desc) {
         send_query(mdb, sql_create_table(
             name, desc,
-            paste0(name, "Id SERIAL PRIMARY KEY"), "Numeric ID for this entry",
+            paste0(name, "_id SERIAL PRIMARY KEY"), "Numeric ID for this entry",
             "name VARCHAR(1024) NOT NULL", "Short name used in data files",
             "description VARCHAR(1024) NOT NULL DEFAULT ''", "Long description",
             "UNIQUE(name)", ""))
@@ -58,48 +58,49 @@ create_tables <- function(mdb) {
     create_lookup("fleet", "")
     create_lookup("gear", "")
     create_lookup("vessel", "")
-    create_lookup("marketCategory", "")
-    create_lookup("samplingType", "")
+    create_lookup("market_category", "")
+    create_lookup("sampling_type", "")
     send_query(mdb, sql_create_table(
         "survey", "Description of survey",
-        "surveyId SERIAL PRIMARY KEY", "",
-        "dataSource VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
-        "year INT NOT NULL", "Year survey was undertaken",
-        "instituteId INT REFERENCES institute(instituteId)", "Institute that undertook survey",
-        "fleetId INT REFERENCES fleet(fleetId)", "Fleet name",
-        "gearId INT REFERENCES gear(gearId)", "Gear used",
-        "vesselId INT REFERENCES vessel(vesselId)", "Vessel used",
-        "marketCategoryId INT REFERENCES marketCategory(marketCategoryId)", "Market category",
-        "samplingTypeId INT REFERENCES samplingType(samplingTypeId)", "Sampling type"))
+        "survey_id SERIAL PRIMARY KEY", "",
+        "data_source VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
+        "institute_id INT REFERENCES institute(institute_id)", "Institute that undertook survey",
+        "fleet_id INT REFERENCES fleet(fleet_id)", "Fleet name",
+        "gear_id INT REFERENCES gear(gear_id)", "Gear used",
+        "vessel_id INT REFERENCES vessel(vessel_id)", "Vessel used",
+        "market_category_id INT REFERENCES market_category(market_category_id)", "Market category",
+        "sampling_type_id INT REFERENCES sampling_type(sampling_type_id)", "Sampling type"))
 
     # TODO: Should we have a numeric ID for areacell?
     send_query(mdb, sql_create_table(
         "area", "Mapping of areacells to divisions",
-        "dataSource VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
+        "data_source VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
         "division VARCHAR(10) NOT NULL", "",
         "areacell VARCHAR(10) NOT NULL", "e.g. ICES gridcell",
-        "PRIMARY KEY(dataSource, division, areacell)", ""))
+        "PRIMARY KEY(data_source, division, areacell)", ""))
 
     create_lookup("sex", "")
     create_lookup("species", "")
     send_query(mdb, sql_create_table(
         "sample", "Samples within survey",
-        "sampleId SERIAL PRIMARY KEY", "",
-        "surveyId INT REFERENCES survey(surveyId)", "",
+        "sample_id SERIAL PRIMARY KEY", "",
+        "survey_id INT REFERENCES survey(survey_id)", "",
         # Grouping columns
-        "month INT NOT NULL", "Month survey was undertaken",
+        "year INT NOT NULL", "Year sample was undertaken",
+        "month INT NOT NULL", "Month sample was undertaken",
+        "CHECK(month BETWEEN 1 AND 12)", "",
         "areacell VARCHAR(10)", "e.g. ICES gridcell",
-        "speciesId INT REFERENCES species(speciesId)", "",
-        "lengthCellMin INT", "Lower bound of lengthcell",
-        "lengthCellMax INT", "Upper bound of lengthcell",
-        # Aggregation columns
+        "species_id INT REFERENCES species(species_id)", "",
         "age INT", "Age (years)",
-        "sexId INT", "Sex ",
+        "sex_id INT", "Sex ID",
+        "lengthcell_min INT", "Lower bound of lengthcell",
+        "lengthcell_max INT", "Upper bound of lengthcell",
+        # Aggregation columns
         "count INT", "Number of fish within the criteria",
-        "lengthMean REAL", "Mean length of fish within the criteria",
-        "lengthVar REAL", "Variance of fish length within the criteria",
-        "weightMean REAL", "Mean weight of fish within the criteria",
-        "weightVar REAL", "Variance of fish weight within the criteria"))
+        "length_mean REAL", "Mean length of fish within the criteria",
+        "length_var REAL", "Variance of fish length within the criteria",
+        "weight_mean REAL", "Mean weight of fish within the criteria",
+        "weight_var REAL", "Variance of fish weight within the criteria"))
 }
 
 # Return the major version of the package

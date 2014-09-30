@@ -1,7 +1,7 @@
 # Import a lookup table e.g. mfdb_import_identifiers("species", read.csv('species.csv'))
 mfdb_import_identifiers <- function (mfdb, table_name, new_data) {
     # Is table_name one of the recognised tables?
-    if (!(table_name %in% c("institute", "fleet", "gear", "vessel", "marketCategory", "samplingType", "species"))) {
+    if (!(table_name %in% c("institute", "fleet", "gear", "vessel", "market_category", "sampling_type", "species"))) {
         stop("Unknown identifier table ", table_name)
     }
 
