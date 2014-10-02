@@ -1,0 +1,6 @@
+"id" "name" "description"
+"1"  "M" "male"
+"2"  "F" "female"
+"3"  "X" "mixed"
+"4"  "N" "indeterminate"
+"5"  "U" "unknown"

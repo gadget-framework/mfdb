@@ -2,7 +2,7 @@
 # new_data should have columns id, name, description
 mfdb_import_taxonomy <- function (mdb, table_name, new_data) {
     # Is table_name one of the recognised tables?
-    if (!(table_name %in% c("institute", "fleet", "gear", "vessel", "market_category", "sampling_type", "species"))) {
+    if (!(table_name %in% c("institute", "fleet", "gear", "vessel", "market_category", "sampling_type", "sex", "species"))) {
         stop("Unknown taxonomy table ", table_name)
     }
 

@@ -153,6 +153,9 @@ mfdb_update_taxonomies <- function(mdb) {
         name = species$name,
         description = paste0(species$common_name, " (", species$scientific_name, ")")
     ))
+
+    data("sex", package = "mfdb")
+    mfdb_import_taxonomy(mdb, "sex", sex)
 }
 
 # Return the major version of the package
