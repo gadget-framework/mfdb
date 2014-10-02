@@ -7,12 +7,12 @@ mfdb_import_taxonomy <- function (mdb, table_name, new_data) {
     }
 
     # Fetch all existing ids
-    existing = unlist(mfdb_fetch(mdb, "SELECT ", table_name, "_id FROM ", table_name))
+    existing <- mfdb_fetch(mdb, "SELECT ", table_name, "_id FROM ", table_name)[,1]
 
     # Either add or update rows. Removing is risky, since we might have dependent data
     mfdb_transaction(mdb, {
         apply(new_data, 1, function (row) {
-            if (row[['id']] %in% existing) {
+            if (as.numeric(row[['id']]) %in% existing) { # NB: Got mushed to a string when row became a vector, probably bad
                 dbSendQuery(mdb$db, paste0(
                     "UPDATE ", table_name,
                     " SET name = ", sql_quote(row[['name']]),
