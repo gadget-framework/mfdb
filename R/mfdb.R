@@ -31,6 +31,36 @@ mfdb <- function(db_connection = NULL, defaultparams = list(), save_tables = FAL
     invisible(mdb)
 }
 
+# Perform query and return all results
+mfdb_fetch <- function(mfdb, ...) {
+    res <- dbSendQuery(mfdb$db, paste0(..., collapse = ""))
+    out <- dbFetch(res)
+    dbClearResult(res)
+    return(out)
+}
+
+# Insert a vector row or data.frame of rows into table_name
+mfdb_insert <- function(mfdb, table_name, data_in, returning = "", extra = c()) {
+    insert_row <- function (r) {
+        res <- dbSendQuery(mfdb$db, paste0("INSERT INTO ", paste(table_name, collapse = ""),
+            " (", paste(c(names(data_in), names(extra)), collapse=","), ") VALUES ",
+            sql_quote(c(data_in, extra)),
+            (if (nzchar(returning)) paste0(c(" RETURNING ", returning), collapse = "") else ""),
+            "", collapse = ""))
+        out <- if (nzchar(returning)) dbFetch(res) else dbGetRowsAffected(res)
+        dbClearResult(res)
+        return(out)
+    }
+    if (!is.data.frame(data_in)) {
+        # Insert single row
+        return(insert_row(data_in))
+    } else {
+        # Insert rows
+        #TODO: Should be batching
+        return(apply(data_in, 1, insert_row))
+    }
+}
+
 create_tables <- function(mdb) {
     send_query <- function (mdb, query) {
         if (is.null(mdb)) {
