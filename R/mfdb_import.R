@@ -28,32 +28,6 @@ mfdb_import_identifiers <- function (mfdb, table_name, new_data) {
     invisible(TRUE)
 }
 
-# NB: Dead, but exicting code
-aggregate_survey_data <- function (survey_data_in, length_cell_size) {
-    grouping_cols <- c("year", "month", "area_cell", "species", "age", "sex")
-    grouping <- function (col) {
-        as.formula(paste(
-            col,
-            "~",
-            paste(c(grouping_cols, paste("length %/%", length_cell_size)), collapse = "+"),
-            sep = " "))
-    }
-
-    # Generate counts first, use this to build data frame
-    survey_data_agg <- aggregate(grouping("year*0"), data = survey_data_in, length)
-
-    # Return combined version of data
-    return(cbind(
-        survey_data_agg[,grouping_cols],
-        length_cell_min = survey_data_agg[,length(grouping_cols) + 1] * length_cell_size,
-        length_cell_max = survey_data_agg[,length(grouping_cols) + 1] * length_cell_size + length_cell_size,
-        count = survey_data_agg[,length(grouping_cols) + 2],
-        length_mean = aggregate(grouping("length"), data = survey_data_in, mean)[,length(grouping_cols) + 2],
-        length_var  = aggregate(grouping("length"), data = survey_data_in, var)[,length(grouping_cols) + 2],
-        weight_mean = aggregate(grouping("weight"), data = survey_data_in, mean)[,length(grouping_cols) + 2],
-        weight_var  = aggregate(grouping("weight"), data = survey_data_in, var)[,length(grouping_cols) + 2]))
-}
-
 mfdb_import_survey <- function (mfdb, data_in, ...) {
     survey_metadata <- list(...)
     sanitise_col <- function (data_in, col_name, default = NULL, lookup = NULL) {
