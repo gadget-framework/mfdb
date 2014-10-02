@@ -13,3 +13,4 @@ Imports:
     DBI,
     RPostgreSQL
 Suggests: unittest
+LazyData: true

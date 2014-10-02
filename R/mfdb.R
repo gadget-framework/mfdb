@@ -96,7 +96,7 @@ create_tables <- function(mdb) {
             paste0(name, "_id ", id_type," PRIMARY KEY"), "Numeric ID for this entry",
             "name VARCHAR(1024) NOT NULL", "Short name used in data files / output data",
             "CHECK(name ~ '^[A-Za-z0-9_.]+$')", "Labels should be in ltree notation",
-            "description VARCHAR(1024) NOT NULL DEFAULT ''", "Long description",
+            "description VARCHAR(1024)", "Long description",
             "UNIQUE(name)", ""))
     }
 
@@ -143,6 +143,16 @@ create_tables <- function(mdb) {
         "length REAL", "Length of fish / mean length of all fish",
         "weight REAL", "Weight of fish / mean weight of all fish",
         "count INT NOT NULL DEFAULT 1", "Number of fish meeting this criteria"))
+}
+
+# Populate with package-provided data
+mfdb_update_taxonomies <- function(mdb) {
+    data("species", package = "mfdb")
+    mfdb_import_taxonomy(mdb, "species", data.frame(
+        id = species$id,
+        name = species$name,
+        description = paste0(species$common_name, " (", species$scientific_name, ")")
+    ))
 }
 
 # Return the major version of the package
