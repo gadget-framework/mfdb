@@ -64,6 +64,7 @@ create_tables <- function(mdb) {
         "survey", "Description of survey",
         "survey_id SERIAL PRIMARY KEY", "",
         "data_source VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
+        "UNIQUE(data_source)", "",
         "institute_id INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "fleet_id INT REFERENCES fleet(fleet_id)", "Fleet name",
         "gear_id INT REFERENCES gear(gear_id)", "Gear used",
@@ -93,14 +94,9 @@ create_tables <- function(mdb) {
         "species_id INT REFERENCES species(species_id)", "",
         "age INT", "Age (years)",
         "sex_id INT", "Sex ID",
-        "lengthcell_min INT", "Lower bound of lengthcell",
-        "lengthcell_max INT", "Upper bound of lengthcell",
-        # Aggregation columns
-        "count INT", "Number of fish within the criteria",
-        "length_mean REAL", "Mean length of fish within the criteria",
-        "length_var REAL", "Variance of fish length within the criteria",
-        "weight_mean REAL", "Mean weight of fish within the criteria",
-        "weight_var REAL", "Variance of fish weight within the criteria"))
+        "length REAL", "Length of fish / mean length of all fish",
+        "weight REAL", "Weight of fish / mean weight of all fish",
+        "count INT NOT NULL DEFAULT 1", "Number of fish meeting this criteria"))
 }
 
 # Return the major version of the package
