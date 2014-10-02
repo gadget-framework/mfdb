@@ -14,7 +14,7 @@ importFrom(logging, getLogger)
 export(mfdb)
 
 # mfdb_import.R
-export(mfdb_import_identifiers)
+export(mfdb_import_taxonomy)
 
 # mfdb_queries.R
 #alsoUses(logging, getLogger)

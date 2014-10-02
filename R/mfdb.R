@@ -90,21 +90,22 @@ create_tables <- function(mdb) {
         "version INT NOT NULL"))
     send_query(mdb, paste0("INSERT INTO mfdb_schema VALUES (", sql_quote(package_major_version()), ")"))
 
-    create_lookup <- function(name, desc) {
+    create_taxonomy <- function(name, desc, id_type = "INT") {
         send_query(mdb, sql_create_table(
             name, desc,
-            paste0(name, "_id SERIAL PRIMARY KEY"), "Numeric ID for this entry",
-            "name VARCHAR(1024) NOT NULL", "Short name used in data files",
+            paste0(name, "_id ", id_type," PRIMARY KEY"), "Numeric ID for this entry",
+            "name VARCHAR(1024) NOT NULL", "Short name used in data files / output data",
+            "CHECK(name ~ '^[A-Za-z0-9_.]+$')", "Labels should be in ltree notation",
             "description VARCHAR(1024) NOT NULL DEFAULT ''", "Long description",
             "UNIQUE(name)", ""))
     }
 
-    create_lookup("institute", "")
-    create_lookup("fleet", "")
-    create_lookup("gear", "")
-    create_lookup("vessel", "")
-    create_lookup("market_category", "")
-    create_lookup("sampling_type", "")
+    create_taxonomy("institute", "")
+    create_taxonomy("fleet", "")
+    create_taxonomy("gear", "")
+    create_taxonomy("vessel", "")
+    create_taxonomy("market_category", "")
+    create_taxonomy("sampling_type", "")
     send_query(mdb, sql_create_table(
         "survey", "Description of survey",
         "survey_id SERIAL PRIMARY KEY", "",
@@ -125,8 +126,8 @@ create_tables <- function(mdb) {
         "areacell VARCHAR(10) NOT NULL", "e.g. ICES gridcell",
         "PRIMARY KEY(data_source, division, areacell)", ""))
 
-    create_lookup("sex", "")
-    create_lookup("species", "")
+    create_taxonomy("sex", "")
+    create_taxonomy("species", "", id_type = "BIGINT")
     send_query(mdb, sql_create_table(
         "sample", "Samples within survey",
         "sample_id SERIAL PRIMARY KEY", "",
@@ -136,7 +137,7 @@ create_tables <- function(mdb) {
         "month INT NOT NULL", "Month sample was undertaken",
         "CHECK(month BETWEEN 1 AND 12)", "",
         "areacell VARCHAR(10)", "e.g. ICES gridcell",
-        "species_id INT REFERENCES species(species_id)", "",
+        "species_id BIGINT REFERENCES species(species_id)", "",
         "age INT", "Age (years)",
         "sex_id INT", "Sex ID",
         "length REAL", "Length of fish / mean length of all fish",
