@@ -9,7 +9,7 @@ mfdb_import_identifiers <- function (mfdb, table_name, new_data) {
     existing = unlist(dbFetch(dbSendQuery(mfdb$db, paste0("SELECT name FROM ", table_name))))
 
     # Either add or update rows. Removing is risky, since we might have dependent data
-    dbGetQuery(mfdb$db, "BEGIN TRANSACTION")
+    dbSendQuery(mfdb$db, "BEGIN TRANSACTION")
     for (name in unlist(new_data[1])) {
         desc <- as.character(new_data[new_data[1] == name,2])
         if (name %in% existing) {
