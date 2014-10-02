@@ -156,6 +156,9 @@ mfdb_update_taxonomies <- function(mdb) {
 
     data("sex", package = "mfdb")
     mfdb_import_taxonomy(mdb, "sex", sex)
+
+    data("gear", package = "mfdb") #TODO: We should be lazy-loading(?)
+    mfdb_import_taxonomy(mdb, "gear", gear)
 }
 
 # Return the major version of the package
