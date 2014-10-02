@@ -7,7 +7,7 @@ mfdb_import_taxonomy <- function (mdb, table_name, new_data) {
     }
 
     # Fetch all existing ids
-    existing <- mfdb_fetch(mdb, "SELECT ", table_name, "_id FROM ", table_name)[,1]
+    existing <- unlist(mfdb_fetch(mdb, "SELECT ", table_name, "_id FROM ", table_name))
 
     # Either add or update rows. Removing is risky, since we might have dependent data
     mfdb_transaction(mdb, {
