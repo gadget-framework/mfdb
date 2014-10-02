@@ -61,6 +61,21 @@ mfdb_insert <- function(mfdb, table_name, data_in, returning = "", extra = c()) 
     }
 }
 
+# Execute code block within a DB transaction, roll back on error, commit otherwise
+mfdb_transaction <- function(mdb, transaction) {
+    mdb$logger$info("Starting transaction...")
+    dbSendQuery(mdb$db, "BEGIN TRANSACTION")
+    ret <- tryCatch(transaction, error = function (e) { e })
+    if ("error" %in% class(ret)) {
+        mdb$logger$warn("Rolling back transaction...")
+        dbRollback(mdb$db)
+        stop(ret)
+    }
+    mdb$logger$info("Committing transaction...")
+    dbCommit(mdb$db)
+    invisible(TRUE)
+}
+
 create_tables <- function(mdb) {
     send_query <- function (mdb, query) {
         if (is.null(mdb)) {

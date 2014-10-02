@@ -76,12 +76,11 @@ mfdb_import_survey <- function (mfdb, data_in, ...) {
         count = sanitise_col(data_in, 'weight', default = c(1)))
 
     # Remove data_source and re-insert
-    dbSendQuery(mfdb$db, "BEGIN TRANSACTION")
-    dbSendQuery(mfdb$db, "DELETE FROM survey WHERE data_source = ", sql_quote(survey_metadata$data_source), " CASCADE")
-    res <- mfdb_insert(mfdb, 'survey', survey_metadata, returning = "survey_id")
-    res <- mfdb_insert(mfdb, 'sample', survey_sample, extra = res$survey_id)
-    dbCommit(mfdb$db)
-    invisible(TRUE)
+    mfdb_transaction(mfdb, {
+        dbSendQuery(mfdb$db, "DELETE FROM survey WHERE data_source = ", sql_quote(survey_metadata$data_source), " CASCADE")
+        res <- mfdb_insert(mfdb, 'survey', survey_metadata, returning = "survey_id")
+        res <- mfdb_insert(mfdb, 'sample', survey_sample, extra = res$survey_id)
+    })
 }
 
 mfdb_import_areas <- function (mfdb) {
