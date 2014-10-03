@@ -143,13 +143,12 @@ create_tables <- function(mdb) {
 
 # Populate with package-provided data
 mfdb_update_taxonomies <- function(mdb) {
-    mfdb_import_taxonomy(mdb, "institute", mfdb::institute)
-    mfdb_import_taxonomy(mdb, "gear", mfdb::gear)
-    mfdb_import_taxonomy(mdb, "vessel", mfdb::vessel)
-    mfdb_import_taxonomy(mdb, "sampling_type", mfdb::sampling_type)
+    mfdb_import_taxonomy(mdb, "institute", institute)
+    mfdb_import_taxonomy(mdb, "gear", gear)
+    mfdb_import_taxonomy(mdb, "vessel", vessel)
+    mfdb_import_taxonomy(mdb, "sampling_type", sampling_type)
 
-    mfdb_import_taxonomy(mdb, "sex", mfdb::sex)
-    species <- mfdb::species
+    mfdb_import_taxonomy(mdb, "sex", sex)
     mfdb_import_taxonomy(mdb, "species", data.frame(
         id = species$id,
         name = species$name,
