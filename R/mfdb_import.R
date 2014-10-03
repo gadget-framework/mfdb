@@ -60,10 +60,8 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
     survey_metadata <- list(
         data_source = sanitise_col(survey_metadata, 'data_source'),
         institute_id = sanitise_col(survey_metadata, 'institute', lookup = 'institute'),
-        fleet_id = sanitise_col(survey_metadata, 'fleet', lookup = 'fleet'),
         gear_id = sanitise_col(survey_metadata, 'gear', lookup = 'gear'),
         vessel_id = sanitise_col(survey_metadata, 'vessel', lookup = 'vessel'),
-        market_category_id = sanitise_col(survey_metadata, 'market_category', lookup = 'market_category'),
         sampling_type_id = sanitise_col(survey_metadata, 'sampling_type', lookup = 'sampling_type'))
     survey_sample <- data.frame(
         year = sanitise_col(data_in, 'year', default = c(survey_metadata$year)),
@@ -74,13 +72,14 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
         sex_id = sanitise_col(data_in, 'sex', lookup = 'sex', default = c(NA)),
         length = sanitise_col(data_in, 'length', default = c(NA)),
         weight = sanitise_col(data_in, 'weight', default = c(NA)),
-        count = sanitise_col(data_in, 'weight', default = c(1)))
+        count = sanitise_col(data_in, 'count', default = c(1)))
 
     # Remove data_source and re-insert
     mfdb_transaction(mdb, {
-        dbSendQuery(mdb$db, "DELETE FROM survey WHERE data_source = ", sql_quote(survey_metadata$data_source), " CASCADE")
+        dbSendQuery(mdb$db, paste0("DELETE FROM sample WHERE survey_id = (SELECT survey_id FROM survey WHERE data_source = ", sql_quote(survey_metadata$data_source), ")"))
+        dbSendQuery(mdb$db, paste0("DELETE FROM survey WHERE data_source = ", sql_quote(survey_metadata$data_source)))
         res <- mfdb_insert(mdb, 'survey', survey_metadata, returning = "survey_id")
-        res <- mfdb_insert(mdb, 'sample', survey_sample, extra = res$survey_id)
+        res <- mfdb_insert(mdb, 'sample', survey_sample, extra = c(survey_id = res$survey_id))
     })
 }
 
