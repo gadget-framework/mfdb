@@ -1,5 +1,5 @@
 \name{mfdb_import}
-\alias{mfdb_import_identifiers}
+\alias{mfdb_import_taxonomy}
 
 \title{MareFrame Import functions}
 \description{
@@ -7,10 +7,10 @@
 }
 
 \usage{
-    mfdb_import_identifiers(mfdb, table_name, new_data)
+    mfdb_import_taxonomy(mdb, table_name, new_data)
 }
 \arguments{
-    \item{mfdb}{
+    \item{mdb}{
         Database connection created by \code{mfdb()}.
     }
     \item{table_name}{
@@ -28,5 +28,5 @@
     # name,description
     # COD,Cod
     # HAD,Haddock
-    mfdb_import_identifiers(mfdb, "species", read.csv('species.csv'))
+    mfdb_import_taxonomy(mdb, "species", read.csv('species.csv'))
 }}
