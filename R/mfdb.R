@@ -147,18 +147,16 @@ create_tables <- function(mdb) {
 
 # Populate with package-provided data
 mfdb_update_taxonomies <- function(mdb) {
-    data("species", package = "mfdb")
+    mfdb_import_taxonomy(mdb, "gear", mfdb::gear)
+    mfdb_import_taxonomy(mdb, "institute", mfdb::institute)
+
+    mfdb_import_taxonomy(mdb, "sex", mfdb::sex)
+    species <- mfdb::species
     mfdb_import_taxonomy(mdb, "species", data.frame(
         id = species$id,
         name = species$name,
         description = paste0(species$common_name, " (", species$scientific_name, ")")
     ))
-
-    data("sex", package = "mfdb")
-    mfdb_import_taxonomy(mdb, "sex", sex)
-
-    data("gear", package = "mfdb") #TODO: We should be lazy-loading(?)
-    mfdb_import_taxonomy(mdb, "gear", gear)
 }
 
 # Return the major version of the package
