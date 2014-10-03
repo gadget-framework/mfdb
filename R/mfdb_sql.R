@@ -1,8 +1,10 @@
 # Return v as a '-quoted SQL string
 sql_quote <- function(v) {
     if (length(v) == 1) {
-        if (is.na(v)) {
+        if (is.na(v) || is.null(v)) {
             "NULL"
+        } else if (is.numeric(v)) {
+            as.character(v)
         } else {
             paste0("'", gsub("'", "''", v) ,"'")
         }
