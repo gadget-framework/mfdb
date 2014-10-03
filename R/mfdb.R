@@ -43,8 +43,8 @@ mfdb_fetch <- function(mfdb, ...) {
 mfdb_insert <- function(mfdb, table_name, data_in, returning = "", extra = c()) {
     insert_row <- function (r) {
         res <- dbSendQuery(mfdb$db, paste0("INSERT INTO ", paste(table_name, collapse = ""),
-            " (", paste(c(names(data_in), names(extra)), collapse=","), ") VALUES ",
-            sql_quote(c(data_in, extra)),
+            " (", paste(c(names(r), names(extra)), collapse=","), ") VALUES ",
+            sql_quote(c(r, extra)),
             (if (nzchar(returning)) paste0(c(" RETURNING ", returning), collapse = "") else ""),
             "", collapse = ""))
         out <- if (nzchar(returning)) dbFetch(res) else dbGetRowsAffected(res)
@@ -57,7 +57,7 @@ mfdb_insert <- function(mfdb, table_name, data_in, returning = "", extra = c()) 
     } else {
         # Insert rows
         #TODO: Should be batching
-        return(apply(data_in, 1, insert_row))
+        return(vapply(seq_len(nrow(data_in)), function (i) { insert_row(data_in[i,]) }, 0))
     }
 }
 
