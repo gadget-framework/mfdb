@@ -101,7 +101,6 @@ create_tables <- function(mdb) {
     }
 
     create_taxonomy("institute", "")
-    create_taxonomy("fleet", "")
     create_taxonomy("gear", "")
     create_taxonomy("vessel", "")
     create_taxonomy("sampling_type", "")
@@ -111,7 +110,6 @@ create_tables <- function(mdb) {
         "data_source VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
         "UNIQUE(data_source)", "",
         "institute_id INT REFERENCES institute(institute_id)", "Institute that undertook survey",
-        "fleet_id INT REFERENCES fleet(fleet_id)", "Fleet name",
         "gear_id INT REFERENCES gear(gear_id)", "Gear used",
         "vessel_id INT REFERENCES vessel(vessel_id)", "Vessel used",
         "sampling_type_id INT REFERENCES sampling_type(sampling_type_id)", "Sampling type"))
