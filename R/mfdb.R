@@ -104,7 +104,6 @@ create_tables <- function(mdb) {
     create_taxonomy("fleet", "")
     create_taxonomy("gear", "")
     create_taxonomy("vessel", "")
-    create_taxonomy("market_category", "")
     create_taxonomy("sampling_type", "")
     send_query(mdb, sql_create_table(
         "survey", "Description of survey",
@@ -115,7 +114,6 @@ create_tables <- function(mdb) {
         "fleet_id INT REFERENCES fleet(fleet_id)", "Fleet name",
         "gear_id INT REFERENCES gear(gear_id)", "Gear used",
         "vessel_id INT REFERENCES vessel(vessel_id)", "Vessel used",
-        "market_category_id INT REFERENCES market_category(market_category_id)", "Market category",
         "sampling_type_id INT REFERENCES sampling_type(sampling_type_id)", "Sampling type"))
 
     # TODO: Should we have a numeric ID for areacell?
