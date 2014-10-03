@@ -40,17 +40,18 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
             col <- factor(col)
             # Fetch corresponding id for each level
             new_levels <- mfdb_fetch(mdb,
-                "SELECT name, ", lookup, "id FROM ", lookup, " AS id",
-                "WHERE name IN ", sql_quote(levels(col)))
+                "SELECT name, ", lookup, "_id FROM ", lookup, " AS id",
+                " WHERE name ", (if (length(levels(col)) > 1) 'IN ' else '= '), sql_quote(levels(col)))
             row.names(new_levels) <- new_levels$name
-            new_levels <- new_levels[levels(col),]$id
+
+            new_levels <- new_levels[levels(col), paste0(lookup, '_id')]
             if (length(new_levels[is.na(new_levels)]) > 0) {
                 # TODO: Decent error message
                 stop("Data does not match vocabulary")
             }
 
             # Return vector with proper levels
-            levels(col) <- new_levels
+            col <- new_levels[as.numeric(col)]
         }
         return(col)
     }
