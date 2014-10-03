@@ -1,5 +1,6 @@
 \name{mfdb_import}
 \alias{mfdb_import_taxonomy}
+\alias{mfdb_import_survey}
 
 \title{MareFrame Import functions}
 \description{
@@ -8,6 +9,8 @@
 
 \usage{
     mfdb_import_taxonomy(mdb, table_name, new_data)
+
+    mfdb_import_survey(mdb, data_in, ...)
 }
 \arguments{
     \item{mdb}{
@@ -22,6 +25,15 @@
         the expected identifier in other data, "description" is a longer description
         if required.
     }
+    \item{data_in}{
+        Survey data to import
+    }
+    \item{...}{
+        Metadata about the survey data, see details.
+    }
+}
+\details{
+    TODO:
 }
 \examples{\dontrun{
     # species.csv contains:-
@@ -29,4 +41,6 @@
     # COD,Cod
     # HAD,Haddock
     mfdb_import_taxonomy(mdb, "species", read.csv('species.csv'))
+
+    mfdb_import_survey(mdb, read.csv("data/cod-1998.csv"), data_source = "cod-1998")
 }}

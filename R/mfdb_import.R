@@ -28,7 +28,7 @@ mfdb_import_taxonomy <- function (mdb, table_name, new_data) {
     })
 }
 
-mfdb_import_survey <- function (mfdb, data_in, ...) {
+mfdb_import_survey <- function (mdb, data_in, ...) {
     survey_metadata <- list(...)
     sanitise_col <- function (data_in, col_name, default = NULL, lookup = NULL) {
         col <- data_in[[col_name]]
@@ -39,7 +39,7 @@ mfdb_import_survey <- function (mfdb, data_in, ...) {
         if (!is.null(lookup)) {
             col <- factor(col)
             # Fetch corresponding id for each level
-            new_levels <- mfdb_fetch(mfdb,
+            new_levels <- mfdb_fetch(mdb,
                 "SELECT name, ", lookup, "id FROM ", lookup, " AS id",
                 "WHERE name IN ", sql_quote(levels(col)))
             row.names(new_levels) <- new_levels$name
@@ -76,10 +76,10 @@ mfdb_import_survey <- function (mfdb, data_in, ...) {
         count = sanitise_col(data_in, 'weight', default = c(1)))
 
     # Remove data_source and re-insert
-    mfdb_transaction(mfdb, {
-        dbSendQuery(mfdb$db, "DELETE FROM survey WHERE data_source = ", sql_quote(survey_metadata$data_source), " CASCADE")
-        res <- mfdb_insert(mfdb, 'survey', survey_metadata, returning = "survey_id")
-        res <- mfdb_insert(mfdb, 'sample', survey_sample, extra = res$survey_id)
+    mfdb_transaction(mdb, {
+        dbSendQuery(mdb$db, "DELETE FROM survey WHERE data_source = ", sql_quote(survey_metadata$data_source), " CASCADE")
+        res <- mfdb_insert(mdb, 'survey', survey_metadata, returning = "survey_id")
+        res <- mfdb_insert(mdb, 'sample', survey_sample, extra = res$survey_id)
     })
 }
 
