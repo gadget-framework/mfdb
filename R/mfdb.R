@@ -150,6 +150,7 @@ mfdb_update_taxonomies <- function(mdb) {
     mfdb_import_taxonomy(mdb, "institute", mfdb::institute)
     mfdb_import_taxonomy(mdb, "gear", mfdb::gear)
     mfdb_import_taxonomy(mdb, "vessel", mfdb::vessel)
+    mfdb_import_taxonomy(mdb, "sampling_type", mfdb::sampling_type)
 
     mfdb_import_taxonomy(mdb, "sex", mfdb::sex)
     species <- mfdb::species
