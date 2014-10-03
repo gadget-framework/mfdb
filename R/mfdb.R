@@ -117,10 +117,10 @@ create_tables <- function(mdb) {
     # TODO: Should we have a numeric ID for areacell?
     send_query(mdb, sql_create_table(
         "area", "Mapping of areacells to divisions",
+        "area_id SERIAL PRIMARY KEY", "",
         "data_source VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
         "division VARCHAR(10) NOT NULL", "",
-        "areacell VARCHAR(10) NOT NULL", "e.g. ICES gridcell",
-        "PRIMARY KEY(data_source, division, areacell)", ""))
+        "areacell VARCHAR(10) NOT NULL", "e.g. ICES gridcell"))
 
     create_taxonomy("sex", "")
     create_taxonomy("species", "", id_type = "BIGINT")
