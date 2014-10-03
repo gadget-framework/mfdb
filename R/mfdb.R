@@ -115,6 +115,7 @@ create_tables <- function(mdb) {
         "sampling_type_id INT REFERENCES sampling_type(sampling_type_id)", "Sampling type"))
 
     # TODO: Should we have a numeric ID for areacell?
+    # TODO: This should be restricted to regions of study (whatever they might be called)
     send_query(mdb, sql_create_table(
         "area", "Mapping of areacells to divisions",
         "area_id SERIAL PRIMARY KEY", "",
@@ -137,7 +138,9 @@ create_tables <- function(mdb) {
         "age INT", "Age (years)",
         "sex_id INT", "Sex ID",
         "length REAL", "Length of fish / mean length of all fish",
+        # TODO: length_step (i.e size of step) & length_var (i.e. variance)?
         "weight REAL", "Weight of fish / mean weight of all fish",
+        # TODO: weight_var (i.e. variance)?
         "count INT NOT NULL DEFAULT 1", "Number of fish meeting this criteria"))
 }
 
