@@ -6,13 +6,23 @@ mfdb_import_taxonomy <- function (mdb, table_name, new_data) {
         stop("Unknown taxonomy table ", table_name)
     }
 
-    # Fetch all existing ids
-    existing <- unlist(mfdb_fetch(mdb, "SELECT ", table_name, "_id FROM ", table_name))
+    # Order incoming data by id
+    new_data <- new_data[order(new_data$id),]
+
+    # Fetch all existing ids, quit if all are there
+    existing <- mfdb_fetch(mdb, "SELECT ", table_name, "_id id, name FROM ", table_name, " ORDER BY 1")
+
+    if (nrow(existing) > 0 && is.logical(all.equal(new_data$id, existing$id))
+                           && is.logical(all.equal(as.character(new_data$name), as.character(existing$name)))) {
+        mdb$logger$debug(paste0("Taxonomy ", table_name ," up-to-date"))
+        return()
+    }
 
     # Either add or update rows. Removing is risky, since we might have dependent data
     mfdb_transaction(mdb, {
+        #TODO: Turn mfdb_insert into mfdb_upsert, use it
         apply(new_data, 1, function (row) {
-            if (as.numeric(row[['id']]) %in% existing) { # NB: Got mushed to a string when row became a vector, probably bad
+            if (as.numeric(row[['id']]) %in% existing$id) { # NB: Got mushed to a string when row became a vector, probably bad
                 dbSendQuery(mdb$db, paste0(
                     "UPDATE ", table_name,
                     " SET name = ", sql_quote(row[['name']]),
