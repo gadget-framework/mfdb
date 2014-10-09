@@ -1,9 +1,17 @@
 #        areas = c(),	# c('101', '101:1001'), e.g. Will group at most granular
 #        timesteps = mfdb_group("ts", c(1,2,3),c(4,5,6)), groupings of months,
 #        todo = NULL) {
-mfdb <- function(db_connection = NULL, defaultparams = list(), save_temp_tables = FALSE) {
+mfdb <- function(db_connection = NULL,
+                 save_temp_tables = FALSE,
+                 defaultparams = list()) {
     if (is.null(db_connection)) {
-        db_connection <- dbConnect(PostgreSQL(), dbname="mf", host="/tmp/pg_mfdb")
+        db_connection <- (function(hosts) {
+            for (host in hosts) {
+                conn <- tryCatch(dbConnect(PostgreSQL(), dbname = "mf", host = host), error = function (e) NULL)
+                if (!is.null(conn)) return(conn)
+            }
+            stop("Could not find a local mf database")
+        })(c("/tmp/pg_mfdb", "/tmp", "/var/tmp", "localhost"))
     }
     mdb <- structure(list(
             logger = getLogger('mfdb'),

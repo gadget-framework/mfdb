@@ -7,12 +7,14 @@
 }
 
 \usage{
-    mfdb(db_connection = NULL, defaultparams = list(), save_temp_tables = FALSE)
+    mfdb(db_connection = NULL,
+         save_temp_tables = FALSE,
+         defaultparams = list())
 }
 \arguments{
     \item{db_connection}{
         An optional \code{DBI} connection object. If none given, will presume a
-        PostgreSQL MareFrame database is available and running locally.
+        PostgreSQL "mf" database is available locally and will try and find it.
     }
     \item{defaultparams}{
         An optional \code{list()} of default options to use for any query, see
