@@ -7,7 +7,7 @@
 }
 
 \usage{
-    mfdb(db_connection = NULL, defaultparams = list(), save_tables = FALSE)
+    mfdb(db_connection = NULL, defaultparams = list(), save_temp_tables = FALSE)
 }
 \arguments{
     \item{db_connection}{
@@ -18,7 +18,7 @@
         An optional \code{list()} of default options to use for any query, see
         \code{\link{mfdb_meanlength}()} for details of available options.
     }
-    \item{save_tables}{
+    \item{save_temp_tables}{
         Optional boolean. If true, any temporary tables will be made permanent
         for later inspection.
     }

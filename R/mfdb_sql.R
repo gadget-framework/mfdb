@@ -49,7 +49,7 @@ sql_interval_condition <- function(col, int_group, min_exclusive = FALSE, max_ex
 }
 
 # Turn mfdb_group into a temporary table to join to
-group_to_table <- function(db, table_name, group, datatype = "INT", save_tables = FALSE) {
+group_to_table <- function(db, table_name, group, datatype = "INT", save_temp_tables = FALSE) {
     #TODO: This error message provides table name, not parameter
     if (is.null(group)) stop(paste("You must provide a mfdb_group for", table_name))
     #TODO: Assign random ID attribute to group, use this as table name or re-use table if it already has one
@@ -57,7 +57,7 @@ group_to_table <- function(db, table_name, group, datatype = "INT", save_tables 
     tryCatch(dbSendQuery(db, paste("DROP TABLE", table_name)), error = function (e) {})
     dbSendQuery(db, paste(
             "CREATE",
-            (if (!save_tables) "TEMPORARY"),
+            (if (!save_temp_tables) "TEMPORARY"),
             "TABLE",
             table_name,
             "(sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value ", datatype,

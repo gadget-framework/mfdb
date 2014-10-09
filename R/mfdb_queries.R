@@ -91,9 +91,9 @@ mfdb_sample_grouping <- function (mdb,
     params <- c(params, mdb$defaultparams)
     mdb$logger$info(params)
     # Store groups into temporary tables for joining
-    if (grouping_by("timestep")) group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT", save_tables = mdb$save_tables)
-    if (grouping_by("areas")) group_to_table(mdb$db, "temp_area", params$areas, datatype = "VARCHAR(10)", save_tables = mdb$save_tables)
-    if (grouping_by("ages"))  group_to_table(mdb$db, "temp_age", params$ages, datatype = "INT", save_tables = mdb$save_tables)
+    if (grouping_by("timestep")) group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT", save_temp_tables = mdb$save_temp_tables)
+    if (grouping_by("areas")) group_to_table(mdb$db, "temp_area", params$areas, datatype = "VARCHAR(10)", save_temp_tables = mdb$save_temp_tables)
+    if (grouping_by("ages"))  group_to_table(mdb$db, "temp_age", params$ages, datatype = "INT", save_temp_tables = mdb$save_temp_tables)
 
     query <- paste(c(
         "SELECT 's'",
