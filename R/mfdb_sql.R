@@ -1,6 +1,6 @@
 # Return v as a '-quoted SQL string
-sql_quote <- function(v) {
-    if (length(v) == 1) {
+sql_quote <- function(v, always_bracket = FALSE) {
+    if (!always_bracket && length(v) == 1) {
         if (is.na(v) || is.null(v)) {
             "NULL"
         } else if (is.numeric(v)) {
@@ -28,16 +28,12 @@ where_clause <- function(x, col) {
 # Turn vector into a SQL IN condition, NA = NULL, optionally go via a lookup table.
 sql_col_condition <- function(col, v, lookup = NULL) {
     if (!is.vector(v)) return("")
-    paste(
-        "AND (", col, "IN (",
-        if (!is.null(lookup)) paste(
-            "SELECT", sub('^[a-z]+\\.', '', col), "FROM", lookup, "WHERE code IN ("),
-        paste(
-            sapply(v[!is.na(v)], function (x) { sql_quote(x) }),
-            collapse = ","),
+    paste0(
+        "AND (", col, " IN ",
+        if (!is.null(lookup)) paste0("(SELECT ", lookup, "_id FROM ", lookup, " WHERE name IN "),
+        sql_quote(v[!is.na(v)], always_bracket = TRUE),
         if (!is.null(lookup)) ")",
-        ")",
-        if (NA %in% v) paste("OR", col, "IS NULL"),
+        if (NA %in% v) paste0(" OR ", col, " IS NULL"),
         ")")
 }
 
