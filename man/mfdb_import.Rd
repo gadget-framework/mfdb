@@ -24,6 +24,7 @@
 For \code{mfdb_import_survey}, the metadata can contain:
 
 \describe{
+    \item{data_source}{A name for this data, e.g. it's filename. Used so you can replace it later without disturbing other data}
     \item{case_study}{A case study name, see mfdb::case_study for possible values}
     \item{institute}{An institute name, see mfdb::institute for possible values}
     \item{gear}{A gear name, see mfdb::gear for possible values}
@@ -46,5 +47,18 @@ And \code{data_in} should contain the following columns:
 }
 }
 \examples{\dontrun{
-    mfdb_import_survey(mdb, read.csv("data/cod-1998.csv"), data_source = "cod-1998")
+# data/cod-1998.csv contains:-
+# year,month,areacell,species,age,sex,length
+# 1998,1,35F1,COD,3,M,140
+# 1998,1,35F1,COD,3,M,150
+# 1998,1,35F1,COD,3,F,150
+
+mfdb_import_survey(mdb,
+    data_source = 'cod-1998',
+    case_study = 'Iceland',
+    institute = 'MRI',
+    gear = 'GIL',
+    vessel = '2.RSH',
+    sampling_type = 'HAR',
+    read.csv("data/cod-1998.csv"))
 }}
