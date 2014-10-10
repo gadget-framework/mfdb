@@ -41,6 +41,7 @@ schema_from_0 <- function(send) {
         "version INT NOT NULL"))
     send(paste0("INSERT INTO mfdb_schema VALUES (", sql_quote(package_major_version()), ")"))
 
+    create_taxonomy("case_study", "")
     create_taxonomy("institute", "")
     create_taxonomy("gear", "")
     create_taxonomy("vessel", "")
@@ -48,6 +49,7 @@ schema_from_0 <- function(send) {
     send(sql_create_table(
         "survey", "Description of survey",
         "survey_id SERIAL PRIMARY KEY", "",
+        "case_study_id INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
         "data_source VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
         "UNIQUE(data_source)", "",
         "institute_id INT REFERENCES institute(institute_id)", "Institute that undertook survey",
@@ -56,10 +58,10 @@ schema_from_0 <- function(send) {
         "sampling_type_id INT REFERENCES sampling_type(sampling_type_id)", "Sampling type"))
 
     # TODO: Should we have a numeric ID for areacell?
-    # TODO: This should be restricted to regions of study (whatever they might be called)
     send(sql_create_table(
         "area", "Mapping of areacells to divisions",
         "area_id SERIAL PRIMARY KEY", "",
+        "case_study_id INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
         "data_source VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
         "division VARCHAR(10) NOT NULL", "",
         "areacell VARCHAR(10) NOT NULL", "e.g. ICES gridcell"))
@@ -87,6 +89,7 @@ schema_from_0 <- function(send) {
 
 # Populate tables with package-provided data
 mfdb_update_taxonomy <- function(mdb) {
+    mfdb_import_taxonomy(mdb, "case_study", case_study)
     mfdb_import_taxonomy(mdb, "institute", institute)
     mfdb_import_taxonomy(mdb, "gear", gear)
     mfdb_import_taxonomy(mdb, "vessel", vessel)

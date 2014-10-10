@@ -13,6 +13,7 @@
 
 \usage{
 gear
+case_study
 institute
 sampling_type
 sex

@@ -2,7 +2,7 @@
 # new_data should have columns id, name, description
 mfdb_import_taxonomy <- function (mdb, table_name, new_data) {
     # Is table_name one of the recognised tables?
-    if (!(table_name %in% c("institute", "fleet", "gear", "vessel", "market_category", "sampling_type", "sex", "species"))) {
+    if (!(table_name %in% c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sampling_type", "sex", "species"))) {
         stop("Unknown taxonomy table ", table_name)
     }
 
@@ -69,6 +69,7 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
     # Sanitise data
     survey_metadata <- list(
         data_source = sanitise_col(survey_metadata, 'data_source'),
+        case_study_id = sanitise_col(survey_metadata, 'case_study', lookup = 'case_study'),
         institute_id = sanitise_col(survey_metadata, 'institute', lookup = 'institute'),
         gear_id = sanitise_col(survey_metadata, 'gear', lookup = 'gear'),
         vessel_id = sanitise_col(survey_metadata, 'vessel', lookup = 'vessel'),

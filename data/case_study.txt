@@ -1,0 +1,8 @@
+"id" "name"    "description"
+1    "Baltic"  "Baltic Sea (SLU)"
+2    "North"   "North Sea (NRC)"
+3    "Iceland" "Northern & Western Waters - Iceland Waters (MRI)"
+4    "WScot"   "Northern Waters - West Scotland (UNIABDN)"
+5    "Ibera"   "South-Western Waters - Iberian Waters (CSIC)"
+6    "Medit"   "Mediterranean Waters - Strait of Sicily (CNR)"
+7    "Black"   "Black Sea (INCDM)"

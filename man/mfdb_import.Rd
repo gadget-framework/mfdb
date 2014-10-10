@@ -17,7 +17,7 @@
         Database connection created by \code{mfdb()}.
     }
     \item{table_name}{
-        The data to import. Can be one of "institute", "fleet", "gear", "vessel",
+        The data to import. Can be one of "case_study", "institute", "fleet", "gear", "vessel",
         "market_category", "sampling_type", "species".
     }
     \item{new_data}{
