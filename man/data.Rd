@@ -1,5 +1,6 @@
 \name{datasets}
 \alias{gear}
+\alias{case_study}
 \alias{institute}
 \alias{sampling_type}
 \alias{sex}
