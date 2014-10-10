@@ -14,14 +14,36 @@
         Database connection created by \code{mfdb()}.
     }
     \item{data_in}{
-        Survey data to import
+        A \code{data.frame} of survey data to import, see details.
     }
     \item{...}{
         Metadata about the survey data, see details.
     }
 }
 \details{
-    TODO:
+For \code{mfdb_import_survey}, the metadata can contain:
+
+\describe{
+    \item{case_study}{A case study name, see mfdb::case_study for possible values}
+    \item{institute}{An institute name, see mfdb::institute for possible values}
+    \item{gear}{A gear name, see mfdb::gear for possible values}
+    \item{vessel}{A vessel name, see mfdb::vessel for possible values}
+    \item{sampling_type}{A sampling_type name, see mfdb::sampling_type for possible values}
+}
+
+And \code{data_in} should contain the following columns:
+
+\describe{
+    \item{year}{Required. Year each sample was taken, e.g. \code{c(2000,2001)}}
+    \item{month}{Required. Month (1--12) each sample was taken, e.g. \code{c(1,12)}}
+    \item{areacell}{Required. Areacell sample was taken within}
+    \item{species}{Optional, default \code{c(NA)}. Species of sample, see mfdb::species for possible values}
+    \item{age}{Optional, default \code{c(NA)}. Age of sample, or mean age}
+    \item{sex}{Optional, default \code{c(NA)}. Sex of sample, see mfdb::sex for possible values}
+    \item{length}{Optional, default \code{c(NA)}. Length of sample / mean length of all samples}
+    \item{weight}{Optional, default \code{c(NA)}. Weight of sample / mean weight of all samples}
+    \item{count}{Optional, default \code{c(1)}. Number of samples this row represents (i.e. if the data is aggregated)}
+}
 }
 \examples{\dontrun{
     mfdb_import_survey(mdb, read.csv("data/cod-1998.csv"), data_source = "cod-1998")
