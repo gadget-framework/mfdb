@@ -70,21 +70,14 @@ In addition, you can use the following arguments to restrict data
 returned as part of the query.
 
 \describe{
-    \item{years}{
-        A vector of years, e.g. \code{c(2000,2001)}
-    }
-    \item{institute}{A vector of institutes}
-    \item{gearclass}{A vector of gear class}
-    \item{gearsubclass}{A vector of gear subclass}
-    \item{vesselclass}{A vector of vessel class}
-    \item{vesselsubclass}{A vector of vessel subclass}
-    \item{species}{A vector of species}
-    \item{stocks}{A vector of stocks}
-    \item{marketcategory}{A vector of market category}
-    \item{samplingtype}{A vector of sampling type}
-    \item{samplingstrategy}{A vector of sampling strategy}
-    \item{maturitystage}{A vector of maturity stage}
-    \item{sex}{A vector of sexes, e.g. \code{c('M', 'F')}}
+    \item{case_study}{A vector of case study names, see mfdb::case_study for possible values}
+    \item{institute}{A vector of institute names, see mfdb::institute for possible values}
+    \item{gear}{A vector of gear names, see mfdb::gear for possible values}
+    \item{vessel}{A vector of vessel names, see mfdb::vessel for possible values}
+    \item{sampling_type}{A vector of sampling_type names, see mfdb::sampling_type for possible values}
+    \item{year}{A vector of years, e.g. \code{c(2000,2001)}}
+    \item{species}{A vector of species names, see mfdb::species for possible values}
+    \item{sex}{A vector of sex names, see mfdb::sex for possible values}
 }
 }
 
@@ -116,7 +109,7 @@ returned as part of the query.
 \examples{\dontrun{
 agg_data <- mfdb_agelength(mdb,
         params = c(list(
-            years = c(1990, 1991),
+            year = c(1990, 1991),
             lengths = mfdb_interval("len", seq(0, 500, by = 30)),
             ages = mfdb_group('young' = c(1,2,3)),
             null = NULL), opt_catch))

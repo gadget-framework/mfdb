@@ -9,7 +9,7 @@ addHandler(writeToConsole, logger='mfdb', level='DEBUG')
 
 # Define options we need to add to get catch data
 opt_catch <- list()
-#    samplingtype = c(130, 131, 133))
+#    sampling_type = c(130, 131, 133))
 
 # Connect to the given dst2dw database, and set some default
 # parameters to use when querying
@@ -53,7 +53,7 @@ gadget_dir_write(gd, gadget_likelihood_component("penalty",
 # defaultparams above and add a few more.
 agg_data <- mfdb_meanlength_stddev(mdb,
         params = c(list(
-            years = c(1990, 1991, 1992, 1993),
+            year = c(1990, 1991, 1992, 1993),
             areas = mfdb_bootstrap_group(2, mfdb_group(
                 "101" = c(1011, 1012, 1013, 1014, 1015),
                 "102" = c(1021, 1022, 1023))), # NB: Add one more & bootstrap, overriding default
@@ -81,7 +81,7 @@ rm(agg_data) # Free up memory before moving on to the next component
 
 agg_data <- mfdb_meanweight(mdb,
         params = c(list(
-            years = c(1990, 1991, 1992, 1993),
+            year = c(1990, 1991, 1992, 1993),
             ages = mfdb_group_numbered("age", c(1), c(2), c(3), c(4), c(5)),
             lengths = mfdb_interval("len", seq(0, 500, by = 50)),
             # species = "COD",
@@ -95,7 +95,7 @@ rm(agg_data) # Free up memory before moving on to the next component
 
 agg_data <- mfdb_agelength(mdb,
         params = c(list(
-            years = c(1990, 1991),
+            year = c(1990, 1991),
             lengths = mfdb_interval("len", seq(0, 500, by = 50)),
             ages = mfdb_group('young' = c(1,2,3)),
             null = NULL), opt_catch))

@@ -31,5 +31,5 @@
     }
 }
 \examples{\dontrun{
-    mfdb(db_connection = dbConnect(\dots), defaultparams = list(years = 2000:2005))
+    mfdb(db_connection = dbConnect(\dots), defaultparams = list(year = 2000:2005))
 }}
