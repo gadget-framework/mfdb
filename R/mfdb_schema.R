@@ -96,11 +96,7 @@ mfdb_update_taxonomy <- function(mdb) {
     mfdb_import_taxonomy(mdb, "sampling_type", sampling_type)
 
     mfdb_import_taxonomy(mdb, "sex", sex)
-    mfdb_import_taxonomy(mdb, "species", data.frame(
-        id = species$id,
-        name = species$name,
-        description = paste0(species$common_name, " (", species$scientific_name, ")")
-    ))
+    mfdb_import_taxonomy(mdb, "species", species)
 }
 
 # Return the major version of the package
