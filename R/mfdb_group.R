@@ -3,7 +3,6 @@
 #     list(camels = c(2,2), aardvarks = c(4,4))
 # )
 mfdb_group <- function (...) {
-    #TODO: Check each value is a vector
     group <- structure(list(...),
             class = "mfdb_group")
 
