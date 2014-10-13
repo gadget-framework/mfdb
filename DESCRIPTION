@@ -8,9 +8,10 @@ Maintainer: Jamie Lentin <jamie.lentin@shuttlethread.com>
 Description: Tools to query a MareFrame DB and reformat results in forms
     useful for GADGET and EwE models.
 License: GPL-3
+Depends: R (>= 3.1.1)
 Imports:
-    logging,
-    DBI,
-    RPostgreSQL
+    logging (>= 0.7-103),
+    DBI (>= 0.3.1),
+    RPostgreSQL (>= 0.4)
 Suggests: unittest
 LazyData: true
