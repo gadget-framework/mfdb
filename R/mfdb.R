@@ -1,21 +1,32 @@
 #        areas = c(),	# c('101', '101:1001'), e.g. Will group at most granular
 #        timesteps = mfdb_group("ts", c(1,2,3),c(4,5,6)), groupings of months,
 #        todo = NULL) {
-mfdb <- function(db_connection = NULL,
+mfdb <- function(db_params = list(),
                  save_temp_tables = FALSE,
                  create_schema = FALSE,
                  defaultparams = list()) {
-    if (is.null(db_connection)) {
-        db_connection <- (function(hosts) {
-            for (host in hosts) {
-                conn <- tryCatch(dbConnect(PostgreSQL(), dbname = "mf", host = host), error = function (e) NULL)
-                if (!is.null(conn)) return(conn)
-            }
-            stop("Could not find a local mf database")
-        })(c("/tmp/pg_mfdb", "/tmp", "/var/tmp", "localhost"))
+    logger <- getLogger('mfdb')
+
+    # Try a selection of host strings until we connect to something
+    db_params <- c(db_params, list(drv = PostgreSQL(), dbname = "mf"))
+    db_guesses <- list(
+        list(),
+        list(host = "/tmp/pg_mfdb"),
+        list(host = "/tmp"),
+        list(host = "/var/tmp"),
+        list(host = "localhost"))
+    for (guess in db_guesses) {
+        logger$info(paste0("Trying to connect to: ", capture.output(str(c(guess, db_params))), sep = ""))
+        db_connection <- tryCatch(do.call(dbConnect, c(guess, db_params)), error = function (e) NULL)
+        if (!is.null(db_connection)) break
     }
+    if (is.null(db_connection)) {
+        logger$error(paste0("Failed to connect, tried: ", capture.output(str(c(db_guesses, db_params))), sep = ""))
+        stop("Could not find a local mf database")
+    }
+
     mdb <- structure(list(
-            logger = getLogger('mfdb'),
+            logger = logger,
             defaultparams = c(defaultparams, list(
                     timesteps = mfdb_group(year = c(1,2,3,4,5,6,7,8,9,10,11,12)))),
             save_temp_tables = save_temp_tables,

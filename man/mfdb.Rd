@@ -7,15 +7,15 @@
 }
 
 \usage{
-    mfdb(db_connection = NULL,
+    mfdb(db_params = list(),
          save_temp_tables = FALSE,
          create_schema = FALSE,
          defaultparams = list())
 }
 \arguments{
-    \item{db_connection}{
-        An optional \code{DBI} connection object. If none given, will presume a
-        PostgreSQL "mf" database is available locally and will try and find it.
+    \item{db_params}{
+        Extra parameters to supply to a \code{DBI} connection object. By
+        default it will search for a PostgreSQL "mf" database locally.
     }
     \item{save_temp_tables}{
         Optional boolean. If true, any temporary tables will be made permanent
@@ -31,5 +31,9 @@
     }
 }
 \examples{\dontrun{
-    mfdb(db_connection = dbConnect(\dots), defaultparams = list(year = 2000:2005))
+    # Connect to local DB, all calls return data for years 2000..2005
+    mfdb(defaultparams = list(year = 2000:2005))
+
+    # Connect to "mf2014" on remote DB server
+    mfdb(db_params = list(host = "db.mareframe-fp7.org", dbname = "mf2014")
 }}

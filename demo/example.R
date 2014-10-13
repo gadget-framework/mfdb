@@ -1,8 +1,6 @@
 # options(error=utils::recover)
 library(mfdb)
 library(logging)
-library(DBI)
-library(RPostgreSQL)
 
 options(error=utils::recover)
 addHandler(writeToConsole, logger='mfdb', level='DEBUG')
@@ -13,7 +11,7 @@ opt_catch <- list()
 
 # Connect to the given dst2dw database, and set some default
 # parameters to use when querying
-mdb <- mfdb(dbConnect(dbDriver("PostgreSQL"), dbname="dw0605", host="/tmp/"),
+mdb <- mfdb(list(dbname="dw0605", host="/tmp/"),
     defaultparams = list(
         areas = mfdb_group(
             "101" = c(1011, 1012, 1013, 1014, 1015),
