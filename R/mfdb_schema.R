@@ -81,9 +81,10 @@ schema_from_0 <- function(send) {
         "age INT", "Age (years)",
         "sex_id INT", "Sex ID",
         "length REAL", "Length of fish / mean length of all fish",
-        # TODO: length_step (i.e size of step) & length_var (i.e. variance)?
+        "length_var REAL", "Length variance of all fish (given aggregated data)",
+        "length_min INT", "Minimum theoretical value in this group",
         "weight REAL", "Weight of fish / mean weight of all fish",
-        # TODO: weight_var (i.e. variance)?
+        "weight_var REAL", "Weight variance of all fish (given aggregated data)",
         "count INT NOT NULL DEFAULT 1", "Number of fish meeting this criteria"))
 }
 

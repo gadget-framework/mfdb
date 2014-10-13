@@ -42,7 +42,10 @@ And \code{data_in} should contain the following columns:
     \item{age}{Optional, default \code{c(NA)}. Age of sample, or mean age}
     \item{sex}{Optional, default \code{c(NA)}. Sex of sample, see mfdb::sex for possible values}
     \item{length}{Optional, default \code{c(NA)}. Length of sample / mean length of all samples}
+    \item{length_var}{Optional, default \code{c(NA)}. Sample variance, if data is already aggregated}
+    \item{length_min}{Optional, default \code{c(NA)}. Minimum theoretical length, if data is already aggregated}
     \item{weight}{Optional, default \code{c(NA)}. Weight of sample / mean weight of all samples}
+    \item{weight_var}{Optional, default \code{c(NA)}. Sample variance, if data is already aggregated}
     \item{count}{Optional, default \code{c(1)}. Number of samples this row represents (i.e. if the data is aggregated)}
 }
 }

@@ -82,7 +82,10 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
         age = sanitise_col(data_in, 'age', default = c(NA)),
         sex_id = sanitise_col(data_in, 'sex', lookup = 'sex', default = c(NA)),
         length = sanitise_col(data_in, 'length', default = c(NA)),
+        length_var = sanitise_col(data_in, 'length_var', default = c(NA)),
+        length_min = sanitise_col(data_in, 'length_min', default = c(NA)),
         weight = sanitise_col(data_in, 'weight', default = c(NA)),
+        weight_var = sanitise_col(data_in, 'weight_var', default = c(NA)),
         count = sanitise_col(data_in, 'count', default = c(1)))
 
     # Remove data_source and re-insert
