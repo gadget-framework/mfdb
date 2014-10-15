@@ -92,7 +92,10 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
 
     # Remove data_source and re-insert
     mfdb_transaction(mdb, {
-        dbSendQuery(mdb$db, paste0("DELETE FROM sample WHERE survey_id = (SELECT survey_id FROM survey WHERE data_source = ", sql_quote(survey_metadata$data_source), ")"))
+        dbSendQuery(mdb$db, paste0("DELETE FROM sample WHERE ",
+            " case_study_id IN ", sql_quote(mdb$case_study_id, always_bracket = TRUE),
+            " AND survey_id = (SELECT survey_id FROM survey WHERE data_source = ", sql_quote(survey_metadata$data_source), ")",
+            ""))
         dbSendQuery(mdb$db, paste0("DELETE FROM survey WHERE data_source = ", sql_quote(survey_metadata$data_source)))
         res <- mfdb_insert(mdb, 'survey', survey_metadata, returning = "survey_id")
         res <- mfdb_insert(mdb, 'sample', survey_sample, extra = c(survey_id = res$survey_id))

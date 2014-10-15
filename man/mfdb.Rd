@@ -8,7 +8,8 @@
 }
 
 \usage{
-    mfdb(db_params = list(),
+    mfdb(case_study_name,
+         db_params = list(),
          save_temp_tables = FALSE,
          create_schema = FALSE,
          defaultparams = list())
@@ -16,6 +17,10 @@
     mfdb_disconnect(mdb)
 }
 \arguments{
+    \item{case_study_name}{
+        The name of the case study you are working with, should be a valid
+        name from \code{mfdb::case_study}.
+    }
     \item{db_params}{
         Extra parameters to supply to a \code{DBI} connection object. By
         default it will search for a PostgreSQL "mf" database locally.

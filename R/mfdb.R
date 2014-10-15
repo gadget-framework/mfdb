@@ -1,5 +1,6 @@
 # Init mfdb object and open connection to database
-mfdb <- function(db_params = list(),
+mfdb <- function(case_study_name,
+                 db_params = list(),
                  save_temp_tables = FALSE,
                  create_schema = FALSE,
                  defaultparams = list()) {
@@ -25,11 +26,18 @@ mfdb <- function(db_params = list(),
         stop("Could not find a local mf database")
     }
 
+    # Look up case study ID via. data, since table might not be populated yet
+    case_study_id <- case_study[case_study$name == case_study_name, 'id']
+    if (length(case_study_id) != 1) {
+        stop("Unknown case study ", case_study_name)
+    }
+
     mdb <- structure(list(
             logger = logger,
             defaultparams = c(defaultparams, list(
                     timesteps = mfdb_group(year = c(1,2,3,4,5,6,7,8,9,10,11,12)))),
             save_temp_tables = save_temp_tables,
+            case_study_id = case_study_id,
             db = db_connection), class = "mfdb")
 
     mfdb_update_schema(mdb, read_only = !create_schema)
