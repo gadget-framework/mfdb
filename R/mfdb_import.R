@@ -1,8 +1,8 @@
 # Import a lookup table e.g. mfdb_import_taxonomy(mdb, "species", read.csv('species.csv'))
 # new_data should have columns id, name, description
-mfdb_import_taxonomy <- function (mdb, table_name, new_data) {
+mfdb_import_taxonomy <- function (mdb, table_name, new_data, extra_cols = c('description')) {
     # Is table_name one of the recognised tables?
-    if (!(table_name %in% c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sampling_type", "sex", "species"))) {
+    if (!(table_name %in% c("areacell", "case_study", "institute", "fleet", "gear", "vessel", "market_category", "sampling_type", "sex", "species"))) {
         stop("Unknown taxonomy table ", table_name)
     }
 
@@ -18,23 +18,25 @@ mfdb_import_taxonomy <- function (mdb, table_name, new_data) {
         return()
     }
 
-    # Either add or update rows. Removing is risky, since we might have dependent data
+    # Either add or update rows. Removing is risky, since we might have dependent data.
+    # Also don't want to remove data if partitioned by case study
     mfdb_transaction(mdb, {
         #TODO: Turn mfdb_insert into mfdb_upsert, use it
-        apply(new_data, 1, function (row) {
-            if (as.numeric(row[['id']]) %in% existing$id) { # NB: Got mushed to a string when row became a vector, probably bad
+        vapply(seq_len(nrow(new_data)), function (i) {
+            if (new_data[i, 'id'] %in% existing$id) { # NB: Got mushed to a string when row became a vector, probably bad
                 dbSendQuery(mdb$db, paste0(
                     "UPDATE ", table_name,
-                    " SET name = ", sql_quote(row[['name']]),
-                    ", description = ", sql_quote(row[['description']]),
-                    " WHERE ", table_name, "_id = ", sql_quote(row[['id']])))
+                    " SET name = ", sql_quote(new_data[i, 'name']),
+                    paste(vapply(extra_cols, function(r) paste0(",", r, " = ", sql_quote(new_data[i, r])), ""), collapse = ""),
+                    " WHERE ", table_name, "_id = ", sql_quote(new_data[i, 'id'])))
             } else {
                 dbSendQuery(mdb$db, paste0(
                     "INSERT INTO ", table_name,
-                    " (", table_name, "_id, name, description) VALUES ",
-                    sql_quote(row[c('id', 'name', 'description')])))
+                    " (", table_name, "_id, name, ", paste(extra_cols, collapse = ","), ") VALUES ",
+                    sql_quote(new_data[i, c('id', 'name', extra_cols)])))
             }
-        })
+            return(0)
+        }, 0)
     })
 }
 
