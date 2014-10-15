@@ -52,8 +52,10 @@ mfdb_disconnect <- function(mdb) {
 }
 
 # Perform query and return all results
-mfdb_fetch <- function(mfdb, ...) {
-    res <- dbSendQuery(mfdb$db, paste0(..., collapse = ""))
+mfdb_fetch <- function(mdb, ...) {
+    query <- paste0(..., collapse = "")
+    mdb$logger$debug(query)
+    res <- dbSendQuery(mdb$db, query)
     out <- dbFetch(res)
     dbClearResult(res)
     return(out)
