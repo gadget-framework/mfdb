@@ -36,6 +36,11 @@ mfdb <- function(db_params = list(),
     invisible(mdb)
 }
 
+# Stop it and tidy up
+mfdb_disconnect <- function(mdb) {
+    dbDisconnect(mdb$db)
+}
+
 # Perform query and return all results
 mfdb_fetch <- function(mfdb, ...) {
     res <- dbSendQuery(mfdb$db, paste0(..., collapse = ""))

@@ -1,5 +1,6 @@
 \name{mfdb}
 \alias{mfdb}
+\alias{mfdb_disconnect}
 
 \title{MareFrame DB class}
 \description{
@@ -11,6 +12,8 @@
          save_temp_tables = FALSE,
          create_schema = FALSE,
          defaultparams = list())
+
+    mfdb_disconnect(mdb)
 }
 \arguments{
     \item{db_params}{
@@ -29,11 +32,17 @@
         An optional \code{list()} of default options to use for any query, see
         \code{\link{mfdb_meanlength}()} for details of available options.
     }
+    \item{mdb}{
+        Database connection created by \code{mfdb()}.
+    }
 }
 \examples{\dontrun{
     # Connect to local DB, all calls return data for years 2000..2005
-    mfdb(defaultparams = list(year = 2000:2005))
+    mdb <- mfdb(defaultparams = list(year = 2000:2005))
 
     # Connect to "mf2014" on remote DB server
-    mfdb(db_params = list(host = "db.mareframe-fp7.org", dbname = "mf2014")
+    mdb <- mfdb(db_params = list(host = "db.mareframe-fp7.org", dbname = "mf2014")
+
+    # Stop it and tidy up
+    mfdb_disconnect(mdb)
 }}
