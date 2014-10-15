@@ -14,8 +14,10 @@ mfdb <- function(db_params = list(),
         list(host = "/var/tmp"),
         list(host = "localhost"))
     for (guess in db_guesses) {
-        logger$info(paste0("Trying to connect to: ", capture.output(str(c(guess, db_params))), sep = ""))
-        db_connection <- tryCatch(do.call(dbConnect, c(guess, db_params)), error = function (e) NULL)
+        db_combined <- c(guess, db_params)[!duplicated(c(guess, db_params))]
+        logger$info(paste0("Trying to connect to: ", capture.output(str(db_combined)), sep = ""))
+        do.call(dbConnect, db_combined)
+        db_connection <- tryCatch(do.call(dbConnect, db_combined), error = function (e) NULL)
         if (!is.null(db_connection)) break
     }
     if (is.null(db_connection)) {
