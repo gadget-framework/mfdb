@@ -42,53 +42,28 @@ mfdb_import_taxonomy <- function (mdb, table_name, new_data, extra_cols = c('des
 
 mfdb_import_survey <- function (mdb, data_in, ...) {
     survey_metadata <- list(...)
-    sanitise_col <- function (data_in, col_name, default = NULL, lookup = NULL) {
-        col <- data_in[[col_name]]
-        if (is.null(col)) {
-            if (!is.null(default)) return(default);
-            stop("Input data is missing ", col_name)
-        }
-        if (!is.null(lookup)) {
-            col <- factor(col)
-            # Fetch corresponding id for each level
-            new_levels <- mfdb_fetch(mdb,
-                "SELECT name, ", lookup, "_id FROM ", lookup, " AS id",
-                " WHERE name ", (if (length(levels(col)) > 1) 'IN ' else '= '), sql_quote(levels(col)))
-            row.names(new_levels) <- new_levels$name
-
-            new_levels <- new_levels[levels(col), paste0(lookup, '_id')]
-            if (length(new_levels[is.na(new_levels)]) > 0) {
-                # TODO: Decent error message
-                stop("Data does not match vocabulary")
-            }
-
-            # Return vector with proper levels
-            col <- new_levels[as.numeric(col)]
-        }
-        return(col)
-    }
 
     # Sanitise data
     survey_metadata <- list(
-        data_source = sanitise_col(survey_metadata, 'data_source'),
-        case_study_id = sanitise_col(survey_metadata, 'case_study', lookup = 'case_study'),
-        institute_id = sanitise_col(survey_metadata, 'institute', lookup = 'institute'),
-        gear_id = sanitise_col(survey_metadata, 'gear', lookup = 'gear'),
-        vessel_id = sanitise_col(survey_metadata, 'vessel', lookup = 'vessel'),
-        sampling_type_id = sanitise_col(survey_metadata, 'sampling_type', lookup = 'sampling_type'))
+        data_source = sanitise_col(mdb, survey_metadata, 'data_source'),
+        case_study_id = c(mdb$case_study_id),
+        institute_id = sanitise_col(mdb, survey_metadata, 'institute', lookup = 'institute'),
+        gear_id = sanitise_col(mdb, survey_metadata, 'gear', lookup = 'gear'),
+        vessel_id = sanitise_col(mdb, survey_metadata, 'vessel', lookup = 'vessel'),
+        sampling_type_id = sanitise_col(mdb, survey_metadata, 'sampling_type', lookup = 'sampling_type'))
     survey_sample <- data.frame(
-        year = sanitise_col(data_in, 'year', default = c(survey_metadata$year)),
-        month = sanitise_col(data_in, 'month'),
-        areacell = sanitise_col(data_in, 'areacell'),
-        species_id = sanitise_col(data_in, 'species', lookup = 'species', default = c(NA)),
-        age = sanitise_col(data_in, 'age', default = c(NA)),
-        sex_id = sanitise_col(data_in, 'sex', lookup = 'sex', default = c(NA)),
-        length = sanitise_col(data_in, 'length', default = c(NA)),
-        length_var = sanitise_col(data_in, 'length_var', default = c(NA)),
-        length_min = sanitise_col(data_in, 'length_min', default = c(NA)),
-        weight = sanitise_col(data_in, 'weight', default = c(NA)),
-        weight_var = sanitise_col(data_in, 'weight_var', default = c(NA)),
-        count = sanitise_col(data_in, 'count', default = c(1)))
+        year = sanitise_col(mdb, data_in, 'year', default = c(survey_metadata$year)),
+        month = sanitise_col(mdb, data_in, 'month'),
+        areacell_id = sanitise_col(mdb, data_in, 'areacell', lookup = 'areacell'),
+        species_id = sanitise_col(mdb, data_in, 'species', lookup = 'species', default = c(NA)),
+        age = sanitise_col(mdb, data_in, 'age', default = c(NA)),
+        sex_id = sanitise_col(mdb, data_in, 'sex', lookup = 'sex', default = c(NA)),
+        length = sanitise_col(mdb, data_in, 'length', default = c(NA)),
+        length_var = sanitise_col(mdb, data_in, 'length_var', default = c(NA)),
+        length_min = sanitise_col(mdb, data_in, 'length_min', default = c(NA)),
+        weight = sanitise_col(mdb, data_in, 'weight', default = c(NA)),
+        weight_var = sanitise_col(mdb, data_in, 'weight_var', default = c(NA)),
+        count = sanitise_col(mdb, data_in, 'count', default = c(1)))
 
     # Remove data_source and re-insert
     mfdb_transaction(mdb, {
@@ -103,4 +78,34 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
 }
 
 mfdb_import_areas <- function (mfdb) {
+}
+
+# Check column content, optionally resolving lookup
+sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL) {
+    col <- data_in[[col_name]]
+    if (is.null(col)) {
+        if (!is.null(default)) return(default);
+        stop("Input data is missing ", col_name)
+    }
+    if (!is.null(lookup)) {
+        col <- factor(col)
+        # Fetch corresponding id for each level
+        new_levels <- mfdb_fetch(mdb,
+            "SELECT name, ", lookup, "_id FROM ", lookup, " AS id",
+            " WHERE name IN ", sql_quote(levels(col), always_bracket = TRUE))
+        if(nrow(new_levels) == 0) {
+            stop("None of the input data matches ", lookup, " vocabulary")
+        }
+        row.names(new_levels) <- new_levels$name
+
+        new_levels <- new_levels[levels(col), paste0(lookup, '_id')]
+        if (length(new_levels[is.na(new_levels)]) > 0) {
+            # TODO: Decent error message
+            stop("Data does not match ", lookup, " vocabulary")
+        }
+
+        # Return vector with proper levels
+        col <- new_levels[as.numeric(col)]
+    }
+    return(col)
 }
