@@ -1,5 +1,8 @@
 \name{mfdb_import}
 \alias{mfdb_import_survey}
+\alias{mfdb_import_area}
+\alias{mfdb_import_division}
+\alias{mfdb_import_temperature}
 
 \title{MareFrame Import functions}
 \description{
@@ -8,6 +11,9 @@
 
 \usage{
     mfdb_import_survey(mdb, data_in, ...)
+    mfdb_import_area(mdb, data_in)
+    mfdb_import_division(mdb, data_in)
+    mfdb_import_temperature(mdb, data_in)
 }
 \arguments{
     \item{mdb}{
@@ -32,7 +38,7 @@ For \code{mfdb_import_survey}, the metadata can contain:
     \item{sampling_type}{A sampling_type name, see mfdb::sampling_type for possible values}
 }
 
-And \code{data_in} should contain the following columns:
+And \code{data_in} should be a data.frame with the following columns:
 
 \describe{
     \item{year}{Required. Year each sample was taken, e.g. \code{c(2000,2001)}}
@@ -48,6 +54,31 @@ And \code{data_in} should contain the following columns:
     \item{weight_var}{Optional, default \code{c(NA)}. Sample variance, if data is already aggregated}
     \item{count}{Optional, default \code{c(1)}. Number of samples this row represents (i.e. if the data is aggregated)}
 }
+
+\code{mfdb_import_area} imports areacell information for your case study. The
+\code{data_in} should be a data.frame with the following columns:
+
+\describe{
+    \item{id}{A numeric ID for this areacell (will be combined with the case study number internally)}
+    \item{name}{The name of the areacell, e.g. '45G01'}
+    \item{size}{The size of the areacell}
+}
+
+\code{mfdb_import_division} imports groupings of areacells into divisions. The
+\code{data_in} should be a list of areacell vectors, with division names.
+For example, \code{list(divA = c('45G01', '45G02', '45G03'))}
+
+\code{mfdb_import_temperature} imports temperature time-series data for
+areacells. The \code{data_in} should be a data.frame with the following columns:
+
+\describe{
+    \item{id}{A numeric ID for this areacell (will be combined with the case study number internally)}
+    \item{year}{Required. Year each sample was taken, e.g. \code{c(2000,2001)}}
+    \item{month}{Required. Month (1--12) each sample was taken, e.g. \code{c(1,12)}}
+    \item{areacell}{Required. Areacell sample was taken within}
+    \item{temperature}{The temperature at given location/time}
+}
+
 }
 \examples{\dontrun{
 # data/cod-1998.csv contains:-

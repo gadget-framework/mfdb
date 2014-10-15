@@ -77,7 +77,48 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
     })
 }
 
-mfdb_import_areas <- function (mfdb) {
+# Import area data
+mfdb_import_area <- function(mdb, data_in) {
+    mfdb_import_taxonomy(mdb, 'areacell',
+        data.frame(
+            id = sanitise_col(mdb, data_in, 'id') + (mdb$case_study_id * 100000000),
+            name = sanitise_col(mdb, data_in, 'name'),
+            size = sanitise_col(mdb, data_in, 'size', default = c(NA))),
+        extra_cols = c('size'))
+}
+
+# Import divisions
+mfdb_import_division <- function (mdb, data_in) {
+    if(!is.list(data_in)) {
+        stop("data_in should be a list of areacell vectors")
+    }
+    mfdb_transaction(mdb, {
+        dbSendQuery(mdb$db, paste0(
+            "DELETE FROM division WHERE",
+            " case_study_id IN ", sql_quote(mdb$case_study_id, always_bracket = TRUE),
+            " AND division IN ", sql_quote(names(data_in), always_bracket = TRUE),
+            ""))
+        res <- mfdb_insert(mdb, 'division', data.frame(
+            case_study_id = c(mdb$case_study_id),
+            division = unlist(lapply(names(data_in), function(n) { rep(n, length(data_in[[n]])) })),
+            areacell_id = sanitise_col(mdb, data.frame(areacell = unlist(data_in)), 'areacell', lookup = 'areacell')))
+    })
+}
+
+# Import temperature data for entire region
+mfdb_import_temperature <- function(mdb, data_in) {
+    mfdb_transaction(mdb, {
+        dbSendQuery(mdb$db, paste0(
+            "DELETE FROM temperature WHERE",
+            " case_study_id IN ", sql_quote(mdb$case_study_id, always_bracket = TRUE),
+            ""))
+        res <- mfdb_insert(mdb, 'temperature', data.frame(
+            case_study_id = c(mdb$case_study_id),
+            year = sanitise_col(mdb, data_in, 'year'),
+            month = sanitise_col(mdb, data_in, 'month'),
+            areacell_id = sanitise_col(mdb, data_in, 'areacell', lookup = 'areacell'),
+            temperature = sanitise_col(mdb, data_in, 'temperature')))
+    })
 }
 
 # Check column content, optionally resolving lookup

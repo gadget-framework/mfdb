@@ -42,6 +42,27 @@ schema_from_0 <- function(send) {
     send(paste0("INSERT INTO mfdb_schema VALUES (", sql_quote(package_major_version()), ")"))
 
     create_taxonomy("case_study", "")
+    send(sql_create_table(
+        "areacell", "Vocabulary of available area cells",
+        "areacell_id INT PRIMARY KEY", "",
+        "name VARCHAR(1024) NOT NULL", "Short name used in data files / output data",
+        "size INT", "Size of areacell"))
+    send(sql_create_table(
+        "division", "Grouping of area cells into divisions",
+        "division_id SERIAL PRIMARY KEY", "",
+        "case_study_id INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
+        "division VARCHAR(10) NOT NULL", "",
+        "areacell_id INT REFERENCES areacell(areacell_id)", "Contained areacell"))
+    send(sql_create_table(
+        "temperature", "Time-series data for areacell temperature",
+        "temperature_id SERIAL PRIMARY KEY", "",
+        "case_study_id INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
+        "areacell_id INT REFERENCES areacell(areacell_id)", "Areacell data relates to",
+        "year INT NOT NULL", "Year sample was undertaken",
+        "month INT NOT NULL", "Month sample was undertaken",
+        "temperature INT NOT NULL", "Temperature at this point in time",
+        "UNIQUE(areacell_id, year, month)", ""))
+
     create_taxonomy("institute", "")
     create_taxonomy("gear", "")
     create_taxonomy("vessel", "")
@@ -56,16 +77,6 @@ schema_from_0 <- function(send) {
         "gear_id INT REFERENCES gear(gear_id)", "Gear used",
         "vessel_id INT REFERENCES vessel(vessel_id)", "Vessel used",
         "sampling_type_id INT REFERENCES sampling_type(sampling_type_id)", "Sampling type"))
-
-    # TODO: Should we have a numeric ID for areacell?
-    send(sql_create_table(
-        "area", "Mapping of areacells to divisions",
-        "area_id SERIAL PRIMARY KEY", "",
-        "case_study_id INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
-        "data_source VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
-        "division VARCHAR(10) NOT NULL", "",
-        "areacell VARCHAR(10) NOT NULL", "e.g. ICES gridcell"))
-
     create_taxonomy("sex", "")
     create_taxonomy("species", "", id_type = "BIGINT")
     send(sql_create_table(
@@ -76,7 +87,7 @@ schema_from_0 <- function(send) {
         "year INT NOT NULL", "Year sample was undertaken",
         "month INT NOT NULL", "Month sample was undertaken",
         "CHECK(month BETWEEN 1 AND 12)", "",
-        "areacell VARCHAR(10)", "e.g. ICES gridcell",
+        "areacell_id INT REFERENCES areacell(areacell_id)", "Areacell data relates to",
         "species_id BIGINT REFERENCES species(species_id)", "",
         "age INT", "Age (years)",
         "sex_id INT", "Sex ID",
