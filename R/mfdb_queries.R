@@ -1,5 +1,38 @@
-mfdb_area_sizes <- function (mdb, params = list()) {
-    #TODO:
+# Return area, size
+mfdb_area_sizes <- function (mdb, params) {
+    group_cols <- c("areas")
+    calc_cols <- c(", SUM(acl.size) size")
+    generator <- "mfdb_area_sizes"
+
+    # True iff str is in the group_cols parameter
+    grouping_by <- function(str) {
+        str %in% group_cols
+    }
+
+    if (grouping_by("areas")) group_to_table(mdb$db, "temp_area", params$areas, datatype = "VARCHAR(10)", save_temp_tables = mdb$save_temp_tables)
+
+    out <- mfdb_fetch(mdb,
+        "SELECT 's'",
+        if (grouping_by("areas"))    "|| '.' || tarea.sample",
+        " AS sample",
+        if (grouping_by("areas"))    ", tarea.name AS area",
+        calc_cols,
+        " FROM areacell acl",
+        if (grouping_by("areas"))    ", temp_area tarea, division div",
+        " WHERE TRUE",
+        if (grouping_by("areas"))    " AND acl.areacell_id = div.areacell_id AND div.division = tarea.value",
+        " GROUP BY ", paste(1:(1 + length(group_cols)), collapse=","),
+        " ORDER BY ", paste(1:(1 + length(group_cols)), collapse=","),
+        "")
+
+    # Break data up by sample and annotate each
+    samples <- unique(out$sample)
+    structure(lapply(samples, function (sample) {
+        structure(
+            out[out$sample == sample,names(out) != 'sample'],
+            generator = generator,
+            areas = params$areas)
+    }), names = samples)
 }
 
 mfdb_temperatures <- function (mdb, params = list()) {

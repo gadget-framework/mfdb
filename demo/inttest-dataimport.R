@@ -26,7 +26,7 @@ mdb <- mfdb('Iceland', db_params = db_params, save_temp_tables = TRUE)
 ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE species_id = 9999999999")[1,] == 
   mfdb::species[mfdb::species$name == 'TBX', c('name', 'description')]), "Entry for 9999999999 matches package")
 
-section("Areacell/division import", function() {
+section("Areacell/divisions", function() {
     # Can't populate divisions yet, no areacells defined
     ok(cmp_error(mfdb_import_division(mdb, list(divA = c('45G01', '45G02', '45G03'))), 'areacell vocabulary'), "Areacell not populated yet")
 
@@ -42,6 +42,15 @@ section("Areacell/division import", function() {
     # Worked this time
     mfdb_import_division(mdb, list(divB = c('45G01', '45G02'), divC = c('45G01')))
     ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM division")[1,1], 6), "Inserted 6 rows into division")
+
+    # Finally, we can make a report out of this
+    area_group <- mfdb_group(divA = c("divA"), divB = c("divB"), divAB = c("divA", "divB"))
+    ok(cmp(mfdb_area_sizes(mdb, list(areas = area_group)),
+        list("s.0" = structure(
+            data.frame(area = c("divA", "divAB", "divB"), size = c(15, 25, 10), stringsAsFactors = FALSE),
+            areas = area_group,
+            generator = "mfdb_area_sizes"))),
+        "Can combine divA & B and get combined size")
 })
 
 section("Temperature import", function() {
