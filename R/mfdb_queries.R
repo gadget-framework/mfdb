@@ -19,8 +19,9 @@ mfdb_area_sizes <- function (mdb, params) {
         calc_cols,
         " FROM areacell acl",
         if (grouping_by("areas"))    ", temp_area tarea, division div",
-        " WHERE TRUE",
-        if (grouping_by("areas"))    " AND acl.areacell_id = div.areacell_id AND div.division = tarea.value",
+        " WHERE TRUE ",
+        sql_col_condition("div.case_study_id", mdb$case_study_id),
+        if (grouping_by("areas"))    " AND acl.case_study_id = div.case_study_id AND acl.areacell_id = div.areacell_id AND div.division = tarea.value",
         " GROUP BY ", paste(1:(1 + length(group_cols)), collapse=","),
         " ORDER BY ", paste(1:(1 + length(group_cols)), collapse=","),
         "")
@@ -35,6 +36,7 @@ mfdb_area_sizes <- function (mdb, params) {
     }), names = samples)
 }
 
+# Return year, step, area, temperature
 mfdb_temperatures <- function (mdb, params = list()) {
     #TODO:
 }
@@ -143,14 +145,14 @@ mfdb_sample_grouping <- function (mdb,
         calc_cols,
         "FROM survey sur, sample sam",
         if (grouping_by("timestep")) ", temp_ts tts",
-        if (grouping_by("areas"))    ", temp_area tarea, area a",
+        if (grouping_by("areas"))    ", temp_area tarea, division div",
         if (grouping_by("ages"))     ", temp_age tage",
         "WHERE sur.survey_id = sam.survey_id",
         if (grouping_by("timestep")) "AND sam.month = tts.value",
-        if (grouping_by("areas"))    "AND sam.areacell = a.areacell AND a.division = tarea.value",
+        if (grouping_by("areas"))    "AND acl.case_study_id = div.case_study_id AND acl.areacell_id = div.areacell_id AND div.division = tarea.value",
         if (grouping_by("ages"))     "AND sam.age = tage.value",
         where_clause(params$lengths, "sam.length"),
-        sql_col_condition("sur.case_study_id", params$case_study, lookup="case_study"),
+        sql_col_condition("sur.case_study_id", mdb$case_study_id),
         sql_col_condition("sur.institute_id", params$institute, lookup="institute"),
         sql_col_condition("sur.gear_id", params$gear, lookup="gear"),
         sql_col_condition("sur.vessel_id", params$vessel, lookup="vessel"),

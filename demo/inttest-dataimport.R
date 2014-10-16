@@ -20,9 +20,8 @@ mfdb:::mfdb_import_taxonomy(mdb, 'species', data.frame(id = c('9999999999'), nam
 ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE species_id = 9999999999")[1,] == 
   c('XXX', 'Wormy Worms')), "Entry for 9999999999 was updated")
 
-# Try again, shouldn't recreate tables, but should have fixed taxonomy
-mfdb_disconnect(mdb)
-mdb <- mfdb('Iceland', db_params = db_params, save_temp_tables = TRUE)
+# Connect as a different case study. shouldn't recreate tables, but should have fixed taxonomy
+mdb2 <- mfdb('Baltic', db_params = db_params, save_temp_tables = TRUE)
 ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE species_id = 9999999999")[1,] == 
   mfdb::species[mfdb::species$name == 'TBX', c('name', 'description')]), "Entry for 9999999999 matches package")
 
@@ -43,11 +42,26 @@ section("Areacell/divisions", function() {
     mfdb_import_division(mdb, list(divB = c('45G01', '45G02'), divC = c('45G01')))
     ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM division")[1,1], 6), "Inserted 6 rows into division")
 
+    # Do similar to mdb2, to show case study data is isolated
+    mfdb_import_area(mdb2, data.frame(id = c(1,2,3), name = c('45G03', '45G04', '45G05'), size = c(10, 11, 12)))
+    ok(cmp_error(mfdb_import_division(mdb2, list(divB = c('45G01', '45G02', '45G03'), divC = c('45G01'))), 'areacell vocabulary'), "areacell values not for this case-study")
+    mfdb_import_division(mdb2, list(divA = c('45G03', '45G04'), divD = c('45G04', '45G05')))
+
     # Finally, we can make a report out of this
     area_group <- mfdb_group(divA = c("divA"), divB = c("divB"), divAB = c("divA", "divB"))
     ok(cmp(mfdb_area_sizes(mdb, list(areas = area_group)),
         list("s.0" = structure(
             data.frame(area = c("divA", "divAB", "divB"), size = c(15, 25, 10), stringsAsFactors = FALSE),
+            areas = area_group,
+            generator = "mfdb_area_sizes"))),
+        "Can combine divA & B and get combined size")
+
+    # And a different report for mdb2
+    area_group <- mfdb_group(divA = c("divA"), divAll = c("divA", "divB", "divC", "divD"))
+    ok(cmp(mfdb_area_sizes(mdb2, list(areas = area_group)),
+        list("s.0" = structure(
+            #TODO: divA and divB overlap, so divAll contains 45G04 twice. Probably bad for size(?)
+            data.frame(area = c("divA", "divAll"), size = c(21, 44), stringsAsFactors = FALSE),
             areas = area_group,
             generator = "mfdb_area_sizes"))),
         "Can combine divA & B and get combined size")
@@ -72,3 +86,7 @@ section("Temperature import", function() {
         areacell = c('45G01', '45G01', '45G01'),
         temperature = c(1,2,4)))
 })
+
+# Disconnect
+mfdb_disconnect(mdb)
+mfdb_disconnect(mdb2)

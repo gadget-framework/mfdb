@@ -44,24 +44,28 @@ schema_from_0 <- function(send) {
     create_taxonomy("case_study", "")
     send(sql_create_table(
         "areacell", "Vocabulary of available area cells",
-        "areacell_id INT PRIMARY KEY", "",
+        "case_study_id INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
+        "areacell_id INT", "",
         "name VARCHAR(1024) NOT NULL", "Short name used in data files / output data",
-        "size INT", "Size of areacell"))
+        "size INT", "Size of areacell",
+        "PRIMARY KEY(case_study_id, areacell_id)", ""))
     send(sql_create_table(
         "division", "Grouping of area cells into divisions",
         "division_id SERIAL PRIMARY KEY", "",
         "case_study_id INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
         "division VARCHAR(10) NOT NULL", "",
-        "areacell_id INT REFERENCES areacell(areacell_id)", "Contained areacell"))
+        "areacell_id INT", "Contained areacell",
+        "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)", ""))
     send(sql_create_table(
         "temperature", "Time-series data for areacell temperature",
         "temperature_id SERIAL PRIMARY KEY", "",
         "case_study_id INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
-        "areacell_id INT REFERENCES areacell(areacell_id)", "Areacell data relates to",
+        "areacell_id INT", "Areacell data relates to",
         "year INT NOT NULL", "Year sample was undertaken",
         "month INT NOT NULL", "Month sample was undertaken",
         "temperature INT NOT NULL", "Temperature at this point in time",
-        "UNIQUE(areacell_id, year, month)", ""))
+        "UNIQUE(areacell_id, year, month)", "",
+        "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)", ""))
 
     create_taxonomy("institute", "")
     create_taxonomy("gear", "")
@@ -83,11 +87,12 @@ schema_from_0 <- function(send) {
         "sample", "Samples within survey",
         "sample_id SERIAL PRIMARY KEY", "",
         "survey_id INT REFERENCES survey(survey_id)", "",
+        "case_study_id INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
         # Grouping columns
         "year INT NOT NULL", "Year sample was undertaken",
         "month INT NOT NULL", "Month sample was undertaken",
         "CHECK(month BETWEEN 1 AND 12)", "",
-        "areacell_id INT REFERENCES areacell(areacell_id)", "Areacell data relates to",
+        "areacell_id INT", "Areacell data relates to",
         "species_id BIGINT REFERENCES species(species_id)", "",
         "age INT", "Age (years)",
         "sex_id INT", "Sex ID",
@@ -96,8 +101,12 @@ schema_from_0 <- function(send) {
         "length_min INT", "Minimum theoretical value in this group",
         "weight REAL", "Weight of fish / mean weight of all fish",
         "weight_var REAL", "Weight variance of all fish (given aggregated data)",
-        "count INT NOT NULL DEFAULT 1", "Number of fish meeting this criteria"))
+        "count INT NOT NULL DEFAULT 1", "Number of fish meeting this criteria",
+        "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)", ""))
 }
+
+mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sampling_type", "sex", "species")
+mfdb_cs_taxonomy <- c("areacell")
 
 # Populate tables with package-provided data
 mfdb_update_taxonomy <- function(mdb) {

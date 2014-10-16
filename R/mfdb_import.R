@@ -2,15 +2,20 @@
 # new_data should have columns id, name, description
 mfdb_import_taxonomy <- function (mdb, table_name, new_data, extra_cols = c('description')) {
     # Is table_name one of the recognised tables?
-    if (!(table_name %in% c("areacell", "case_study", "institute", "fleet", "gear", "vessel", "market_category", "sampling_type", "sex", "species"))) {
+    if (!(table_name %in% mfdb_taxonomy | table_name %in% mfdb_cs_taxonomy)) {
         stop("Unknown taxonomy table ", table_name)
     }
+    cs_specific <- (table_name %in% mfdb_cs_taxonomy)
 
     # Order incoming data by id
     new_data <- new_data[order(new_data$id),]
 
     # Fetch all existing ids, quit if all are there
-    existing <- mfdb_fetch(mdb, "SELECT ", table_name, "_id id, name FROM ", table_name, " ORDER BY 1")
+    existing <- mfdb_fetch(mdb,
+        "SELECT ", table_name, "_id id, name",
+        " FROM ", table_name,
+        if (cs_specific) c(" WHERE case_study_id = ", mdb$case_study_id) else "",
+        " ORDER BY 1")
 
     if (nrow(existing) > 0 && is.logical(all.equal(new_data$id, existing$id))
                            && is.logical(all.equal(as.character(new_data$name), as.character(existing$name)))) {
@@ -24,16 +29,23 @@ mfdb_import_taxonomy <- function (mdb, table_name, new_data, extra_cols = c('des
         #TODO: Turn mfdb_insert into mfdb_upsert, use it
         vapply(seq_len(nrow(new_data)), function (i) {
             if (new_data[i, 'id'] %in% existing$id) { # NB: Got mushed to a string when row became a vector, probably bad
-                dbSendQuery(mdb$db, paste0(
+                mfdb_send(mdb,
                     "UPDATE ", table_name,
                     " SET name = ", sql_quote(new_data[i, 'name']),
-                    paste(vapply(extra_cols, function(r) paste0(",", r, " = ", sql_quote(new_data[i, r])), ""), collapse = ""),
-                    " WHERE ", table_name, "_id = ", sql_quote(new_data[i, 'id'])))
+                    vapply(extra_cols, function(r) paste0(",", r, " = ", sql_quote(new_data[i, r])), ""),
+                    " WHERE ", table_name, "_id = ", sql_quote(new_data[i, 'id']),
+                    if (cs_specific) c(" AND case_study_id = ", mdb$case_study_id) else "")
             } else {
-                dbSendQuery(mdb$db, paste0(
+                mfdb_send(mdb,
                     "INSERT INTO ", table_name,
-                    " (", table_name, "_id, name, ", paste(extra_cols, collapse = ","), ") VALUES ",
-                    sql_quote(new_data[i, c('id', 'name', extra_cols)])))
+                    " (", paste(c(
+                        if (cs_specific) "case_study_id" else NULL,
+                        paste0(table_name, "_id"),
+                        "name",
+                        extra_cols), collapse = ","), ") VALUES ",
+                    sql_quote(c(
+                        if (cs_specific) mdb$case_study_id else NULL,
+                        new_data[i, c('id', 'name', extra_cols)])))
             }
             return(0)
         }, 0)
@@ -81,7 +93,7 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
 mfdb_import_area <- function(mdb, data_in) {
     mfdb_import_taxonomy(mdb, 'areacell',
         data.frame(
-            id = sanitise_col(mdb, data_in, 'id') + (mdb$case_study_id * 100000000),
+            id = sanitise_col(mdb, data_in, 'id'),
             name = sanitise_col(mdb, data_in, 'name'),
             size = sanitise_col(mdb, data_in, 'size', default = c(NA))),
         extra_cols = c('size'))
@@ -133,7 +145,8 @@ sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL)
         # Fetch corresponding id for each level
         new_levels <- mfdb_fetch(mdb,
             "SELECT name, ", lookup, "_id FROM ", lookup, " AS id",
-            " WHERE name IN ", sql_quote(levels(col), always_bracket = TRUE))
+            " WHERE name IN ", sql_quote(levels(col), always_bracket = TRUE),
+            if(lookup %in% mfdb_cs_taxonomy) c(" AND case_study_id = ", mdb$case_study_id))
         if(nrow(new_levels) == 0) {
             stop("None of the input data matches ", lookup, " vocabulary")
         }
