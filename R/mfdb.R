@@ -53,12 +53,19 @@ mfdb_disconnect <- function(mdb) {
 
 # Perform query and return all results
 mfdb_fetch <- function(mdb, ...) {
-    query <- paste0(..., collapse = "")
+    query <- paste0(c(...), collapse = "")
     mdb$logger$debug(query)
     res <- dbSendQuery(mdb$db, query)
     out <- dbFetch(res)
     dbClearResult(res)
     return(out)
+}
+
+# Send a query without the fetch
+mfdb_send <- function(mdb, ...) {
+    query <- paste0(c(...), collapse = "")
+    mdb$logger$debug(query)
+    res <- dbSendQuery(mdb$db, query)
 }
 
 # Insert a vector row or data.frame of rows into table_name
