@@ -23,7 +23,7 @@ export(mfdb_import_temperature)
 # mfdb_queries.R
 #alsoUses(logging, getLogger)
 export(mfdb_area_size)
-export(mfdb_temperatures)
+export(mfdb_temperature)
 export(mfdb_stock_count)
 export(mfdb_meanlength_stddev)
 export(mfdb_meanlength)

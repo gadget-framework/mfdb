@@ -36,9 +36,56 @@ mfdb_area_size <- function (mdb, params) {
     }), names = samples)
 }
 
-# Return year, step, area, temperature
-mfdb_temperatures <- function (mdb, params = list()) {
-    #TODO:
+# Return year, step, area, temperature (mean)
+mfdb_temperature <- function (mdb, params = list()) {
+    group_cols <- c("year", "timestep", "areas")
+    calc_cols <- c("AVG(c.temperature) temperature")
+    core_table <- "temperature"
+    generator <- "mfdb_temperature"
+
+    # True iff str is in the group_cols parameter
+    grouping_by <- function(str) {
+        str %in% group_cols
+    }
+
+    if (grouping_by("timestep")) group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT", save_temp_tables = mdb$save_temp_tables)
+    if (grouping_by("areas")) group_to_table(mdb$db, "temp_area", params$areas, datatype = "VARCHAR(10)", save_temp_tables = mdb$save_temp_tables)
+
+    out <- mfdb_fetch(mdb,
+        "SELECT ", paste(c(
+            paste(paste0(c(
+                if (grouping_by("timestep")) "tts.sample",
+                if (grouping_by("areas"))    "tarea.sample",
+                NULL), collapse = "|| '.' ||"), "AS sample"),
+            if (grouping_by("year"))     "c.year AS year",
+            if (grouping_by("timestep")) "tts.name AS step",
+            if (grouping_by("areas"))    "tarea.name AS area",
+            calc_cols,
+            NULL), collapse = ","),
+        " FROM ", paste(c(
+            paste(core_table, "c"),
+            if (grouping_by("timestep")) "temp_ts tts",
+            if (grouping_by("areas"))    "temp_area tarea, division div",
+            NULL), collapse = ","),
+        " WHERE ", paste(c(
+            paste("c.case_study_id =", sql_quote(mdb$case_study_id)),
+            if (grouping_by("year"))     paste("c.year IN", sql_quote(params$year, always_bracket = TRUE)),
+            if (grouping_by("timestep")) "c.month = tts.value",
+            if (grouping_by("areas"))    "c.case_study_id = div.case_study_id AND c.areacell_id = div.areacell_id AND div.division = tarea.value",
+            NULL), collapse = " AND "),
+        " GROUP BY ", paste(1:(1 + length(group_cols)), collapse=","),
+        " ORDER BY ", paste(1:(1 + length(group_cols)), collapse=","),
+        "")
+
+    # Break data up by sample and annotate each
+    samples <- unique(out$sample)
+    structure(lapply(samples, function (sample) {
+        structure(
+            out[out$sample == sample,names(out) != 'sample'],
+            generator = generator,
+            timestep = params$timestep,
+            areas = params$areas)
+    }), names = samples)
 }
 
 # Return year,step,area,stock,age,length, number (of samples)

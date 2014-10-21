@@ -1,6 +1,6 @@
 \name{mfdb_queries}
 \alias{mfdb_area_size}
-\alias{mfdb_temperatures}
+\alias{mfdb_temperature}
 \alias{mfdb_stock_count}
 \alias{mfdb_meanlength_stddev}
 \alias{mfdb_meanlength}
@@ -15,6 +15,7 @@
 }
 
 \usage{
+mfdb_temperature(mdb, params)
 mfdb_stock_count(mdb, params)
 mfdb_meanlength(mdb, params)
 mfdb_meanlength_stddev(mdb, params)
@@ -38,6 +39,9 @@ The following parameters both restrict what data is returned, and
 groups it into larger chunks.
 
 \describe{
+    \item{year}{
+        (required) A vector of years, e.g. \code{c(2000,2001)}
+    }
     \item{timestep}{
         (required) An mfdb_group representing which months you want to
         include in the data, and how to group them. For example,
@@ -70,12 +74,10 @@ In addition, you can use the following arguments to restrict data
 returned as part of the query.
 
 \describe{
-    \item{case_study}{A vector of case study names, see mfdb::case_study for possible values}
     \item{institute}{A vector of institute names, see mfdb::institute for possible values}
     \item{gear}{A vector of gear names, see mfdb::gear for possible values}
     \item{vessel}{A vector of vessel names, see mfdb::vessel for possible values}
     \item{sampling_type}{A vector of sampling_type names, see mfdb::sampling_type for possible values}
-    \item{year}{A vector of years, e.g. \code{c(2000,2001)}}
     \item{species}{A vector of species names, see mfdb::species for possible values}
     \item{sex}{A vector of sex names, see mfdb::sex for possible values}
 }
@@ -85,6 +87,9 @@ returned as part of the query.
     All will return a list of data.frame objects. Precisely what columns
     these will contain depends on the function called.
     \describe{
+        \item{mfdb_temperature}{
+            Returns year, step, area, (mean) temperature
+        }
         \item{mfdb_stock_count}{
             Returns year,step,area,stock,age,length,number (of samples)
         }
