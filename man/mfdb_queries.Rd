@@ -1,5 +1,5 @@
 \name{mfdb_queries}
-\alias{mfdb_area_sizes}
+\alias{mfdb_area_size}
 \alias{mfdb_temperatures}
 \alias{mfdb_stock_count}
 \alias{mfdb_meanlength_stddev}

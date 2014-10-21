@@ -26,7 +26,7 @@ gd <- gadget_directory("./out")
 # NB: Could have a "remove everything" option here, but it doesn't yet exist.
 
 # Fetch sizes and temperatures for areas, and turn them into an areafile.
-# sizes <- mfdb_area_sizes(mdb)
+# sizes <- mfdb_area_size(mdb)
 # temps <- mfdb_temperatures(mdb)
 # gadget_dir_write(gadget_areafile(gd,
 #         sizes = sizes,

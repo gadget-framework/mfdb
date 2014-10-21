@@ -49,21 +49,21 @@ section("Areacell/divisions", function() {
 
     # Finally, we can make a report out of this
     area_group <- mfdb_group(divA = c("divA"), divB = c("divB"), divAB = c("divA", "divB"))
-    ok(cmp(mfdb_area_sizes(mdb, list(areas = area_group)),
+    ok(cmp(mfdb_area_size(mdb, list(areas = area_group)),
         list("s.0" = structure(
             data.frame(area = c("divA", "divAB", "divB"), size = c(15, 25, 10), stringsAsFactors = FALSE),
             areas = area_group,
-            generator = "mfdb_area_sizes"))),
+            generator = "mfdb_area_size"))),
         "Can combine divA & B and get combined size")
 
     # And a different report for mdb2
     area_group <- mfdb_group(divA = c("divA"), divAll = c("divA", "divB", "divC", "divD"))
-    ok(cmp(mfdb_area_sizes(mdb2, list(areas = area_group)),
+    ok(cmp(mfdb_area_size(mdb2, list(areas = area_group)),
         list("s.0" = structure(
             #TODO: divA and divB overlap, so divAll contains 45G04 twice. Probably bad for size(?)
             data.frame(area = c("divA", "divAll"), size = c(21, 44), stringsAsFactors = FALSE),
             areas = area_group,
-            generator = "mfdb_area_sizes"))),
+            generator = "mfdb_area_size"))),
         "Can combine divA & B and get combined size")
 })
 

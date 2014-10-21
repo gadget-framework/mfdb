@@ -1,8 +1,8 @@
 # Return area, size
-mfdb_area_sizes <- function (mdb, params) {
+mfdb_area_size <- function (mdb, params) {
     group_cols <- c("areas")
     calc_cols <- c(", SUM(acl.size) size")
-    generator <- "mfdb_area_sizes"
+    generator <- "mfdb_area_size"
 
     # True iff str is in the group_cols parameter
     grouping_by <- function(str) {
