@@ -108,6 +108,62 @@ section("Temperature import", function() {
         temperature = c(1,2,4)))
 })
 
+section("Temperature", function() {
+    # Set-up areas/divisions
+    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
+    mfdb_import_division(mdb, list(divB = c('45G01', '45G02'), divC = c('45G01')))
+
+    # Notice missing columns
+    ok(cmp_error(mfdb_import_temperature(mdb, data.frame(
+        year = c(1998),
+        areacell_id = c('45G01', '45G01', '45G01'),
+        temperature = c(1,2,4))), "month"), "Notice month column is missing")
+
+    # Import works
+    mfdb_import_temperature(mdb, data.frame(
+        year = rep(c(1998, 1999), each = 12),
+        month = c(1:12, 1:12),
+        areacell = c(rep('45G01', times = 24)),
+        temperature = c(1:12, 25:36)))
+    area_group <- mfdb_group(divA = c("divA"))
+    timestep <- mfdb_group(q1 = 1:3, q2 = 4:6, q3 = 7:9, q4 = 10:12)
+    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = timestep, areas = area_group)),
+        list("0.0" = structure(
+            data.frame(
+                year = rep(c(1998, 1999), each = 4),
+                step = rep(c("q1", "q2", "q3", "q4"), times = 2),
+                area = rep("divA", times = 8),
+                temperature = c(
+                    mean(1:3), mean(4:6), mean(7:9), mean(10:12),
+                    mean(25:27), mean(28:30), mean(31:33), mean(34:36)),
+                stringsAsFactors = FALSE),
+            timestep = timestep,
+            areas = area_group,
+            generator = "mfdb_temperature"))),
+        "Can collate temperatures by quarter")
+
+    # Another import replaces previous data
+    mfdb_import_temperature(mdb, data.frame(
+        year = rep(c(1998, 1999), each = 12),
+        month = c(1:12, 1:12),
+        areacell = c(rep('45G01', times = 24)),
+        temperature = c(12:23, 20:31)))
+    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = timestep, areas = area_group)),
+        list("0.0" = structure(
+            data.frame(
+                year = rep(c(1998, 1999), each = 4),
+                step = rep(c("q1", "q2", "q3", "q4"), times = 2),
+                area = rep("divA", times = 8),
+                temperature = c(
+                    mean(12:14), mean(15:17), mean(18:20), mean(21:23),
+                    mean(20:22), mean(23:25), mean(26:28), mean(29:31)),
+                stringsAsFactors = FALSE),
+            timestep = timestep,
+            areas = area_group,
+            generator = "mfdb_temperature"))),
+        "Second import cleared previous data")
+})
+
 # Disconnect
 mfdb_disconnect(mdb)
 mfdb_disconnect(mdb2)

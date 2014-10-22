@@ -3,6 +3,7 @@ mfdb_area_size <- function (mdb, params) {
     mfdb_sample_grouping(mdb,
         params = params,
         group_cols = c("areas"),
+        filter_cols = c(),
         calc_cols = c("SUM(c.size) size"),
         core_table = "areacell",
         generator = "mfdb_area_size")
@@ -13,6 +14,7 @@ mfdb_temperature <- function (mdb, params = list()) {
     mfdb_sample_grouping(mdb,
         params = params,
         group_cols = c("year", "timestep", "areas"),
+        filter_cols = c(),
         calc_cols = c("AVG(c.temperature) temperature"),
         core_table = "temperature",
         generator = "mfdb_temperature")
