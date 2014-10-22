@@ -99,11 +99,15 @@ mfdb_sample_grouping <- function (mdb,
         core_table = "(SELECT * FROM survey sur, sample sam WHERE sur.survey_id = sam.sample_id)",
         generator = "mfdb_sample_grouping") {
 
+    # If grouping by, the a setting *must* be in params
     grouping_by <- function(str, if_true = TRUE, if_false = NULL) {
-        if(str %in% group_cols) if_true else if_false
+        if(!(str %in% group_cols)) return(if_false)
+        if(is.null(params[[str]])) stop("params must contain value for ", str)
+        return(if_true)
     }
+    # If filtering, then do it if possible
     filtering_by <- function(str, if_true = TRUE, if_false = NULL) {
-        if (str %in% filter_cols) if_true else if_false
+        if (str %in% filter_cols && !is.null(params[[str]])) if_true else if_false
     }
 
     x <- grouping_by("timestep", group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT", save_temp_tables = mdb$save_temp_tables))
