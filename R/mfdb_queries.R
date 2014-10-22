@@ -160,11 +160,11 @@ mfdb_sample_grouping <- function (mdb,
     samples <- unique(out$sample)
     structure(lapply(samples, function (sample) {
         do.call(structure, c(
-            list(out[out$sample == sample,names(out) != 'sample'], generator = generator),
+            list(out[out$sample == sample,names(out) != 'sample']),
             grouping_by("timestep", list(timestep = params$timestep)),
             grouping_by("areas",    list(areas = params$areas)),
-            grouping_by("ages",     list(ages = params$areas)),
+            grouping_by("ages",     list(ages = params$ages)),
             grouping_by("lengths",  list(lengths = params$lengths)),
-            NULL))
+            list(generator = generator)))
     }), names = samples)
 }
