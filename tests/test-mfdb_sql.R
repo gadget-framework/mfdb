@@ -18,8 +18,8 @@ section("sql_quote", function() {
 })
 
 section("sql_col_condition", function() {
-    ok(mfdb:::sql_col_condition('col', 5) == "AND (col IN (5))")
-    ok(mfdb:::sql_col_condition('col', c(1,2,3)) == "AND (col IN (1,2,3))")
-    ok(mfdb:::sql_col_condition('cow', c(1,NA,3)) == "AND (cow IN (1,3) OR cow IS NULL)")
-    ok(mfdb:::sql_col_condition('tbl.gear_id', c("GEA"), lookup = "gear") == "AND (tbl.gear_id IN (SELECT gear_id FROM gear WHERE name IN ('GEA')))")
+    ok(mfdb:::sql_col_condition('col', 5) == "(col IN (5))")
+    ok(mfdb:::sql_col_condition('col', c(1,2,3)) == "(col IN (1,2,3))")
+    ok(mfdb:::sql_col_condition('cow', c(1,NA,3)) == "(cow IN (1,3) OR cow IS NULL)")
+    ok(mfdb:::sql_col_condition('tbl.gear_id', c("GEA"), lookup = "gear") == "(tbl.gear_id IN (SELECT gear_id FROM gear WHERE name IN ('GEA')))")
 })

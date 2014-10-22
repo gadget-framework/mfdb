@@ -29,7 +29,7 @@ where_clause <- function(x, col) {
 sql_col_condition <- function(col, v, lookup = NULL) {
     if (!is.vector(v)) return("")
     paste0(
-        "AND (", col, " IN ",
+        "(", col, " IN ",
         if (!is.null(lookup)) paste0("(SELECT ", lookup, "_id FROM ", lookup, " WHERE name IN "),
         sql_quote(v[!is.na(v)], always_bracket = TRUE),
         if (!is.null(lookup)) ")",
@@ -40,7 +40,7 @@ sql_col_condition <- function(col, v, lookup = NULL) {
 # Generate interval condition given 2 values
 sql_interval_condition <- function(col, int_group, min_exclusive = FALSE, max_exclusive = FALSE) {
     if(is.null(int_group)) return("")
-    paste("AND", col, if (min_exclusive) ">" else ">=", sql_quote(int_group$int_min),
+    paste(col, if (min_exclusive) ">" else ">=", sql_quote(int_group$int_min),
           "AND", col, if (max_exclusive) "<" else "<=", sql_quote(int_group$int_max))
 }
 
