@@ -64,6 +64,7 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
         vessel_id = sanitise_col(mdb, survey_metadata, 'vessel', lookup = 'vessel', default = c(NA)),
         sampling_type_id = sanitise_col(mdb, survey_metadata, 'sampling_type', lookup = 'sampling_type', default = c(NA)))
     survey_sample <- data.frame(
+        case_study_id = c(mdb$case_study_id),
         year = sanitise_col(mdb, data_in, 'year'),
         month = sanitise_col(mdb, data_in, 'month'),
         areacell_id = sanitise_col(mdb, data_in, 'areacell', lookup = 'areacell'),
