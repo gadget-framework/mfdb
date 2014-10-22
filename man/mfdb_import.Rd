@@ -31,11 +31,10 @@ For \code{mfdb_import_survey}, the metadata can contain:
 
 \describe{
     \item{data_source}{A name for this data, e.g. it's filename. Used so you can replace it later without disturbing other data}
-    \item{case_study}{A case study name, see mfdb::case_study for possible values}
-    \item{institute}{An institute name, see mfdb::institute for possible values}
-    \item{gear}{A gear name, see mfdb::gear for possible values}
-    \item{vessel}{A vessel name, see mfdb::vessel for possible values}
-    \item{sampling_type}{A sampling_type name, see mfdb::sampling_type for possible values}
+    \item{institute}{Optional. An institute name, see mfdb::institute for possible values}
+    \item{gear}{Optional. Gear name, see mfdb::gear for possible values}
+    \item{vessel}{Optional. Vessel name, see mfdb::vessel for possible values}
+    \item{sampling_type}{Optional. A sampling_type, see mfdb::sampling_type for possible values}
 }
 
 And \code{data_in} should be a data.frame with the following columns:

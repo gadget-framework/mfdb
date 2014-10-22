@@ -59,12 +59,12 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
     survey_metadata <- list(
         data_source = sanitise_col(mdb, survey_metadata, 'data_source'),
         case_study_id = c(mdb$case_study_id),
-        institute_id = sanitise_col(mdb, survey_metadata, 'institute', lookup = 'institute'),
-        gear_id = sanitise_col(mdb, survey_metadata, 'gear', lookup = 'gear'),
-        vessel_id = sanitise_col(mdb, survey_metadata, 'vessel', lookup = 'vessel'),
-        sampling_type_id = sanitise_col(mdb, survey_metadata, 'sampling_type', lookup = 'sampling_type'))
+        institute_id = sanitise_col(mdb, survey_metadata, 'institute', lookup = 'institute', default = c(NA)),
+        gear_id = sanitise_col(mdb, survey_metadata, 'gear', lookup = 'gear', default = c(NA)),
+        vessel_id = sanitise_col(mdb, survey_metadata, 'vessel', lookup = 'vessel', default = c(NA)),
+        sampling_type_id = sanitise_col(mdb, survey_metadata, 'sampling_type', lookup = 'sampling_type', default = c(NA)))
     survey_sample <- data.frame(
-        year = sanitise_col(mdb, data_in, 'year', default = c(survey_metadata$year)),
+        year = sanitise_col(mdb, data_in, 'year'),
         month = sanitise_col(mdb, data_in, 'month'),
         areacell_id = sanitise_col(mdb, data_in, 'areacell', lookup = 'areacell'),
         species_id = sanitise_col(mdb, data_in, 'species', lookup = 'species', default = c(NA)),
