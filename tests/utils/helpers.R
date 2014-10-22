@@ -11,6 +11,20 @@ print.stringvec <- function(x, ...) {
 cmp <- function(a, b) {
     if(identical(all.equal(a,b), TRUE)) return(TRUE)
 
+    if (file.exists('/usr/bin/git')) {
+        totmp <- function(x) {
+            f <- tempfile(pattern = "str.")
+            capture.output(str(x), file = f)
+            return(f)
+        }
+
+        return(suppressWarnings(system2(
+            '/usr/bin/git',
+            c("diff", "--no-index", "--color-words", totmp(a), totmp(b)),
+            input = "",
+            stdout = TRUE, stderr = TRUE)))
+    }
+
     return(c(
         capture.output(str(a)),
         "... does not equal...",
