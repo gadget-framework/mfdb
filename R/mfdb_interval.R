@@ -14,17 +14,19 @@ mfdb_interval <- function (prefix, vect) {
 # Generate CASE statement to pick correct group for value
 select_clause.mfdb_interval <- function(x, col, outputname) {
     sorted <- sort(x, decreasing = TRUE)
-    paste(", CASE",
+    names(sorted)[[1]] <- NA # First case is stuff outside group
+    paste("CASE",
         paste("WHEN",
             col, ">=", sorted, "THEN",
-            sql_quote(names(sorted)), collapse = " ")
+            vapply(names(sorted), sql_quote, ""), collapse = " ")
         , "END AS", outputname)
 }
 
 # Ensure value is within range specified
 where_clause.mfdb_interval <- function(x, col) {
-    paste("AND", col, ">=", sql_quote(min(x)),
-        "AND", col, "<", sql_quote(max(x)))
+    c(
+        paste(col, ">=", sql_quote(min(x))),
+        paste(col, "<", sql_quote(max(x))))
 }
 
 # Return a list of the form "group" = c("min", "max"), as required by gadget_file

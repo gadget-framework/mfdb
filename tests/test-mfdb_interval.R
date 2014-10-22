@@ -23,3 +23,19 @@ section("Elements are named by prefixes", function() {
         as.list(mfdb_interval("l", c(5,15,25,30))),
         list(l5 = c(5,15), l15 = c(15,25), l25 = c(25,30)))
 })
+
+section("Can generate SQL", function() {
+    ok(cmp(
+            mfdb:::select_clause.mfdb_interval(mfdb_interval("l", c(10,20,30)), "col", "outname"),
+            "CASE WHEN col >= 30 THEN NULL WHEN col >= 20 THEN 'l20' WHEN col >= 10 THEN 'l10' END AS outname"),
+        "Generated select clause")
+
+    ok(cmp(
+            mfdb:::where_clause.mfdb_interval(mfdb_interval("l", c(10,20,25,30)), "col"),
+            c("col >= 10", "col < 30")),
+        "Generated where clause")
+    ok(cmp(
+            mfdb:::where_clause.mfdb_interval(mfdb_interval("l", c(25,50)), "col"),
+            c("col >= 25", "col < 50")),
+        "Generated where clause")
+})
