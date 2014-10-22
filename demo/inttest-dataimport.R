@@ -167,6 +167,51 @@ section("Temperature", function() {
         "Second import cleared previous data")
 })
 
+section("Unaggregated length / weight samples", function () {
+    # Set-up areas/divisions
+    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
+    mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G01')))
+
+    # Import a survey
+    mfdb_import_survey(mdb,
+        data_source = 'survey1',
+        data.frame(
+            year = c('1998'),
+            month = c(1:12),
+            areacell = c('45G01'),
+            species = c('COD'),
+            age = c(1,1,1,1,1,1,1,1,1,1,1,1),
+            length = c(10,50,30,10,35,46, 65,62,36,35,34,22),
+            weight = c(100,500,300,100,350,460,650,320,360,350,340,220)))
+
+    # Aggregate lengths
+    area_group <- mfdb_group(divA = c("divA"))
+    timestep <- mfdb_group(h1 = 1:6, h2 = 7:12)
+    age_group <- mfdb_group(all = 1:1000)
+    length_group <- mfdb_interval("len", seq(0, 50, by = 5))
+    ok(cmp(
+        mfdb_meanlength(mdb, list(
+            year = 1998:2000,
+            areas = area_group,
+            timestep = timestep,
+            ages = age_group,
+            lengths = length_group)),
+        list("0.0.0" = structure(
+            data.frame(
+                year = c(1998:1998),
+                step = c("h1", "h2"),
+                area = c("divA"),
+                age = c("all"),
+                number = c(5, 4),
+                mean = c(26.2, 31.75),
+                stringsAsFactors = FALSE),
+            timestep = timestep,
+            areas = area_group,
+            ages = age_group,
+            generator = "mfdb_meanlength"))),
+       "Aggregated length data")
+})
+
 # Disconnect
 mfdb_disconnect(mdb)
 mfdb_disconnect(mdb2)

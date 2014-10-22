@@ -21,6 +21,7 @@ mfdb_temperature <- function (mdb, params = list()) {
 }
 
 # Return year,step,area,stock,age,length, number (of samples)
+# TODO: stocks isn't a group_cols yet
 mfdb_stock_count <- function (mdb, params) {
     mfdb_sample_grouping(mdb,
         params = params,
@@ -30,28 +31,30 @@ mfdb_stock_count <- function (mdb, params) {
         generator = "mfdb_stock_count")
 }
 
-# Return year,step,area,age,number (# of samples),mean (length), stddev (length)
-mfdb_meanlength_stddev <- function (mdb, params) {
-    # SCHEMA: Don't have length_stddev, need a weighted stddev function
-    # TODO: Do we need to know the resolution of the input data to avoid oversampling?
-    out <- mfdb_sample_grouping(mdb,
-        params = params,
-        calc_cols = c(
-            ", SUM(sam.count) AS number",
-            ", AVG(sam.count * sam.length) * (COUNT(*)::float / SUM(sam.count)) AS mean",
-            ", 0 AS stddev"),
-        generator = "mfdb_meanlength_stddev")
-    out
-}
-
 # Return year,step,area,age,number (# of samples),mean (length)
 mfdb_meanlength <- function (mdb, params) {
     out <- mfdb_sample_grouping(mdb,
         params = params,
+        group_cols = c("year", "timestep", "areas", "ages"),
         calc_cols = c(
-            ", SUM(sam.count) AS number",
-            ", AVG(sam.count * sam.length) * (COUNT(*)::float / SUM(sam.count)) AS mean"),
+            "SUM(c.count) AS number",
+            "AVG(c.count * c.length) * (COUNT(*)::float / SUM(c.count)) AS mean"),
         generator = "mfdb_meanlength")
+    out
+}
+
+# Return year,step,area,age,number (# of samples),mean (length), stddev (length)
+mfdb_meanlength_stddev <- function (mdb, params) {
+    # SCHEMA: Need a weighted stddev function
+    # TODO: Do we need to know the resolution of the input data to avoid oversampling?
+    out <- mfdb_sample_grouping(mdb,
+        params = params,
+        group_cols = c("year", "timestep", "areas", "ages"),
+        calc_cols = c(
+            ", SUM(c.count) AS number",
+            ", AVG(c.count * c.length) * (COUNT(*)::float / SUM(c.count)) AS mean",
+            ", 0 AS stddev"),
+        generator = "mfdb_meanlength_stddev")
     out
 }
 
@@ -94,9 +97,9 @@ mfdb_agelength <- function (mdb, params) {
 mfdb_sample_grouping <- function (mdb,
         params = list(),
         group_cols = c("year", "timestep", "areas", "ages"),
-        filter_cols = c(),
+        filter_cols = c("lengths", "institute", "gear", "vessel", "sampling_type", "species", "sex"),
         calc_cols = c(),
-        core_table = "(SELECT * FROM survey sur, sample sam WHERE sur.survey_id = sam.sample_id)",
+        core_table = "(SELECT sur.institute_id, sur.gear_id, sur.vessel_id, sur.sampling_type_id, sam.* FROM sample sam INNER JOIN survey sur ON sam.survey_id = sur.survey_id)",
         generator = "mfdb_sample_grouping") {
 
     # If grouping by, the a setting *must* be in params
@@ -140,6 +143,7 @@ mfdb_sample_grouping <- function (mdb,
             grouping_by("timestep", "c.month = tts.value"),
             grouping_by("areas",    "c.case_study_id = div.case_study_id AND c.areacell_id = div.areacell_id AND div.division = tarea.value"),
             grouping_by("ages",     "c.age = tage.value"),
+            #TODO: Grouping by lengths too?
             filtering_by("lengths", where_clause(params$lengths, "c.length")),
             filtering_by("institute", sql_col_condition("c.institute_id", params$institute, lookup="institute")),
             filtering_by("gear", sql_col_condition("c.gear_id", params$gear, lookup="gear")),
