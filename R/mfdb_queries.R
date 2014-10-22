@@ -1,91 +1,21 @@
 # Return area, size
 mfdb_area_size <- function (mdb, params) {
-    group_cols <- c("areas")
-    calc_cols <- c(", SUM(acl.size) size")
-    generator <- "mfdb_area_size"
-
-    # True iff str is in the group_cols parameter
-    grouping_by <- function(str) {
-        str %in% group_cols
-    }
-
-    if (grouping_by("areas")) group_to_table(mdb$db, "temp_area", params$areas, datatype = "VARCHAR(10)", save_temp_tables = mdb$save_temp_tables)
-
-    out <- mfdb_fetch(mdb,
-        "SELECT 's'",
-        if (grouping_by("areas"))    "|| '.' || tarea.sample",
-        " AS sample",
-        if (grouping_by("areas"))    ", tarea.name AS area",
-        calc_cols,
-        " FROM areacell acl",
-        if (grouping_by("areas"))    ", temp_area tarea, division div",
-        " WHERE TRUE ",
-        sql_col_condition("div.case_study_id", mdb$case_study_id),
-        if (grouping_by("areas"))    " AND acl.case_study_id = div.case_study_id AND acl.areacell_id = div.areacell_id AND div.division = tarea.value",
-        " GROUP BY ", paste(1:(1 + length(group_cols)), collapse=","),
-        " ORDER BY ", paste(1:(1 + length(group_cols)), collapse=","),
-        "")
-
-    # Break data up by sample and annotate each
-    samples <- unique(out$sample)
-    structure(lapply(samples, function (sample) {
-        structure(
-            out[out$sample == sample,names(out) != 'sample'],
-            generator = generator,
-            areas = params$areas)
-    }), names = samples)
+    mfdb_sample_grouping(mdb,
+        params = params,
+        group_cols = c("areas"),
+        calc_cols = c("SUM(c.size) size"),
+        core_table = "areacell",
+        generator = "mfdb_area_size")
 }
 
 # Return year, step, area, temperature (mean)
 mfdb_temperature <- function (mdb, params = list()) {
-    group_cols <- c("year", "timestep", "areas")
-    calc_cols <- c("AVG(c.temperature) temperature")
-    core_table <- "temperature"
-    generator <- "mfdb_temperature"
-
-    # True iff str is in the group_cols parameter
-    grouping_by <- function(str) {
-        str %in% group_cols
-    }
-
-    if (grouping_by("timestep")) group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT", save_temp_tables = mdb$save_temp_tables)
-    if (grouping_by("areas")) group_to_table(mdb$db, "temp_area", params$areas, datatype = "VARCHAR(10)", save_temp_tables = mdb$save_temp_tables)
-
-    out <- mfdb_fetch(mdb,
-        "SELECT ", paste(c(
-            paste(paste0(c(
-                if (grouping_by("timestep")) "tts.sample",
-                if (grouping_by("areas"))    "tarea.sample",
-                NULL), collapse = "|| '.' ||"), "AS sample"),
-            if (grouping_by("year"))     "c.year AS year",
-            if (grouping_by("timestep")) "tts.name AS step",
-            if (grouping_by("areas"))    "tarea.name AS area",
-            calc_cols,
-            NULL), collapse = ","),
-        " FROM ", paste(c(
-            paste(core_table, "c"),
-            if (grouping_by("timestep")) "temp_ts tts",
-            if (grouping_by("areas"))    "temp_area tarea, division div",
-            NULL), collapse = ","),
-        " WHERE ", paste(c(
-            paste("c.case_study_id =", sql_quote(mdb$case_study_id)),
-            if (grouping_by("year"))     paste("c.year IN", sql_quote(params$year, always_bracket = TRUE)),
-            if (grouping_by("timestep")) "c.month = tts.value",
-            if (grouping_by("areas"))    "c.case_study_id = div.case_study_id AND c.areacell_id = div.areacell_id AND div.division = tarea.value",
-            NULL), collapse = " AND "),
-        " GROUP BY ", paste(1:(1 + length(group_cols)), collapse=","),
-        " ORDER BY ", paste(1:(1 + length(group_cols)), collapse=","),
-        "")
-
-    # Break data up by sample and annotate each
-    samples <- unique(out$sample)
-    structure(lapply(samples, function (sample) {
-        structure(
-            out[out$sample == sample,names(out) != 'sample'],
-            generator = generator,
-            timestep = params$timestep,
-            areas = params$areas)
-    }), names = samples)
+    mfdb_sample_grouping(mdb,
+        params = params,
+        group_cols = c("year", "timestep", "areas"),
+        calc_cols = c("AVG(c.temperature) temperature"),
+        core_table = "temperature",
+        generator = "mfdb_temperature")
 }
 
 # Return year,step,area,stock,age,length, number (of samples)
@@ -161,71 +91,74 @@ mfdb_agelength <- function (mdb, params) {
 # Group up sample data by area, age or length
 mfdb_sample_grouping <- function (mdb,
         params = list(),
-        group_cols = c("timestep", "areas", "ages"),
+        group_cols = c("year", "timestep", "areas", "ages"),
+        filter_cols = c(),
         calc_cols = c(),
+        core_table = "(SELECT * FROM survey sur, sample sam WHERE sur.survey_id = sam.sample_id)",
         generator = "mfdb_sample_grouping") {
 
-    # True iff str is in the group_cols parameter
-    grouping_by <- function(str) {
-        str %in% group_cols
+    grouping_by <- function(str, if_true = TRUE, if_false = NULL) {
+        if(str %in% group_cols) if_true else if_false
+    }
+    filtering_by <- function(str, if_true = TRUE, if_false = NULL) {
+        if (str %in% filter_cols) if_true else if_false
     }
 
-    params <- c(params, mdb$defaultparams)
-    mdb$logger$info(params)
-    # Store groups into temporary tables for joining
-    if (grouping_by("timestep")) group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT", save_temp_tables = mdb$save_temp_tables)
-    if (grouping_by("areas")) group_to_table(mdb$db, "temp_area", params$areas, datatype = "VARCHAR(10)", save_temp_tables = mdb$save_temp_tables)
-    if (grouping_by("ages"))  group_to_table(mdb$db, "temp_age", params$ages, datatype = "INT", save_temp_tables = mdb$save_temp_tables)
+    x <- grouping_by("timestep", group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT", save_temp_tables = mdb$save_temp_tables))
+    x <- grouping_by("areas", group_to_table(mdb$db, "temp_area", params$areas, datatype = "VARCHAR(10)", save_temp_tables = mdb$save_temp_tables))
+    x <- grouping_by("ages", group_to_table(mdb$db, "temp_age", params$ages, datatype = "INT", save_temp_tables = mdb$save_temp_tables))
 
-    query <- paste(c(
-        "SELECT 's'",
-        if (grouping_by("timestep")) "|| '.' || tts.sample",
-        if (grouping_by("areas"))    "|| '.' || tarea.sample",
-        if (grouping_by("ages"))     "|| '.' || tage.sample",
-        " AS sample",
-        ", sam.year",
-        if (grouping_by("timestep")) ", tts.name AS step",
-        # TODO: if (grouping_by("stocks"))   ", spe.stock AS stock",
-        if (grouping_by("areas"))    ", tarea.name AS area",
-        if (grouping_by("ages"))     ", tage.name AS age",
-        if (grouping_by("lengths"))  select_clause(params$lengths, "sam.length", "length"),
-        calc_cols,
-        "FROM survey sur, sample sam",
-        if (grouping_by("timestep")) ", temp_ts tts",
-        if (grouping_by("areas"))    ", temp_area tarea, division div",
-        if (grouping_by("ages"))     ", temp_age tage",
-        "WHERE sur.survey_id = sam.survey_id",
-        if (grouping_by("timestep")) "AND sam.month = tts.value",
-        if (grouping_by("areas"))    "AND acl.case_study_id = div.case_study_id AND acl.areacell_id = div.areacell_id AND div.division = tarea.value",
-        if (grouping_by("ages"))     "AND sam.age = tage.value",
-        where_clause(params$lengths, "sam.length"),
-        sql_col_condition("sur.case_study_id", mdb$case_study_id),
-        sql_col_condition("sur.institute_id", params$institute, lookup="institute"),
-        sql_col_condition("sur.gear_id", params$gear, lookup="gear"),
-        sql_col_condition("sur.vessel_id", params$vessel, lookup="vessel"),
-        sql_col_condition("sur.sampling_type_id", params$sampling_type, lookup="sampling_type"),
-        sql_col_condition("sam.year_id", params$year),
-        sql_col_condition("sam.species_id", params$species, lookup="species"),
-        sql_col_condition("sam.sex_id", params$sex, lookup="sex"),
-        # TODO: sql_col_condition("spe.stock", params$stocks, lookup="l_stock"),
-        # TODO: sql_col_condition("spe.marketcategory", params$marketcategory, lookup="l_marketcategory"),
-        # TODO: sql_col_condition("cas.samplingstrategy", params$samplingstrategy, lookup="l_samplingstrategy"),
-        # TODO: sql_col_condition("lec.maturitystage", params$maturitystage, lookup="l_maturitystage"),
-        "GROUP BY ", paste(1:(2 + length(group_cols)), collapse=","),
-        "ORDER BY ", paste(1:(2 + length(group_cols)), collapse=","),
-        ""), collapse = " ")
-    mdb$logger$debug(query)
+    out <- mfdb_fetch(mdb,
+        "SELECT ", paste(c(
+            paste(paste0(c(
+                grouping_by("timestep", "tts.sample"),
+                grouping_by("areas",    "tarea.sample"),
+                grouping_by("ages",     "tage.sample"),
+                NULL), collapse = "|| '.' ||"), "AS sample"),
+            grouping_by("year",     "c.year AS year"),
+            grouping_by("timestep", "tts.name AS step"),
+            grouping_by("areas",    "tarea.name AS area"),
+            grouping_by("ages",     "tage.name AS age"),
+            grouping_by("lengths",  select_clause(params$lengths, "c.length", "length")),
+            calc_cols,
+            NULL), collapse = ","),
+        " FROM ", paste(c(
+            paste(core_table, "c"),
+            grouping_by("timestep", "temp_ts tts"),
+            grouping_by("areas",    "temp_area tarea, division div"),
+            grouping_by("ages",     "temp_age tage"),
+            NULL), collapse = ","),
+        " WHERE ", paste(c(
+            paste("c.case_study_id =", sql_quote(mdb$case_study_id)),
+            grouping_by("year",     paste("c.year IN", sql_quote(params$year, always_bracket = TRUE))),
+            grouping_by("timestep", "c.month = tts.value"),
+            grouping_by("areas",    "c.case_study_id = div.case_study_id AND c.areacell_id = div.areacell_id AND div.division = tarea.value"),
+            grouping_by("ages",     "c.age = tage.value"),
+            filtering_by("lengths", where_clause(params$lengths, "c.length")),
+            filtering_by("institute", sql_col_condition("c.institute_id", params$institute, lookup="institute")),
+            filtering_by("gear", sql_col_condition("c.gear_id", params$gear, lookup="gear")),
+            filtering_by("vessel", sql_col_condition("c.vessel_id", params$vessel, lookup="vessel")),
+            filtering_by("sampling_type", sql_col_condition("c.sampling_type_id", params$sampling_type, lookup="sampling_type")),
+            filtering_by("species", sql_col_condition("c.species_id", params$species, lookup="species")),
+            filtering_by("sex", sql_col_condition("c.sex_id", params$sex, lookup="sex")),
+            # TODO: sql_col_condition("c.stock", params$stocks, lookup="stock"),
+            # TODO: sql_col_condition("c.marketcategory", params$marketcategory, lookup="marketcategory"),
+            # TODO: sql_col_condition("c.samplingstrategy", params$samplingstrategy, lookup="samplingstrategy"),
+            # TODO: sql_col_condition("c.maturitystage", params$maturitystage, lookup="maturitystage"),
+            NULL), collapse = " AND "),
+        " GROUP BY ", paste(1:(1 + length(group_cols)), collapse=","),
+        " ORDER BY ", paste(1:(1 + length(group_cols)), collapse=","),
+        "")
 
-    # Fetch all data, break it up by sample and annotate each
-    out <- dbFetch(dbSendQuery(mdb$db, query), -1)
+    # Break data up by sample and annotate each
     samples <- unique(out$sample)
     structure(lapply(samples, function (sample) {
-        structure(
-            out[out$sample == sample,names(out) != 'sample'],
-            generator = generator,
-            areas = params$areas,
-            ages = params$ages,
-            lengths = params$lengths,
-            timestep = params$timestep)
+        do.call(structure, c(
+            list(out[out$sample == sample,names(out) != 'sample'], generator = generator),
+            grouping_by("timestep", list(timestep = params$timestep)),
+            grouping_by("areas",    list(areas = params$areas)),
+            grouping_by("ages",     list(ages = params$areas)),
+            grouping_by("lengths",  list(lengths = params$lengths)),
+            NULL))
     }), names = samples)
 }
