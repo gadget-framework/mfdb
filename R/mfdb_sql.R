@@ -89,3 +89,8 @@ sql_create_table <- function(name, desc, ...) {
         paste(sapply(1:ncol(cols), row_to_string), collapse = ""),
         ")")
 }
+
+sql_create_index <- function(table, cols) {
+   name <- paste0(c("idx", table, cols), collapse = "_")
+   paste0(c("CREATE INDEX ", name, " ON ", table, " (", paste0(cols, collapse = ","), ")"), collapse = "")
+}

@@ -35,3 +35,9 @@ section("where_clause", {
     ok(cmp(wc(c("a", "b"), 'tbl.boar_id'), "(tbl.boar_id IN ('a','b'))"))
     ok(cmp(wc(c("GEA"), 'tbl.gear_id'), "(tbl.gear_id IN (SELECT gear_id FROM gear WHERE name IN ('GEA')))"))
 })
+
+section("sql_create_index", {
+    ci <- mfdb:::sql_create_index
+    ok(cmp(ci("tbl", "col"), "CREATE INDEX idx_tbl_col ON tbl (col)"))
+    ok(cmp(ci("tbl", c("A", "B")), "CREATE INDEX idx_tbl_A_B ON tbl (A,B)"))
+})
