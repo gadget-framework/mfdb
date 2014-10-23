@@ -11,15 +11,18 @@ print.stringvec <- function(x, ...) {
 cmp <- function(a, b) {
     if(identical(all.equal(a,b), TRUE)) return(TRUE)
 
-    if (file.exists('/usr/bin/git')) {
+    if (file.exists(Sys.which('git'))) {
         totmp <- function(x) {
             f <- tempfile(pattern = "str.")
-            capture.output(str(x), file = f)
+            capture.output(str(x,
+                vec.len = 10,
+                digits.d = 5,
+                nchar.max = 100), file = f)
             return(f)
         }
 
         return(suppressWarnings(system2(
-            '/usr/bin/git',
+            Sys.which('git'),
             c("diff", "--no-index", "--color-words", totmp(a), totmp(b)),
             input = "",
             stdout = TRUE, stderr = TRUE)))
