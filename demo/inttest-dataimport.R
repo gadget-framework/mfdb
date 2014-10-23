@@ -5,6 +5,11 @@ library(mfdb)
 source('mfdb/tests/utils/helpers.R')
 source('mfdb/tests/utils/inttest-helpers.R')
 
+# Make some obvious time groupings
+step_year <- mfdb_group(year = 1:12)
+step_halves <- mfdb_group(h1 = 1:6, h2 = 7:12)
+step_quarters <- mfdb_group(q1 = 1:3, q2 = 4:6, q3 = 7:9, q4 = 10:12)
+
 # Empty database
 conn <- db_connection()
 remove_mfdb_tables(conn)
@@ -88,8 +93,7 @@ section("Temperature import", {
         areacell = c(rep('45G01', times = 24)),
         temperature = c(1:12, 25:36)))
     area_group <- mfdb_group(divA = c("divA"))
-    timestep <- mfdb_group(q1 = 1:3, q2 = 4:6, q3 = 7:9, q4 = 10:12)
-    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = timestep, area = area_group)),
+    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = step_quarters, area = area_group)),
         list("0.0" = structure(
             data.frame(
                 year = rep(c(1998, 1999), each = 4),
@@ -99,7 +103,7 @@ section("Temperature import", {
                     mean(1:3), mean(4:6), mean(7:9), mean(10:12),
                     mean(25:27), mean(28:30), mean(31:33), mean(34:36)),
                 stringsAsFactors = FALSE),
-            timestep = timestep,
+            timestep = step_quarters,
             area = area_group,
             generator = "mfdb_temperature"))),
         "Can collate temperatures by quarter")
@@ -129,8 +133,7 @@ section("Temperature", {
         areacell = c(rep('45G01', times = 24)),
         temperature = c(1:12, 25:36)))
     area_group <- mfdb_group(divA = c("divA"))
-    timestep <- mfdb_group(q1 = 1:3, q2 = 4:6, q3 = 7:9, q4 = 10:12)
-    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = timestep, area = area_group)),
+    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = step_quarters, area = area_group)),
         list("0.0" = structure(
             data.frame(
                 year = rep(c(1998, 1999), each = 4),
@@ -140,7 +143,7 @@ section("Temperature", {
                     mean(1:3), mean(4:6), mean(7:9), mean(10:12),
                     mean(25:27), mean(28:30), mean(31:33), mean(34:36)),
                 stringsAsFactors = FALSE),
-            timestep = timestep,
+            timestep = step_quarters,
             area = area_group,
             generator = "mfdb_temperature"))),
         "Can collate temperatures by quarter")
@@ -151,7 +154,7 @@ section("Temperature", {
         month = c(1:12, 1:12),
         areacell = c(rep('45G01', times = 24)),
         temperature = c(12:23, 20:31)))
-    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = timestep, area = area_group)),
+    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = step_quarters, area = area_group)),
         list("0.0" = structure(
             data.frame(
                 year = rep(c(1998, 1999), each = 4),
@@ -161,13 +164,13 @@ section("Temperature", {
                     mean(12:14), mean(15:17), mean(18:20), mean(21:23),
                     mean(20:22), mean(23:25), mean(26:28), mean(29:31)),
                 stringsAsFactors = FALSE),
-            timestep = timestep,
+            timestep = step_quarters,
             area = area_group,
             generator = "mfdb_temperature"))),
         "Second import cleared previous data")
 })
 
-section("Unaggregated length / weight samples", function () {
+section("Unaggregated length / weight / age samples", {
     # Set-up areas/divisions
     mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
     mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G01')))
@@ -180,20 +183,19 @@ section("Unaggregated length / weight samples", function () {
             month = c(1:12),
             areacell = c('45G01'),
             species = c('COD'),
-            age = c(1,1,1,1,1,1,1,1,1,1,1,1),
-            length = c(10,50,30,10,35,46, 65,62,36,35,34,22),
-            weight = c(100,500,300,100,350,460,650,320,360,350,340,220)))
+            age =    c(  1,  2,  1,  2,  1,  2,   1,  2,  1,  2,  1,  2),
+            length = c( 10, 50, 30, 10, 35, 46,  65, 62, 36, 35, 34, 22),
+            weight = c(100,500,300,100,350,460, 650,320,360,350,340,220)))
 
     # Aggregate lengths
     area_group <- mfdb_group(divA = c("divA"))
-    timestep <- mfdb_group(h1 = 1:6, h2 = 7:12)
     age_group <- mfdb_group(all = 1:1000)
     length_group <- mfdb_interval("len", seq(0, 50, by = 5))
     ok(cmp(
         mfdb_meanlength(mdb, list(
             year = 1998:2000,
             area = area_group,
-            timestep = timestep,
+            timestep = step_halves,
             age = age_group,
             length = length_group)),
         list("0.0.0" = structure(
@@ -205,11 +207,110 @@ section("Unaggregated length / weight samples", function () {
                 number = c(5, 4),
                 mean = c(26.2, 31.75),
                 stringsAsFactors = FALSE),
-            timestep = timestep,
+            timestep = step_halves,
             area = area_group,
             age = age_group,
             generator = "mfdb_meanlength"))),
        "Aggregated length data")
+
+    # mfdb_meanlength_stddev is the same, but with an extra column
+    ok(cmp(
+        mfdb_meanlength_stddev(mdb, list(
+            year = 1998:2000,
+            area = area_group,
+            timestep = step_halves,
+            age = age_group,
+            length = length_group)),
+        list("0.0.0" = structure(
+            data.frame(
+                year = c(1998:1998),
+                step = c("h1", "h2"),
+                area = c("divA"),
+                age = c("all"),
+                number = c(5, 4),
+                mean = c(26.2, 31.75),
+                stddev = c(0), # TODO:
+                stringsAsFactors = FALSE),
+            timestep = step_halves,
+            area = area_group,
+            age = age_group,
+            generator = "mfdb_meanlength_stddev"))),
+       "Aggregated length data (with stddev)")
+
+    # mfdb_meanweight aggregates weight, but still use length as a filter
+    length_group <- mfdb_interval("len", seq(50, 100, by = 5))
+    ok(cmp(
+        mfdb_meanweight(mdb, list(
+            year = 1998:2000,
+            area = area_group,
+            timestep = step_halves,
+            age = age_group,
+            length = length_group)),
+        list("0.0.0" = structure(
+            data.frame(
+                year = c(1998:1998),
+                step = c("h1", "h2"),
+                area = c("divA"),
+                age = c("all"),
+                number = c(1, 2),
+                mean = c(500, 485),
+                stringsAsFactors = FALSE),
+            timestep = step_halves,
+            area = area_group,
+            age = age_group,
+            generator = "mfdb_meanweight"))),
+       "Aggregated weight data")
+
+    # mfdb_meanweight_stddev works the same, but with stddev
+    length_group <- mfdb_interval("len", seq(50, 100, by = 5))
+    ok(cmp(
+        mfdb_meanweight_stddev(mdb, list(
+            year = 1998:2000,
+            area = area_group,
+            timestep = step_halves,
+            age = age_group,
+            length = length_group)),
+        list("0.0.0" = structure(
+            data.frame(
+                year = c(1998:1998),
+                step = c("h1", "h2"),
+                area = c("divA"),
+                age = c("all"),
+                number = c(1, 2),
+                mean = c(500, 485),
+                stddev = c(0), # TODO:
+                stringsAsFactors = FALSE),
+            timestep = step_halves,
+            area = area_group,
+            age = age_group,
+            generator = "mfdb_meanweight_stddev"))),
+       "Aggregated weight data (with stddev)")
+
+    # Age / length splits by age
+    length_group <- mfdb_interval("len", seq(50, 100, by = 5))
+    age_group <- mfdb_group(age1 = c(1), age2 = c(2))
+    ok(cmp(
+        mfdb_agelength(mdb, list(
+            year = 1998:2000,
+            area = area_group,
+            timestep = step_halves,
+            age = age_group,
+            length = length_group)),
+        list("0.0.0" = structure(
+            data.frame(
+                year = c(1998, 1998, 1998),
+                step = c("h1", "h2", "h2"),
+                area = c("divA", "divA", "divA"),
+                age = c("age2", "age1", "age2"),
+                length = c("len50", "len65", "len60"),
+                number = c(1, 1, 1),
+                stringsAsFactors = FALSE),
+            timestep = step_halves,
+            area = area_group,
+            age = age_group,
+            length = length_group,
+            generator = "mfdb_agelength"))),
+       "Aggregated agelength data")
 })
 
 # Disconnect

@@ -27,7 +27,7 @@ mfdb_stock_count <- function (mdb, params) {
         params = params,
         group_cols = c("timestep", "stock", "area", "age", "length"),
         calc_cols = c(
-            ", SUM(sam.count) AS number"),
+            ", SUM(c.count) AS number"),
         generator = "mfdb_stock_count")
 }
 
@@ -51,9 +51,9 @@ mfdb_meanlength_stddev <- function (mdb, params) {
         params = params,
         group_cols = c("year", "timestep", "area", "age"),
         calc_cols = c(
-            ", SUM(c.count) AS number",
-            ", AVG(c.count * c.length) * (COUNT(*)::float / SUM(c.count)) AS mean",
-            ", 0 AS stddev"),
+            "SUM(c.count) AS number",
+            "AVG(c.count * c.length) * (COUNT(*)::float / SUM(c.count)) AS mean",
+            "0 AS stddev"),
         generator = "mfdb_meanlength_stddev")
     out
 }
@@ -63,8 +63,8 @@ mfdb_meanweight <- function (mdb, params) {
     out <- mfdb_sample_grouping(mdb,
         params = params,
         calc_cols = c(
-            ", SUM(sam.count) AS number",
-            ", AVG(sam.count * sam.weight) * (COUNT(*)::float / SUM(sam.count)) AS mean"),
+            "SUM(c.count) AS number",
+            "AVG(c.count * c.weight) * (COUNT(*)::float / SUM(c.count)) AS mean"),
         generator = "mfdb_meanweight")
     out
 }
@@ -75,9 +75,9 @@ mfdb_meanweight_stddev <- function (mdb, params) {
     out <- mfdb_sample_grouping(mdb,
         params = params,
         calc_cols = c(
-            ", SUM(sam.count) AS number",
-            ", AVG(sam.count * sam.weight) * (COUNT(*)::float / SUM(sam.count)) AS mean",
-            ", 0 AS stddev"),
+            "SUM(c.count) AS number",
+            "AVG(c.count * c.weight) * (COUNT(*)::float / SUM(c.count)) AS mean",
+            "0 AS stddev"),
         generator = "mfdb_meanweight_stddev")
     out
 }
@@ -86,10 +86,10 @@ mfdb_meanweight_stddev <- function (mdb, params) {
 mfdb_agelength <- function (mdb, params) {
     out <- mfdb_sample_grouping(mdb,
         params = params,
-        group_cols = c("timestep", "area", "age", "length"),
+        group_cols = c("year", "timestep", "area", "age", "length"),
         calc_cols = c(
-            ", SUM(sam.count) AS number"),
-        generator = "mfdb_meanweight_stddev")
+            "SUM(c.count) AS number"),
+        generator = "mfdb_agelength")
     out
 }
 
