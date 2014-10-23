@@ -25,24 +25,25 @@ where_clause <- function(x, col) {
     UseMethod("where_clause")
 }
 
-# Turn vector into a SQL IN condition, NA = NULL, optionally go via a lookup table.
-sql_col_condition <- function(col, v, lookup = NULL) {
-    if (!is.vector(v)) return("")
+# Simple case for vectors, first checked to see if there's a lookup
+select_clause.numeric <- function(x, col, outputname) {
+    paste(col, "AS", outputname)
+}
+select_clause.character <- select_clause.numeric
+where_clause.numeric <- function(x, col) {
+    lookup <- gsub('(.*\\.)|_id', '', col)
+    if (!(lookup %in% mfdb_taxonomy)) lookup <- NULL
+
+    if (!is.vector(x)) return("")
     paste0(
         "(", col, " IN ",
         if (!is.null(lookup)) paste0("(SELECT ", lookup, "_id FROM ", lookup, " WHERE name IN "),
-        sql_quote(v[!is.na(v)], always_bracket = TRUE),
+        sql_quote(x[!is.na(x)], always_bracket = TRUE),
         if (!is.null(lookup)) ")",
-        if (NA %in% v) paste0(" OR ", col, " IS NULL"),
+        if (NA %in% x) paste0(" OR ", col, " IS NULL"),
         ")")
 }
-
-# Generate interval condition given 2 values
-sql_interval_condition <- function(col, int_group, min_exclusive = FALSE, max_exclusive = FALSE) {
-    if(is.null(int_group)) return("")
-    paste(col, if (min_exclusive) ">" else ">=", sql_quote(int_group$int_min),
-          "AND", col, if (max_exclusive) "<" else "<=", sql_quote(int_group$int_max))
-}
+where_clause.character <- where_clause.numeric
 
 # Turn mfdb_group into a temporary table to join to
 group_to_table <- function(db, table_name, group, datatype = "INT", save_temp_tables = FALSE) {
