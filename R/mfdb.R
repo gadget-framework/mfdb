@@ -38,16 +38,31 @@ mfdb <- function(case_study_name,
                     timesteps = mfdb_group(year = c(1,2,3,4,5,6,7,8,9,10,11,12)))),
             save_temp_tables = save_temp_tables,
             case_study_id = case_study_id,
+            state = new.env(),
             db = db_connection), class = "mfdb")
 
     mfdb_update_schema(mdb, read_only = !create_schema)
     mfdb_update_taxonomy(mdb)
+    if (!create_schema) {
+        # Assume indexes are already there if we shouldn't create schema
+        assign('index_created', TRUE, pos = mdb$state)
+    }
 
     invisible(mdb)
 }
 
+# Create indexes if not already there
+mfdb_finish_import <- function(mdb) {
+    if (!exists('index_created', where = mdb$state)) {
+        mfdb_create_indexes(mdb)
+        mfdb_send(mdb, "ANALYZE")
+        assign('index_created', TRUE, pos = mdb$state)
+    }
+}
+
 # Stop it and tidy up
 mfdb_disconnect <- function(mdb) {
+    mfdb_finish_import(mdb) # Might have just been an import session
     dbDisconnect(mdb$db)
 }
 

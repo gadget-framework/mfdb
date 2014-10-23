@@ -120,5 +120,17 @@ mfdb_update_taxonomy <- function(mdb) {
     mfdb_import_taxonomy(mdb, "species", species)
 }
 
+# Create any required indexes, if they don't already exist
+mfdb_create_indexes <- function(mdb) {
+   create_index <- function (table, cols) {
+       tryCatch(mfdb_send(mdb, sql_create_index(table, cols)),
+           error = function (e) {
+               if (!grepl('relation "[^"]+" already exists', e$message)) stop(e)
+           })
+   }
+
+   mdb$logger$info("Creating indexes")
+}
+
 # Return the major version of the package
 package_major_version <- function () gsub("\\..*", "", packageVersion("mfdb"))
