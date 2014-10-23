@@ -2,7 +2,7 @@ library(mfdb)
 library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
-section("Will create a directory when creating gadget_directories", function() {
+section("Will create a directory when creating gadget_directories", {
     expect_error(
         gadget_directory("/dont-run-as-root"),
         "/dont-run-as-root")
@@ -13,7 +13,7 @@ section("Will create a directory when creating gadget_directories", function() {
     expect_true(file.exists(dir) && file_test("-d", dir))
 })
 
-section("Can write files", function() {
+section("Can write files", {
     # Create a temporary directory, starts off empty
     dir <- tempfile()
     gd <- gadget_directory(dir)
@@ -31,7 +31,7 @@ section("Can write files", function() {
     expect_equal(list.files(dir), c("animals", "plants"))
 })
 
-section("Can write likelihood components", function() {
+section("Can write likelihood components", {
     # Create a temporary directory, starts off empty
     dir <- tempfile()
     gd <- gadget_directory(dir)

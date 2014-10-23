@@ -2,7 +2,7 @@ library(mfdb)
 library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
-section("sql_quote", function() {
+section("sql_quote", {
     sql_quote <- mfdb:::sql_quote
     ok(sql_quote("") == "''")
     ok(sql_quote("3") == "'3'")
@@ -17,7 +17,7 @@ section("sql_quote", function() {
     ok(sql_quote(c(1, NA, 3)) == "(1,NULL,3)")
 })
 
-section("sql_col_condition", function() {
+section("sql_col_condition", {
     ok(mfdb:::sql_col_condition('col', 5) == "(col IN (5))")
     ok(mfdb:::sql_col_condition('col', c(1,2,3)) == "(col IN (1,2,3))")
     ok(mfdb:::sql_col_condition('cow', c(1,NA,3)) == "(cow IN (1,3) OR cow IS NULL)")

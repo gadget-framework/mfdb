@@ -56,7 +56,7 @@ expect_true <- function(exp) {
     ok(exp, "Is true")
 }
 
-section <- function (message, fn) {
+section <- function (message, tests) {
     cat(paste("#", message, collapse="\n"), "\n")
-    fn()
+    tests
 }
