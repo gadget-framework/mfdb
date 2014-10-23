@@ -48,18 +48,18 @@ groups it into larger chunks.
         \code{mfdb_group_numbered("ts", 1:6, 7:12)}
         to group years by 2 timesteps, for each half of the year.
     }
-    \item{areas}{
+    \item{area}{
         (required) An mfdb_group representing the area groupings you
         want to include and aggregate by. For example,
         \code{mfdb_group("101" = c(1011, 1012), "102" = c(1021, 1022, 1023))}
     }
-    \item{ages}{
+    \item{age}{
         (required) An mfdb_group representing which years you want to
         include in the data, and how to group them. For example,
         \code{mfdb_group('young' = 1:3, 'old' = 4:6)}
         to group ages into "young" (up to 3), or "old" (4--6 years)
     }
-    \item{lengths}{
+    \item{length}{
         (required) An mfdb_interval representing which lengths to
         include in the data, and how to group them. For example,
         \code{mfdb_interval("len", seq(0, 500, by = 10))}
@@ -115,13 +115,13 @@ returned as part of the query.
 agg_data <- mfdb_agelength(mdb,
         params = c(list(
             year = c(1990, 1991),
-            lengths = mfdb_interval("len", seq(0, 500, by = 30)),
-            ages = mfdb_group('young' = c(1,2,3)),
+            length = mfdb_interval("len", seq(0, 500, by = 30)),
+            age = mfdb_group('young' = c(1,2,3)),
             null = NULL), opt_catch))
 gadget_dir_write(gd, gadget_likelihood_component("catchdistribution",
         name = "cdist",
         weight = 0.9,
         data = agg_data[[1]],
-        area = attr(agg_data[[1]], "areas"),
-        age = attr(agg_data[[1]], "ages")))
+        area = attr(agg_data[[1]], "area"),
+        age = attr(agg_data[[1]], "age")))
 }}

@@ -13,7 +13,7 @@ opt_catch <- list()
 # parameters to use when querying
 mdb <- mfdb(list(dbname="dw0605", host="/tmp/"),
     defaultparams = list(
-        areas = mfdb_group(
+        area = mfdb_group(
             "101" = c(1011, 1012, 1013, 1014, 1015),
             "102" = c(1021, 1022, 1023)),
         timestep = mfdb_group_numbered("ts", c(1,2,3,4,5,6), c(7,8,9,10,11,12)), # Group months to create 2 timesteps for each year
@@ -25,7 +25,7 @@ mdb <- mfdb(list(dbname="dw0605", host="/tmp/"),
 gd <- gadget_directory("./out")
 # NB: Could have a "remove everything" option here, but it doesn't yet exist.
 
-# Fetch sizes and temperatures for areas, and turn them into an areafile.
+# Fetch sizes and temperatures for area, and turn them into an areafile.
 # sizes <- mfdb_area_size(mdb)
 # temps <- mfdb_temperatures(mdb)
 # gadget_dir_write(gadget_areafile(gd,
@@ -52,11 +52,11 @@ gadget_dir_write(gd, gadget_likelihood_component("penalty",
 agg_data <- mfdb_meanlength_stddev(mdb,
         params = c(list(
             year = c(1990, 1991, 1992, 1993),
-            areas = mfdb_bootstrap_group(2, mfdb_group(
+            area = mfdb_bootstrap_group(2, mfdb_group(
                 "101" = c(1011, 1012, 1013, 1014, 1015),
                 "102" = c(1021, 1022, 1023))), # NB: Add one more & bootstrap, overriding default
-            ages = mfdb_group('young' = c(1,2,3), 'old' = c(4,5,6)),
-            lengths = mfdb_interval("len", seq(0, 500, by = 50)),
+            age = mfdb_group('young' = c(1,2,3), 'old' = c(4,5,6)),
+            length = mfdb_interval("len", seq(0, 500, by = 50)),
             # species = "COD",
             null = NULL), opt_catch))
 
@@ -80,8 +80,8 @@ rm(agg_data) # Free up memory before moving on to the next component
 agg_data <- mfdb_meanweight(mdb,
         params = c(list(
             year = c(1990, 1991, 1992, 1993),
-            ages = mfdb_group_numbered("age", c(1), c(2), c(3), c(4), c(5)),
-            lengths = mfdb_interval("len", seq(0, 500, by = 50)),
+            age = mfdb_group_numbered("age", c(1), c(2), c(3), c(4), c(5)),
+            length = mfdb_interval("len", seq(0, 500, by = 50)),
             # species = "COD",
             null = NULL), opt_catch))
 
@@ -94,8 +94,8 @@ rm(agg_data) # Free up memory before moving on to the next component
 agg_data <- mfdb_agelength(mdb,
         params = c(list(
             year = c(1990, 1991),
-            lengths = mfdb_interval("len", seq(0, 500, by = 50)),
-            ages = mfdb_group('young' = c(1,2,3)),
+            length = mfdb_interval("len", seq(0, 500, by = 50)),
+            age = mfdb_group('young' = c(1,2,3)),
             null = NULL), opt_catch))
 gadget_dir_write(gd, gadget_likelihood_component("catchdistribution",
         name = "cdist",

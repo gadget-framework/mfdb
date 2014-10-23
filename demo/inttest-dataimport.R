@@ -48,24 +48,24 @@ section("Areacell/divisions", function() {
     mfdb_import_division(mdb2, list(divA = c('45G03', '45G04'), divD = c('45G04', '45G05')))
 
     # Can't make a report without an area grouping
-    ok(cmp_error(mfdb_area_size(mdb, list()), "areas"), "Noticed lack of area grouping")
+    ok(cmp_error(mfdb_area_size(mdb, list()), "area"), "Noticed lack of area grouping")
 
     # Finally, we can make a report out of this
     area_group <- mfdb_group(divA = c("divA"), divB = c("divB"), divAB = c("divA", "divB"))
-    ok(cmp(mfdb_area_size(mdb, list(areas = area_group)),
+    ok(cmp(mfdb_area_size(mdb, list(area = area_group)),
         list("0" = structure(
             data.frame(area = c("divA", "divAB", "divB"), size = c(15, 25, 10), stringsAsFactors = FALSE),
-            areas = area_group,
+            area = area_group,
             generator = "mfdb_area_size"))),
         "Can combine divA & B and get combined size")
 
     # And a different report for mdb2
     area_group <- mfdb_group(divA = c("divA"), divAll = c("divA", "divB", "divC", "divD"))
-    ok(cmp(mfdb_area_size(mdb2, list(areas = area_group)),
+    ok(cmp(mfdb_area_size(mdb2, list(area = area_group)),
         list("0" = structure(
             #TODO: divA and divB overlap, so divAll contains 45G04 twice. Probably bad for size(?)
             data.frame(area = c("divA", "divAll"), size = c(21, 44), stringsAsFactors = FALSE),
-            areas = area_group,
+            area = area_group,
             generator = "mfdb_area_size"))),
         "Can combine divA & B and get combined size")
 })
@@ -89,7 +89,7 @@ section("Temperature import", function() {
         temperature = c(1:12, 25:36)))
     area_group <- mfdb_group(divA = c("divA"))
     timestep <- mfdb_group(q1 = 1:3, q2 = 4:6, q3 = 7:9, q4 = 10:12)
-    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = timestep, areas = area_group)),
+    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = timestep, area = area_group)),
         list("0.0" = structure(
             data.frame(
                 year = rep(c(1998, 1999), each = 4),
@@ -100,7 +100,7 @@ section("Temperature import", function() {
                     mean(25:27), mean(28:30), mean(31:33), mean(34:36)),
                 stringsAsFactors = FALSE),
             timestep = timestep,
-            areas = area_group,
+            area = area_group,
             generator = "mfdb_temperature"))),
         "Can collate temperatures by quarter")
 
@@ -130,7 +130,7 @@ section("Temperature", function() {
         temperature = c(1:12, 25:36)))
     area_group <- mfdb_group(divA = c("divA"))
     timestep <- mfdb_group(q1 = 1:3, q2 = 4:6, q3 = 7:9, q4 = 10:12)
-    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = timestep, areas = area_group)),
+    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = timestep, area = area_group)),
         list("0.0" = structure(
             data.frame(
                 year = rep(c(1998, 1999), each = 4),
@@ -141,7 +141,7 @@ section("Temperature", function() {
                     mean(25:27), mean(28:30), mean(31:33), mean(34:36)),
                 stringsAsFactors = FALSE),
             timestep = timestep,
-            areas = area_group,
+            area = area_group,
             generator = "mfdb_temperature"))),
         "Can collate temperatures by quarter")
 
@@ -151,7 +151,7 @@ section("Temperature", function() {
         month = c(1:12, 1:12),
         areacell = c(rep('45G01', times = 24)),
         temperature = c(12:23, 20:31)))
-    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = timestep, areas = area_group)),
+    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = timestep, area = area_group)),
         list("0.0" = structure(
             data.frame(
                 year = rep(c(1998, 1999), each = 4),
@@ -162,7 +162,7 @@ section("Temperature", function() {
                     mean(20:22), mean(23:25), mean(26:28), mean(29:31)),
                 stringsAsFactors = FALSE),
             timestep = timestep,
-            areas = area_group,
+            area = area_group,
             generator = "mfdb_temperature"))),
         "Second import cleared previous data")
 })
@@ -192,10 +192,10 @@ section("Unaggregated length / weight samples", function () {
     ok(cmp(
         mfdb_meanlength(mdb, list(
             year = 1998:2000,
-            areas = area_group,
+            area = area_group,
             timestep = timestep,
-            ages = age_group,
-            lengths = length_group)),
+            age = age_group,
+            length = length_group)),
         list("0.0.0" = structure(
             data.frame(
                 year = c(1998:1998),
@@ -206,8 +206,8 @@ section("Unaggregated length / weight samples", function () {
                 mean = c(26.2, 31.75),
                 stringsAsFactors = FALSE),
             timestep = timestep,
-            areas = area_group,
-            ages = age_group,
+            area = area_group,
+            age = age_group,
             generator = "mfdb_meanlength"))),
        "Aggregated length data")
 })
