@@ -19,3 +19,8 @@ remove_mfdb_tables <- function(conn) {
     }
     invisible(TRUE)
 }
+
+# Make some obvious time groupings
+step_year <- mfdb_group(year = 1:12)
+step_halves <- mfdb_group(h1 = 1:6, h2 = 7:12)
+step_quarters <- mfdb_group(q1 = 1:3, q2 = 4:6, q3 = 7:9, q4 = 10:12)
