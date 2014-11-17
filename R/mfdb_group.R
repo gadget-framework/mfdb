@@ -46,8 +46,8 @@ denormalize.mfdb_bootstrap_group <- function (group, samp_count = 0) {
 denormalize.mfdb_group <- function (group, samp_count = 0) {
     do.call(rbind, lapply(1:length(group), function (i) {
         data.frame(
-            samp = samp_count,
-            key = names(group)[[i]],
+            sample = samp_count,
+            name = names(group)[[i]],
             value = I(group[[i]]))
     }))
 }
