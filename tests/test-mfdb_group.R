@@ -2,7 +2,7 @@ library(mfdb)
 library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
-section("Can generate groupobjects", {
+ok_group("Can generate groupobjects", {
     expect_equal(
         class(mfdb_group()),
         c("mfdb_group"))
@@ -12,13 +12,13 @@ section("Can generate groupobjects", {
         c("mfdb_group"))
 })
 
-section("Can generate a numbered group", {
+ok_group("Can generate a numbered group", {
     expect_equal(
         mfdb_group_numbered("age", c(4), c(5)),
         mfdb_group(age1 = c(4), age2 = c(5)))
 })
 
-section("Can denormalise a group", {
+ok_group("Can denormalise a group", {
     expect_equal(
         mfdb:::denormalize.mfdb_group(mfdb_group(a = c(1,"two",3), b = c(88))),
         data.frame(sample = 0,
@@ -32,7 +32,7 @@ section("Can denormalise a group", {
             value = I(c(1, 2, 3, 88, 21, 99))))
 })
 
-section("Can get a bootstrap sample", {
+ok_group("Can get a bootstrap sample", {
     expect_error(
         mfdb_bootstrap_group(2, "camel"),
         "Second argument should be a mfdb_group")

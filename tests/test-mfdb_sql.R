@@ -2,7 +2,7 @@ library(mfdb)
 library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
-section("sql_quote", {
+ok_group("sql_quote", {
     sql_quote <- mfdb:::sql_quote
     ok(sql_quote("") == "''")
     ok(sql_quote("3") == "'3'")
@@ -17,7 +17,7 @@ section("sql_quote", {
     ok(sql_quote(c(1, NA, 3)) == "(1,NULL,3)")
 })
 
-section("select_clause", {
+ok_group("select_clause", {
     sc <- mfdb:::select_clause.numeric
     ok(cmp(sc(5, 'col', 'out'), "col AS out"))
 
@@ -25,7 +25,7 @@ section("select_clause", {
     ok(cmp(sc('a', 'col', 'out'), "col AS out"))
 })
 
-section("where_clause", {
+ok_group("where_clause", {
     wc <- mfdb:::where_clause.numeric
     ok(cmp(wc(5, 'col'), "(col IN (5))"))
     ok(cmp(wc(c(1,2,3), 'col'), "(col IN (1,2,3))"))
@@ -36,7 +36,7 @@ section("where_clause", {
     ok(cmp(wc(c("GEA"), 'tbl.gear_id'), "(tbl.gear_id IN (SELECT gear_id FROM gear WHERE name IN ('GEA')))"))
 })
 
-section("sql_create_index", {
+ok_group("sql_create_index", {
     ci <- mfdb:::sql_create_index
     ok(cmp(ci("tbl", "col"), "CREATE INDEX idx_tbl_col ON tbl (col)"))
     ok(cmp(ci("tbl", c("A", "B")), "CREATE INDEX idx_tbl_A_B ON tbl (A,B)"))

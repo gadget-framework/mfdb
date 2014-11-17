@@ -9,7 +9,7 @@ all_components <- c(
         "catchdistribution",
         "stockdistribution")
 
-section("Can generate gadget_likelihood_component objects", {
+ok_group("Can generate gadget_likelihood_component objects", {
     expect_error(
         gadget_likelihood_component("aardvark"),
         "Unknown likelihood component aardvark")
@@ -19,14 +19,14 @@ section("Can generate gadget_likelihood_component objects", {
         c("gadget_penalty_component", "gadget_likelihood_component"))
 })
 
-section("Can use as.character on gadget_likelihood_components", {
+ok_group("Can use as.character on gadget_likelihood_components", {
     comp <- gadget_likelihood_component("penalty", name = "wibble", weight = 0.5)
     expect_equal(comp$name, "wibble")
     expect_equal(comp$weight, 0.5)
     expect_equal(comp$type, "penalty")
 })
 
-section("Name, type and weight behave the same with all components", {
+ok_group("Name, type and weight behave the same with all components", {
     for (type in all_components) {
         if (type == "catchstatistics") {
             c <- gadget_likelihood_component(type,
@@ -60,14 +60,14 @@ section("Name, type and weight behave the same with all components", {
 })
 
 ###############################################################################
-section("Can generate an understocking component with default parameters", {
+ok_group("Can generate an understocking component with default parameters", {
     comp <- gadget_likelihood_component("understocking")
     expect_equal(comp$name, "understocking")
     expect_equal(comp$weight, 0)
     expect_equal(comp$type, "understocking")
 })
 
-section("Can customise it", {
+ok_group("Can customise it", {
     comp <- gadget_likelihood_component("understocking", name = "alfred", weight = 0.3)
     expect_equal(comp$name, "alfred")
     expect_equal(comp$weight, 0.3)
@@ -75,7 +75,7 @@ section("Can customise it", {
 })
 
 ###############################################################################
-section("Function either provided explicitly or based on generator", {
+ok_group("Function either provided explicitly or based on generator", {
     expect_error(
         gadget_likelihood_component("catchstatistics"),
         "No data provided")

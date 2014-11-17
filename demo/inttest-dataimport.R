@@ -25,7 +25,7 @@ mdb2 <- mfdb('Baltic', db_params = db_params, save_temp_tables = TRUE)
 ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE species_id = 9999999999")[1,] == 
   mfdb::species[mfdb::species$name == 'TBX', c('name', 'description')]), "Entry for 9999999999 matches package")
 
-section("Areacell/divisions", {
+ok_group("Areacell/divisions", {
     # Can't populate divisions yet, no areacells defined
     ok(cmp_error(mfdb_import_division(mdb, list(divA = c('45G01', '45G02', '45G03'))), 'areacell vocabulary'), "Areacell not populated yet")
 
@@ -70,7 +70,7 @@ section("Areacell/divisions", {
         "Can combine divA & B and get combined size")
 })
 
-section("Temperature import", {
+ok_group("Temperature import", {
     # Set-up areas/divisions
     mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
     mfdb_import_division(mdb, list(divB = c('45G01', '45G02'), divC = c('45G01')))
@@ -110,7 +110,7 @@ section("Temperature import", {
         temperature = c(1,2,4)))
 })
 
-section("Temperature", {
+ok_group("Temperature", {
     # Set-up areas/divisions
     mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
     mfdb_import_division(mdb, list(divB = c('45G01', '45G02'), divC = c('45G01')))

@@ -56,7 +56,8 @@ expect_true <- function(exp) {
     ok(exp, "Is true")
 }
 
-section <- function (message, tests) {
-    cat(paste("#", message, collapse="\n"), "\n")
+ok_group <- function (message, tests = NULL) {
+    cat(paste0("# ", unlist(strsplit(message, "[\r\n]+")), "\n", collapse=""), sep = "")
     tests
+    invisible(NULL)
 }

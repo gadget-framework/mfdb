@@ -17,7 +17,7 @@ ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE speci
   mfdb::species[mfdb::species$name == 'TBX', c('name', 'description')]), "Entry for 9999999999 matches package")
 ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM species")[1,1], nrow(mfdb::species)), "Species has right number of entries")
 
-section("Unaggregated length / weight / age samples", {
+ok_group("Unaggregated length / weight / age samples", {
     # Set-up areas/divisions
     mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
     mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G01')))
@@ -160,7 +160,7 @@ section("Unaggregated length / weight / age samples", {
        "Aggregated agelength data")
 })
 
-section("Filtering of samples", {
+ok_group("Filtering of samples", {
     # Set-up areas/divisions
     mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
     mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G01')))

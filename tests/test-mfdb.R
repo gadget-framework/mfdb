@@ -18,7 +18,7 @@ assignInNamespace("dbClearResult", function(mdb, ...) {
     return("dbClearResult")
 }, ns="DBI")
 
-section("mfdb_insert", {
+ok_group("mfdb_insert", {
     mfdb_insert <- function (table_name, data_in, returning = "", extra = c()) {
         mdb <- NULL
         return(capture.output({
@@ -61,7 +61,7 @@ section("mfdb_insert", {
 
 })
 
-section("mfdb_update", {
+ok_group("mfdb_update", {
     mfdb_update <- function (table_name, data_in, returning = "", extra = c(), where = c()) {
         mdb <- NULL
         return(capture.output({
