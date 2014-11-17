@@ -83,30 +83,67 @@ mfdb_send <- function(mdb, ...) {
 }
 
 # Insert a vector row or data.frame of rows into table_name
-mfdb_insert <- function(mfdb, table_name, data_in, returning = "", extra = c()) {
+mfdb_insert <- function(mdb, table_name, data_in, returning = "", extra = c()) {
     insert_row <- function (r) {
-        res <- dbSendQuery(mfdb$db, paste0(c("INSERT INTO ", paste(table_name, collapse = ""),
+        res <- mfdb_send(mdb, "INSERT INTO ", paste(table_name, collapse = ""),
             " (", paste(c(names(r), names(extra)), collapse=","), ") VALUES ",
             if (is.null(nrow(r)))
                 sql_quote(c(r, extra))
             else
                 paste0(vapply(seq_len(nrow(r)), function (i) { sql_quote(c(r[i,], extra)) }, ""), collapse = ","),
             (if (nzchar(returning)) paste0(c(" RETURNING ", returning), collapse = "") else ""),
-            NULL), collapse = ""))
-        out <- if (nzchar(returning)) dbFetch(res) else dbGetRowsAffected(res)
-        dbClearResult(res)
+            NULL)
+        out <- if (nzchar(returning)) DBI::dbFetch(res) else DBI::dbGetRowsAffected(res)
+        DBI::dbClearResult(res)
         return(out)
     }
     if (!is.data.frame(data_in)) {
         # Insert single row
         return(insert_row(data_in))
+    } else if (nrow(data_in) == 0) {
+        # Nothing to insert
+        return(0)
     } else {
         # Insert rows
         batch_size <- 1000
-        return(vapply(
+        return(sum(vapply(
             seq(0, nrow(data_in) %/% batch_size),
             function (i) { insert_row(data_in[(i * batch_size):min(nrow(data_in), (i+1) * batch_size - 1),]) },
-            0))
+            0)))
+    }
+}
+
+# Update a vector row or data.frame of rows from table_name
+mfdb_update <- function(mdb, table_name, data_in, returning = "", extra = c(), where = list()) {
+    id_col <- paste0(table_name, '_id')
+
+    update_row <- function (r) {
+        res <- mfdb_send(mdb,
+            "UPDATE ", table_name,
+            " SET ",
+            paste0(c(
+                vapply(names(r)[names(r) != id_col], function (n) paste0(n, "=", sql_quote(r[[n]])), ""),
+                vapply(names(extra), function (n) paste0(n, "=", sql_quote(extra[[n]])), ""),
+                NULL
+            ), collapse = ","),
+            " WHERE ", table_name, "_id = ", sql_quote(r[[id_col]]),
+            vapply(names(where), function (n) paste0(" AND ", n, "=", sql_quote(where[[n]])), ""),
+            NULL)
+        out <- if (nzchar(returning)) DBI::dbFetch(res) else DBI::dbGetRowsAffected(res)
+        if (out != 1) stop("update should affect one row not ", out)
+        DBI::dbClearResult(res)
+        return(out)
+    }
+
+    if (!is.data.frame(data_in)) {
+        # Update single row
+        return(update_row(data_in))
+    } else if (nrow(data_in) == 0) {
+        # Nothing to update
+        return(0)
+    } else {
+        # Update all rows in turn
+        return(sum(vapply(seq(1, nrow(data_in)), function(i) update_row(data_in[i,]), 0)))
     }
 }
 
