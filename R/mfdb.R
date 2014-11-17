@@ -10,14 +10,13 @@ mfdb <- function(case_study_name,
     db_params <- c(db_params, list(drv = PostgreSQL(), dbname = "mf"))
     db_guesses <- list(
         list(),
-        list(host = "/tmp/pg_mfdb"),
         list(host = "/tmp"),
+        list(host = "/tmp/pg_mfdb"),
         list(host = "/var/tmp"),
         list(host = "localhost"))
     for (guess in db_guesses) {
         db_combined <- c(guess, db_params)[!duplicated(c(guess, db_params))]
         logger$info(paste0("Trying to connect to: ", capture.output(str(db_combined)), sep = ""))
-        do.call(dbConnect, db_combined)
         db_connection <- tryCatch(do.call(dbConnect, db_combined), error = function (e) NULL)
         if (!is.null(db_connection)) break
     }
