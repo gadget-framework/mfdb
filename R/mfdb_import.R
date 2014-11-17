@@ -1,6 +1,6 @@
 # Import a lookup table e.g. mfdb_import_taxonomy(mdb, "species", read.csv('species.csv'))
-# new_data should have columns id, name, description
-mfdb_import_taxonomy <- function (mdb, table_name, new_data, extra_cols = c('description')) {
+# data_in should have columns id, name, description
+mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('description')) {
     # Is table_name one of the recognised tables?
     if (!(table_name %in% mfdb_taxonomy | table_name %in% mfdb_cs_taxonomy)) {
         stop("Unknown taxonomy table ", table_name)
@@ -8,7 +8,7 @@ mfdb_import_taxonomy <- function (mdb, table_name, new_data, extra_cols = c('des
     cs_specific <- (table_name %in% mfdb_cs_taxonomy)
 
     # Order incoming data by id
-    new_data <- new_data[order(new_data$id),]
+    data_in <- data_in[order(data_in$id),]
 
     # Fetch all existing ids, quit if all are there
     existing <- mfdb_fetch(mdb,
@@ -17,8 +17,8 @@ mfdb_import_taxonomy <- function (mdb, table_name, new_data, extra_cols = c('des
         if (cs_specific) c(" WHERE case_study_id = ", mdb$case_study_id) else "",
         " ORDER BY 1")
 
-    if (nrow(existing) > 0 && is.logical(all.equal(new_data$id, existing$id))
-                           && is.logical(all.equal(as.character(new_data$name), as.character(existing$name)))) {
+    if (nrow(existing) > 0 && is.logical(all.equal(data_in$id, existing$id))
+                           && is.logical(all.equal(as.character(data_in$name), as.character(existing$name)))) {
         mdb$logger$debug(paste0("Taxonomy ", table_name ," up-to-date"))
         return()
     }
@@ -26,14 +26,14 @@ mfdb_import_taxonomy <- function (mdb, table_name, new_data, extra_cols = c('des
     # Either add or update rows. Removing is risky, since we might have dependent data.
     # Also don't want to remove data if partitioned by case study
     mfdb_transaction(mdb, {
-        #TODO: Turn mfdb_insert into mfdb_upsert, use it
-        vapply(seq_len(nrow(new_data)), function (i) {
-            if (new_data[i, 'id'] %in% existing$id) { # NB: Got mushed to a string when row became a vector, probably bad
+        #TODO: Split data_in into 2, use mfdb_insert on one half.
+        vapply(seq_len(nrow(data_in)), function (i) {
+            if (data_in[i, 'id'] %in% existing$id) { # NB: Got mushed to a string when row became a vector, probably bad
                 mfdb_send(mdb,
                     "UPDATE ", table_name,
-                    " SET name = ", sql_quote(new_data[i, 'name']),
-                    vapply(extra_cols, function(r) paste0(",", r, " = ", sql_quote(new_data[i, r])), ""),
-                    " WHERE ", table_name, "_id = ", sql_quote(new_data[i, 'id']),
+                    " SET name = ", sql_quote(data_in[i, 'name']),
+                    vapply(extra_cols, function(r) paste0(",", r, " = ", sql_quote(data_in[i, r])), ""),
+                    " WHERE ", table_name, "_id = ", sql_quote(data_in[i, 'id']),
                     if (cs_specific) c(" AND case_study_id = ", mdb$case_study_id) else "")
             } else {
                 mfdb_send(mdb,
@@ -45,7 +45,7 @@ mfdb_import_taxonomy <- function (mdb, table_name, new_data, extra_cols = c('des
                         extra_cols), collapse = ","), ") VALUES ",
                     sql_quote(c(
                         if (cs_specific) mdb$case_study_id else NULL,
-                        new_data[i, c('id', 'name', extra_cols)])))
+                        data_in[i, c('id', 'name', extra_cols)])))
             }
             return(0)
         }, 0)
