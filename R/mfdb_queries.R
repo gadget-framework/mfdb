@@ -116,9 +116,9 @@ mfdb_sample_grouping <- function (mdb,
     # Importing is probably done, so create indexes if we need to
     mfdb_finish_import(mdb)
 
-    x <- grouping_by("timestep", group_to_table(mdb$db, "temp_ts", params$timestep, datatype = "INT", save_temp_tables = mdb$save_temp_tables))
-    x <- grouping_by("area", group_to_table(mdb$db, "temp_area", params$area, datatype = "VARCHAR(10)", save_temp_tables = mdb$save_temp_tables))
-    x <- grouping_by("age", group_to_table(mdb$db, "temp_age", params$age, datatype = "INT", save_temp_tables = mdb$save_temp_tables))
+    x <- grouping_by("timestep", group_to_table(mdb, "temp_ts", params$timestep, datatype = "INT", save_temp_tables = mdb$save_temp_tables))
+    x <- grouping_by("area", group_to_table(mdb, "temp_area", params$area, datatype = "VARCHAR(10)", save_temp_tables = mdb$save_temp_tables))
+    x <- grouping_by("age", group_to_table(mdb, "temp_age", params$age, datatype = "INT", save_temp_tables = mdb$save_temp_tables))
 
     out <- mfdb_fetch(mdb,
         "SELECT ", paste(c(
