@@ -1,2 +1,3 @@
 example	Exercise some of the features of mfdb
 inttest-dataimport Integration test: Exercise data loading
+inttest-samples Integration test: Sampling of data
