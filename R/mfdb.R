@@ -86,11 +86,14 @@ mfdb_send <- function(mdb, ...) {
 # Insert a vector row or data.frame of rows into table_name
 mfdb_insert <- function(mfdb, table_name, data_in, returning = "", extra = c()) {
     insert_row <- function (r) {
-        res <- dbSendQuery(mfdb$db, paste0("INSERT INTO ", paste(table_name, collapse = ""),
+        res <- dbSendQuery(mfdb$db, paste0(c("INSERT INTO ", paste(table_name, collapse = ""),
             " (", paste(c(names(r), names(extra)), collapse=","), ") VALUES ",
-            sql_quote(c(r, extra)),
+            if (is.null(nrow(r)))
+                sql_quote(c(r, extra))
+            else
+                paste0(vapply(seq_len(nrow(r)), function (i) { sql_quote(c(r[i,], extra)) }, ""), collapse = ","),
             (if (nzchar(returning)) paste0(c(" RETURNING ", returning), collapse = "") else ""),
-            "", collapse = ""))
+            NULL), collapse = ""))
         out <- if (nzchar(returning)) dbFetch(res) else dbGetRowsAffected(res)
         dbClearResult(res)
         return(out)
@@ -100,8 +103,11 @@ mfdb_insert <- function(mfdb, table_name, data_in, returning = "", extra = c()) 
         return(insert_row(data_in))
     } else {
         # Insert rows
-        #TODO: Should be batching
-        return(vapply(seq_len(nrow(data_in)), function (i) { insert_row(data_in[i,]) }, 0))
+        batch_size <- 1000
+        return(vapply(
+            seq(0, nrow(data_in) %/% batch_size),
+            function (i) { insert_row(data_in[(i * batch_size):min(nrow(data_in), (i+1) * batch_size - 1),]) },
+            0))
     }
 }
 
