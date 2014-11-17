@@ -8,7 +8,9 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
     cs_specific <- (table_name %in% mfdb_cs_taxonomy)
 
     # Order incoming data by id
-    data_in <- data_in[order(data_in$id),]
+    id_col <- paste0(table_name, '_id')
+    data_in <- data_in[order(data_in$id), c('id', 'name', extra_cols)]
+    names(data_in) <- c(id_col, 'name', extra_cols)
 
     # Fetch all existing ids, quit if all are there
     existing <- mfdb_fetch(mdb,
@@ -17,7 +19,7 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
         if (cs_specific) c(" WHERE case_study_id = ", mdb$case_study_id) else "",
         " ORDER BY 1")
 
-    if (nrow(existing) > 0 && is.logical(all.equal(data_in$id, existing$id))
+    if (nrow(existing) > 0 && is.logical(all.equal(data_in[[id_col]], existing$id))
                            && is.logical(all.equal(as.character(data_in$name), as.character(existing$name)))) {
         mdb$logger$debug(paste0("Taxonomy ", table_name ," up-to-date"))
         return()
@@ -26,29 +28,14 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
     # Either add or update rows. Removing is risky, since we might have dependent data.
     # Also don't want to remove data if partitioned by case study
     mfdb_transaction(mdb, {
-        #TODO: Split data_in into 2, use mfdb_insert on one half.
-        vapply(seq_len(nrow(data_in)), function (i) {
-            if (data_in[i, 'id'] %in% existing$id) { # NB: Got mushed to a string when row became a vector, probably bad
-                mfdb_send(mdb,
-                    "UPDATE ", table_name,
-                    " SET name = ", sql_quote(data_in[i, 'name']),
-                    vapply(extra_cols, function(r) paste0(",", r, " = ", sql_quote(data_in[i, r])), ""),
-                    " WHERE ", table_name, "_id = ", sql_quote(data_in[i, 'id']),
-                    if (cs_specific) c(" AND case_study_id = ", mdb$case_study_id) else "")
-            } else {
-                mfdb_send(mdb,
-                    "INSERT INTO ", table_name,
-                    " (", paste(c(
-                        if (cs_specific) "case_study_id" else NULL,
-                        paste0(table_name, "_id"),
-                        "name",
-                        extra_cols), collapse = ","), ") VALUES ",
-                    sql_quote(c(
-                        if (cs_specific) mdb$case_study_id else NULL,
-                        data_in[i, c('id', 'name', extra_cols)])))
-            }
-            return(0)
-        }, 0)
+        mfdb_insert(mdb,
+            table_name,
+            data_in[!(data_in[[id_col]] %in% existing$id),],
+            extra = (if (cs_specific) c(case_study_id = mdb$case_study_id) else c()))
+        mfdb_update(mdb,
+            table_name,
+            data_in[data_in[[id_col]] %in% existing$id,],
+            where = list(if (cs_specific) c(case_study_id = mdb$case_study_id)))
     })
 }
 
