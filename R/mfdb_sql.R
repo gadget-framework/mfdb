@@ -60,11 +60,7 @@ group_to_table <- function(db, table_name, group, datatype = "INT", save_temp_ta
             ")"))
 
     # Flatten out into multiple key:value rows, populate table in one hit
-    group_table <- denormalize(group)
-    by(group_table, 1:nrow(group_table), function(v) {
-        #NB: Once we upgrade postgresql can use multi-row insert form
-        dbSendQuery(db, paste0("INSERT INTO ", table_name, " (sample, name, value) VALUES (", sql_quote(v[[1]]), ",", sql_quote(v[[2]]), ",", sql_quote(v[[3]]), ")"))
-    })
+    mfdb_insert(mdb, table_name, denormalize(group))
 }
 
 # Return SQL to create a table, arguments of form
