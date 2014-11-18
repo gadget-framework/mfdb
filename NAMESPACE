@@ -31,6 +31,10 @@ export(mfdb_meanweight)
 export(mfdb_meanweight_stddev)
 export(mfdb_agelength)
 
+# gadget_areafile.R
+export(gadget_areafile)
+S3method(gadget_dir_write, gadget_areafile)
+
 # gadget_directory.R
 export(gadget_directory)
 export(gadget_dir_write)
