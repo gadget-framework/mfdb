@@ -19,7 +19,13 @@ print.gadget_file <- function (x, ...) {
 
         # properties are in key\tvalue1\tvalue2... form
         if(length(comp) > 0) for (i in 1:length(comp)) {
-            cat(names(comp)[[i]], "\t", paste(comp[[i]], collapse = "\t"), "\n", sep = "")
+            cat(names(comp)[[i]], "\t", sep = "")
+            cat(paste(comp[[i]], collapse = "\t"), sep = "")
+            if (length(attr(comp[[i]], "comment")) > 0) {
+                if (length(comp[[i]]) > 0) cat("\t\t")
+                cat("; ", attr(comp[[i]], "comment"), sep = "")
+            }
+            cat("\n")
         }
     }
 
@@ -107,7 +113,7 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
             break
         }
 
-        # Add any comments as a preamble
+        # Add any full-line comments as a preamble
         x <- extract("^;\\s*(.*)", line)
         if (length(x) > 0) {
             cur_preamble <- c(cur_preamble, list(x[[1]]))
@@ -129,20 +135,24 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
             next
         }
 
-        # Any other line shoud be a \t seperated list
-        x <- unlist(strsplit(line, "\t"))
-        if (length(x) > 0) {
+        # Any other line shoud be a tab seperated list
+        match <- extract("([a-zA-Z0-9\\-_]*)\\s+([^;]*);?\\s*(.*)", line)
+        line_name <- match[[1]]
+        line_values <- if (length(match[[2]]) > 0) unlist(strsplit(sub("\\s+$", "", match[[2]]), "\\t+")) else c()
+        line_comment <- match[[3]]
+
+        if (length(line_name) > 0) {
             # Started writing items, so must have got to the end of the preamble
             if (length(cur_preamble) > 0) {
                 attr(cur_comp, 'preamble') <- cur_preamble
                 cur_preamble <- list()
             }
-            if (length(x) > 1) {
-                cur_comp[[length(cur_comp) + 1]] <- tryCatch(as.numeric(x[2:length(x)]), warning = function (w) x[2:length(x)])
-            } else {
-                cur_comp[[length(cur_comp) + 1]] <- c("")
-            }
-            names(cur_comp)[[length(cur_comp)]] <- x[[1]]
+
+            # Append to cur_comp
+            cur_comp[[length(cur_comp) + 1]] <- structure(
+                tryCatch(as.numeric(line_values), warning = function (w) line_values),
+                comment = (if (nzchar(line_comment)) line_comment else NULL))
+            names(cur_comp)[[length(cur_comp)]] <- line_name
             next
         }
     }

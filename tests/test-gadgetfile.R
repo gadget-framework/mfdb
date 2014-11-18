@@ -76,9 +76,9 @@ ok_group("Can read gadget files", {
     }
     # Test we can go from string to object and back again
     test_loopback <- function(...) {
-        expect_equal(
-            as.character(gadget_file_string(c(...))),
-            paste0(c(...), "\n", collapse = ""))
+        ok(cmp(
+            strsplit(as.character(gadget_file_string(c(...))), "\n")[[1]],
+            c(...)))
     }
 
     # Basic structure
@@ -176,4 +176,13 @@ ok_group("Can read gadget files", {
         "a\t46",
         "[component]",
         "a\t47")
+
+    # Can have comments at the end of lines too
+    test_loopback(
+        ver_string,
+        "; This is a preamble comment",
+        "[component]",
+        "a\t46\t\t; This is a comment at the end of a line",
+        "a\t46\t47\t48\t49\t\t; This is a comment at the end of multiple values",
+        "a\t; This is a comment at the end of an empty line")
 })
