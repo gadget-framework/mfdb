@@ -9,7 +9,7 @@
 }
 
 \usage{
-gadget_directory(dir)
+gadget_directory(dir, mainfile = "main")
 gadget_dir_write(gd, obj)
 gadget_dir_read(gd, file_name, missing_okay = TRUE)
 }
@@ -17,6 +17,9 @@ gadget_dir_read(gd, file_name, missing_okay = TRUE)
 \arguments{
     \item{dir}{
         Name of directory, will be created if it doesn't exist.
+    }
+    \item{mainfile}{
+        Name of the GADGET mainfile to use.
     }
     \item{gd}{
         A \code{gadget_directory} object.
