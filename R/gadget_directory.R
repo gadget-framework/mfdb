@@ -19,32 +19,31 @@ gadget_dir_write.gadget_file <- function(gd, obj) {
 
 gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
     # Either replace component with matching name, or add to end
-    insert_component <- function(comps, cname, n) {
-        for (i in 1:(length(comps) + 1)) {
-            if (i > length(comps)) break;
-            if (length(comps[[i]]) == 0) next;  # e.g. empty initial component
-            if (names(comps)[[i]] == cname
-                & comps[[i]]$type == n$type
-                & comps[[i]]$name == n$name) break;
-        }
-        comps[[i]] <- n
-        names(comps)[[i]] <- cname
-        return(comps)
-    }
+    gadget_likelihoodfile_update <- function(gd, fname, obj) {
+        likelihood <- gadget_dir_read(gd, fname)
 
-    # Make sure mainfile knows about likelihood file
-    gadget_mainfile_update(gd, likelihoodfiles = 'likelihood')
-
-    # Insert / Update component in likelihood file
-    likelihood <- gadget_dir_read(gd, 'likelihood')
-    likelihood$components <- insert_component(
-        as.list(likelihood$components),
-        "component",
-        lapply(obj, function (x) {
+        n <- lapply(obj, function (x) {
             # Don't let gadget_file's leak out into lists for export
             if ("gadget_file" %in% class(x)) x$filename else x
-        }))
-    gadget_dir_write(gd, likelihood)
+        })
+
+        # Find component with matching name and type
+        for (i in 1:(length(likelihood$components) + 1)) {
+            if (i > length(likelihood$components)) break;
+            if (length(likelihood$components[[i]]) == 0) next;  # e.g. empty initial component
+            if (names(likelihood$components)[[i]] == "component"
+                & likelihood$components[[i]]$type == n$type
+                & likelihood$components[[i]]$name == n$name) break;
+        }
+        likelihood$components[[i]] <- n
+        names(likelihood$components)[[i]] <- "component"
+
+        gadget_dir_write(gd, likelihood)
+    }
+
+    # Update mainfile and likelihood file
+    gadget_mainfile_update(gd, likelihoodfiles = 'likelihood')
+    gadget_likelihoodfile_update(gd, 'likelihood', obj)
 
     # Write out each file-based component
     for (x in obj) {
