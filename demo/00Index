@@ -1,3 +1,4 @@
 example	Exercise some of the features of mfdb
+inttest-gadgetdirectory Integration test: Import data and write back out to gadget directory
 inttest-dataimport Integration test: Exercise data loading
 inttest-samples Integration test: Sampling of data
