@@ -32,6 +32,9 @@ gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
         return(comps)
     }
 
+    # Make sure mainfile knows about likelihood file
+    gadget_mainfile_update(gd, likelihoodfiles = 'likelihood')
+
     # Insert / Update component in likelihood file
     likelihood <- gadget_dir_read(gd, 'likelihood')
     likelihood$components <- insert_component(

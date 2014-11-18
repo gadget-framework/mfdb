@@ -39,21 +39,43 @@ ok_group("Can write likelihood components", {
 
     # Create some components
     gadget_dir_write(gd, gadget_likelihood_component("understocking", name="head-bone", weight = 0.3))
-    expect_equal(list.files(dir), c("likelihood"))
+    expect_equal(list.files(dir), c("likelihood", "main"))
     expect_equal(
         gadget_dir_read(gd, "likelihood")$components,
         list(
             list(),
             component = list(name = "head-bone", weight = 0.3, type = "understocking")))
+    ok(cmp_file(gd, "main",
+        ver_string,
+        "timefile\t",
+        "areafile\t",
+        "printfiles\t; Required comment",
+        "[stock]",
+        "[tagging]",
+        "[otherfood]",
+        "[fleet]",
+        "[likelihood]",
+        "likelihoodfiles\tlikelihood"))
 
     gadget_dir_write(gd, gadget_likelihood_component("penalty", name="neck-bone", weight = 0.5))
-    expect_equal(list.files(dir), c("likelihood", "neck-bone.penaltyfile"))
+    expect_equal(list.files(dir), c("likelihood", "main", "neck-bone.penaltyfile"))
     expect_equal(
         gadget_dir_read(gd, "likelihood")$components,
         list(
             list(),
             component = list(name = "head-bone", weight = 0.3, type = "understocking"),
             component = list(name = "neck-bone", weight = 0.5, type = "penalty", datafile = "neck-bone.penaltyfile")))
+    ok(cmp_file(gd, "main",
+        ver_string,
+        "timefile\t",
+        "areafile\t",
+        "printfiles\t; Required comment",
+        "[stock]",
+        "[tagging]",
+        "[otherfood]",
+        "[fleet]",
+        "[likelihood]",
+        "likelihoodfiles\tlikelihood"))
 
     # Override one, add another
     gadget_dir_write(gd, gadget_likelihood_component("understocking", name="head-bone", weight = 0.8))
@@ -65,4 +87,15 @@ ok_group("Can write likelihood components", {
             component = list(name = "head-bone", weight = 0.8, type = "understocking"),
             component = list(name = "neck-bone", weight = 0.5, type = "penalty", datafile = "neck-bone.penaltyfile"),
             component = list(name = "shoulder-bone", weight = 0.2, type = "understocking")))
+    ok(cmp_file(gd, "main",
+        ver_string,
+        "timefile\t",
+        "areafile\t",
+        "printfiles\t; Required comment",
+        "[stock]",
+        "[tagging]",
+        "[otherfood]",
+        "[fleet]",
+        "[likelihood]",
+        "likelihoodfiles\tlikelihood"))
 })
