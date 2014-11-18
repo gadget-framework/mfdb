@@ -70,7 +70,7 @@ ok_group("Areacell/divisions", {
         "Can combine divA & B and get combined size")
 })
 
-ok_group("Temperature import", {
+ok_group("Temperature", {
     # Set-up areas/divisions
     mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
     mfdb_import_division(mdb, list(divB = c('45G01', '45G02'), divC = c('45G01')))
@@ -108,40 +108,6 @@ ok_group("Temperature import", {
         month = c(4,5,6),
         areacell = c('45G01', '45G01', '45G01'),
         temperature = c(1,2,4)))
-})
-
-ok_group("Temperature", {
-    # Set-up areas/divisions
-    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
-    mfdb_import_division(mdb, list(divB = c('45G01', '45G02'), divC = c('45G01')))
-
-    # Notice missing columns
-    ok(cmp_error(mfdb_import_temperature(mdb, data.frame(
-        year = c(1998),
-        areacell_id = c('45G01', '45G01', '45G01'),
-        temperature = c(1,2,4))), "month"), "Notice month column is missing")
-
-    # Import works
-    mfdb_import_temperature(mdb, data.frame(
-        year = rep(c(1998, 1999), each = 12),
-        month = c(1:12, 1:12),
-        areacell = c(rep('45G01', times = 24)),
-        temperature = c(1:12, 25:36)))
-    area_group <- mfdb_group(divA = c("divA"))
-    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = step_quarters, area = area_group)),
-        list("0.0" = structure(
-            data.frame(
-                year = rep(c(1998, 1999), each = 4),
-                step = rep(c("q1", "q2", "q3", "q4"), times = 2),
-                area = rep("divA", times = 8),
-                temperature = c(
-                    mean(1:3), mean(4:6), mean(7:9), mean(10:12),
-                    mean(25:27), mean(28:30), mean(31:33), mean(34:36)),
-                stringsAsFactors = FALSE),
-            timestep = step_quarters,
-            area = area_group,
-            generator = "mfdb_temperature"))),
-        "Can collate temperatures by quarter")
 
     # Another import replaces previous data
     mfdb_import_temperature(mdb, data.frame(
