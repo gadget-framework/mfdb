@@ -2,7 +2,7 @@ MareFrame DB Access package
 ===========================
 
 This package enables automated processing of fisheries data into suitable forms
-for running ecosystem models against it, e.g. [GADGET])http://www.hafro.is/gadget/).
+for running ecosystem models against it, e.g. [GADGET](http://www.hafro.is/gadget/).
 
 This package contains several distinct sets of functions:
 
