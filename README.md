@@ -2,7 +2,7 @@ MareFrame DB Access package
 ===========================
 
 This package enables automated processing of fisheries data into suitable forms
-for running ecosystem models against it, e.g. `GADGET <http://www.hafro.is/gadget/>`__.
+for running ecosystem models against it, e.g. [GADGET])http://www.hafro.is/gadget/).
 
 This package contains several distinct sets of functions:
 
@@ -22,15 +22,14 @@ process of:
 Also, this libary can be used to connect to a remote database and generate
 model files from that data.
 
-This work is based on it's predecessor, `DST^2 <http://www.hafro.is/dst2/>`__.
+This work is based on it's predecessor, [DST^2](http://www.hafro.is/dst2/).
 
 Prerequisites
 -------------
 
 Besides R, you also need to have PostgreSQL installed and running on your computer.
 
-Linux (Debian / Ubuntu)
-^^^^^^^^^^^^^^^^^^^^^^^
+### Linux (Debian / Ubuntu)
 
 Install the ``postgresql`` package using:
 
@@ -43,8 +42,7 @@ which keeps all the required R dependencies and PostgreSQL database in the local
 
 Otherwise create a database called ``mf`` as per the distribution instructions.
 
-Linux (Redhat / Fedora)
-^^^^^^^^^^^^^^^^^^^^^^^
+### Linux (Redhat / Fedora)
 
 Install the ``postgresql-server`` package using:
 
@@ -57,8 +55,7 @@ which keeps all the required R dependencies and PostgreSQL database in the local
 
 Otherwise create a database called ``mf`` as per the distribution instructions.
 
-Microsoft Windows
-^^^^^^^^^^^^^^^^^
+### Microsoft Windows
 
 Download the latest database installer from here:
 
@@ -66,8 +63,7 @@ http://www.enterprisedb.com/products-services-training/pgdownload#windows
 
 Create a database called ``mf``. http://www.postgresql.org/docs/9.3/static/tutorial-createdb.html
 
-Apple OS X
-^^^^^^^^^^
+### Apple OS X
 
 Install using http://postgresapp.com/
 
