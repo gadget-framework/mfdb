@@ -62,6 +62,32 @@ cmp_file <- function (gd, filename, ...) {
         c(...))
 }
 
+# Replace function with new one, optionally returning to normal after expr
+mock_functions <- function(ns, new_funcs, expr = NULL) {
+    assign_list <- function (ns, replacements) {
+        for (k in names(replacements)) {
+            assignInNamespace(k, replacements[[k]], ns)
+        }
+    }
+
+    # Without an expression, just assign permanently
+    if (is.null(expr)) {
+        assign_list(ns, new_funcs)
+        return(NULL);
+    }
+
+    # Replace temporarily, put the old ones back again
+    old_funcs <- structure(
+        lapply(names(new_funcs), function(n) getFromNamespace(n, ns)),
+        names = names(new_funcs))
+    tryCatch({
+        assign_list(ns, new_funcs)
+        expr
+    }, finally = {
+        assign_list(ns, old_funcs)
+    })
+}
+
 ok_group <- function (message, tests = NULL) {
     cat(paste0("# ", unlist(strsplit(message, "[\r\n]+")), "\n", collapse=""), sep = "")
     tests

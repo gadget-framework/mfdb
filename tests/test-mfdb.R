@@ -3,20 +3,16 @@ library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
 # Knobble database access for all tests
-assignInNamespace("mfdb_send", function(mdb, ...) {
-    cat(paste0(c(...), collapse = ""))
-    cat("\n")
-    return(NULL)
-}, ns="mfdb")
-assignInNamespace("dbFetch", function(mdb, ...) {
-    return("fetch")
-}, ns="DBI")
-assignInNamespace("dbGetRowsAffected", function(mdb, ...) {
-    return(1)
-}, ns="DBI")
-assignInNamespace("dbClearResult", function(mdb, ...) {
-    return("dbClearResult")
-}, ns="DBI")
+mock_functions('mfdb', list(
+    mfdb_send = function(mdb, ...) {
+        cat(paste0(c(...), collapse = ""))
+        cat("\n")
+        return(NULL)
+    }))
+mock_functions('DBI', list(
+    dbFetch = function(...) { return("fetch") },
+    dbGetRowsAffected = function(...) { return(1) },
+    dbClearResult = function(...) { return("dbClearResult") }))
 
 ok_group("mfdb_insert", {
     mfdb_insert <- function (table_name, data_in, returning = "", extra = c()) {
