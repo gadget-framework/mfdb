@@ -1,5 +1,10 @@
-# Script to exercise mfdb
-# NB: To use this you *must* be using mfdb-workspace and not mind loosing data
+# This script demonstrates various ways you can use the data sampling functions
+#
+# ok and ok_group are there so we can run this code and verify it is correct,
+# and not needed every-day use.
+#
+# NB: if you want to run this, you must be using mfdb-workspace, also be warned
+# any data stored in your database will be destroyed.
 library(unittest)
 library(mfdb)
 source('mfdb/tests/utils/helpers.R')
