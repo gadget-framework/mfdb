@@ -25,18 +25,21 @@ mfdb_agelength(mdb, params)
 }
 
 \arguments{
-All functions take the following:-
     \item{mdb}{An object created by \code{mfdb}()}
     \item{params}{A list of parameters, see details.}
 }
 
 \details{
-All arguments could be provided in \code{defaultparams} to the
-\code{mfdb}() object as well as here. If provided in both, then the version
-given here will override it.
+The options in \code{params} can both restrict data that is returned, and group
+this data. To save specifying the same items repeatedly, you can use list
+concatenation to keep some defaults, for example:
 
-The following parameters both restrict what data is returned, and
-groups it into larger chunks.
+\preformatted{
+defaults <- list(year = 1998:2000)
+mfdb_meanlength(mdb, c(list(), defaults))
+}
+
+The following options will group the data:
 
 \describe{
     \item{year}{

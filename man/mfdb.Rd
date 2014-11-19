@@ -11,8 +11,7 @@
     mfdb(case_study_name,
          db_params = list(),
          save_temp_tables = FALSE,
-         create_schema = FALSE,
-         defaultparams = list())
+         create_schema = FALSE)
 
     mfdb_disconnect(mdb)
 }
@@ -33,17 +32,13 @@
         Optional boolean. If true, will attempt to create tables if they're
         missing.
     }
-    \item{defaultparams}{
-        An optional \code{list()} of default options to use for any query, see
-        \code{\link{mfdb_meanlength}()} for details of available options.
-    }
     \item{mdb}{
         Database connection created by \code{mfdb()}.
     }
 }
 \examples{\dontrun{
-    # Connect to local DB, all calls return data for years 2000..2005
-    mdb <- mfdb(defaultparams = list(year = 2000:2005))
+    # Connect to local DB
+    mdb <- mfdb()
 
     # Connect to "mf2014" on remote DB server
     mdb <- mfdb(db_params = list(host = "db.mareframe-fp7.org", dbname = "mf2014")

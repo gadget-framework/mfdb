@@ -2,8 +2,7 @@
 mfdb <- function(case_study_name,
                  db_params = list(),
                  save_temp_tables = FALSE,
-                 create_schema = FALSE,
-                 defaultparams = list()) {
+                 create_schema = FALSE) {
     logger <- getLogger('mfdb')
 
     # Try a selection of host strings until we connect to something
@@ -33,8 +32,6 @@ mfdb <- function(case_study_name,
 
     mdb <- structure(list(
             logger = logger,
-            defaultparams = c(defaultparams, list(
-                    timesteps = mfdb_group(year = c(1,2,3,4,5,6,7,8,9,10,11,12)))),
             save_temp_tables = save_temp_tables,
             case_study_id = case_study_id,
             state = new.env(),
