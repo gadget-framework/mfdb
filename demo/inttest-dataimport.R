@@ -94,7 +94,7 @@ ok_group("Temperature", {
         areacell = c(rep('45G01', times = 24)),
         temperature = c(1:12, 25:36)))
     area_group <- mfdb_group(divA = c("divA"))
-    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = step_quarters, area = area_group)),
+    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = mfdb_timestep_quarterly, area = area_group)),
         list("0.0" = structure(
             data.frame(
                 year = rep(c(1998, 1999), each = 4),
@@ -104,7 +104,7 @@ ok_group("Temperature", {
                     mean(1:3), mean(4:6), mean(7:9), mean(10:12),
                     mean(25:27), mean(28:30), mean(31:33), mean(34:36)),
                 stringsAsFactors = FALSE),
-            timestep = step_quarters,
+            timestep = mfdb_timestep_quarterly,
             area = area_group,
             generator = "mfdb_temperature"))),
         "Can collate temperatures by quarter")
@@ -121,7 +121,7 @@ ok_group("Temperature", {
         month = c(1:12, 1:12),
         areacell = c(rep('45G01', times = 24)),
         temperature = c(12:23, 20:31)))
-    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = step_quarters, area = area_group)),
+    ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = mfdb_timestep_quarterly, area = area_group)),
         list("0.0" = structure(
             data.frame(
                 year = rep(c(1998, 1999), each = 4),
@@ -131,7 +131,7 @@ ok_group("Temperature", {
                     mean(12:14), mean(15:17), mean(18:20), mean(21:23),
                     mean(20:22), mean(23:25), mean(26:28), mean(29:31)),
                 stringsAsFactors = FALSE),
-            timestep = step_quarters,
+            timestep = mfdb_timestep_quarterly,
             area = area_group,
             generator = "mfdb_temperature"))),
         "Second import cleared previous data")

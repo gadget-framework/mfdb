@@ -1,5 +1,8 @@
 # mfdb_group.R
 export(mfdb_group)
+export(mfdb_timestep_yearly)
+export(mfdb_timestep_biannually)
+export(mfdb_timestep_quarterly)
 export(mfdb_group_numbered)
 export(mfdb_bootstrap_group)
 

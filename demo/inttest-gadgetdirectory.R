@@ -46,7 +46,7 @@ ok_group("Area File", {
     # quarterly periods, write the lot out into a gadget areafile
     gadget_dir_write(gd, gadget_areafile(
         mfdb_area_size(mdb, list(area = area_group))[[1]],
-        mfdb_temperature(mdb, list(year = c(1998, 1999), timestep = step_quarters, area = area_group))[[1]]
+        mfdb_temperature(mdb, list(year = c(1998, 1999), timestep = mfdb_timestep_quarterly, area = area_group))[[1]]
         ))
 
     # Resulting areafile contains the following data

@@ -47,7 +47,7 @@ ok_group("Unaggregated length / weight / age samples", {
         mfdb_meanlength(mdb, list(
             year = 1998:2000,
             area = area_group,
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             age = age_group,
             length = length_group)),
         list("0.0.0" = structure(
@@ -59,7 +59,7 @@ ok_group("Unaggregated length / weight / age samples", {
                 number = c(5, 4),
                 mean = c(26.2, 31.75),
                 stringsAsFactors = FALSE),
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             area = area_group,
             age = age_group,
             generator = "mfdb_meanlength"))),
@@ -70,7 +70,7 @@ ok_group("Unaggregated length / weight / age samples", {
         mfdb_meanlength_stddev(mdb, list(
             year = 1998:2000,
             area = area_group,
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             age = age_group,
             length = length_group)),
         list("0.0.0" = structure(
@@ -83,7 +83,7 @@ ok_group("Unaggregated length / weight / age samples", {
                 mean = c(26.2, 31.75),
                 stddev = c(0), # TODO:
                 stringsAsFactors = FALSE),
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             area = area_group,
             age = age_group,
             generator = "mfdb_meanlength_stddev"))),
@@ -95,7 +95,7 @@ ok_group("Unaggregated length / weight / age samples", {
         mfdb_meanweight(mdb, list(
             year = 1998:2000,
             area = area_group,
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             age = age_group,
             length = length_group)),
         list("0.0.0" = structure(
@@ -107,7 +107,7 @@ ok_group("Unaggregated length / weight / age samples", {
                 number = c(1, 2),
                 mean = c(500, 485),
                 stringsAsFactors = FALSE),
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             area = area_group,
             age = age_group,
             generator = "mfdb_meanweight"))),
@@ -119,7 +119,7 @@ ok_group("Unaggregated length / weight / age samples", {
         mfdb_meanweight_stddev(mdb, list(
             year = 1998:2000,
             area = area_group,
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             age = age_group,
             length = length_group)),
         list("0.0.0" = structure(
@@ -132,7 +132,7 @@ ok_group("Unaggregated length / weight / age samples", {
                 mean = c(500, 485),
                 stddev = c(0), # TODO:
                 stringsAsFactors = FALSE),
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             area = area_group,
             age = age_group,
             generator = "mfdb_meanweight_stddev"))),
@@ -145,7 +145,7 @@ ok_group("Unaggregated length / weight / age samples", {
         mfdb_agelength(mdb, list(
             year = 1998:2000,
             area = area_group,
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             age = age_group,
             length = length_group)),
         list("0.0.0" = structure(
@@ -157,7 +157,7 @@ ok_group("Unaggregated length / weight / age samples", {
                 length = c("len50", "len65", "len60"),
                 number = c(1, 1, 1),
                 stringsAsFactors = FALSE),
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             area = area_group,
             age = age_group,
             length = length_group,
@@ -207,7 +207,7 @@ ok_group("Filtering of samples", {
     ok(cmp(
         mfdb_meanlength(mdb, list(
             area = mfdb_group(divA = c("divA")),
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
@@ -223,7 +223,7 @@ ok_group("Filtering of samples", {
         mfdb_meanlength(mdb, list(
             sampling_type = 'SEA',
             area = mfdb_group(divA = c("divA")),
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
@@ -241,7 +241,7 @@ ok_group("Filtering of samples", {
         mfdb_meanlength(mdb, list(
             gear = 'GIL',
             area = mfdb_group(divA = c("divA")),
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
@@ -257,7 +257,7 @@ ok_group("Filtering of samples", {
         mfdb_meanlength(mdb, list(
             vessel = '1.RSH',
             area = mfdb_group(divA = c("divA")),
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
@@ -273,7 +273,7 @@ ok_group("Filtering of samples", {
         mfdb_meanlength(mdb, list(
             institute = 'ICES',
             area = mfdb_group(divA = c("divA")),
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
@@ -289,7 +289,7 @@ ok_group("Filtering of samples", {
         mfdb_meanlength(mdb, list(
             vessel = '2.RSH',
             area = mfdb_group(divA = c("divA")),
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
@@ -308,7 +308,7 @@ ok_group("Filtering of samples", {
             gear = 'GIL',
             vessel = '2.RSH',
             area = mfdb_group(divA = c("divA")),
-            timestep = step_halves,
+            timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
