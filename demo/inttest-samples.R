@@ -17,7 +17,7 @@ remove_mfdb_tables(conn)
 #TODO: Connecting to empty database without ability to populate fails
 
 # Rebuild database, taxonomy got populated
-mdb <- mfdb('Iceland', db_params = db_params, save_temp_tables = TRUE, create_schema = TRUE)
+mdb <- mfdb('Iceland', db_params = db_params, save_temp_tables = TRUE)
 ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE species_id = 9999999999")[1,] == 
   mfdb::species[mfdb::species$name == 'TBX', c('name', 'description')]), "Entry for 9999999999 matches package")
 ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM species")[1,1], nrow(mfdb::species)), "Species has right number of entries")

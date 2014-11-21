@@ -1,8 +1,7 @@
 # Init mfdb object and open connection to database
 mfdb <- function(case_study_name,
                  db_params = list(),
-                 save_temp_tables = FALSE,
-                 create_schema = FALSE) {
+                 save_temp_tables = FALSE) {
     logger <- getLogger('mfdb')
 
     # Try a selection of host strings until we connect to something
@@ -37,12 +36,9 @@ mfdb <- function(case_study_name,
             state = new.env(),
             db = db_connection), class = "mfdb")
 
-    mfdb_update_schema(mdb, read_only = !create_schema)
+    # Make sure schema is up-to-date
+    mfdb_update_schema(mdb)
     mfdb_update_taxonomy(mdb)
-    if (!create_schema) {
-        # Assume indexes are already there if we shouldn't create schema
-        assign('index_created', TRUE, pos = mdb$state)
-    }
 
     invisible(mdb)
 }

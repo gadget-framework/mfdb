@@ -17,7 +17,7 @@ remove_mfdb_tables(conn)
 
 # Open a connection to the DB for the Iceland case study, and open an output
 # directory to save files in
-mdb <- mfdb('Iceland', db_params = db_params, save_temp_tables = TRUE, create_schema = TRUE)
+mdb <- mfdb('Iceland', db_params = db_params, save_temp_tables = TRUE)
 gd <- gadget_directory(tempfile())
 
 ok_group("Area File", {

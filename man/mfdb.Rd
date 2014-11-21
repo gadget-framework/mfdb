@@ -10,8 +10,7 @@
 \usage{
     mfdb(case_study_name,
          db_params = list(),
-         save_temp_tables = FALSE,
-         create_schema = FALSE)
+         save_temp_tables = FALSE)
 
     mfdb_disconnect(mdb)
 }
@@ -27,10 +26,6 @@
     \item{save_temp_tables}{
         Optional boolean. If true, any temporary tables will be made permanent
         for later inspection.
-    }
-    \item{create_schema}{
-        Optional boolean. If true, will attempt to create tables if they're
-        missing.
     }
     \item{mdb}{
         Database connection created by \code{mfdb()}.
