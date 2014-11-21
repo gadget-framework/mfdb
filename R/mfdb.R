@@ -81,9 +81,9 @@ mfdb_insert <- function(mdb, table_name, data_in, returning = "", extra = c()) {
         res <- mfdb_send(mdb, "INSERT INTO ", paste(table_name, collapse = ""),
             " (", paste(c(names(r), names(extra)), collapse=","), ") VALUES ",
             if (is.null(nrow(r)))
-                sql_quote(c(r, extra))
+                sql_quote(c(r, extra), always_bracket = TRUE)
             else
-                paste0(vapply(seq_len(nrow(r)), function (i) { sql_quote(c(r[i,], extra)) }, ""), collapse = ","),
+                paste0(vapply(seq_len(nrow(r)), function (i) { sql_quote(c(r[i,], extra), always_bracket = TRUE) }, ""), collapse = ","),
             (if (nzchar(returning)) paste0(c(" RETURNING ", returning), collapse = "") else ""),
             NULL)
         out <- if (nzchar(returning)) DBI::dbFetch(res) else DBI::dbGetRowsAffected(res)
