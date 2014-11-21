@@ -41,8 +41,6 @@ S3method(gadget_dir_write, gadget_areafile)
 # gadget_directory.R
 export(gadget_directory)
 export(gadget_dir_write)
-S3method(gadget_dir_write, gadget_file)
-S3method(gadget_dir_write, gadget_likelihood_component)
 export(gadget_dir_read)
 S3method(gadget_dir_read, gadget_directory)
 
@@ -50,7 +48,9 @@ S3method(gadget_dir_read, gadget_directory)
 export(gadget_file)
 S3method(print, gadget_file)
 S3method(as.character, gadget_file)
+S3method(gadget_dir_write, gadget_file)
 export(read.gadget_file)
 
 # gadget_likelihood_component.R
 export(gadget_likelihood_component)
+S3method(gadget_dir_write, gadget_likelihood_component)

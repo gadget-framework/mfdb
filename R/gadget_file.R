@@ -56,6 +56,14 @@ as.character.gadget_file <- function (x, ...) {
     paste0(capture.output(print.gadget_file(x)), "\n", collapse = "")
 }
 
+# Write gadget file to directory
+gadget_dir_write.gadget_file <- function(gd, obj) {
+    fh = file(file.path(gd$dir, obj$filename), "w")
+    tryCatch(
+        capture.output(print(obj), file = fh),
+        finally = close(fh))
+}
+
 # Load gadget file into memory
 read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
     extract <- function (pattern, line) {

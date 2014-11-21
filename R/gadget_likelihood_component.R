@@ -8,6 +8,42 @@ gadget_likelihood_component <- function (type, ...) {
         stop(paste("Unknown likelihood component", type)))
 }
 
+gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
+    # Either replace component with matching name, or add to end
+    gadget_likelihoodfile_update <- function(gd, fname, obj) {
+        likelihood <- gadget_dir_read(gd, fname)
+
+        n <- lapply(obj, function (x) {
+            # Don't let gadget_file's leak out into lists for export
+            if ("gadget_file" %in% class(x)) x$filename else x
+        })
+
+        # Find component with matching name and type
+        for (i in 1:(length(likelihood$components) + 1)) {
+            if (i > length(likelihood$components)) break;
+            if (length(likelihood$components[[i]]) == 0) next;  # e.g. empty initial component
+            if (names(likelihood$components)[[i]] == "component"
+                & likelihood$components[[i]]$type == n$type
+                & likelihood$components[[i]]$name == n$name) break;
+        }
+        likelihood$components[[i]] <- n
+        names(likelihood$components)[[i]] <- "component"
+
+        gadget_dir_write(gd, likelihood)
+    }
+
+    # Update mainfile and likelihood file
+    gadget_mainfile_update(gd, likelihoodfiles = 'likelihood')
+    gadget_likelihoodfile_update(gd, 'likelihood', obj)
+
+    # Write out each file-based component
+    for (x in obj) {
+        if ("gadget_file" %in% class(x)) {
+            gadget_dir_write(gd, x)
+        }
+    }
+}
+
 ### Internal constructors for each component type
 
 gadget_penalty_component <- function (weight = 0, name = "penalty", data = NULL) {
