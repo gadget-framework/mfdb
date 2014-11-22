@@ -146,6 +146,36 @@ mfdb_update <- function(mdb, table_name, data_in, returning = "", extra = c(), w
     }
 }
 
+mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
+    items <- matrix(c(
+        cols,
+        unlist(lapply(keys, function (k) c(k, "", "")))
+    ), nrow = 3)
+
+    row_to_string <- function (i) {
+        paste0("    ",
+            items[1,i],
+            (if (nzchar(items[2,i])) paste("\t", items[2,i])),
+            (if (i == ncol(items)) "" else ","),
+            (if (nzchar(items[3,i])) paste("\t--", items[3,i])),
+            "\n")
+    }
+
+    mfdb_send(mdb,
+        if (nzchar(desc)) paste0("-- ", desc, "\n", collapse = ""),
+        "CREATE TABLE ", name, " (\n",
+        vapply(1:ncol(items), row_to_string, ""),
+        ")")
+    if (nzchar(desc)) mfdb_send(mdb,
+        "COMMENT ON TABLE ", name,
+        " IS ", sql_quote(desc))
+    for (i in 1:ncol(items)) {
+        if (nzchar(items[3,i])) mfdb_send(mdb,
+            "COMMENT ON COLUMN ", name, ".", items[1,i],
+            " IS ", sql_quote(items[3,i]))
+    }
+}
+
 # Execute code block within a DB transaction, roll back on error, commit otherwise
 mfdb_transaction <- function(mdb, transaction) {
     mdb$logger$info("Starting transaction...")
