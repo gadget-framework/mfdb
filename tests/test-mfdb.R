@@ -16,7 +16,7 @@ mock_functions('DBI', list(
 
 ok_group("mfdb_insert", {
     mfdb_insert <- function (table_name, data_in, returning = "", extra = c()) {
-        mdb <- NULL
+        mdb <- "X"
         return(capture.output({
             out <- mfdb:::mfdb_insert(mdb, table_name, data_in, returning, extra)
             cat("Returned:", out, "\n")

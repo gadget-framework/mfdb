@@ -71,6 +71,11 @@ mfdb_fetch <- function(mdb, ...) {
 # Send a query without the fetch
 mfdb_send <- function(mdb, ...) {
     query <- paste0(c(...), collapse = "")
+    if (is.null(mdb)) {
+        cat(query)
+        cat("\n")
+        return()
+    }
     mdb$logger$debug(query)
     res <- dbSendQuery(mdb$db, query)
 }
@@ -86,6 +91,7 @@ mfdb_insert <- function(mdb, table_name, data_in, returning = "", extra = c()) {
                 paste0(vapply(seq_len(nrow(r)), function (i) { sql_quote(c(r[i,], extra), always_bracket = TRUE) }, ""), collapse = ","),
             (if (nzchar(returning)) paste0(c(" RETURNING ", returning), collapse = "") else ""),
             NULL)
+        if (is.null(mdb)) return(NULL)
         out <- if (nzchar(returning)) DBI::dbFetch(res) else DBI::dbGetRowsAffected(res)
         DBI::dbClearResult(res)
         return(out)
