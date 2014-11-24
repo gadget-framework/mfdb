@@ -52,7 +52,6 @@ group_to_table <- function(mdb, table_name, group, datatype = "INT", save_temp_t
     # Remove the table if it exists, and recreate it
     tryCatch(mfdb_send(mdb,
         "DROP ",
-        (if (!save_temp_tables) "TEMPORARY "),
         "TABLE ", table_name), error = function (e) {
             mdb$logger$debug(paste("Ignored", e))
         })
