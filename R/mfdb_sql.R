@@ -68,6 +68,5 @@ group_to_table <- function(mdb, table_name, group, datatype = "INT", save_temp_t
 }
 
 sql_create_index <- function(table, cols) {
-   name <- paste0(c("idx", table, cols), collapse = "_")
-   paste0(c("CREATE INDEX ", name, " ON ", table, " (", paste0(cols, collapse = ","), ")"), collapse = "")
+   paste0(c("CREATE INDEX ON ", table, " (", paste0(cols, collapse = ","), ")"), collapse = "")
 }
