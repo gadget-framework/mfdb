@@ -1,7 +1,3 @@
-.libPaths(c("/home/bthe/Documents/mfdb-workspace/Rpackages",
-          "/usr/local/lib/R/site/3.1/x86_64/library",
-          "/home/bthe/r/x86_64/library"))
-setwd('~/Documents/mfdb-workspace')
 library(mfdb)
 library(fjolst)
 library(geo)
@@ -22,10 +18,6 @@ mdb <- mfdb('Iceland')
 
 
 gd <- gadget_directory("out")
-gadget_dir_write(gd,gadget_areafile(
-                                 size = mfdb_area_size(mdb, defaults)[[1]],
-                                 temperature = mfdb_temperature(mdb, defaults)[[1]]))
-
 
 
 ## area setup
@@ -37,7 +29,9 @@ mfdb_import_temperature(mdb, data.frame(
   areacell = reitmapping$GRIDCELL[1],
   temperature = 3))
 
-
+gadget_dir_write(gd,gadget_areafile(
+                                 size = mfdb_area_size(mdb, defaults)[[1]],
+                                 temperature = mfdb_temperature(mdb, defaults)[[1]]))
 
 ## Actual data 
 ## 1 inspectors, 2 hafro, 8 on-board discard 
