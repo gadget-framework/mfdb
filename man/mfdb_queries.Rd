@@ -71,6 +71,9 @@ The following options will group the data:
         by length (doesn't make sense), but this is still used to provide a
         minimum and maximum length.
     }
+    \item{maturity_stage}{
+        An mfdb_group of maturity stages, see mfdb::maturity_stage for possible values.
+    }
 }
 
 In addition, you can use the following arguments to restrict data
@@ -83,6 +86,7 @@ returned as part of the query.
     \item{sampling_type}{A vector of sampling_type names, see mfdb::sampling_type for possible values}
     \item{species}{A vector of species names, see mfdb::species for possible values}
     \item{sex}{A vector of sex names, see mfdb::sex for possible values}
+    \item{maturity_stage}{A vector of maturity stages, see mfdb::maturity_stage for possible values}
 }
 }
 

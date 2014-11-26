@@ -87,6 +87,7 @@ schema_from_0 <- function(mdb) {
     ))
 
     create_taxonomy("sex", "")
+    create_taxonomy("maturity_stage", "")
     create_taxonomy("species", "", id_type = "BIGINT")
     mfdb_create_table(mdb, "sample", "Samples within survey", cols = c(
         "sample_id", "SERIAL PRIMARY KEY", "",
@@ -99,6 +100,7 @@ schema_from_0 <- function(mdb) {
         "species_id", "BIGINT REFERENCES species(species_id)", "",
         "age", "INT", "Age (years)",
         "sex_id", "INT", "Sex ID",
+        "maturity_stage_id", "INT REFERENCES maturity_stage(maturity_stage_id)", "Maturity Stage ID",
         "length", "REAL", "Length of fish / mean length of all fish",
         "length_var", "REAL", "Length variance of all fish (given aggregated data)",
         "length_min", "INT", "Minimum theoretical value in this group",
@@ -110,7 +112,7 @@ schema_from_0 <- function(mdb) {
         "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)"))
 }
 
-mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sampling_type", "sex", "species")
+mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sampling_type", "sex", "maturity_stage", "species")
 mfdb_cs_taxonomy <- c("areacell")
 
 # Populate tables with package-provided data

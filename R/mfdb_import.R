@@ -58,6 +58,7 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
         species_id = sanitise_col(mdb, data_in, 'species', lookup = 'species', default = c(NA)),
         age = sanitise_col(mdb, data_in, 'age', default = c(NA)),
         sex_id = sanitise_col(mdb, data_in, 'sex', lookup = 'sex', default = c(NA)),
+        maturity_stage_id = sanitise_col(mdb, data_in, 'maturity_stage', lookup = 'maturity_stage', default = c(NA)),
         length = sanitise_col(mdb, data_in, 'length', default = c(NA)),
         length_var = sanitise_col(mdb, data_in, 'length_var', default = c(NA)),
         length_min = sanitise_col(mdb, data_in, 'length_min', default = c(NA)),

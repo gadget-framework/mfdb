@@ -1,0 +1,6 @@
+"id" "name" "description"
+1	1	"Immature"
+2	2	""
+3	3	""
+4	4	""
+5	5	"Mature"

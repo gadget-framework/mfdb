@@ -2,6 +2,7 @@
 \alias{gear}
 \alias{case_study}
 \alias{institute}
+\alias{maturity_stage}
 \alias{sampling_type}
 \alias{sex}
 \alias{species}
@@ -16,6 +17,7 @@
 gear
 case_study
 institute
+maturity_stage
 sampling_type
 sex
 species

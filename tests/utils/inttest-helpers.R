@@ -9,7 +9,7 @@ db_connection <- function() {
 
 # Remove all tables in reverse order
 remove_mfdb_tables <- function(conn) {
-    tables <- unlist(strsplit('sample species sex survey sampling_type vessel gear institute temperature division areacell case_study mfdb_schema', ' '))
+    tables <- unlist(strsplit('sample species sex maturity_stage survey sampling_type vessel gear institute temperature division areacell case_study mfdb_schema', ' '))
     for(t in tables) {
         print(paste("Removing table", t))
         tryCatch(dbSendQuery(conn, paste0("DROP TABLE ", t, " CASCADE")), error = function(e) {
