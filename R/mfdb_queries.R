@@ -157,8 +157,8 @@ mfdb_sample_grouping <- function (mdb,
             # TODO: where_clause(params$samplingstrategy, "c.samplingstrategy")),
             # TODO: where_clause(params$maturitystage, "c.maturitystage")),
             NULL), collapse = " AND "),
-        " GROUP BY ", paste(1:(1 + sum(grouping_by("year", 1), grouping_by("timestep", 1), grouping_by("area", 1), grouping_by("age", 1), grouping_by("length", 1))), collapse=","),
-        " ORDER BY ", paste(1:(1 + sum(grouping_by("year", 1), grouping_by("timestep", 1), grouping_by("area", 1), grouping_by("age", 1), grouping_by("length", 1))), collapse=","),
+        " GROUP BY ", paste(1:(1 + sum(unlist(Vectorize(grouping_by, 'str')(group_cols, 1)))), collapse=","),
+        " ORDER BY ", paste(1:(1 + sum(unlist(Vectorize(grouping_by, 'str')(group_cols, 1)))), collapse=","),
         "")
 
     # Break data up by sample and annotate each
