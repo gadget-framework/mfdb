@@ -40,10 +40,10 @@ comm.stations <- subset(stodvar, synaflokkur == 8)
 ldist <- subset(all.le, synis.id %in% stations$synis.id & tegund == 1)
 comm.ldist <- subset(all.le, synis.id %in% comm.stations$synis.id & 
                        tegund == 1)
-adist <- subset(all.kv, synis.id %in% stations$synis.id & tegund == 1 )
+# adist <- subset(all.kv, synis.id %in% stations$synis.id & tegund == 1 )
 num.dist <- subset(all.nu, synis.id %in% stations$synis.id & tegund == 1 )
 ldist.aug <- Skala.med.toldum(ldist,num.dist, tegund==1)
-adist.aug <- Skala.med.toldum(adist,num.dist, tegund==1)
+# adist.aug <- Skala.med.toldum(adist,num.dist, tegund==1)
 
 comm.ldist <- merge(comm.ldist, 
                     comm.stations[c('synis.id','ar','man','lat','lon')])
@@ -80,7 +80,6 @@ ldist.aug$age <- 0
 ## lets do something useful
 comm.query <- 
 mfdb_agelength(mdb, c(list(
-  age = mfdb_group(all=0),
   sampling_type = 'SEA',
   length = mfdb_interval("len", seq(0, 150, by = 2))),
   defaults))
