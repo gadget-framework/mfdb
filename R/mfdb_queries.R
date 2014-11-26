@@ -105,7 +105,7 @@ mfdb_sample_grouping <- function (mdb,
     # If grouping by, the a setting *must* be in params
     grouping_by <- function(str, if_true = TRUE, if_false = NULL) {
         if(!(str %in% group_cols)) return(if_false)
-        if(is.null(params[[str]])) stop("params must contain value for ", str)
+        if(is.null(params[[str]])) return(if_false)
         return(if_true)
     }
     # If filtering, then do it if possible
@@ -157,8 +157,8 @@ mfdb_sample_grouping <- function (mdb,
             # TODO: where_clause(params$samplingstrategy, "c.samplingstrategy")),
             # TODO: where_clause(params$maturitystage, "c.maturitystage")),
             NULL), collapse = " AND "),
-        " GROUP BY ", paste(1:(1 + length(group_cols)), collapse=","),
-        " ORDER BY ", paste(1:(1 + length(group_cols)), collapse=","),
+        " GROUP BY ", paste(1:(1 + sum(grouping_by("year", 1), grouping_by("timestep", 1), grouping_by("area", 1), grouping_by("age", 1), grouping_by("length", 1))), collapse=","),
+        " ORDER BY ", paste(1:(1 + sum(grouping_by("year", 1), grouping_by("timestep", 1), grouping_by("area", 1), grouping_by("age", 1), grouping_by("length", 1))), collapse=","),
         "")
 
     # Break data up by sample and annotate each
