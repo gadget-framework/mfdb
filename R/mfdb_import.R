@@ -35,7 +35,7 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
         mfdb_update(mdb,
             table_name,
             data_in[data_in[[id_col]] %in% existing$id,],
-            where = list(if (cs_specific) c(case_study_id = mdb$case_study_id)))
+            where = if (cs_specific) list(case_study_id = mdb$case_study_id) else c())
     })
 }
 
