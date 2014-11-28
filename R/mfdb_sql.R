@@ -13,38 +13,6 @@ sql_quote <- function(v, always_bracket = FALSE) {
     }
 }
 
-# Generic for turning "col == x" into a SQL SELECT condition
-select_clause <- function(x, col, outputname) {
-    if (is.null(x)) return("")
-    UseMethod("select_clause")
-}
-
-# Generic for turning "col == x" into a SQL WHERE condition
-where_clause <- function(x, col) {
-    if (is.null(x)) return("")
-    UseMethod("where_clause")
-}
-
-# Simple case for vectors, first checked to see if there's a lookup
-select_clause.numeric <- function(x, col, outputname) {
-    paste(col, "AS", outputname)
-}
-select_clause.character <- select_clause.numeric
-where_clause.numeric <- function(x, col) {
-    lookup <- gsub('(.*\\.)|_id', '', col)
-    if (!(lookup %in% mfdb_taxonomy)) lookup <- NULL
-
-    if (!is.vector(x)) return("")
-    paste0(
-        "(", col, " IN ",
-        if (!is.null(lookup)) paste0("(SELECT ", lookup, "_id FROM ", lookup, " WHERE name IN "),
-        sql_quote(x[!is.na(x)], always_bracket = TRUE),
-        if (!is.null(lookup)) ")",
-        if (NA %in% x) paste0(" OR ", col, " IS NULL"),
-        ")")
-}
-where_clause.character <- where_clause.numeric
-
 # Turn mfdb_group into a temporary table to join to
 group_to_table <- function(mdb, table_name, group, datatype = "INT", save_temp_tables = FALSE) {
     if (is.null(group)) stop(paste("You must provide a mfdb_group for", table_name))

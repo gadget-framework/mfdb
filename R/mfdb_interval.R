@@ -7,7 +7,7 @@ mfdb_interval <- function (prefix, vect) {
     }
     group <- structure(vect,
             names = paste0(prefix, vect),
-            class = "mfdb_interval")
+            class = c("mfdb_interval", "mfdb_aggregate"))
     invisible(group)
 }
 
@@ -23,7 +23,7 @@ select_clause.mfdb_interval <- function(x, col, outputname) {
 }
 
 # Ensure value is within range specified
-where_clause.mfdb_interval <- function(x, col) {
+where_clause.mfdb_interval <- function(x, col, outputname) {
     c(
         paste(col, ">=", sql_quote(min(x))),
         paste(col, "<", sql_quote(max(x))))

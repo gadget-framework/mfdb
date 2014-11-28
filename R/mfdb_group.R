@@ -4,9 +4,47 @@
 # )
 mfdb_group <- function (...) {
     group <- structure(list(...),
-            class = "mfdb_group")
+            class = c("mfdb_group", "mfdb_aggregate"))
 
     invisible(group)
+}
+
+pre_query.mfdb_group <- function(mdb, x, outputname) {
+    table_name <- paste0("temp_", outputname)
+    group <- x
+    datatype <- "INT"
+
+    # Turn mfdb_group into a temporary table to join to
+    if (is.null(group)) stop(paste("You must provide a mfdb_group for", table_name))
+    #TODO: Assign random ID attribute to group, use this as table name or re-use table if it already has one
+    # Remove the table if it exists, and recreate it
+    tryCatch(mfdb_send(mdb,
+        "DROP ",
+        "TABLE ", table_name), error = function (e) {
+            if (!is.null(mdb)) mdb$logger$debug(paste("Ignored", e))
+        })
+    mfdb_send(mdb, paste(
+            "CREATE",
+            (if (!is.null(mdb) && !mdb$save_temp_tables) "TEMPORARY"),
+            "TABLE",
+            table_name,
+            "(sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value ", datatype,
+            ")"))
+
+    # Flatten out into multiple key:value rows, populate table in one hit
+    mfdb_insert(mdb, table_name, denormalize(group))
+}
+
+select_clause.mfdb_group <- function(x, col, outputname) {
+    paste0("temp_", outputname, ".name AS ", outputname)
+}
+
+from_clause.mfdb_group <- function(x, col, outputname) {
+    paste0("temp_", outputname)
+}
+
+where_clause.mfdb_group <- function(x, col, outputname) {
+    paste0(col, " = ", "temp_", outputname, ".value")
 }
 
 # Some default time groupings
@@ -26,7 +64,7 @@ mfdb_group_numbered <- function (prefix, ...) {
 }
 
 mfdb_bootstrap_group <- function (count, group) {
-    if (class(group) != 'mfdb_group') {
+    if (!('mfdb_group' %in% class(group))) {
         stop("Second argument should be a mfdb_group")
     }
     if (count < 1) {
@@ -35,7 +73,7 @@ mfdb_bootstrap_group <- function (count, group) {
 
     bs_group <- structure(
             lapply(1:count, function(i) { lapply(group, function (g) { if (length(g) == 1) g else sample(g, replace = TRUE) }) }),
-            class = "mfdb_bootstrap_group")
+            class = c("mfdb_bootstrap_group", "mfdb_group", "mfdb_aggregate"))
     invisible(bs_group)
 }
 
