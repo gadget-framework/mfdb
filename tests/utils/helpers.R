@@ -88,11 +88,6 @@ mock_functions <- function(ns, new_funcs, expr = NULL) {
     })
 }
 
-# Execute a code block within the namespace for a given package
-executeInNamespace <- function (ns, ex) {
-    local(expression(ex), envir = asNamespace(ns))
-}
-
 ok_group <- function (message, tests = NULL) {
     cat(paste0("# ", unlist(strsplit(message, "[\r\n]+")), "\n", collapse=""), sep = "")
     tests
