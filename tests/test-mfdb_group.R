@@ -31,7 +31,7 @@ g <- NULL
 
 ok_group("Aggregates with mfdb_group", local({
     g <<- mfdb_group(a = c(1,"two",3), b = c(88))
-    ok(cmp(capture.output(pre_query.mfdb_group(NULL, g, "out")), c(
+    ok(cmp(capture.output(pre_query(NULL, g, "out")), c(
         "DROP TABLE temp_out",
         "CREATE  TABLE temp_out (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )",
         "INSERT INTO temp_out (sample,name,value) VALUES (0,'a','1'),(0,'a','two'),(0,'a','3'),(0,'b','88')",
@@ -43,7 +43,7 @@ ok_group("Aggregates with mfdb_group", local({
     ok(cmp(where_clause(g, "col", "out"), "col = temp_out.value"), "Where clause")
 
     g <<- mfdb_group(a1 = c(1,2,3), badger = c(88, 21), a3 = c(99))
-    ok(cmp(capture.output(pre_query.mfdb_group(NULL, g, "out")), c(
+    ok(cmp(capture.output(pre_query(NULL, g, "out")), c(
         "DROP TABLE temp_out",
         "CREATE  TABLE temp_out (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )",
         "INSERT INTO temp_out (sample,name,value) VALUES (0,'a1',1),(0,'a1',2),(0,'a1',3),(0,'badger',88),(0,'badger',21),(0,'a3',99)",
@@ -57,7 +57,7 @@ ok_group("Aggregates with mfdb_group", local({
 
 ok_group("Aggregates with mfdb_bootstrap_group", local({
     g <<- mfdb_bootstrap_group(2, mfdb_group(camels = c(44), aardvarks = c(88)))
-    ok(cmp(capture.output(pre_query.mfdb_group(NULL, g, "out")), c(
+    ok(cmp(capture.output(pre_query(NULL, g, "out")), c(
         "DROP TABLE temp_out",
         "CREATE  TABLE temp_out (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )",
         "INSERT INTO temp_out (sample,name,value) VALUES (1,'camels',44),(1,'aardvarks',88),(2,'camels',44),(2,'aardvarks',88)",
@@ -70,7 +70,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
 
     set.seed(123456)
     g <<- mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99)))
-    ok(cmp(capture.output(pre_query.mfdb_group(NULL, g, "out")), c(
+    ok(cmp(capture.output(pre_query(NULL, g, "out")), c(
         "DROP TABLE temp_out",
         "CREATE  TABLE temp_out (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )",
         "INSERT INTO temp_out (sample,name,value) VALUES (1,'g1',55),(1,'g1',55),(1,'g2',88),(1,'g2',88),(2,'g1',44),(2,'g1',44),(2,'g2',99),(2,'g2',88)",
@@ -84,7 +84,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
     # Test a few more random combinations
     set.seed(8081)
     g <<- mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99)))
-    ok(cmp(capture.output(pre_query.mfdb_group(NULL, g, "out")), c(
+    ok(cmp(capture.output(pre_query(NULL, g, "out")), c(
         "DROP TABLE temp_out",
         "CREATE  TABLE temp_out (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )",
         "INSERT INTO temp_out (sample,name,value) VALUES (1,'g1',44),(1,'g1',55),(1,'g2',99),(1,'g2',99),(2,'g1',44),(2,'g1',55),(2,'g2',99),(2,'g2',99)",
@@ -93,7 +93,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
 
     set.seed(203785)
     g <<- mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99)))
-    ok(cmp(capture.output(pre_query.mfdb_group(NULL, g, "out")), c(
+    ok(cmp(capture.output(pre_query(NULL, g, "out")), c(
         "DROP TABLE temp_out",
         "CREATE  TABLE temp_out (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )",
         "INSERT INTO temp_out (sample,name,value) VALUES (1,'g1',55),(1,'g1',55),(1,'g2',99),(1,'g2',99),(2,'g1',44),(2,'g1',44),(2,'g2',88),(2,'g2',99)",
@@ -104,7 +104,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
 ok_group("Aggregates with mfdb_group areas", local({
     # Areas are a special case, they have to be broken down into areacells first
     g <<- mfdb_group(a = c(1,2,3), b = c(88, 89))
-    ok(cmp(capture.output(pre_query.mfdb_group(NULL, g, "area")), c(
+    ok(cmp(capture.output(pre_query(NULL, g, "area")), c(
         "DROP TABLE temp_area",
         "CREATE  TABLE temp_area (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )",
         "INSERT INTO temp_area SELECT 0 AS sample, 'a' AS name, areacell_id AS value FROM division WHERE case_study_id = () AND division IN (1,2,3)",
