@@ -99,7 +99,7 @@ schema_from_0 <- function(mdb) {
         "areacell_id", "INT", "Areacell data relates to",
         "species_id", "BIGINT REFERENCES species(species_id)", "",
         "age", "INT", "Age (years)",
-        "sex_id", "INT", "Sex ID",
+        "sex_id", "INT REFERENCES sex(sex_id)", "Sex ID",
         "maturity_stage_id", "INT REFERENCES maturity_stage(maturity_stage_id)", "Maturity Stage ID",
         "length", "REAL", "Length of fish / mean length of all fish",
         "length_var", "REAL", "Length variance of all fish (given aggregated data)",
