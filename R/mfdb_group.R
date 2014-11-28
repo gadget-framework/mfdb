@@ -33,6 +33,9 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
 
     # Flatten out into multiple key:value rows, populate table in one hit
     mfdb_insert(mdb, table_name, denormalize(group))
+
+    # Index the lookup table to speed up queries
+    mfdb_send(mdb, sql_create_index(table_name, c('value', 'name', 'sample')))
 }
 
 select_clause.mfdb_group <- function(x, col, outputname) {
