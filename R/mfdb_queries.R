@@ -20,12 +20,12 @@ mfdb_temperature <- function (mdb, params = list()) {
         generator = "mfdb_temperature")
 }
 
-# Return year,step,area,stock,age,length, number (of samples)
-# TODO: stock isn't a group_cols yet
-mfdb_stock_count <- function (mdb, params) {
+# Return year, step, area, ... , number (of samples)
+mfdb_sample_count <- function (mdb, cols, params) {
+    #TODO: check cols has known entries
     mfdb_sample_grouping(mdb,
         params = params,
-        group_cols = c("timestep", "stock", "area", "age", "length"),
+        group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             ", SUM(c.count) AS number"),
         generator = "mfdb_stock_count")

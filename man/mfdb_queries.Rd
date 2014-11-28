@@ -1,7 +1,7 @@
 \name{mfdb_queries}
 \alias{mfdb_area_size}
 \alias{mfdb_temperature}
-\alias{mfdb_stock_count}
+\alias{mfdb_sample_count}
 \alias{mfdb_meanlength_stddev}
 \alias{mfdb_meanlength}
 \alias{mfdb_meanweight}
@@ -16,7 +16,7 @@
 
 \usage{
 mfdb_temperature(mdb, params)
-mfdb_stock_count(mdb, params)
+mfdb_sample_count(mdb, cols, params)
 mfdb_meanlength(mdb, params)
 mfdb_meanlength_stddev(mdb, params)
 mfdb_meanweight(mdb, params)
@@ -26,6 +26,7 @@ mfdb_agelength(mdb, params)
 
 \arguments{
     \item{mdb}{An object created by \code{mfdb}()}
+    \item{cols}{Any additonal columns to group by, see details.}
     \item{params}{A list of parameters, see details.}
 }
 
@@ -97,7 +98,7 @@ returned as part of the query.
         \item{mfdb_temperature}{
             Returns year, step, area, (mean) temperature
         }
-        \item{mfdb_stock_count}{
+        \item{mfdb_sample_count}{
             Returns year,step,area,stock,age,length,number (of samples)
         }
         \item{mfdb_meanlength}{
