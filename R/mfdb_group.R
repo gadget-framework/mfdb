@@ -35,7 +35,6 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
     denormalized <- denormalize(group)
 
     if (table_name == 'temp_area') {
-        # TODO: faster! faster!
         # Decompose divisions into areacells first
         for (set in split(denormalized, list(denormalized$sample, denormalized$name))) {
             mfdb_send(mdb,
