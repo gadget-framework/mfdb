@@ -31,8 +31,26 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
             "(sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value ", datatype,
             ")"))
 
-    # Flatten out into multiple key:value rows, populate table in one hit
-    mfdb_insert(mdb, table_name, denormalize(group))
+    # Break down group into single table
+    denormalized <- denormalize(group)
+
+    if (table_name == 'temp_area') {
+        # TODO: faster! faster!
+        # Decompose divisions into areacells first
+        for (set in split(denormalized, list(denormalized$sample, denormalized$name))) {
+            mfdb_send(mdb,
+                "INSERT INTO ", table_name,
+                " SELECT ", sql_quote(set[1, 'sample']), " AS sample",
+                ", ", sql_quote(set[1, 'name']), " AS name",
+                ", areacell_id AS value",
+                " FROM division",
+                " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
+                " AND division IN ", sql_quote(set[,'value'], always_bracket = TRUE))
+        }
+    } else {
+        # Populate table based on denormalized group
+        mfdb_insert(mdb, table_name, denormalized)
+    }
 
     # Index the lookup table to speed up queries
     mfdb_send(mdb, sql_create_index(table_name, c('value', 'name', 'sample')))

@@ -1,5 +1,6 @@
 # Return area, size
 mfdb_area_size <- function (mdb, params) {
+    if (is.null(params$area)) stop("Must specify 'area' in params")
     mfdb_sample_grouping(mdb,
         params = params,
         group_cols = c("area"),
@@ -116,7 +117,7 @@ mfdb_sample_grouping <- function (mdb,
     mfdb_finish_import(mdb)
 
     x <- grouping_by("timestep",       pre_query(mdb, params$timestep, "step"))
-    x <- grouping_by("area", group_to_table(mdb, "temp_area", params$area, datatype = "VARCHAR(10)", save_temp_tables = mdb$save_temp_tables))
+    x <- grouping_by("area",           pre_query(mdb, params$area, "area"))
     x <- grouping_by("age",            pre_query(mdb, params$age, "age"))
     x <- grouping_by("maturity_stage", pre_query(mdb, params$maturity_stage, "maturity_stage"))
 
@@ -124,13 +125,13 @@ mfdb_sample_grouping <- function (mdb,
         "SELECT ", paste(c(
             paste(paste0(c(
                 grouping_by("timestep", sample_clause(params$timestep, "c.month", "step")),
-                grouping_by("area",    "tarea.sample"),
+                grouping_by("area",     sample_clause(params$area, "c.areacell_id", "area")),
                 grouping_by("age",     sample_clause(params$age, "c.age", "age")),
                 grouping_by("maturity_stage", sample_clause(params$maturity_stage, "c.maturity_stage", "maturity_stage")),
                 NULL), collapse = "|| '.' ||"), "AS sample"),
             grouping_by("year",     select_clause(params$year, "c.year", "year")),
             grouping_by("timestep", select_clause(params$timestep, "c.month", "step")),
-            grouping_by("area",    "tarea.name AS area"),
+            grouping_by("area",     select_clause(params$area, "c.areacell_id", "area")),
             grouping_by("age",      select_clause(params$age, "c.age", "age")),
             grouping_by("maturity_stage", select_clause(params$maturity_stage, "c.maturity_stage", "maturity_stage")),
             grouping_by("length",  select_clause(params$length, "c.length", "length")),
@@ -139,7 +140,7 @@ mfdb_sample_grouping <- function (mdb,
         " FROM ", paste(c(
             paste(core_table, "c"),
             grouping_by("timestep", from_clause(params$timestep, "c.month", "step")),
-            grouping_by("area",    "temp_area tarea, division div"),
+            grouping_by("area",     from_clause(params$area, "c.areacell_id", "area")),
             grouping_by("age",      from_clause(params$age, "c.age", "age")),
             grouping_by("maturity_stage", from_clause(params$maturity_stage, "c.maturity_stage", "maturity_stage")),
             NULL), collapse = ","),
@@ -147,7 +148,7 @@ mfdb_sample_grouping <- function (mdb,
             paste("c.case_study_id =", sql_quote(mdb$case_study_id)),
             grouping_by("year",     where_clause(params$year, "c.year", "year")),
             grouping_by("timestep", where_clause(params$timestep, "c.month", "step")),
-            grouping_by("area",    "c.case_study_id = div.case_study_id AND c.areacell_id = div.areacell_id AND div.division = tarea.value"),
+            grouping_by("area",     where_clause(params$area, "c.areacell_id", "area")),
             grouping_by("age",     where_clause(params$age, "c.age", "age")),
             grouping_by("maturity_stage", where_clause(params$maturity_stage, "c.maturity_stage", "maturity_stage")),
             filtering_by("length", where_clause(params$length, "c.length")),

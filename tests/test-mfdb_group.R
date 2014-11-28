@@ -100,3 +100,15 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         "CREATE INDEX ON temp_out (value,name,sample)",
         "NULL")), "Created temporary table")
 }, asNamespace('mfdb')))
+
+ok_group("Aggregates with mfdb_group areas", local({
+    # Areas are a special case, they have to be broken down into areacells first
+    g <<- mfdb_group(a = c(1,2,3), b = c(88, 89))
+    ok(cmp(capture.output(pre_query.mfdb_group(NULL, g, "area")), c(
+        "DROP TABLE temp_area",
+        "CREATE  TABLE temp_area (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )",
+        "INSERT INTO temp_area SELECT 0 AS sample, 'a' AS name, areacell_id AS value FROM division WHERE case_study_id = () AND division IN (1,2,3)",
+        "INSERT INTO temp_area SELECT 0 AS sample, 'b' AS name, areacell_id AS value FROM division WHERE case_study_id = () AND division IN (88,89)",
+        "CREATE INDEX ON temp_area (value,name,sample)",
+        "NULL")), "Created temporary table")
+}, asNamespace('mfdb')))
