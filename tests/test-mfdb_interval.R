@@ -2,6 +2,8 @@ library(mfdb)
 library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
+g <- NULL
+
 ok_group("Can generate objects", local({
     expect_error(
         mfdb_interval("l", c()),
@@ -38,4 +40,14 @@ ok_group("Can generate SQL", local({
             where_clause(mfdb_interval("l", c(25,50)), "col", "out"),
             c("col >= 25", "col < 50")),
         "Generated where clause")
+}, asNamespace('mfdb')))
+
+ok_group("Aggregates with open_ended mfdb_interval", local({
+    g <<- mfdb_interval('l', c(10, 20, 100), open_ended = TRUE)
+    ok(cmp(capture.output(pre_query(NULL, g, "out")), c(
+        "NULL")), "Nothing happened pre_query")
+    ok(cmp(sample_clause(g, "col", "out"), "0"), "Sample clause")
+    ok(cmp(select_clause(g, "col", "out"), "CASE WHEN col >= 100 THEN 'l100' WHEN col >= 20 THEN 'l20' WHEN col >= 10 THEN 'l10' END AS out"), "Select clause")
+    ok(cmp(from_clause(g, "col", "out"), c()), "From clause")
+    ok(cmp(where_clause(g, "col", "out"), "col >= 10"), "Where clause")
 }, asNamespace('mfdb')))

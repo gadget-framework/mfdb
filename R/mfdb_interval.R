@@ -1,12 +1,13 @@
 # Max exclusive
 # mfdb_interval("length", c(10, 400, 1000))
 # mfdb_interval("length", seq(10, 1000, by=10))
-mfdb_interval <- function (prefix, vect) {
+mfdb_interval <- function (prefix, vect, open_ended = FALSE) {
     if (length(vect) < 2) {
         stop("vect must at least be 2 items long (min & max)")
     }
     group <- structure(vect,
             names = paste0(prefix, vect),
+            open_ended = open_ended,
             class = c("mfdb_interval", "mfdb_aggregate"))
     invisible(group)
 }
@@ -14,7 +15,10 @@ mfdb_interval <- function (prefix, vect) {
 # Generate CASE statement to pick correct group for value
 select_clause.mfdb_interval <- function(x, col, outputname) {
     sorted <- sort(x, decreasing = TRUE)
-    names(sorted)[[1]] <- NA # First case is stuff outside group
+    if (!attr(x, 'open_ended')) {
+        # Assign stuff outside highest group to NULL
+        names(sorted)[[1]] <- NA
+    }
     paste("CASE",
         paste("WHEN",
             col, ">=", sorted, "THEN",
@@ -26,7 +30,8 @@ select_clause.mfdb_interval <- function(x, col, outputname) {
 where_clause.mfdb_interval <- function(x, col, outputname) {
     c(
         paste(col, ">=", sql_quote(min(x))),
-        paste(col, "<", sql_quote(max(x))))
+        if (!attr(x, 'open_ended')) paste(col, "<", sql_quote(max(x))),
+        NULL)
 }
 
 # Return a list of the form "group" = c("min", "max"), as required by gadget_file

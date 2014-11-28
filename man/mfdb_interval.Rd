@@ -8,7 +8,7 @@
 }
 
 \usage{
-mfdb_interval(prefix, vect)
+mfdb_interval(prefix, vect, open_ended = FALSE)
 \method{as.list}{mfdb_interval}(x, ...)
 }
 
@@ -18,6 +18,9 @@ mfdb_interval(prefix, vect)
     }
     \item{vect}{
         (required) A vector representing the minimum for each group, and the maximum
+    }
+    \item{open_ended}{
+        If true, the last group will include everything >= the last value in vect
     }
     \item{x}{
         The \code{mfdb_interval} to convert to a list for use in \code{gadget_file}
