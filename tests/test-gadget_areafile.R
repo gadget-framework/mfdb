@@ -18,11 +18,11 @@ ok_group("Can write area files", {
     ok(cmp_file(gd, 'main',
         ver_string,
         "timefile\t",
-        "areafile\tarea",
+        "areafile\tModelfiles/area",
         "printfiles\t; Required comment",
         "[stock]","[tagging]","[otherfood]","[fleet]","[likelihood]"
     ))
-    ok(cmp_file(gd, 'area',
+    ok(cmp_file(gd, 'Modelfiles/area',
         ver_string,
         "; divA\tdivX\tdivB\tdivC\tdivD",
         "areas\t1\t2\t3\t4\t5",

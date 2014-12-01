@@ -52,7 +52,7 @@ ok_group("Area File", {
         ))
 
     # Resulting areafile contains the following data
-    ok(cmp_file(gd, "area",
+    ok(cmp_file(gd, "Modelfiles/area",
         ver_string,
         "; a\tb",
         "areas\t1\t2",
