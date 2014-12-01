@@ -14,7 +14,7 @@ ok_group("Can write area files", {
         area = rep(c("divA", "divB", "divC"), times = 4),
         temperature = 1:12,
         stringsAsFactors = FALSE
-    )))
+    ), area = list(divA = 14, divX = 99, divB = 30, divC = 44, divD = 88)))
     ok(cmp_file(gd, 'main',
         ver_string,
         "timefile\t",
@@ -24,22 +24,23 @@ ok_group("Can write area files", {
     ))
     ok(cmp_file(gd, 'area',
         ver_string,
-        "areas\tdivA\tdivB\tdivC",
-        "size\t15\t25\t10",
+        "; divA\tdivX\tdivB\tdivC\tdivD",
+        "areas\t1\t2\t3\t4\t5",
+        "size\t15\t0\t25\t10\t0",
         "temperature\t",
         "; -- data --",
         "; year\tstep\tarea\ttemperature",
-        "1998\tq1\tdivA\t1",
-        "1998\tq1\tdivB\t2",
-        "1998\tq1\tdivC\t3",
-        "1998\tq2\tdivA\t4",
-        "1998\tq2\tdivB\t5",
-        "1998\tq2\tdivC\t6",
-        "1998\tq3\tdivA\t7",
-        "1998\tq3\tdivB\t8",
-        "1998\tq3\tdivC\t9",
-        "1998\tq4\tdivA\t10",
-        "1998\tq4\tdivB\t11",
-        "1998\tq4\tdivC\t12"
+        "1998\tq1\t1\t1",
+        "1998\tq1\t3\t2",
+        "1998\tq1\t4\t3",
+        "1998\tq2\t1\t4",
+        "1998\tq2\t3\t5",
+        "1998\tq2\t4\t6",
+        "1998\tq3\t1\t7",
+        "1998\tq3\t3\t8",
+        "1998\tq3\t4\t9",
+        "1998\tq4\t1\t10",
+        "1998\tq4\t3\t11",
+        "1998\tq4\t4\t12"
     ))
 })

@@ -54,19 +54,20 @@ ok_group("Area File", {
     # Resulting areafile contains the following data
     ok(cmp_file(gd, "area",
         ver_string,
-        "areas\ta\tb",
+        "; a\tb",
+        "areas\t1\t2",
         "size\t5\t10",
         "temperature\t",
         "; -- data --",
         "; year\tstep\tarea\ttemperature",
-        "1998\t1\ta\t2",
-        "1998\t2\ta\t5",
-        "1998\t3\ta\t8",
-        "1998\t4\ta\t11",
-        "1999\t1\ta\t26",
-        "1999\t2\ta\t29",
-        "1999\t3\ta\t32",
-        "1999\t4\ta\t35"
+        "1998\t1\t1\t2",
+        "1998\t2\t1\t5",
+        "1998\t3\t1\t8",
+        "1998\t4\t1\t11",
+        "1999\t1\t1\t26",
+        "1999\t2\t1\t29",
+        "1999\t3\t1\t32",
+        "1999\t4\t1\t35"
         ), "Areafile on disk matches")
 })
 
@@ -130,7 +131,7 @@ ok_group("Length / weight / age samples", {
         ), "datafile updated")
     ok(cmp_file(gd, "catchstatistics.catchstatistics.area.agg",
         ver_string,
-        "divA\tdivA"
+        "divA\t1"
         ), "areafile updated")
     ok(cmp_file(gd, "catchstatistics.catchstatistics.age.agg",
         ver_string,

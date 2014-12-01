@@ -7,7 +7,7 @@
 }
 
 \usage{
-gadget_areafile(size, temperature)
+gadget_areafile(size, temperature, area = attr(size, 'area'))
 }
 
 \arguments{
@@ -16,6 +16,10 @@ gadget_areafile(size, temperature)
     }
     \item{temperature}{
         data.frame as produced by \code{mfdb_area_temperature}
+    }
+    \item{area}{
+        Optional. \code{mfdb_group} that you used to specify area. By default
+        pulls it from annotations on the \code{size} object.
     }
 }
 

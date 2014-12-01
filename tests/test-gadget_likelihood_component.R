@@ -165,3 +165,40 @@ ok_group("Function either provided explicitly or based on generator", {
             data = structure(data.frame(), generator = "mfdb_meanlength_stddev"))[['function']],
         "lengthgivenstddev")
 })
+
+###############################################################################
+ok_group("Aggregation files", {
+    gd <- gadget_directory(tempfile())
+    gadget_dir_write(gd, gadget_likelihood_component(
+        "catchstatistics",
+        name="cs",
+        weight = 0.8,
+        data = structure(
+            data.frame(a = c(1,2,3), b = c(4,5,6)),
+            area = list(divA = c('x', 't'), divB = c('s', 'r')),
+            age = list(young = 1:4, old = 5:8),
+            generator = "mfdb_meanlength")
+        ))
+
+    ok(cmp_file(gd, "likelihood",
+        ver_string, "; ",
+        "[component]",
+        "name\tcs",
+        "weight\t0.8",
+        "type\tcatchstatistics",
+        "datafile\tcatchstatistics.cs.lengthnostddev",
+        "function\tlengthnostddev",
+        "areaaggfile\tcatchstatistics.cs.area.agg",
+        "ageaggfile\tcatchstatistics.cs.age.agg",
+        "fleetnames\t",
+        "stocknames\t"), "Can write likelihood file")
+
+    ok(cmp_file(gd, "catchstatistics.cs.area.agg",
+        ver_string,
+        "divA\t1",
+        "divB\t2"), "Area aggregation file has subdivisions hidden")
+    ok(cmp_file(gd, "catchstatistics.cs.age.agg",
+        ver_string,
+        "young\t1\t2\t3\t4",
+        "old\t5\t6\t7\t8"), "Age aggregation file matches input")
+})
