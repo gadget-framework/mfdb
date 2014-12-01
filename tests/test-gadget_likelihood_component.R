@@ -72,7 +72,7 @@ ok_group("Can write likelihood components", {
         gadget_dir_read(gd, "likelihood")$components,
         list(
             list(),
-            component = list(name = "head-bone", weight = 0.3, type = "understocking")))
+            component = structure(list(name = "head-bone", weight = 0.3, type = "understocking"), preamble = list(""))))
     ok(cmp_file(gd, "main",
         ver_string,
         "timefile\t",
@@ -91,8 +91,8 @@ ok_group("Can write likelihood components", {
         gadget_dir_read(gd, "likelihood")$components,
         list(
             list(),
-            component = list(name = "head-bone", weight = 0.3, type = "understocking"),
-            component = list(name = "neck-bone", weight = 0.5, type = "penalty", datafile = "neck-bone.penaltyfile")))
+            component = structure(list(name = "head-bone", weight = 0.3, type = "understocking"), preamble = list("")),
+            component = structure(list(name = "neck-bone", weight = 0.5, type = "penalty", datafile = "neck-bone.penaltyfile"), preamble = list(""))))
     ok(cmp_file(gd, "main",
         ver_string,
         "timefile\t",
@@ -112,9 +112,9 @@ ok_group("Can write likelihood components", {
         gadget_dir_read(gd, "likelihood")$components,
         list(
             list(),
-            component = list(name = "head-bone", weight = 0.8, type = "understocking"),
-            component = list(name = "neck-bone", weight = 0.5, type = "penalty", datafile = "neck-bone.penaltyfile"),
-            component = list(name = "shoulder-bone", weight = 0.2, type = "understocking")))
+            component = structure(list(name = "head-bone", weight = 0.8, type = "understocking"), preamble = list("")),
+            component = structure(list(name = "neck-bone", weight = 0.5, type = "penalty", datafile = "neck-bone.penaltyfile"), preamble = list("")),
+            component = structure(list(name = "shoulder-bone", weight = 0.2, type = "understocking"), preamble = list(""))))
     ok(cmp_file(gd, "main",
         ver_string,
         "timefile\t",

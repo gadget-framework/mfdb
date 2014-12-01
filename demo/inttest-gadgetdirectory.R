@@ -67,3 +67,65 @@ ok_group("Area File", {
         "1999\t4\ta\t35"
         ), "Areafile on disk matches")
 })
+
+ok_group("Length / weight / age samples", {
+    # Set-up areas/divisions
+    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
+    mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G01')))
+
+    # Import a survey
+    mfdb_import_survey(mdb,
+        data_source = 'survey1',
+        data.frame(
+            year = c('1998'),
+            month = c(1:12),
+            areacell = c('45G01'),
+            species = c('COD'),
+            age =    c(  1,  2,  1,  2,  1,  2,   1,  2,  1,  2,  1,  2),
+            length = c( 10, 50, 30, 10, 35, 46,  65, 62, 36, 35, 34, 22),
+            weight = c(100,500,300,100,350,460, 650,320,360,350,340,220)))
+
+    # Aggregate data
+    agg_data <- mfdb_meanlength(mdb, list(
+            year = 1998:2000,
+            area = mfdb_group(divA = c("divA")),
+            timestep = mfdb_timestep_biannually,
+            age = mfdb_group(all = 1:1000),
+            length = mfdb_interval("len", seq(0, 50, by = 5))))
+
+    # Write it into a likelihood component
+    gadget_dir_write(gd, gadget_likelihood_component('catchstatistics', data = agg_data[[1]]))
+
+    # Likelihood file has a component
+    ok(cmp_file(gd, "likelihood",
+        ver_string,
+        "; ",
+        "[component]",
+        "name\tcatchstatistics",
+        "weight\t0",
+        "type\tcatchstatistics",
+        "datafile\tcatchstatistics.catchstatistics.lengthnostddev",
+        "function\tlengthnostddev",
+        "areaaggfile\tcatchstatistics.catchstatistics.area.agg",
+        "ageaggfile\tcatchstatistics.catchstatistics.age.agg",
+        "fleetnames\t",
+        "stocknames\t"
+        ), "Likelihood file updated")
+
+    # Data files written
+    ok(cmp_file(gd, "catchstatistics.catchstatistics.lengthnostddev",
+        ver_string,
+        "; -- data --",
+        "; year\tstep\tarea\tage\tnumber\tmean",
+        "1998\t1\tdivA\tall\t5\t26.2",
+        "1998\t2\tdivA\tall\t4\t31.75"
+        ), "datafile updated")
+    ok(cmp_file(gd, "catchstatistics.catchstatistics.area.agg",
+        ver_string,
+        "divA\tdivA"
+        ), "areafile updated")
+    ok(cmp_file(gd, "catchstatistics.catchstatistics.age.agg",
+        ver_string,
+        paste0("all\t", paste(1:1000, collapse = "\t"))
+        ), "age updated")
+})

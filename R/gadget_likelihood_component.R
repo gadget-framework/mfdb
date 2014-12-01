@@ -28,6 +28,9 @@ gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
         }
         likelihood$components[[i]] <- n
         names(likelihood$components)[[i]] <- "component"
+        if (is.null(attr(likelihood$components[[i]], "preamble"))) {
+            attr(likelihood$components[[i]], "preamble") <- ""
+        }
 
         gadget_dir_write(gd, likelihood)
     }
