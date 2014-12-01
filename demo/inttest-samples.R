@@ -53,7 +53,7 @@ ok_group("Unaggregated length / weight / age samples", {
         list("0.0.0" = structure(
             data.frame(
                 year = c(1998:1998),
-                step = c("h1", "h2"),
+                step = c("1", "2"),
                 area = c("divA"),
                 age = c("all"),
                 number = c(5, 4),
@@ -76,7 +76,7 @@ ok_group("Unaggregated length / weight / age samples", {
         list("0.0.0" = structure(
             data.frame(
                 year = c(1998:1998),
-                step = c("h1", "h2"),
+                step = c("1", "2"),
                 area = c("divA"),
                 age = c("all"),
                 number = c(5, 4),
@@ -101,7 +101,7 @@ ok_group("Unaggregated length / weight / age samples", {
         list("0.0.0" = structure(
             data.frame(
                 year = c(1998:1998),
-                step = c("h1", "h2"),
+                step = c("1", "2"),
                 area = c("divA"),
                 age = c("all"),
                 number = c(1, 2),
@@ -125,7 +125,7 @@ ok_group("Unaggregated length / weight / age samples", {
         list("0.0.0" = structure(
             data.frame(
                 year = c(1998:1998),
-                step = c("h1", "h2"),
+                step = c("1", "2"),
                 area = c("divA"),
                 age = c("all"),
                 number = c(1, 2),
@@ -167,7 +167,7 @@ ok_group("Unaggregated length / weight / age samples", {
         list("0.0.0" = structure(
             data.frame(
                 year = c(1998, 1998, 1998),
-                step = c("h1", "h2", "h2"),
+                step = c("1", "2", "2"),
                 area = c("divA", "divA", "divA"),
                 age = c("age2", "age1", "age2"),
                 length = c("len50", "len65", "len60"),
@@ -228,7 +228,7 @@ ok_group("Filtering of samples", {
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
         data.frame(
-            step = c("h1", "h2"),
+            step = c("1", "2"),
             number = c(12, 12),
             mean = c(
                 mean(c(10,50,30,10,35,46, 35,64,23,13,99,83)),
@@ -244,7 +244,7 @@ ok_group("Filtering of samples", {
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
         data.frame(
-            step = c("h1", "h2"),
+            step = c("1", "2"),
             number = c(12, 12),
             mean = c(
                 mean(c(10,50,30,10,35,46, 35,64,23,13,99,83)),
@@ -262,7 +262,7 @@ ok_group("Filtering of samples", {
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
         data.frame(
-            step = c("h1", "h2"),
+            step = c("1", "2"),
             number = c(6, 6),
             mean = c(
                 mean(c(10,50,30,10,35,46)),
@@ -278,7 +278,7 @@ ok_group("Filtering of samples", {
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
         data.frame(
-            step = c("h1", "h2"),
+            step = c("1", "2"),
             number = c(6, 6),
             mean = c(
                 mean(c(10,50,30,10,35,46)),
@@ -294,7 +294,7 @@ ok_group("Filtering of samples", {
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
         data.frame(
-            step = c("h1", "h2"),
+            step = c("1", "2"),
             number = c(6, 6),
             mean = c(
                 mean(c(35,64,23,13,99,83)),
@@ -310,7 +310,7 @@ ok_group("Filtering of samples", {
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
         data.frame(
-            step = c("h1", "h2"),
+            step = c("1", "2"),
             number = c(6, 6),
             mean = c(
                 mean(c(35,64,23,13,99,83)),

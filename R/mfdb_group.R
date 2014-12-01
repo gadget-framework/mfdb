@@ -68,9 +68,9 @@ where_clause.mfdb_group <- function(x, col, outputname) {
 }
 
 # Some default time groupings
-mfdb_timestep_yearly <- mfdb_group(year = 1:12)
-mfdb_timestep_biannually <- mfdb_group(h1 = 1:6, h2 = 7:12)
-mfdb_timestep_quarterly <- mfdb_group(q1 = 1:3, q2 = 4:6, q3 = 7:9, q4 = 10:12)
+mfdb_timestep_yearly <- mfdb_group('1' = 1:12)
+mfdb_timestep_biannually <- mfdb_group('1' = 1:6, '2' = 7:12)
+mfdb_timestep_quarterly <- mfdb_group('1' = 1:3, '2' = 4:6, '3' = 7:9, '4' = 10:12)
 
 # Shortcut, return group of form prefix1 = c(1,2)
 mfdb_group_numbered <- function (prefix, ...) {

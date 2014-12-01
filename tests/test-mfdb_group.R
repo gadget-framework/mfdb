@@ -27,6 +27,16 @@ ok_group("Can get a bootstrap group", {
         "Count should be equal or greater than 1")
 })
 
+ok_group("Predefined timestep groups", {
+    ok(cmp(mfdb_timestep_yearly[[1]], 1:12), "mfdb_timestep_yearly")
+    ok(cmp(mfdb_timestep_biannually[[1]], 1:6), "mfdb_timestep_biannually")
+    ok(cmp(mfdb_timestep_biannually[[2]], 7:12), "mfdb_timestep_biannually")
+    ok(cmp(mfdb_timestep_quarterly[[1]], 1:3), "mfdb_timestep_quarterly")
+    ok(cmp(mfdb_timestep_quarterly[[2]], 4:6), "mfdb_timestep_quarterly")
+    ok(cmp(mfdb_timestep_quarterly[[3]], 7:9), "mfdb_timestep_quarterly")
+    ok(cmp(mfdb_timestep_quarterly[[4]], 10:12), "mfdb_timestep_quarterly")
+})
+
 g <- NULL
 
 ok_group("Aggregates with mfdb_group", local({

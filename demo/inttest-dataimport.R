@@ -98,7 +98,7 @@ ok_group("Temperature", {
         list("0.0" = structure(
             data.frame(
                 year = rep(c(1998, 1999), each = 4),
-                step = rep(c("q1", "q2", "q3", "q4"), times = 2),
+                step = rep(c("1", "2", "3", "4"), times = 2),
                 area = rep("divA", times = 8),
                 temperature = c(
                     mean(1:3), mean(4:6), mean(7:9), mean(10:12),
@@ -125,7 +125,7 @@ ok_group("Temperature", {
         list("0.0" = structure(
             data.frame(
                 year = rep(c(1998, 1999), each = 4),
-                step = rep(c("q1", "q2", "q3", "q4"), times = 2),
+                step = rep(c("1", "2", "3", "4"), times = 2),
                 area = rep("divA", times = 8),
                 temperature = c(
                     mean(12:14), mean(15:17), mean(18:20), mean(21:23),

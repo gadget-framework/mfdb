@@ -57,13 +57,13 @@ ok_group("Area File", {
         "temperature\t",
         "; -- data --",
         "; year\tstep\tarea\ttemperature",
-        "1998\tq1\ta\t2",
-        "1998\tq2\ta\t5",
-        "1998\tq3\ta\t8",
-        "1998\tq4\ta\t11",
-        "1999\tq1\ta\t26",
-        "1999\tq2\ta\t29",
-        "1999\tq3\ta\t32",
-        "1999\tq4\ta\t35"
+        "1998\t1\ta\t2",
+        "1998\t2\ta\t5",
+        "1998\t3\ta\t8",
+        "1998\t4\ta\t11",
+        "1999\t1\ta\t26",
+        "1999\t2\ta\t29",
+        "1999\t3\ta\t32",
+        "1999\t4\ta\t35"
         ), "Areafile on disk matches")
 })
