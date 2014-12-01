@@ -10,6 +10,10 @@ export(mfdb_bootstrap_group)
 export(mfdb_interval)
 S3method(as.list, mfdb_interval)
 
+# mfdb_step_interval.R
+export(mfdb_step_interval)
+S3method(as.list, mfdb_step_interval)
+
 # mfdb.R
 importFrom(DBI, dbConnect, dbDisconnect, dbDriver, dbSendQuery, dbFetch, dbGetQuery, dbCommit, dbRollback, dbGetRowsAffected, dbClearResult)
 importFrom(RPostgreSQL, PostgreSQL)
