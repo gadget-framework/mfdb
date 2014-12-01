@@ -5,11 +5,10 @@ mfdb_interval <- function (prefix, vect, open_ended = FALSE) {
     if (length(vect) < 2) {
         stop("vect must at least be 2 items long (min & max)")
     }
-    group <- structure(vect,
-            names = paste0(prefix, vect),
-            open_ended = open_ended,
-            class = c("mfdb_interval", "mfdb_aggregate"))
-    invisible(group)
+    return(structure(vect,
+        names = paste0(prefix, vect),
+        open_ended = open_ended,
+        class = c("mfdb_interval", "mfdb_aggregate")))
 }
 
 # Generate CASE statement to pick correct group for value
