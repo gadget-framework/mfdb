@@ -123,6 +123,21 @@ mfdb_import_temperature <- function(mdb, data_in) {
     })
 }
 
+# Import sampling type data
+mfdb_import_sampling_type <- function(mdb, data_in) {
+    mfdb_transaction(mdb, {
+        dbSendQuery(mdb$db, paste0(
+            "DELETE FROM sampling_type WHERE",
+            " case_study_id IN ", sql_quote(mdb$case_study_id, always_bracket = TRUE),
+            ""))
+        res <- mfdb_insert(mdb, 'sampling_type', data.frame(
+            case_study_id = c(mdb$case_study_id),
+            sampling_type_id = sanitise_col(mdb, data_in, 'id'),
+            name = sanitise_col(mdb, data_in, 'name'),
+            description = sanitise_col(mdb, data_in, 'description', default = c(""))))
+    })
+}
+
 # Check column content, optionally resolving lookup
 sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL) {
     col <- data_in[[col_name]]

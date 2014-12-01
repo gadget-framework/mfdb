@@ -28,10 +28,12 @@ mfdb_update_schema <- function(mdb, read_only = FALSE) {
 schema_from_0 <- function(mdb) {
     create_taxonomy <- function(name, desc, id_type = "INT") {
         mfdb_create_table(mdb, name, desc, cols = c(
-            paste0(name, "_id"), paste0(id_type, " PRIMARY KEY"), "Numeric ID for this entry",
+            if (name %in% mfdb_cs_taxonomy) c("case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to"),
+            paste0(name, "_id"), id_type, "Numeric ID for this entry",
             "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
             "description", "VARCHAR(1024)", "Long description"
         ), keys = c(
+            paste0(c("PRIMARY KEY(", (if (name %in% mfdb_cs_taxonomy) "case_study_id, "), paste0(name, "_id"), ")"), collapse = ""),
             "CHECK(name ~ '^[A-Za-z0-9_.]+$')",
             "UNIQUE(name)"
         ))
@@ -81,9 +83,10 @@ schema_from_0 <- function(mdb) {
         "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
         "vessel_id", "INT REFERENCES vessel(vessel_id)", "Vessel used",
-        "sampling_type_id", "INT REFERENCES sampling_type(sampling_type_id)", "Sampling type"
+        "sampling_type_id", "INT", "Sampling type"
     ), keys = c(
-        "UNIQUE(data_source)"
+        "UNIQUE(data_source)",
+        "FOREIGN KEY(case_study_id, sampling_type_id) REFERENCES sampling_type(case_study_id, sampling_type_id)"
     ))
 
     create_taxonomy("sex", "")
@@ -112,8 +115,8 @@ schema_from_0 <- function(mdb) {
         "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)"))
 }
 
-mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sampling_type", "sex", "maturity_stage", "species")
-mfdb_cs_taxonomy <- c("areacell")
+mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sex", "maturity_stage", "species")
+mfdb_cs_taxonomy <- c("areacell", "sampling_type")
 
 # Populate tables with package-provided data
 mfdb_update_taxonomy <- function(mdb) {
@@ -121,7 +124,6 @@ mfdb_update_taxonomy <- function(mdb) {
     mfdb_import_taxonomy(mdb, "institute", institute)
     mfdb_import_taxonomy(mdb, "gear", gear)
     mfdb_import_taxonomy(mdb, "vessel", vessel)
-    mfdb_import_taxonomy(mdb, "sampling_type", sampling_type)
 
     mfdb_import_taxonomy(mdb, "sex", sex)
     mfdb_import_taxonomy(mdb, "species", species)

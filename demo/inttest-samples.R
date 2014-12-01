@@ -186,6 +186,9 @@ ok_group("Filtering of samples", {
     mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
     mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G01')))
 
+    # Set up sampling types
+    mfdb_import_sampling_type(mdb, data.frame(id = 1:2, name = c("SEA", "MOO")))
+
     # Import several surveys with different metadata set
     mfdb_import_survey(mdb,
         data_source = 'survey1',
@@ -218,6 +221,17 @@ ok_group("Filtering of samples", {
             length = c( 35, 64, 23, 13, 99, 83,  54, 23, 65, 12, 22,  9),
             weight = c(110,510,310,110,310,410, 610,310,310,310,310,230)))
 
+    # MOO sampling_type has no dat
+    ok(cmp(
+        mfdb_meanlength(mdb, list(
+            sampling_type = 'MOO',
+            area = mfdb_group(divA = c("divA")),
+            timestep = mfdb_timestep_biannually,
+            age = mfdb_group(all = 1:1000),
+            length = mfdb_interval("len", seq(0, 100, by = 10)),
+            year = 1998:2000)),
+            list()),
+        "sampling_type MOO empty")
 
     # Without any aggregation on, we get the whole lot
     ok(cmp(

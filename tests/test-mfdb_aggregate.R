@@ -2,7 +2,7 @@ library(mfdb)
 library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
-mdb <- NULL
+mdb <- list(case_study_id = 5)
 
 ok_group("Aggregates with NULL", local({
     pre_query(mdb, NULL, "out")  # Just check nothing happens
@@ -36,5 +36,11 @@ ok_group("Aggregates with character", local({
     ok(cmp(from_clause(mdb, "c", "col", "out"), c()), "From clause")
 
     ok(cmp(where_clause(mdb, c("a", "b"), 'tbl.boar_id'), "(tbl.boar_id IN ('a','b'))"))
-    ok(cmp(where_clause(mdb, c("GEA"), 'tbl.gear_id'), "(tbl.gear_id IN (SELECT gear_id FROM gear WHERE name IN ('GEA')))"))
+}, asNamespace('mfdb')))
+
+ok_group("Aggregates with lookup tables", local({
+    ok(cmp(where_clause(mdb, c("GEA"), 'tbl.gear_id'),
+        "(tbl.gear_id IN (SELECT gear_id FROM gear WHERE name IN ('GEA')))"))
+    ok(cmp(where_clause(mdb, c("SEA"), 'tbl.sampling_type_id'),
+        "(tbl.sampling_type_id IN (SELECT sampling_type_id FROM sampling_type WHERE case_study_id = 5 AND name IN ('SEA')))"))
 }, asNamespace('mfdb')))

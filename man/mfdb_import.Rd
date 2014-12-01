@@ -3,6 +3,7 @@
 \alias{mfdb_import_area}
 \alias{mfdb_import_division}
 \alias{mfdb_import_temperature}
+\alias{mfdb_import_sampling_type}
 
 \title{MareFrame Import functions}
 \description{
@@ -14,6 +15,7 @@
     mfdb_import_area(mdb, data_in)
     mfdb_import_division(mdb, data_in)
     mfdb_import_temperature(mdb, data_in)
+    mfdb_import_sampling_type(mdb, data_in)
 }
 \arguments{
     \item{mdb}{
@@ -76,6 +78,15 @@ areacells. The \code{data_in} should be a data.frame with the following columns:
     \item{month}{Required. Month (1--12) each sample was taken, e.g. \code{c(1,12)}}
     \item{areacell}{Required. Areacell sample was taken within}
     \item{temperature}{The temperature at given location/time}
+}
+
+\code{mfdb_import_sampling_type} imports names of sampling types for this case
+study. The \code{data_in} should be a data.frame with the following columns:
+
+\describe{
+    \item{id}{A numeric ID for this sampling type}
+    \item{name}{Required. A vector of short names to use in data, e.g. "SEA"}
+    \item{description}{Optional. A vector of descriptive names, e.g. "sea sampling"}
 }
 
 }
