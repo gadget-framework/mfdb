@@ -4,7 +4,7 @@ source('utils/helpers.R')
 
 g <- NULL
 
-ok_group("Can generate objects", local({
+ok_group("Can generate objects", {
     expect_error(
         mfdb_interval("l", c()),
         "vect must at least be 2 items long")
@@ -15,7 +15,7 @@ ok_group("Can generate objects", local({
     expect_equal(
         class(mfdb_interval("l", c(1, 100))),
         c("mfdb_interval", "mfdb_aggregate"))
-}, asNamespace('mfdb')))
+})
 
 ok_group("Elements are named by prefixes", local({
     expect_equal(
