@@ -2,41 +2,39 @@ library(mfdb)
 library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
-ok_group("Aggregates with NULL", {
-    mfdb:::pre_query("mdb", NULL, "out")  # Just check nothing happens
-    ok(cmp(mfdb:::sample_clause(NULL, "col", "out"), "0"), "Sample clause")
-    ok(cmp(mfdb:::select_clause(NULL, "col", "out"), "'all' AS out"), "Select clause")
-    ok(cmp(mfdb:::from_clause(NULL, "col", "out"), c()), "From clause")
-    ok(cmp(mfdb:::where_clause(NULL, "col", "out"), c()), "Where clause")
-})
+mdb <- NULL
 
-ok_group("Aggregates with numeric", {
-    mfdb:::pre_query.numeric("mdb", 5, "out")  # Just check nothing happens
+ok_group("Aggregates with NULL", local({
+    pre_query(mdb, NULL, "out")  # Just check nothing happens
+    ok(cmp(sample_clause(mdb, NULL, "col", "out"), "0"), "Sample clause")
+    ok(cmp(select_clause(mdb, NULL, "col", "out"), "'all' AS out"), "Select clause")
+    ok(cmp(from_clause(mdb, NULL, "col", "out"), c()), "From clause")
+    ok(cmp(where_clause(mdb, NULL, "col", "out"), c()), "Where clause")
+}, asNamespace('mfdb')))
 
-    ok(cmp(mfdb:::sample_clause.numeric(5, "col", "out"), "0"), "Sample clause")
+ok_group("Aggregates with numeric", local({
+    pre_query(mdb, 5, "out")  # Just check nothing happens
 
-    sc <- mfdb:::select_clause.numeric
-    ok(cmp(sc(5, 'col', 'out'), "col AS out"))
+    ok(cmp(sample_clause(mdb, 5, "col", "out"), "0"), "Sample clause")
 
-    ok(cmp(mfdb:::from_clause.numeric(5, "col", "out"), c()), "From clause")
+    ok(cmp(select_clause(mdb, 5, 'col', 'out'), "col AS out"))
 
-    wc <- mfdb:::where_clause.numeric
-    ok(cmp(wc(5, 'col'), "(col IN (5))"))
-    ok(cmp(wc(c(1,2,3), 'col'), "(col IN (1,2,3))"))
-    ok(cmp(wc(c(1,NA,3), 'cow'), "(cow IN (1,3) OR cow IS NULL)"))
-})
+    ok(cmp(from_clause(mdb, 5, "col", "out"), c()), "From clause")
 
-ok_group("Aggregates with character", {
-    mfdb:::pre_query.character("mdb", "c", "out")  # Just check nothing happens
+    ok(cmp(where_clause(mdb, 5, 'col'), "(col IN (5))"))
+    ok(cmp(where_clause(mdb, c(1,2,3), 'col'), "(col IN (1,2,3))"))
+    ok(cmp(where_clause(mdb, c(1,NA,3), 'cow'), "(cow IN (1,3) OR cow IS NULL)"))
+}, asNamespace('mfdb')))
 
-    ok(cmp(mfdb:::sample_clause.character("c", "col", "out"), "0"), "Sample clause")
+ok_group("Aggregates with character", local({
+    pre_query(mdb, "c", "out")  # Just check nothing happens
 
-    sc <- mfdb:::select_clause.character
-    ok(cmp(sc('a', 'col', 'out'), "col AS out"))
+    ok(cmp(sample_clause(mdb, "c", "col", "out"), "0"), "Sample clause")
 
-    ok(cmp(mfdb:::from_clause.character("c", "col", "out"), c()), "From clause")
+    ok(cmp(select_clause(mdb, 'a', 'col', 'out'), "col AS out"))
 
-    wc <- mfdb:::where_clause.character
-    ok(cmp(wc(c("a", "b"), 'tbl.boar_id'), "(tbl.boar_id IN ('a','b'))"))
-    ok(cmp(wc(c("GEA"), 'tbl.gear_id'), "(tbl.gear_id IN (SELECT gear_id FROM gear WHERE name IN ('GEA')))"))
-})
+    ok(cmp(from_clause(mdb, "c", "col", "out"), c()), "From clause")
+
+    ok(cmp(where_clause(mdb, c("a", "b"), 'tbl.boar_id'), "(tbl.boar_id IN ('a','b'))"))
+    ok(cmp(where_clause(mdb, c("GEA"), 'tbl.gear_id'), "(tbl.gear_id IN (SELECT gear_id FROM gear WHERE name IN ('GEA')))"))
+}, asNamespace('mfdb')))

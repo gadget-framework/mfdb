@@ -55,15 +55,15 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
     mfdb_send(mdb, sql_create_index(table_name, c('value', 'name', 'sample')))
 }
 
-select_clause.mfdb_group <- function(x, col, outputname) {
+select_clause.mfdb_group <- function(mdb, x, col, outputname) {
     paste0("temp_", outputname, ".name AS ", outputname)
 }
 
-from_clause.mfdb_group <- function(x, col, outputname) {
+from_clause.mfdb_group <- function(mdb, x, col, outputname) {
     paste0("temp_", outputname)
 }
 
-where_clause.mfdb_group <- function(x, col, outputname) {
+where_clause.mfdb_group <- function(mdb, x, col, outputname) {
     paste0(col, " = ", "temp_", outputname, ".value")
 }
 

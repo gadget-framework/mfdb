@@ -3,6 +3,7 @@ library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
 g <- NULL
+mdb <- NULL
 
 ok_group("Can generate objects", {
     expect_equal(
@@ -24,34 +25,34 @@ ok_group("Aggregates with close_ended mfdb_step_interval", local({
     g <<- mfdb_step_interval('l', 10)
     ok(cmp(capture.output(pre_query(NULL, g, "out")), c(
         "NULL")), "Nothing happened pre_query")
-    ok(cmp(sample_clause(g, "col", "out"), "0"), "Sample clause")
-    ok(cmp(select_clause(g, "col", "out"), "'l' || (least(floor(col), 0) / 10) * 10 AS out"), "Select clause")
-    ok(cmp(from_clause(g, "col", "out"), c()), "From clause")
-    ok(cmp(where_clause(g, "col", "out"), "col >= 0"), "Where clause")
+    ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
+    ok(cmp(select_clause(mdb, g, "col", "out"), "'l' || (least(floor(col), 0) / 10) * 10 AS out"), "Select clause")
+    ok(cmp(from_clause(mdb, g, "col", "out"), c()), "From clause")
+    ok(cmp(where_clause(mdb, g, "col", "out"), "col >= 0"), "Where clause")
 
     g <<- mfdb_step_interval('l', 5, from = 10, to = 90)
     ok(cmp(capture.output(pre_query(NULL, g, "out")), c(
         "NULL")), "Nothing happened pre_query")
-    ok(cmp(sample_clause(g, "col", "out"), "0"), "Sample clause")
-    ok(cmp(select_clause(g, "col", "out"), "'l' || (greatest(least(floor(col), 10), 90) / 5) * 5 AS out"), "Select clause")
-    ok(cmp(from_clause(g, "col", "out"), c()), "From clause")
-    ok(cmp(where_clause(g, "col", "out"), c("col >= 10", "col < 90")), "Where clause")
+    ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
+    ok(cmp(select_clause(mdb, g, "col", "out"), "'l' || (greatest(least(floor(col), 10), 90) / 5) * 5 AS out"), "Select clause")
+    ok(cmp(from_clause(mdb, g, "col", "out"), c()), "From clause")
+    ok(cmp(where_clause(mdb, g, "col", "out"), c("col >= 10", "col < 90")), "Where clause")
 }, asNamespace('mfdb')))
 
 ok_group("Aggregates with open_ended mfdb_step_interval", local({
     g <<- mfdb_step_interval('l', 10, open_ended = TRUE)
     ok(cmp(capture.output(pre_query(NULL, g, "out")), c(
         "NULL")), "Nothing happened pre_query")
-    ok(cmp(sample_clause(g, "col", "out"), "0"), "Sample clause")
-    ok(cmp(select_clause(g, "col", "out"), "'l' || (least(floor(col), 0) / 10) * 10 AS out"), "Select clause")
-    ok(cmp(from_clause(g, "col", "out"), c()), "From clause")
-    ok(cmp(where_clause(g, "col", "out"), "col >= 0"), "Where clause")
+    ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
+    ok(cmp(select_clause(mdb, g, "col", "out"), "'l' || (least(floor(col), 0) / 10) * 10 AS out"), "Select clause")
+    ok(cmp(from_clause(mdb, g, "col", "out"), c()), "From clause")
+    ok(cmp(where_clause(mdb, g, "col", "out"), "col >= 0"), "Where clause")
 
     g <<- mfdb_step_interval('l', 5, from = 10, to = 90, open_ended = TRUE)
     ok(cmp(capture.output(pre_query(NULL, g, "out")), c(
         "NULL")), "Nothing happened pre_query")
-    ok(cmp(sample_clause(g, "col", "out"), "0"), "Sample clause")
-    ok(cmp(select_clause(g, "col", "out"), "'l' || (greatest(least(floor(col), 10), 90) / 5) * 5 AS out"), "Select clause")
-    ok(cmp(from_clause(g, "col", "out"), c()), "From clause")
-    ok(cmp(where_clause(g, "col", "out"), c("col >= 10")), "Where clause")
+    ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
+    ok(cmp(select_clause(mdb, g, "col", "out"), "'l' || (greatest(least(floor(col), 10), 90) / 5) * 5 AS out"), "Select clause")
+    ok(cmp(from_clause(mdb, g, "col", "out"), c()), "From clause")
+    ok(cmp(where_clause(mdb, g, "col", "out"), c("col >= 10")), "Where clause")
 }, asNamespace('mfdb')))

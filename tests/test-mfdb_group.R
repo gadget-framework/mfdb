@@ -47,10 +47,10 @@ ok_group("Aggregates with mfdb_group", local({
         "INSERT INTO temp_out (sample,name,value) VALUES (0,'a','1'),(0,'a','two'),(0,'a','3'),(0,'b','88')",
         "CREATE INDEX ON temp_out (value,name,sample)",
         "NULL")), "Created temporary table")
-    ok(cmp(sample_clause(g, "col", "out"), "0"), "Sample clause")
-    ok(cmp(select_clause(g, "col", "out"), "temp_out.name AS out"), "Select clause")
-    ok(cmp(from_clause(g, "col", "out"), "temp_out"), "From clause")
-    ok(cmp(where_clause(g, "col", "out"), "col = temp_out.value"), "Where clause")
+    ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
+    ok(cmp(select_clause(mdb, g, "col", "out"), "temp_out.name AS out"), "Select clause")
+    ok(cmp(from_clause(mdb, g, "col", "out"), "temp_out"), "From clause")
+    ok(cmp(where_clause(mdb, g, "col", "out"), "col = temp_out.value"), "Where clause")
 
     g <<- mfdb_group(a1 = c(1,2,3), badger = c(88, 21), a3 = c(99))
     ok(cmp(capture.output(pre_query(NULL, g, "out")), c(
@@ -59,10 +59,10 @@ ok_group("Aggregates with mfdb_group", local({
         "INSERT INTO temp_out (sample,name,value) VALUES (0,'a1',1),(0,'a1',2),(0,'a1',3),(0,'badger',88),(0,'badger',21),(0,'a3',99)",
         "CREATE INDEX ON temp_out (value,name,sample)",
         "NULL")), "Created temporary table")
-    ok(cmp(sample_clause(g, "col", "out"), "0"), "Sample clause")
-    ok(cmp(select_clause(g, "col", "out"), "temp_out.name AS out"), "Select clause")
-    ok(cmp(from_clause(g, "col", "out"), "temp_out"), "From clause")
-    ok(cmp(where_clause(g, "col", "out"), "col = temp_out.value"), "Where clause")
+    ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
+    ok(cmp(select_clause(mdb, g, "col", "out"), "temp_out.name AS out"), "Select clause")
+    ok(cmp(from_clause(mdb, g, "col", "out"), "temp_out"), "From clause")
+    ok(cmp(where_clause(mdb, g, "col", "out"), "col = temp_out.value"), "Where clause")
 }, asNamespace('mfdb')))
 
 ok_group("Aggregates with mfdb_bootstrap_group", local({
@@ -73,10 +73,10 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         "INSERT INTO temp_out (sample,name,value) VALUES (1,'camels',44),(1,'aardvarks',88),(2,'camels',44),(2,'aardvarks',88)",
         "CREATE INDEX ON temp_out (value,name,sample)",
         "NULL")), "Created temporary table")
-    ok(cmp(sample_clause(g, "col", "out"), "0"), "Sample clause")
-    ok(cmp(select_clause(g, "col", "out"), "temp_out.name AS out"), "Select clause")
-    ok(cmp(from_clause(g, "col", "out"), "temp_out"), "From clause")
-    ok(cmp(where_clause(g, "col", "out"), "col = temp_out.value"), "Where clause")
+    ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
+    ok(cmp(select_clause(mdb, g, "col", "out"), "temp_out.name AS out"), "Select clause")
+    ok(cmp(from_clause(mdb, g, "col", "out"), "temp_out"), "From clause")
+    ok(cmp(where_clause(mdb, g, "col", "out"), "col = temp_out.value"), "Where clause")
 
     set.seed(123456)
     g <<- mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99)))
@@ -86,10 +86,10 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         "INSERT INTO temp_out (sample,name,value) VALUES (1,'g1',55),(1,'g1',55),(1,'g2',88),(1,'g2',88),(2,'g1',44),(2,'g1',44),(2,'g2',99),(2,'g2',88)",
         "CREATE INDEX ON temp_out (value,name,sample)",
         "NULL")), "Created temporary table")
-    ok(cmp(sample_clause(g, "col", "out"), "0"), "Sample clause")
-    ok(cmp(select_clause(g, "col", "out"), "temp_out.name AS out"), "Select clause")
-    ok(cmp(from_clause(g, "col", "out"), "temp_out"), "From clause")
-    ok(cmp(where_clause(g, "col", "out"), "col = temp_out.value"), "Where clause")
+    ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
+    ok(cmp(select_clause(mdb, g, "col", "out"), "temp_out.name AS out"), "Select clause")
+    ok(cmp(from_clause(mdb, g, "col", "out"), "temp_out"), "From clause")
+    ok(cmp(where_clause(mdb, g, "col", "out"), "col = temp_out.value"), "Where clause")
 
     # Test a few more random combinations
     set.seed(8081)
