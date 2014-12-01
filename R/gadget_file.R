@@ -58,6 +58,10 @@ as.character.gadget_file <- function (x, ...) {
 
 # Write gadget file to directory
 gadget_dir_write.gadget_file <- function(gd, obj) {
+    dir.create(
+        dirname(file.path(gd$dir, obj$filename)),
+        recursive = TRUE,
+        showWarnings = FALSE)
     fh = file(file.path(gd$dir, obj$filename), "w")
     tryCatch(
         capture.output(print(obj), file = fh),

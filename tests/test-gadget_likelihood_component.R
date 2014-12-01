@@ -86,13 +86,15 @@ ok_group("Can write likelihood components", {
         "likelihoodfiles\tlikelihood"))
 
     gadget_dir_write(gd, gadget_likelihood_component("penalty", name="neck-bone", weight = 0.5))
-    expect_equal(list.files(dir), c("likelihood", "main", "neck-bone.penaltyfile"))
+    ok(cmp(
+        list.files(dir, recursive = TRUE),
+        c("Data/neck-bone.penaltyfile", "likelihood", "main")), "Created penaltyfile")
     expect_equal(
         gadget_dir_read(gd, "likelihood")$components,
         list(
             list(),
             component = structure(list(name = "head-bone", weight = 0.3, type = "understocking"), preamble = list("")),
-            component = structure(list(name = "neck-bone", weight = 0.5, type = "penalty", datafile = "neck-bone.penaltyfile"), preamble = list(""))))
+            component = structure(list(name = "neck-bone", weight = 0.5, type = "penalty", datafile = "Data/neck-bone.penaltyfile"), preamble = list(""))))
     ok(cmp_file(gd, "main",
         ver_string,
         "timefile\t",
@@ -113,7 +115,7 @@ ok_group("Can write likelihood components", {
         list(
             list(),
             component = structure(list(name = "head-bone", weight = 0.8, type = "understocking"), preamble = list("")),
-            component = structure(list(name = "neck-bone", weight = 0.5, type = "penalty", datafile = "neck-bone.penaltyfile"), preamble = list("")),
+            component = structure(list(name = "neck-bone", weight = 0.5, type = "penalty", datafile = "Data/neck-bone.penaltyfile"), preamble = list("")),
             component = structure(list(name = "shoulder-bone", weight = 0.2, type = "understocking"), preamble = list(""))))
     ok(cmp_file(gd, "main",
         ver_string,
@@ -186,18 +188,18 @@ ok_group("Aggregation files", {
         "name\tcs",
         "weight\t0.8",
         "type\tcatchstatistics",
-        "datafile\tcatchstatistics.cs.lengthnostddev",
+        "datafile\tData/catchstatistics.cs.lengthnostddev",
         "function\tlengthnostddev",
-        "areaaggfile\tcatchstatistics.cs.area.agg",
-        "ageaggfile\tcatchstatistics.cs.age.agg",
+        "areaaggfile\tAggfiles/catchstatistics.cs.area.agg",
+        "ageaggfile\tAggfiles/catchstatistics.cs.age.agg",
         "fleetnames\t",
         "stocknames\t"), "Can write likelihood file")
 
-    ok(cmp_file(gd, "catchstatistics.cs.area.agg",
+    ok(cmp_file(gd, "Aggfiles/catchstatistics.cs.area.agg",
         ver_string,
         "divA\t1",
         "divB\t2"), "Area aggregation file has subdivisions hidden")
-    ok(cmp_file(gd, "catchstatistics.cs.age.agg",
+    ok(cmp_file(gd, "Aggfiles/catchstatistics.cs.age.agg",
         ver_string,
         "young\t1\t2\t3\t4",
         "old\t5\t6\t7\t8"), "Age aggregation file matches input")

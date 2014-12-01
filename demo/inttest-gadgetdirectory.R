@@ -113,27 +113,27 @@ ok_group("Length / weight / age samples", {
         "name\tcatchstatistics",
         "weight\t0",
         "type\tcatchstatistics",
-        "datafile\tcatchstatistics.catchstatistics.lengthnostddev",
+        "datafile\tData/catchstatistics.catchstatistics.lengthnostddev",
         "function\tlengthnostddev",
-        "areaaggfile\tcatchstatistics.catchstatistics.area.agg",
-        "ageaggfile\tcatchstatistics.catchstatistics.age.agg",
+        "areaaggfile\tAggfiles/catchstatistics.catchstatistics.area.agg",
+        "ageaggfile\tAggfiles/catchstatistics.catchstatistics.age.agg",
         "fleetnames\t",
         "stocknames\t"
         ), "Likelihood file updated")
 
     # Data files written
-    ok(cmp_file(gd, "catchstatistics.catchstatistics.lengthnostddev",
+    ok(cmp_file(gd, "Data/catchstatistics.catchstatistics.lengthnostddev",
         ver_string,
         "; -- data --",
         "; year\tstep\tarea\tage\tnumber\tmean",
         "1998\t1\tdivA\tall\t5\t26.2",
         "1998\t2\tdivA\tall\t4\t31.75"
         ), "datafile updated")
-    ok(cmp_file(gd, "catchstatistics.catchstatistics.area.agg",
+    ok(cmp_file(gd, "Aggfiles/catchstatistics.catchstatistics.area.agg",
         ver_string,
         "divA\t1"
         ), "areafile updated")
-    ok(cmp_file(gd, "catchstatistics.catchstatistics.age.agg",
+    ok(cmp_file(gd, "Aggfiles/catchstatistics.catchstatistics.age.agg",
         ver_string,
         paste0("all\t", paste(1:1000, collapse = "\t"))
         ), "age updated")
