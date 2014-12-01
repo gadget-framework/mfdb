@@ -1,4 +1,3 @@
-example				Overview of some MFDB features (somewhat old)
 inttest-gadgetdirectory		Demonstrate importing data and writing to GADGET directory
 inttest-dataimport		Exercise data loading
 inttest-samples			Exercise sampling of data

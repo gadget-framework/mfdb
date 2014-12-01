@@ -18,7 +18,6 @@ remove_mfdb_tables(conn)
 # Open a connection to the DB for the Iceland case study, and open an output
 # directory to save files in
 mdb <- mfdb('Iceland', db_params = db_params, save_temp_tables = TRUE)
-gd <- gadget_directory(tempfile())
 
 ok_group("Area File", {
     # 3 area cells 45G01--3, each of which are 5km^2
@@ -38,6 +37,9 @@ ok_group("Area File", {
         month = c(1:12, 1:12),
         areacell = c(rep('45G01', times = 24)),
         temperature = c(1:12, 25:36)))
+
+    # Initalise a gadget directory to output into
+    gd <- gadget_directory(tempfile())
 
     # Define a grouping for area, a for divA and b for divB
     area_group <- mfdb_group(a = c("divA"), b = c("divB"))
@@ -85,7 +87,10 @@ ok_group("Length / weight / age samples", {
             length = c( 10, 50, 30, 10, 35, 46,  65, 62, 36, 35, 34, 22),
             weight = c(100,500,300,100,350,460, 650,320,360,350,340,220)))
 
-    # Aggregate data
+    # Initalise a gadget directory to output into
+    gd <- gadget_directory(tempfile())
+
+    # Get the mean length data from the database
     agg_data <- mfdb_meanlength(mdb, list(
             year = 1998:2000,
             area = mfdb_group(divA = c("divA")),
@@ -94,6 +99,9 @@ ok_group("Length / weight / age samples", {
             length = mfdb_interval("len", seq(0, 50, by = 5))))
 
     # Write it into a likelihood component
+    # NB: We use agg_data[[1]] since mfdb_meanlength() could have returned
+    # multiple bootstrap samples, in this case we didn't use bootstrapping, so
+    # only got one.
     gadget_dir_write(gd, gadget_likelihood_component('catchstatistics', data = agg_data[[1]]))
 
     # Likelihood file has a component
