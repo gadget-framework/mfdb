@@ -43,8 +43,8 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
                 ", ", sql_quote(set[1, 'name']), " AS name",
                 ", areacell_id AS value",
                 " FROM division",
-                " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-                " AND division IN ", sql_quote(set[,'value'], always_bracket = TRUE))
+                " WHERE case_study_id = ", sql_quote(if (is.null(mdb$case_study_id)) -1 else mdb$case_study_id),
+                " AND division IN ", sql_quote(unique(set[,'value']), always_bracket = TRUE, always_quote = TRUE))
         }
     } else {
         # Populate table based on denormalized group

@@ -117,8 +117,8 @@ ok_group("Aggregates with mfdb_group areas", local({
     ok(cmp(capture.output(pre_query(NULL, g, "area")), c(
         "DROP TABLE temp_area",
         "CREATE  TABLE temp_area (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )",
-        "INSERT INTO temp_area SELECT 0 AS sample, 'a' AS name, areacell_id AS value FROM division WHERE case_study_id = () AND division IN (1,2,3)",
-        "INSERT INTO temp_area SELECT 0 AS sample, 'b' AS name, areacell_id AS value FROM division WHERE case_study_id = () AND division IN (88,89)",
+        "INSERT INTO temp_area SELECT 0 AS sample, 'a' AS name, areacell_id AS value FROM division WHERE case_study_id = -1 AND division IN ('1','2','3')",
+        "INSERT INTO temp_area SELECT 0 AS sample, 'b' AS name, areacell_id AS value FROM division WHERE case_study_id = -1 AND division IN ('88','89')",
         "CREATE INDEX ON temp_area (value,name,sample)",
         "NULL")), "Created temporary table")
 }, asNamespace('mfdb')))
