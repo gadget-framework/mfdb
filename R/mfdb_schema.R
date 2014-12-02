@@ -4,8 +4,20 @@ mfdb_show_schema <- function() {
     invisible(NULL)
 }
 
-# Check to see if we need to update schema do it, if !read_only
-mfdb_update_schema <- function(mdb, read_only = FALSE) {
+# Destroy everything in current schema
+mfdb_destroy_schema <- function(mdb) {
+    for(t in c('sample', 'survey', 'temperature', 'division', mfdb_taxonomy, mfdb_cs_taxonomy, 'case_study', 'mfdb_schema')) {
+        mdb$logger$info(paste("Removing table", t))
+        tryCatch(mfdb_send(mdb, "DROP TABLE ", t, " CASCADE"), error = function(e) {
+            if(grepl("does not exist", e$message)) return();
+            stop(e)
+        })
+    }
+    invisible(TRUE)
+}
+
+# Check to see if we need to update schema do it,
+mfdb_update_schema <- function(mdb) {
     # Find out existing schema version
     schema_version <- tryCatch(
         mfdb_fetch(mdb, "SELECT version FROM mfdb_schema"),
@@ -18,7 +30,11 @@ mfdb_update_schema <- function(mdb, read_only = FALSE) {
     } else if (length(schema_version) > 1) {
         stop(paste("DB schema table has too many entries"))
     } else if (schema_version[1][1] != package_major_version()) {
-        stop(paste("DB Schema version", schema_version[1][1], "does not match package version", package_major_version()))
+        stop(paste(
+            "DB Schema version", schema_version[1][1],
+            "does not match package version", package_major_version(),
+            "no upgrade step available. call mdb(destroy_schema = TRUE) first.",
+            "Warning: This *will destroy* any existing data"))
     } else {
         mdb$logger$debug("Schema up-to-date")
     }

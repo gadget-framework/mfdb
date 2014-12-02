@@ -12,8 +12,7 @@ source('mfdb/tests/utils/helpers.R')
 source('mfdb/tests/utils/inttest-helpers.R')
 
 # Empty database
-conn <- db_connection()
-remove_mfdb_tables(conn)
+mfdb('', destroy_schema = TRUE)
 
 # Rebuild database, taxonomy got populated
 mdb <- mfdb('Iceland', db_params = db_params, save_temp_tables = TRUE)

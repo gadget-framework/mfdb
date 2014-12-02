@@ -10,6 +10,7 @@
 \usage{
     mfdb(case_study_name,
          db_params = list(),
+         destroy_schema = FALSE,
          save_temp_tables = FALSE)
 
     mfdb_disconnect(mdb)
@@ -23,6 +24,11 @@
         Extra parameters to supply to a \code{DBI} connection object. By
         default it will search for a PostgreSQL "mf" database locally.
     }
+    \item{destroy_schema}{
+        Optional boolean. If true, all mfdb tables will be dropped, allowing
+        you to recreate your schema. Returns NULL, you need to call \code{mfdb}
+        to connect and rebuild schema.
+    }
     \item{save_temp_tables}{
         Optional boolean. If true, any temporary tables will be made permanent
         for later inspection.
@@ -32,12 +38,15 @@
     }
 }
 \examples{\dontrun{
-    # Connect to local DB
-    mdb <- mfdb()
+    # Connect to local DB, as the Iceland case study
+    mdb <- mfdb('Iceland')
 
     # Connect to "mf2014" on remote DB server
-    mdb <- mfdb(db_params = list(host = "db.mareframe-fp7.org", dbname = "mf2014")
+    mdb <- mfdb('Iceland', db_params = list(host = "db.mareframe-fp7.org", dbname = "mf2014")
 
     # Stop it and tidy up
     mfdb_disconnect(mdb)
+
+    # Destroy everything, since schema was out of date.
+    mfdb('', destroy_schema = TRUE)
 }}

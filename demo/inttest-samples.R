@@ -11,8 +11,7 @@ source('mfdb/tests/utils/helpers.R')
 source('mfdb/tests/utils/inttest-helpers.R')
 
 # Empty database
-conn <- db_connection()
-remove_mfdb_tables(conn)
+mfdb('', destroy_schema = TRUE)
 
 #TODO: Connecting to empty database without ability to populate fails
 

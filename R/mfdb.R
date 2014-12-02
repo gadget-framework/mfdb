@@ -1,6 +1,7 @@
 # Init mfdb object and open connection to database
 mfdb <- function(case_study_name,
                  db_params = list(),
+                 destroy_schema = FALSE,
                  save_temp_tables = FALSE) {
     logger <- getLogger('mfdb')
 
@@ -23,22 +24,32 @@ mfdb <- function(case_study_name,
         stop("Could not find a local mf database")
     }
 
-    # Look up case study ID via. data, since table might not be populated yet
+    # Create temporary mdb object and ensure we have a valid schema
+    mdb <- structure(list(
+            logger = logger,
+            db = db_connection), class = "mfdb_temp")
+    if (destroy_schema) {
+        mfdb_destroy_schema(mdb)
+        mdb$logger$info("Schema removed, connect again to repopulate DB.")
+        dbDisconnect(mdb$db)
+        return(invisible(NULL))
+    }
+    mfdb_update_schema(mdb)
+    mfdb_update_taxonomy(mdb)
+
+    # Look up case study ID
     case_study_id <- case_study[case_study$name == case_study_name, 'id']
     if (length(case_study_id) != 1) {
         stop("Unknown case study ", case_study_name)
     }
 
+    # Create full mdb object
     mdb <- structure(list(
             logger = logger,
             save_temp_tables = save_temp_tables,
             case_study_id = case_study_id,
             state = new.env(),
             db = db_connection), class = "mfdb")
-
-    # Make sure schema is up-to-date
-    mfdb_update_schema(mdb)
-    mfdb_update_taxonomy(mdb)
 
     invisible(mdb)
 }
