@@ -51,7 +51,7 @@ schema_from_0 <- function(mdb) {
         ), keys = c(
             paste0(c("PRIMARY KEY(", (if (name %in% mfdb_cs_taxonomy) "case_study_id, "), paste0(name, "_id"), ")"), collapse = ""),
             "CHECK(name ~ '^[A-Za-z0-9_.]+$')",
-            "UNIQUE(name)"
+            paste0("UNIQUE(", ifelse(name %in% mfdb_cs_taxonomy, "case_study_id,", ""), "name)")
         ))
     }
 
