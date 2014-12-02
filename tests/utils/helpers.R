@@ -15,9 +15,9 @@ cmp <- function(a, b) {
         totmp <- function(x) {
             f <- tempfile(pattern = "str.")
             capture.output(str(x,
-                vec.len = 10,
+                vec.len = 1000,
                 digits.d = 5,
-                nchar.max = 100), file = f)
+                nchar.max = 1000), file = f)
             return(f)
         }
 
