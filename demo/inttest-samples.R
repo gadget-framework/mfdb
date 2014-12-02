@@ -343,4 +343,23 @@ ok_group("Filtering of samples", {
             year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
         NULL),
        "GIL & 2.RSH returns nothing")
+
+    # Should be able to re-import sampling types
+    mfdb_import_sampling_type(mdb, data.frame(name = c("SEA", "MOO"), description = c("Sea", "Seacow")))
+    ok(cmp(
+        mfdb_meanlength(mdb, list(
+            vessel = '2.RSH',
+            area = mfdb_group(divA = c("divA")),
+            timestep = mfdb_timestep_biannually,
+            age = mfdb_group(all = 1:1000),
+            length = mfdb_interval("len", seq(0, 100, by = 10)),
+            year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
+        data.frame(
+            step = c("1", "2"),
+            number = c(6, 6),
+            mean = c(
+                mean(c(35,64,23,13,99,83)),
+                mean(c(54,23,65,12,22,9))),
+            stringsAsFactors = FALSE)),
+       "Data still exists")
 })
