@@ -16,7 +16,7 @@ mfdb('', destroy_schema = TRUE)
 
 # Open a connection to the DB for the Iceland case study, and open an output
 # directory to save files in
-mdb <- mfdb('Iceland', db_params = db_params, save_temp_tables = TRUE)
+mdb <- mfdb('Test', db_params = db_params, save_temp_tables = TRUE)
 
 ok_group("Area File", {
     # 3 area cells 45G01--3, each of which are 5km^2

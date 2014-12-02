@@ -1,4 +1,5 @@
 "id" "name"    "description"
+0    "Test"    "For use in tests only"
 1    "Baltic"  "Baltic Sea (SLU)"
 2    "North"   "North Sea (NRC)"
 3    "Iceland" "Northern & Western Waters - Iceland Waters (MRI)"
