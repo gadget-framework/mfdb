@@ -9,8 +9,8 @@ mfdb_step_interval <- function (prefix, by, from = 0, to = NULL, open_ended = FA
 # Use integer division to pick correct group
 select_clause.mfdb_step_interval <- function(mdb, x, col, outputname) {
     #TODO: add x$from somewhere to fudge steps
-    val <- paste0("least(floor(", col, "), ", sql_quote(x$from), ")")
-    if (!is.null(x$to)) val <- paste0("greatest(", val, ", ", sql_quote(x$to), ")")
+    val <- paste0("greatest(floor(", col, ")::integer, ", sql_quote(x$from), ")")
+    if (!is.null(x$to)) val <- paste0("least(", val, ", ", sql_quote(x$to), ")")
 
     paste0(sql_quote(x$prefix),
         " || (", val, " / ", sql_quote(x$by), ") * ", sql_quote(x$by),
