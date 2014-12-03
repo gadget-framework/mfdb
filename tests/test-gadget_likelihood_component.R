@@ -170,59 +170,66 @@ ok_group("Function either provided explicitly or based on generator", {
 
 ###############################################################################
 ok_group("Aggregation files", {
-    gd <- gadget_directory(tempfile())
-    gadget_dir_write(gd, gadget_likelihood_component(
-        "catchstatistics",
-        name="cs",
-        weight = 0.8,
-        data = structure(
-            data.frame(a = c(1,2,3), b = c(4,5,6)),
-            area = list(divA = c('x', 't'), divB = c('s', 'r')),
-            age = list(young = 1:4, old = 5:8),
-            generator = "mfdb_meanlength")
-        ))
+    cmp_agg <- function (agg_type, agg, ...) {
+        gd <- gadget_directory(tempfile())
+        gadget_dir_write(gd, gadget_likelihood_component(
+            "catchdistribution",
+            name="cd",
+            weight = 0.8,
+            data = structure(
+                data.frame(a = c(1,2,3), b = c(4,5,6)),
+                area = if (agg_type == 'area') agg else NULL,
+                age = if (agg_type == 'age') agg else NULL,
+                length = if (agg_type == 'len') agg else NULL,
+                generator = "mfdb_meanlength")
+            ))
+        do.call(cmp_file, c(
+            list(gd, paste0("Aggfiles/catchdistribution.cd.", agg_type, ".agg")),
+            list(...)))
+    }
 
-    ok(cmp_file(gd, "likelihood",
-        ver_string, "; ",
-        "[component]",
-        "name\tcs",
-        "weight\t0.8",
-        "type\tcatchstatistics",
-        "datafile\tData/catchstatistics.cs.lengthnostddev",
-        "function\tlengthnostddev",
-        "areaaggfile\tAggfiles/catchstatistics.cs.area.agg",
-        "ageaggfile\tAggfiles/catchstatistics.cs.age.agg",
-        "fleetnames\t",
-        "stocknames\t"), "Can write likelihood file")
-
-    ok(cmp_file(gd, "Aggfiles/catchstatistics.cs.area.agg",
+    ok(cmp_agg('area', list(divA = c('x', 't'), divB = c('s', 'r')),
         ver_string,
         "divA\t1",
-        "divB\t2"), "Area aggregation file has subdivisions hidden")
-    ok(cmp_file(gd, "Aggfiles/catchstatistics.cs.age.agg",
+        "divB\t2",
+        NULL), "Area aggregation file has subdivisions hidden")
+
+    ok(cmp_agg('age', list(young = 1:4, old = 5:8),
         ver_string,
         "young\t1\t2\t3\t4",
-        "old\t5\t6\t7\t8"), "Age aggregation file matches input")
-})
+        "old\t5\t6\t7\t8",
+        NULL), "Age aggregation matches input")
 
-ok_group("Length aggregation files", {
-    gd <- gadget_directory(tempfile())
-    gadget_dir_write(gd, gadget_likelihood_component(
-        "catchdistribution",
-        name = "alice",
-        weight = 1,
-        data = data.frame(year = 1996, step = 1, area = 101, age = 'age1', length = paste0('len', 1:10), number = 5),
-        area = mfdb_group(north = 1:3, south = 4:5),
-        age = mfdb_interval("age", seq(0, 20, by = 5)),
-        length = mfdb_interval("len", seq(0, 50, by = 10)),
-        fleetnames = c("datras"),
-        stocknames = 'cod'))
-    ok(cmp_file(gd, "Aggfiles/catchdistribution.alice.len.agg",
+    ok(cmp_agg('age', 1:4,
+        ver_string,
+        "1\t1",
+        "2\t2",
+        "3\t3",
+        "4\t4",
+        NULL), "1:4 converted into 1 group for each")
+
+    ok(cmp_agg('age', NULL,
+        ver_string,
+        "all\tX",
+        NULL), "Make our best guess at an 'all' aggregation")
+
+    ok(cmp_agg('len', mfdb_interval("len", seq(0, 50, by = 10)),
         ver_string,
         "len0\t0\t10",
         "len10\t10\t20",
         "len20\t20\t30",
         "len30\t30\t40",
         "len40\t40\t50",
-        NULL), "Length encoded correctly")
+        NULL), "mfdb_interval")
+
+    ok(cmp_agg('len', mfdb_step_interval("len", to = 30, by = 5),
+        ver_string,
+        "len0\t0\t5",
+        "len5\t5\t10",
+        "len10\t10\t15",
+        "len15\t15\t20",
+        "len20\t20\t25",
+        "len25\t25\t30",
+        NULL), "mfdb_step_interval")
+
 })
