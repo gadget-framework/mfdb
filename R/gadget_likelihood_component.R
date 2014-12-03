@@ -112,7 +112,7 @@ gadget_catchstatistics_component <- function (weight = 0,
         datafile = gadget_file(fname('Data', prefix, data_function), data=data),
         "function" = data_function,
         areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area),
-        ageaggfile  = gadget_file(fname('Aggfiles', prefix, 'age.agg'),  components=list(if(is.null(age))    attr(data, "age") else age)),
+        ageaggfile  = agg_file('age', prefix, if(is.null(age)) attr(data, "age") else age),
         fleetnames = fleetnames,
         stocknames = stocknames), class = c("gadget_catchstatistics_component", "gadget_likelihood_component"))
 }
@@ -140,8 +140,8 @@ gadget_catchdistribution_component <- function (weight = 0,
         overconsumption = if (overconsumption) 1 else 0,
         epsilon = epsilon,
         areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area),
-        ageaggfile  = gadget_file(fname('Aggfiles', prefix, 'age.agg'),  components=list(if(is.null(age))    attr(data, "age") else age)),
-        lenaggfile  = gadget_file(fname('Aggfiles', prefix, 'len.agg'),  components=list(if(is.null(length)) attr(data, "length") else length)),
+        ageaggfile  = agg_file('age', prefix, if(is.null(age)) attr(data, "age") else age),
+        lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length),
         fleetnames = fleetnames,
         stocknames = stocknames)), class = c("gadget_catchdistribution_component", "gadget_likelihood_component"))
 }
@@ -164,8 +164,8 @@ gadget_stockdistribution_component <- function (weight = 0,
         overconsumption = if (overconsumption) 1 else 0,
         epsilon = epsilon,
         areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area),
-        ageaggfile  = gadget_file(fname('Aggfiles', prefix, 'age.agg'),  components=list(if(is.null(age))    attr(data, "age") else age)),
-        lenaggfile  = gadget_file(fname('Aggfiles', prefix, 'len.agg'),  components=list(if(is.null(length)) attr(data, "length") else length)),
+        ageaggfile  = agg_file('age', prefix, if(is.null(age)) attr(data, "age") else age),
+        lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length),
         fleetnames = fleetnames,
         stocknames = stocknames)), class = c("gadget_stockdistribution_component", "gadget_likelihood_component"))
 }
@@ -173,10 +173,18 @@ gadget_stockdistribution_component <- function (weight = 0,
 agg_file <- function (type, prefix, data) {
     if (type == 'area') {
         # Areas should just be a => 1, b => 2, ...
-        data <- structure(
+        comp <- structure(
             as.list(seq_len(length(data))),
             names = names(data))
+    } else if (type == 'len') {
+        # Lengths should be min/max
+        comp <- lapply(as.list(data), function (x) c(min(x), max(x)))
+    } else {
+        # Convert to list
+        comp <- as.list(data)
     }
 
-    return(gadget_file(fname('Aggfiles', prefix, type, '.agg'), components=list(data)))
+    return(gadget_file(
+        fname('Aggfiles', prefix, type, '.agg'),
+        components=list(comp)))
 }

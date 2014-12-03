@@ -204,3 +204,25 @@ ok_group("Aggregation files", {
         "young\t1\t2\t3\t4",
         "old\t5\t6\t7\t8"), "Age aggregation file matches input")
 })
+
+ok_group("Length aggregation files", {
+    gd <- gadget_directory(tempfile())
+    gadget_dir_write(gd, gadget_likelihood_component(
+        "catchdistribution",
+        name = "alice",
+        weight = 1,
+        data = data.frame(year = 1996, step = 1, area = 101, age = 'age1', length = paste0('len', 1:10), number = 5),
+        area = mfdb_group(north = 1:3, south = 4:5),
+        age = mfdb_interval("age", seq(0, 20, by = 5)),
+        length = mfdb_interval("len", seq(0, 50, by = 10)),
+        fleetnames = c("datras"),
+        stocknames = 'cod'))
+    ok(cmp_file(gd, "Aggfiles/catchdistribution.alice.len.agg",
+        ver_string,
+        "len0\t0\t10",
+        "len10\t10\t20",
+        "len20\t20\t30",
+        "len30\t30\t40",
+        "len40\t40\t50",
+        NULL), "Length encoded correctly")
+})
