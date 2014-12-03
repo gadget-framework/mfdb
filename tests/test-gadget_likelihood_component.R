@@ -213,6 +213,11 @@ ok_group("Aggregation files", {
         "all\tX",
         NULL), "Make our best guess at an 'all' aggregation")
 
+    ok(cmp_agg('age', mfdb_unaggregated(),
+        ver_string,
+        "X\tX",
+        NULL), "mfdb_unaggregated")
+
     ok(cmp_agg('len', mfdb_interval("len", seq(0, 50, by = 10)),
         ver_string,
         "len0\t0\t10",
