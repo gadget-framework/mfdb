@@ -91,7 +91,7 @@ ok_group("Length / weight / age samples", {
     gd <- gadget_directory(tempfile())
 
     # Get the mean length data from the database
-    agg_data <- mfdb_meanlength(mdb, list(
+    agg_data <- mfdb_sample_meanlength(mdb, c('age'), list(
             year = 1998:2000,
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
@@ -99,7 +99,7 @@ ok_group("Length / weight / age samples", {
             length = mfdb_interval("len", seq(0, 50, by = 5))))
 
     # Write it into a likelihood component
-    # NB: We use agg_data[[1]] since mfdb_meanlength() could have returned
+    # NB: We use agg_data[[1]] since mfdb_sample_meanlength() could have returned
     # multiple bootstrap samples, in this case we didn't use bootstrapping, so
     # only got one.
     gadget_dir_write(gd, gadget_likelihood_component('catchstatistics', data = agg_data[[1]]))

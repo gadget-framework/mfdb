@@ -164,7 +164,7 @@ ok_group("Function either provided explicitly or based on generator", {
 
     expect_equal(
         gadget_likelihood_component("catchstatistics",
-            data = structure(data.frame(), generator = "mfdb_meanlength_stddev"))[['function']],
+            data = structure(data.frame(), generator = "mfdb_sample_meanlength_stddev"))[['function']],
         "lengthgivenstddev")
 })
 
@@ -181,7 +181,7 @@ ok_group("Aggregation files", {
                 area = if (agg_type == 'area') agg else NULL,
                 age = if (agg_type == 'age') agg else NULL,
                 length = if (agg_type == 'len') agg else NULL,
-                generator = "mfdb_meanlength")
+                generator = "mfdb_sample_meanlength")
             ))
         do.call(cmp_file, c(
             list(gd, paste0("Aggfiles/catchdistribution.cd.", agg_type, ".agg")),

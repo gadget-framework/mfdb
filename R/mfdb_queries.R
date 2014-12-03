@@ -23,74 +23,64 @@ mfdb_temperature <- function (mdb, params = list()) {
 
 # Return year, step, area, ... , number (of samples)
 mfdb_sample_count <- function (mdb, cols, params) {
-    #TODO: check cols has known entries
     mfdb_sample_grouping(mdb,
         params = params,
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             "SUM(c.count) AS number"),
-        generator = "mfdb_stock_count")
+        generator = "mfdb_sample_count")
 }
 
 # Return year,step,area,age,number (# of samples),mean (length)
-mfdb_meanlength <- function (mdb, params) {
+mfdb_sample_meanlength <- function (mdb, cols, params) {
     out <- mfdb_sample_grouping(mdb,
         params = params,
-        group_cols = c("year", "timestep", "area", "age"),
+        group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             "SUM(c.count) AS number",
             "AVG(c.count * c.length) * (COUNT(*)::float / SUM(c.count)) AS mean"),
-        generator = "mfdb_meanlength")
+        generator = "mfdb_sample_meanlength")
     out
 }
 
 # Return year,step,area,age,number (# of samples),mean (length), stddev (length)
-mfdb_meanlength_stddev <- function (mdb, params) {
+mfdb_sample_meanlength_stddev <- function (mdb, cols, params) {
     # SCHEMA: Need a weighted stddev function
     # TODO: Do we need to know the resolution of the input data to avoid oversampling?
     out <- mfdb_sample_grouping(mdb,
         params = params,
-        group_cols = c("year", "timestep", "area", "age"),
+        group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             "SUM(c.count) AS number",
             "AVG(c.count * c.length) * (COUNT(*)::float / SUM(c.count)) AS mean",
             "0 AS stddev"),
-        generator = "mfdb_meanlength_stddev")
+        generator = "mfdb_sample_meanlength_stddev")
     out
 }
 
 # Return year,step,area,age,number (# of samples),mean (weight)
-mfdb_meanweight <- function (mdb, params) {
+mfdb_sample_meanweight <- function (mdb, cols, params) {
     out <- mfdb_sample_grouping(mdb,
         params = params,
+        group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             "SUM(c.count) AS number",
             "AVG(c.count * c.weight) * (COUNT(*)::float / SUM(c.count)) AS mean"),
-        generator = "mfdb_meanweight")
+        generator = "mfdb_sample_meanweight")
     out
 }
 
 # Return year,step,area,age,number (# of samples),mean (weight), stddev (weight)
-mfdb_meanweight_stddev <- function (mdb, params) {
+mfdb_sample_meanweight_stddev <- function (mdb, cols, params) {
     # SCHEMA: Don't have weight_stddev, aggregation function
     out <- mfdb_sample_grouping(mdb,
         params = params,
+        group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             "SUM(c.count) AS number",
             "AVG(c.count * c.weight) * (COUNT(*)::float / SUM(c.count)) AS mean",
             "0 AS stddev"),
-        generator = "mfdb_meanweight_stddev")
-    out
-}
-
-# Return year,step,area,age,length,number (# of samples)
-mfdb_agelength <- function (mdb, params) {
-    out <- mfdb_sample_grouping(mdb,
-        params = params,
-        group_cols = c("year", "timestep", "area", "age", "length"),
-        calc_cols = c(
-            "SUM(c.count) AS number"),
-        generator = "mfdb_agelength")
+        generator = "mfdb_sample_meanweight_stddev")
     out
 }
 
@@ -116,41 +106,46 @@ mfdb_sample_grouping <- function (mdb,
     # Importing is probably done, so create indexes if we need to
     mfdb_finish_import(mdb)
 
-    x <- grouping_by("timestep",       pre_query(mdb, params$timestep, "step"))
-    x <- grouping_by("area",           pre_query(mdb, params$area, "area"))
-    x <- grouping_by("age",            pre_query(mdb, params$age, "age"))
-    x <- grouping_by("maturity_stage", pre_query(mdb, params$maturity_stage, "maturity_stage"))
+    # Group names to the columns that define them
+    col_defs <- list(
+        year = "c.year",
+        timestep = "c.month",
+        area = "c.areacell_id",
+        age = "c.age",
+        maturity_stage = "c.maturity_stage_id",
+        length = "c.length")
+
+    for (col in group_cols) {
+        if (is.null(col_defs[[col]])) {
+            stop("Unknown column ", col)
+        }
+        x <- pre_query(mdb, params[[col]], ifelse(col == 'timestep', 'step', col))
+    }
+
+    # Call relevant clause function for all group_cols
+    group_clauses <- function (fn) {
+        unlist(lapply(group_cols, function (col) fn(
+                mdb,
+                params[[col]],
+                col_defs[[col]],
+                ifelse(col == 'timestep', 'step', col))))
+    }
 
     out <- mfdb_fetch(mdb,
         "SELECT ", paste(c(
-            paste(paste0(c(
-                grouping_by("timestep", sample_clause(mdb, params$timestep, "c.month", "step")),
-                grouping_by("area",     sample_clause(mdb, params$area, "c.areacell_id", "area")),
-                grouping_by("maturity_stage", sample_clause(mdb, params$maturity_stage, "c.maturity_stage_id", "maturity_stage")),
-                grouping_by("age",     sample_clause(mdb, params$age, "c.age", "age")),
-                NULL), collapse = "|| '.' ||"), "AS sample"),
-            grouping_by("year",     select_clause(mdb, params$year, "c.year", "year")),
-            grouping_by("timestep", select_clause(mdb, params$timestep, "c.month", "step")),
-            grouping_by("area",     select_clause(mdb, params$area, "c.areacell_id", "area")),
-            grouping_by("maturity_stage", select_clause(mdb, params$maturity_stage, "c.maturity_stage_id", "maturity_stage")),
-            grouping_by("age",      select_clause(mdb, params$age, "c.age", "age")),
-            grouping_by("length",  select_clause(mdb, params$length, "c.length", "length")),
+            paste(paste(
+                group_clauses(sample_clause),
+                NULL, collapse = "|| '.' ||"), "AS sample"),
+            group_clauses(select_clause),
             calc_cols,
             NULL), collapse = ","),
         " FROM ", paste(c(
             paste(core_table, "c"),
-            grouping_by("timestep", from_clause(mdb, params$timestep, "c.month", "step")),
-            grouping_by("area",     from_clause(mdb, params$area, "c.areacell_id", "area")),
-            grouping_by("age",      from_clause(mdb, params$age, "c.age", "age")),
-            grouping_by("maturity_stage", from_clause(mdb, params$maturity_stage, "c.maturity_stage_id", "maturity_stage")),
+            group_clauses(from_clause),
             NULL), collapse = ","),
         " WHERE ", paste(c(
             paste("c.case_study_id =", sql_quote(mdb$case_study_id)),
-            grouping_by("year",     where_clause(mdb, params$year, "c.year", "year")),
-            grouping_by("timestep", where_clause(mdb, params$timestep, "c.month", "step")),
-            grouping_by("area",     where_clause(mdb, params$area, "c.areacell_id", "area")),
-            grouping_by("age",     where_clause(mdb, params$age, "c.age", "age")),
-            grouping_by("maturity_stage", where_clause(mdb, params$maturity_stage, "c.maturity_stage_id", "maturity_stage")),
+            group_clauses(where_clause),
             filtering_by("length", where_clause(mdb, params$length, "c.length")),
             filtering_by("institute", where_clause(mdb, params$institute, "c.institute_id")),
             filtering_by("gear", where_clause(mdb, params$gear, "c.gear_id")),
@@ -159,8 +154,8 @@ mfdb_sample_grouping <- function (mdb,
             filtering_by("species", where_clause(mdb, params$species, "c.species_id")),
             filtering_by("sex", where_clause(mdb, params$sex, "c.sex_id")),
             NULL), collapse = " AND "),
-        " GROUP BY ", paste(1:(1 + sum(unlist(Vectorize(grouping_by, 'str')(group_cols, 1)))), collapse=","),
-        " ORDER BY ", paste(1:(1 + sum(unlist(Vectorize(grouping_by, 'str')(group_cols, 1)))), collapse=","),
+        " GROUP BY ", paste(seq_len(length(group_cols) + 1), collapse=","),
+        " ORDER BY ", paste(seq_len(length(group_cols) + 1), collapse=","),
         "")
 
     # Break data up by sample and annotate each
@@ -168,10 +163,9 @@ mfdb_sample_grouping <- function (mdb,
     structure(lapply(samples, function (sample) {
         do.call(structure, c(
             list(out[out$sample == sample,names(out) != 'sample']),
-            grouping_by("timestep", list(timestep = params$timestep)),
-            grouping_by("area",    list(area = params$area)),
-            grouping_by("age",     list(age = params$age)),
-            grouping_by("length",  list(length = params$length)),
+            structure(
+                lapply(group_cols, function(col) params[[col]]),
+                names = group_cols),
             list(generator = generator)))
     }), names = samples)
 }

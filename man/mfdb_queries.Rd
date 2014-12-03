@@ -2,11 +2,10 @@
 \alias{mfdb_area_size}
 \alias{mfdb_temperature}
 \alias{mfdb_sample_count}
-\alias{mfdb_meanlength_stddev}
-\alias{mfdb_meanlength}
-\alias{mfdb_meanweight}
-\alias{mfdb_meanweight_stddev}
-\alias{mfdb_agelength}
+\alias{mfdb_sample_meanlength_stddev}
+\alias{mfdb_sample_meanlength}
+\alias{mfdb_sample_meanweight}
+\alias{mfdb_sample_meanweight_stddev}
 
 \title{MareFrame DB queries}
 
@@ -15,13 +14,13 @@
 }
 
 \usage{
+mfdb_area_size(mdb, params)
 mfdb_temperature(mdb, params)
 mfdb_sample_count(mdb, cols, params)
-mfdb_meanlength(mdb, params)
-mfdb_meanlength_stddev(mdb, params)
-mfdb_meanweight(mdb, params)
-mfdb_meanweight_stddev(mdb, params)
-mfdb_agelength(mdb, params)
+mfdb_sample_meanlength(mdb, cols, params)
+mfdb_sample_meanlength_stddev(mdb, cols, params)
+mfdb_sample_meanweight(mdb, cols, params)
+mfdb_sample_meanweight_stddev(mdb, cols, params)
 }
 
 \arguments{
@@ -31,54 +30,44 @@ mfdb_agelength(mdb, params)
 }
 
 \details{
-The options in \code{params} can both restrict data that is returned, and group
-this data. To save specifying the same items repeatedly, you can use list
-concatenation to keep some defaults, for example:
+The items in the \code{params} list either restrict data that is returned, or
+groups data if they are also in the \code{cols} vector, or are 'year',
+'timestep', or 'area'.
 
-\preformatted{
-defaults <- list(year = 1998:2000)
-mfdb_meanlength(mdb, c(list(), defaults))
-}
-
-The following options will group the data:
+If you are grouping by the column, \code{params} should contain one of the
+following:
 
 \describe{
-    \item{year}{
-        (required) A vector of years, e.g. \code{c(2000,2001)}
+    \item{NULL}{
+        Don't do any grouping, instead put 'any' in the resulting column.
+        For example, \code{age = NULL} results in "any".
     }
-    \item{timestep}{
-        (required) An mfdb_group representing which months you want to
-        include in the data, and how to group them. For example,
-        \code{mfdb_group_numbered("ts", 1:6, 7:12)}
-        to group years by 2 timesteps, for each half of the year.
+    \item{character / numeric vector}{
+        Aggregate all samples together where they match.
+        For example, \code{year = 1990:2000} results in 1990, ... , 2000.
     }
-    \item{area}{
-        (required) An mfdb_group representing the area groupings you
-        want to include and aggregate by. For example,
-        \code{mfdb_group("101" = c(1011, 1012), "102" = c(1021, 1022, 1023))}
+    \item{mfdb_unaggregated()}{
+        Don't do any aggregation for this column, return all possible values.
     }
-    \item{age}{
-        (required) An mfdb_group representing which years you want to
-        include in the data, and how to group them. For example,
-        \code{mfdb_group('young' = 1:3, 'old' = 4:6)}
-        to group ages into "young" (up to 3), or "old" (4--6 years)
+    \item{mfdb_group()}{
+        Group several discrete items together.
+        For example, \code{age = mfdb_group(young = 1:3, old = 4:5)}
+        results in "young" and "old".
     }
-    \item{length}{
-        (required) An mfdb_interval representing which lengths to
-        include in the data, and how to group them. For example,
-        \code{mfdb_interval("len", seq(0, 500, by = 10))}
-        to include lengths from 0--500, and group them into 0, 10, 20,...
-        Note that in the case of \code{mfdb_meanlength}, there is no grouping
-        by length (doesn't make sense), but this is still used to provide a
-        minimum and maximum length.
+    \item{mfdb_interval()}{
+        Group irregular ranges together.
+        For example, \code{length = mfdb_interval('len', c(0, 10, 100, 1000))}
+        results in "len0", "len10", "len100", and "len1000".
     }
-    \item{maturity_stage}{
-        An mfdb_group of maturity stages, see mfdb::maturity_stage for possible values.
+    \item{mfdb_step_interval()}{
+        Group regular ranges together.
+        For example, \code{length = mfdb_step_interval('len', to = 100, by = 10)}
+        results in "len0", "len10", ... , "len100".
     }
 }
 
-In addition, you can use the following arguments to restrict data
-returned as part of the query.
+In addition, \code{params} can contain other arguments to purely restrict the
+data that is returned.
 
 \describe{
     \item{institute}{A vector of institute names, see mfdb::institute for possible values}
@@ -87,8 +76,16 @@ returned as part of the query.
     \item{sampling_type}{A vector of sampling_type names, see mfdb::sampling_type for possible values}
     \item{species}{A vector of species names, see mfdb::species for possible values}
     \item{sex}{A vector of sex names, see mfdb::sex for possible values}
-    \item{maturity_stage}{A vector of maturity stages, see mfdb::maturity_stage for possible values}
 }
+
+To save specifying the same items repeatedly, you can use list
+concatenation to keep some defaults, for example:
+
+\preformatted{
+defaults <- list(year = 1998:2000)
+mfdb_sample_meanlength(mdb, c('age'), c(list(), defaults))
+}
+
 }
 
 \value{
@@ -99,28 +96,25 @@ returned as part of the query.
             Returns year, step, area, (mean) temperature
         }
         \item{mfdb_sample_count}{
-            Returns year,step,area,stock,age,length,number (of samples)
+            Returns year,step,area,(group cols),number (of samples)
         }
-        \item{mfdb_meanlength}{
-            Returns year,step,area,age,number (of samples),mean (length in group)
+        \item{mfdb_sample_meanlength}{
+            Returns year,step,area,(group cols),number (of samples),mean (length in group)
         }
-        \item{mfdb_meanlength_stddev}{
-            As mfdb_meanlength, but also returns std. deviation.
+        \item{mfdb_sample_meanlength_stddev}{
+            As mfdb_sample_meanlength, but also returns std. deviation.
         }
-        \item{mfdb_meanweight}{
-            Returns year,step,area,age,number (of samples),mean (weight of group)
+        \item{mfdb_sample_meanweight}{
+            Returns year,step,area,(group cols),number (of samples),mean (weight of group)
         }
-        \item{mfdb_meanweight_stddev}{
-            As mfdb_meanweight, but also returns std. deviation.
-        }
-        \item{mfdb_agelength}{
-            Returns year,step,area,age,length,number (of samples)
+        \item{mfdb_sample_meanweight_stddev}{
+            As mfdb_sample_meanweight, but also returns std. deviation.
         }
     }
 }
 
 \examples{\dontrun{
-agg_data <- mfdb_agelength(mdb,
+agg_data <- mfdb_sample_count(mdb, c('age', 'length'),
         params = c(list(
             year = c(1990, 1991),
             length = mfdb_interval("len", seq(0, 500, by = 30)),

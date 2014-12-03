@@ -43,13 +43,13 @@ ok_group("Unaggregated length / weight / age samples", {
     age_group <- mfdb_group(all = 1:1000)
     length_group <- mfdb_interval("len", seq(0, 50, by = 5))
     ok(cmp(
-        mfdb_meanlength(mdb, list(
+        mfdb_sample_meanlength(mdb, c('age'), list(
             year = 1998:2000,
             area = area_group,
             timestep = mfdb_timestep_biannually,
             age = age_group,
             length = length_group)),
-        list("0.0.0" = structure(
+        list("0.0.0.0" = structure(
             data.frame(
                 year = c(1998:1998),
                 step = c("1", "2"),
@@ -58,21 +58,22 @@ ok_group("Unaggregated length / weight / age samples", {
                 number = c(5, 4),
                 mean = c(26.2, 31.75),
                 stringsAsFactors = FALSE),
+            year = 1998:2000,
             timestep = mfdb_timestep_biannually,
             area = area_group,
             age = age_group,
-            generator = "mfdb_meanlength"))),
+            generator = "mfdb_sample_meanlength"))),
        "Aggregated length data")
 
-    # mfdb_meanlength_stddev is the same, but with an extra column
+    # mfdb_sample_meanlength_stddev is the same, but with an extra column
     ok(cmp(
-        mfdb_meanlength_stddev(mdb, list(
+        mfdb_sample_meanlength_stddev(mdb, c('age'), list(
             year = 1998:2000,
             area = area_group,
             timestep = mfdb_timestep_biannually,
             age = age_group,
             length = length_group)),
-        list("0.0.0" = structure(
+        list("0.0.0.0" = structure(
             data.frame(
                 year = c(1998:1998),
                 step = c("1", "2"),
@@ -82,22 +83,23 @@ ok_group("Unaggregated length / weight / age samples", {
                 mean = c(26.2, 31.75),
                 stddev = c(0), # TODO:
                 stringsAsFactors = FALSE),
+            year = 1998:2000,
             timestep = mfdb_timestep_biannually,
             area = area_group,
             age = age_group,
-            generator = "mfdb_meanlength_stddev"))),
+            generator = "mfdb_sample_meanlength_stddev"))),
        "Aggregated length data (with stddev)")
 
-    # mfdb_meanweight aggregates weight, but still use length as a filter
+    # mfdb_sample_meanweight aggregates weight, but still use length as a filter
     length_group <- mfdb_interval("len", seq(50, 100, by = 5))
     ok(cmp(
-        mfdb_meanweight(mdb, list(
+        mfdb_sample_meanweight(mdb, c('age'), list(
             year = 1998:2000,
             area = area_group,
             timestep = mfdb_timestep_biannually,
             age = age_group,
             length = length_group)),
-        list("0.0.0" = structure(
+        list("0.0.0.0" = structure(
             data.frame(
                 year = c(1998:1998),
                 step = c("1", "2"),
@@ -106,22 +108,23 @@ ok_group("Unaggregated length / weight / age samples", {
                 number = c(1, 2),
                 mean = c(500, 485),
                 stringsAsFactors = FALSE),
+            year = 1998:2000,
             timestep = mfdb_timestep_biannually,
             area = area_group,
             age = age_group,
-            generator = "mfdb_meanweight"))),
+            generator = "mfdb_sample_meanweight"))),
        "Aggregated weight data")
 
-    # mfdb_meanweight_stddev works the same, but with stddev
+    # mfdb_sample_meanweight_stddev works the same, but with stddev
     length_group <- mfdb_interval("len", seq(50, 100, by = 5))
     ok(cmp(
-        mfdb_meanweight_stddev(mdb, list(
+        mfdb_sample_meanweight_stddev(mdb, c('age'), list(
             year = 1998:2000,
             area = area_group,
             timestep = mfdb_timestep_biannually,
             age = age_group,
             length = length_group)),
-        list("0.0.0" = structure(
+        list("0.0.0.0" = structure(
             data.frame(
                 year = c(1998:1998),
                 step = c("1", "2"),
@@ -131,21 +134,22 @@ ok_group("Unaggregated length / weight / age samples", {
                 mean = c(500, 485),
                 stddev = c(0), # TODO:
                 stringsAsFactors = FALSE),
+            year = 1998:2000,
             timestep = mfdb_timestep_biannually,
             area = area_group,
             age = age_group,
-            generator = "mfdb_meanweight_stddev"))),
+            generator = "mfdb_sample_meanweight_stddev"))),
        "Aggregated weight data (with stddev)")
 
     # Can use step interval to produce same result
     ok(cmp(
-        mfdb_meanweight_stddev(mdb, list(
+        mfdb_sample_meanweight_stddev(mdb, c('age'), list(
             year = 1998:2000,
             area = area_group,
             timestep = mfdb_timestep_biannually,
             age = age_group,
             length = mfdb_interval("len", seq(50, 100, by = 5)))),
-        mfdb_meanweight_stddev(mdb, list(
+        mfdb_sample_meanweight_stddev(mdb, c('age'), list(
             year = 1998:2000,
             area = area_group,
             timestep = mfdb_timestep_biannually,
@@ -157,13 +161,13 @@ ok_group("Unaggregated length / weight / age samples", {
     length_group <- mfdb_interval("len", seq(50, 100, by = 5))
     age_group <- mfdb_group(age1 = c(1), age2 = c(2))
     ok(cmp(
-        mfdb_agelength(mdb, list(
+        mfdb_sample_count(mdb, c('age', 'length'), list(
             year = 1998:2000,
             area = area_group,
             timestep = mfdb_timestep_biannually,
             age = age_group,
             length = length_group)),
-        list("0.0.0" = structure(
+        list("0.0.0.0.0" = structure(
             data.frame(
                 year = c(1998, 1998, 1998),
                 step = c("1", "2", "2"),
@@ -172,11 +176,12 @@ ok_group("Unaggregated length / weight / age samples", {
                 length = c("len50", "len65", "len60"),
                 number = c(1, 1, 1),
                 stringsAsFactors = FALSE),
+            year = 1998:2000,
             timestep = mfdb_timestep_biannually,
             area = area_group,
             age = age_group,
             length = length_group,
-            generator = "mfdb_agelength"))),
+            generator = "mfdb_sample_count"))),
        "Aggregated agelength data")
 })
 
@@ -222,7 +227,7 @@ ok_group("Filtering of samples", {
 
     # MOO sampling_type has no dat
     ok(cmp(
-        mfdb_meanlength(mdb, list(
+        mfdb_sample_meanlength(mdb, c(), list(
             sampling_type = 'MOO',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
@@ -234,7 +239,7 @@ ok_group("Filtering of samples", {
 
     # Without any aggregation on, we get the whole lot
     ok(cmp(
-        mfdb_meanlength(mdb, list(
+        mfdb_sample_meanlength(mdb, c(), list(
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
@@ -249,7 +254,7 @@ ok_group("Filtering of samples", {
             stringsAsFactors = FALSE)),
        "No filtering, got everything")
     ok(cmp(
-        mfdb_meanlength(mdb, list(
+        mfdb_sample_meanlength(mdb, c(), list(
             sampling_type = 'SEA',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
@@ -267,7 +272,7 @@ ok_group("Filtering of samples", {
 
     # Filtering by gear,institute, vessel or sampling_type will break down to one or other
     ok(cmp(
-        mfdb_meanlength(mdb, list(
+        mfdb_sample_meanlength(mdb, c(), list(
             gear = 'GIL',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
@@ -283,7 +288,7 @@ ok_group("Filtering of samples", {
             stringsAsFactors = FALSE)),
        "GIL means survey1")
     ok(cmp(
-        mfdb_meanlength(mdb, list(
+        mfdb_sample_meanlength(mdb, c(), list(
             vessel = '1.RSH',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
@@ -299,7 +304,7 @@ ok_group("Filtering of samples", {
             stringsAsFactors = FALSE)),
        "1.RSH means survey1")
     ok(cmp(
-        mfdb_meanlength(mdb, list(
+        mfdb_sample_meanlength(mdb, c(), list(
             institute = 'ICES',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
@@ -315,7 +320,7 @@ ok_group("Filtering of samples", {
             stringsAsFactors = FALSE)),
        "ICES means survey2")
     ok(cmp(
-        mfdb_meanlength(mdb, list(
+        mfdb_sample_meanlength(mdb, c(), list(
             vessel = '2.RSH',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
@@ -333,7 +338,7 @@ ok_group("Filtering of samples", {
 
     # Intersection gives nothing
     ok(cmp(
-        mfdb_meanlength(mdb, list(
+        mfdb_sample_meanlength(mdb, c(), list(
             gear = 'GIL',
             vessel = '2.RSH',
             area = mfdb_group(divA = c("divA")),
@@ -347,7 +352,7 @@ ok_group("Filtering of samples", {
     # Should be able to re-import sampling types
     mfdb_import_sampling_type(mdb, data.frame(name = c("SEA", "MOO"), description = c("Sea", "Seacow")))
     ok(cmp(
-        mfdb_meanlength(mdb, list(
+        mfdb_sample_meanlength(mdb, c(), list(
             vessel = '2.RSH',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,

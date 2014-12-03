@@ -95,7 +95,7 @@ gadget_dir_write(gd, gadget_likelihood_component("penalty",
                                                    stringsAsFactors = FALSE)))
 
 # Query some age-length data and write it as a catchdistribution component
-aggdata <- mfdb_agelength(mdb, c(list(
+aggdata <- mfdb_sample_count(mdb, c('age', 'length'), c(list(
     age = mfdb_group_numbered('age',1,2,3,4,5,6,7,8,9,10,11,12,13),
     sampling_type = 'RES',
     length = mfdb_interval("len", seq(0, 150, by = 2))),
@@ -109,7 +109,7 @@ gadget_dir_write(gd, gadget_likelihood_component("catchdistribution",
 rm(aggdata)
 
 # Query some length data and write a separate component (note different name)
-aggdata <- mfdb_agelength(mdb, c(list(
+aggdata <- mfdb_sample_count(mdb, c('age', 'length'), c(list(
     sampling_type = 'RES',
     length = mfdb_interval("len", seq(0, 150, by = 2))),
     defaults))
