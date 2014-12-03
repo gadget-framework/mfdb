@@ -8,11 +8,18 @@
 }
 
 \usage{
-mfdb_unaggregated()
+mfdb_unaggregated(omitNA = FALSE)
 \method{as.list}{mfdb_unaggregated}(x, ...)
 }
 
 \arguments{
+    \item{omitNA}{Skip over rows where column is NA}
+    \item{x}{
+        The \code{mfdb_unaggregated} to convert to a list for use in \code{gadget_file}
+    }
+    \item{...}{
+        Ignored.
+    }
 }
 
 \examples{
