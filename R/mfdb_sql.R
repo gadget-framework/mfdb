@@ -12,9 +12,10 @@ sql_quote <- function(v, always_bracket = FALSE, always_quote = FALSE) {
             paste0("'", gsub("'", "''", v) ,"'")
         }
     } else {
-        paste0("(", paste0(Vectorize(sql_quote)(v, always_quote = always_quote), collapse = ","), ")")
+        paste0("(", paste0(sql_vquote(v, always_quote = always_quote), collapse = ","), ")")
     }
 }
+sql_vquote <- Vectorize(sql_quote)
 
 sql_create_index <- function(table, cols) {
    paste0(c("CREATE INDEX ON ", table, " (", paste0(cols, collapse = ","), ")"), collapse = "")
