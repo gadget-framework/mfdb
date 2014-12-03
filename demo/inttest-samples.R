@@ -30,8 +30,8 @@ ok_group("Unaggregated length / weight / age samples", {
     mfdb_import_survey(mdb,
         data_source = 'survey1',
         data.frame(
-            year = c('1998'),
-            month = c(1:12),
+            Year = c('1998'),  # NB: Not case-sensitive
+            mOnth = c(1:12),
             areacell = c('45G01'),
             species = c('COD'),
             age =    c(  1,  2,  1,  2,  1,  2,   1,  2,  1,  2,  1,  2),

@@ -185,11 +185,13 @@ mfdb_import_sampling_type <- function(mdb, data_in) {
 
 # Check column content, optionally resolving lookup
 sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL) {
-    col <- data_in[[col_name]]
-    if (is.null(col)) {
+    data_col_name <- grep(col_name, names(data_in), ignore.case=TRUE, value=TRUE)
+    if (length(data_col_name) == 0) {
         if (!is.null(default)) return(default);
         stop("Input data is missing ", col_name)
     }
+    col <- data_in[[data_col_name[[1]]]]
+
     if (!is.null(lookup)) {
         col <- factor(col)
         # Fetch corresponding id for each level
