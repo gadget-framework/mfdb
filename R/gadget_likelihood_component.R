@@ -155,6 +155,11 @@ gadget_stockdistribution_component <- function (weight = 0,
         fleetnames = c(), stocknames = c()) {
     prefix <- paste0('stockdistribution.', name, '.')
 
+    # For stock distribution, anything in column 4 should be called stock
+    if (length(names(data)) > 4) {
+        names(data)[4] <- 'stock'
+    }
+
     structure(c(list(
         name = name,
         weight = weight,

@@ -137,3 +137,93 @@ ok_group("Length / weight / age samples", {
         paste0("all\t", paste(1:1000, collapse = "\t"))
         ), "age updated")
 })
+
+ok_group("Maturity stage samples", {
+    # Set-up areas/divisions
+    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
+    mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G01')))
+
+    # Import a survey
+    mfdb_import_survey(mdb,
+        data_source = 'survey1',
+        data.frame(
+            year = c('1998'),
+            month = c(1:12),
+            areacell = c('45G01'),
+            species = c('COD'),
+            maturity_stage = c(  1,  2,  3,  1,  2,  3,   1,  2,  3,  1,  2,  3),
+            age =            c(  1,  2,  1,  2,  1,  2,   1,  2,  1,  2,  1,  2),
+            length =         c( 10, 50, 30, 10, 35, 46,  65, 62, 36, 35, 34, 22),
+            count =          c(100,500,300,100,350,460, 650,320,360,350,340,220)))
+
+    # Initalise a gadget directory to output into
+    gd <- gadget_directory(tempfile())
+
+    # Treat the maturity stage as a stock, divide up into mature and immature
+    agg_data <- mfdb_sample_count(mdb, c('maturity_stage', 'age', 'length'), list(
+            year = 1998:2000,
+            area = mfdb_group(divA = c("divA")),
+            length = mfdb_step_interval('len', by = 10, to = 100),
+            timestep = mfdb_timestep_biannually,
+            maturity_stage = mfdb_group(imm = 1, mat = 2:5)))
+
+    # Write it into a likelihood component
+    gadget_dir_write(gd, gadget_likelihood_component(
+        'stockdistribution', data = agg_data[[1]]))
+
+    # Likelihood file has a component
+    ok(cmp_file(gd, "likelihood",
+        ver_string,
+        "; ",
+        "[component]",
+        "name\tstockdistribution",
+        "weight\t0",
+        "type\tstockdistribution",
+        "datafile\tData/stockdistribution.stockdistribution.sumofsquares",
+        "function\tsumofsquares",
+        "overconsumption\t0",
+        "epsilon\t10",
+        "areaaggfile\tAggfiles/stockdistribution.stockdistribution.area.agg",
+        "ageaggfile\tAggfiles/stockdistribution.stockdistribution.age.agg",
+        "lenaggfile\tAggfiles/stockdistribution.stockdistribution.len.agg",
+        "fleetnames\t",
+        "stocknames\t"
+        ), "Likelihood file updated")
+
+    # Data files written
+    ok(cmp_file(gd, "Data/stockdistribution.stockdistribution.sumofsquares",
+        ver_string,
+        "; -- data --",
+        "; year\tstep\tarea\tstock\tage\tlength\tnumber",
+        "1998\t1\tdivA\timm\tall\tlen10\t200",
+        "1998\t1\tdivA\tmat\tall\tlen30\t650",
+        "1998\t1\tdivA\tmat\tall\tlen40\t460",
+        "1998\t1\tdivA\tmat\tall\tlen50\t500",
+        "1998\t2\tdivA\timm\tall\tlen30\t350",
+        "1998\t2\tdivA\timm\tall\tlen60\t650",
+        "1998\t2\tdivA\tmat\tall\tlen20\t220",
+        "1998\t2\tdivA\tmat\tall\tlen30\t700",
+        "1998\t2\tdivA\tmat\tall\tlen60\t320",
+        NULL), "datafile updated")
+    ok(cmp_file(gd, "Aggfiles/stockdistribution.stockdistribution.area.agg",
+        ver_string,
+        "divA\t1",
+        NULL), "area aggregation file")
+    ok(cmp_file(gd, "Aggfiles/stockdistribution.stockdistribution.age.agg",
+        ver_string,
+        "all\tX",
+        NULL), "age aggregtaion file")
+    ok(cmp_file(gd, "Aggfiles/stockdistribution.stockdistribution.len.agg",
+        ver_string,
+        "len0\t0\t10",
+        "len10\t10\t20",
+        "len20\t20\t30",
+        "len30\t30\t40",
+        "len40\t40\t50",
+        "len50\t50\t60",
+        "len60\t60\t70",
+        "len70\t70\t80",
+        "len80\t80\t90",
+        "len90\t90\t100",
+        NULL), "len aggregation file")
+})
