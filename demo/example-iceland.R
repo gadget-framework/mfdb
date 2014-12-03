@@ -62,6 +62,7 @@ names(ldist.aug) <- c('sample.id','species','length','num','sex',
                       'maturity','count','year','lat','lon','areacell')
 ldist.aug$species <- 'COD' 
 ldist.aug$month  <- 3
+ldist.aug$count <- round(ldist.aug$count)
 
 ldist.aug <- subset(ldist.aug,!is.na(areacell))
 ldist.aug <- subset(ldist.aug,areacell %in% reitmapping$GRIDCELL) 

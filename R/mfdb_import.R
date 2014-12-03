@@ -66,6 +66,30 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
         weight_var = sanitise_col(mdb, data_in, 'weight_var', default = c(NA)),
         count = sanitise_col(mdb, data_in, 'count', default = c(1)))
 
+    # Likely to be pretty big, so pre-load data into a temporary table
+    mdb$logger$info("Writing sample rows to temporary table")
+    tryCatch(mfdb_send(mdb, "DROP TABLE mfdb_temp_insert"), error = function(e) {
+        if(grepl("does not exist", e$message)) return();
+        stop(e)
+    })
+    mfdb_send(mdb, "SET CLIENT_ENCODING TO 'LATIN1'") # Not sure.
+    dbWriteTable(mdb$db, "mfdb_temp_insert", survey_sample, row.names = FALSE, field.types = list(
+        case_study_id = 'INT',
+        year = 'INT',
+        month = 'INT',
+        areacell_id = 'INT',
+        species_id = 'BIGINT',
+        age = 'INT',
+        sex_id = 'INT',
+        maturity_stage_id = 'INT',
+        length = 'REAL',
+        length_var = 'REAL',
+        length_min = 'INT',
+        weight = 'REAL',
+        weight_var = 'REAL',
+        count = 'INT'))
+    mfdb_send(mdb, "SET CLIENT_ENCODING TO 'UTF8'")
+
     # Remove data_source and re-insert
     mfdb_transaction(mdb, {
         dbSendQuery(mdb$db, paste0("DELETE FROM sample WHERE survey_id = (SELECT survey_id FROM survey WHERE ",
@@ -75,8 +99,13 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
             " case_study_id IN ", sql_quote(mdb$case_study_id, always_bracket = TRUE),
             " AND data_source = ", sql_quote(survey_metadata$data_source)))
         res <- mfdb_insert(mdb, 'survey', survey_metadata, returning = "survey_id")
-        res <- mfdb_insert(mdb, 'sample', survey_sample, extra = c(survey_id = res$survey_id))
+        mfdb_send(mdb,
+            "INSERT INTO sample",
+            " (", paste(names(survey_sample), collapse=","), ", survey_id)",
+            " SELECT ", paste(names(survey_sample), collapse=","), ", ", sql_quote(res$survey_id),
+            " FROM mfdb_temp_insert")
     })
+    mfdb_send(mdb, "DROP TABLE mfdb_temp_insert");
 }
 
 # Import area data
