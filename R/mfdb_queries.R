@@ -89,74 +89,59 @@ mfdb_sample_grouping <- function (mdb,
         params = list(),
         group_cols = c("year", "timestep", "area", "age"),
         filter_cols = c("length", "institute", "gear", "vessel", "sampling_type", "species", "sex"),
+        col_defs = list(
+            year = "c.year", timestep = "c.month", area = "c.areacell_id", age = "c.age",
+            maturity_stage = "c.maturity_stage_id", length = "c.length",
+            institute = "c.institute_id", gear = "c.gear_id", vessel = "c.vessel_id",
+            sampling_type = "c.sampling_type_id", species ="c.species_id", sex = "c.sex_id"),
         calc_cols = c(),
         core_table = "(SELECT sur.institute_id, sur.gear_id, sur.vessel_id, sur.sampling_type_id, sam.* FROM sample sam INNER JOIN survey sur ON sam.survey_id = sur.survey_id)",
         generator = "mfdb_sample_grouping") {
 
-    # If grouping by, the a setting *must* be in params
-    grouping_by <- function(str, if_true = TRUE, if_false = NULL) {
-        if(!(str %in% group_cols)) return(if_false)
-        return(if_true)
-    }
-    # If filtering, then do it if possible
-    filtering_by <- function(str, if_true = TRUE, if_false = NULL) {
-        if (str %in% filter_cols && !is.null(params[[str]])) if_true else if_false
-    }
-
-    # Importing is probably done, so create indexes if we need to
-    mfdb_finish_import(mdb)
-
-    # Group names to the columns that define them
-    col_defs <- list(
-        year = "c.year",
-        timestep = "c.month",
-        area = "c.areacell_id",
-        age = "c.age",
-        maturity_stage = "c.maturity_stage_id",
-        length = "c.length")
-
-    for (col in group_cols) {
-        if (is.null(col_defs[[col]])) {
-            stop("Unknown column ", col)
-        }
-        x <- pre_query(mdb, params[[col]], ifelse(col == 'timestep', 'step', col))
-    }
-
     # Call relevant clause function for all group_cols
-    group_clauses <- function (fn) {
-        unlist(lapply(group_cols, function (col) fn(
+    clauses <- function (cols, fn) {
+        unlist(lapply(cols, function (col) fn(
                 mdb,
                 params[[col]],
                 col_defs[[col]],
                 ifelse(col == 'timestep', 'step', col))))
     }
 
+    # Importing is probably done, so create indexes if we need to
+    mfdb_finish_import(mdb)
+
+    # Do we know what these map to in SQL?
+    for (col in c(group_cols, filter_cols)) {
+        if (is.null(col_defs[[col]])) {
+            stop("Unknown column ", col)
+        }
+    }
+
+    # Call pre-query for all groups
+    for (col in group_cols) {
+        x <- pre_query(mdb, params[[col]], ifelse(col == 'timestep', 'step', col))
+    }
+
     out <- mfdb_fetch(mdb,
         "SELECT ", paste(c(
             paste(paste(
-                group_clauses(sample_clause),
+                clauses(group_cols, sample_clause),
                 NULL, collapse = "|| '.' ||"), "AS sample"),
-            group_clauses(select_clause),
+            clauses(group_cols, select_clause),
             calc_cols,
             NULL), collapse = ","),
         " FROM ", paste(c(
             paste(core_table, "c"),
-            group_clauses(from_clause),
+            clauses(group_cols, from_clause),
             NULL), collapse = ","),
         " WHERE ", paste(c(
             paste("c.case_study_id =", sql_quote(mdb$case_study_id)),
-            group_clauses(where_clause),
-            filtering_by("length", where_clause(mdb, params$length, "c.length")),
-            filtering_by("institute", where_clause(mdb, params$institute, "c.institute_id")),
-            filtering_by("gear", where_clause(mdb, params$gear, "c.gear_id")),
-            filtering_by("vessel", where_clause(mdb, params$vessel, "c.vessel_id")),
-            filtering_by("sampling_type", where_clause(mdb, params$sampling_type, "c.sampling_type_id")),
-            filtering_by("species", where_clause(mdb, params$species, "c.species_id")),
-            filtering_by("sex", where_clause(mdb, params$sex, "c.sex_id")),
+            clauses(group_cols, where_clause),
+            clauses(setdiff(filter_cols, group_cols), where_clause),
             NULL), collapse = " AND "),
         " GROUP BY ", paste(seq_len(length(group_cols) + 1), collapse=","),
         " ORDER BY ", paste(seq_len(length(group_cols) + 1), collapse=","),
-        "")
+        NULL)
 
     # Break data up by sample and annotate each
     samples <- unique(out$sample)
