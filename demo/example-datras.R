@@ -58,6 +58,7 @@ mfdb_import_sampling_type(mdb, data.frame(
 tmp <- codL[c('Year','Quarter','areacell','Species','Sex','LngtCm','Count')]
 names(tmp) <- c('year','month','areacell','species','sex','length','count')
 tmp <- subset(tmp,!is.na(length))
+tmp$count <- round(tmp$count)
 mfdb_import_survey(mdb,
                    data_source = 'example-datras-codL',
                    sampling_type = 'RES',
@@ -108,14 +109,14 @@ gadget_dir_write(gd, gadget_likelihood_component("catchdistribution",
 rm(aggdata)
 
 # Query some length data and write a separate component (note different name)
-Length.query <- mfdb_agelength(mdb, c(list(
+aggdata <- mfdb_agelength(mdb, c(list(
     sampling_type = 'RES',
     length = mfdb_interval("len", seq(0, 150, by = 2))),
     defaults))
 gadget_dir_write(gd, gadget_likelihood_component("catchdistribution",
                                                  name = "ldist.datras",
                                                  weight = 1,
-                                                 data = Length.query[[1]],
+                                                 data = aggdata[[1]],
                                                  fleetnames = c("datras"),
                                                  stocknames = 'cod'))
 rm(aggdata)
