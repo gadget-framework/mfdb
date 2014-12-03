@@ -142,6 +142,7 @@ mfdb_update_taxonomy <- function(mdb) {
     mfdb_import_taxonomy(mdb, "vessel", vessel)
 
     mfdb_import_taxonomy(mdb, "sex", sex)
+    mfdb_import_taxonomy(mdb, "maturity_stage", maturity_stage)
     mfdb_import_taxonomy(mdb, "species", species)
 }
 
