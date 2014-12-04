@@ -1,4 +1,5 @@
-\name{datasets}
+\name{mfdb-data}
+\alias{mfdb-data}
 \alias{gear}
 \alias{case_study}
 \alias{institute}
