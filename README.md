@@ -68,7 +68,10 @@ Otherwise create a database called ``mf`` as per the distribution instructions.
 
 ### Microsoft Windows
 
-Download the latest database installer from here:
+If you can use the binary RPostgreSQL packages, then you do not need to install
+anything else. See https://code.google.com/p/rpostgresql/w/list for more information.
+
+To install PostgreSQL, download the latest database installer from here:
 
 http://www.enterprisedb.com/products-services-training/pgdownload#windows
 
@@ -86,7 +89,7 @@ Installing
 You can use devtools to install this directly:
 
     # install.packages("devtools")
-    devtools::install_github("mareframe/mfdb" ref = "1.x")
+    devtools::install_github("mareframe/mfdb", ref = "1.x")
 
 Or without:-
 
