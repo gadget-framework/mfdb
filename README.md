@@ -6,7 +6,7 @@ for running ecosystem models against it, e.g. [GADGET](http://www.hafro.is/gadge
 
 This package contains several distinct sets of functions:
 
-* Create a PostgreSQL database schema (``mfdb`` function)
+* Create and connect to a PostgreSQL database schema (``mfdb`` function)
 * Import data into a PostgreSQL database (``mfdb_import_*`` functions)
 * Sample / group data from database (other ``mfdb_*`` functions)
 * Manage GADGET model directories and export data into them (``gadget_*`` functions)
@@ -27,11 +27,17 @@ This work is based on it's predecessor, [DST^2](http://www.hafro.is/dst2/).
 Prerequisites
 -------------
 
-Besides R, you also need to have PostgreSQL installed and running on your computer.
+Besides R, you will also need RPostgreSQL set up to access the database, and
+PostgreSQL installed if you want to run the database locally too.
 
 ### Linux (Debian / Ubuntu)
 
-Install the ``postgresql`` package using:
+Installation of RPostgreSQL will happen automatically, however you need some
+PostgreSQL libraries before it will work:
+
+    apt-get install libpq-dev
+
+Also, you can install the ``postgresql`` package using:
 
     apt-get install postgresql
 
@@ -44,7 +50,12 @@ Otherwise create a database called ``mf`` as per the distribution instructions.
 
 ### Linux (Redhat / Fedora)
 
-Install the ``postgresql-server`` package using:
+Installation of RPostgreSQL will happen automatically, however you need some
+PostgreSQL libraries before it will work:
+
+    yum install postgresql-devel
+
+Also, you can install the ``postgresql`` package using:
 
     yum install postgresql-server
 
@@ -75,20 +86,30 @@ Installing
 You can use devtools to install this directly:
 
     # install.packages("devtools")
-    devtools::install_github("mareframe/mfdb")
+    devtools::install_github("mareframe/mfdb" ref = "1.x")
+
+Or without:-
+
+    # install.packages("downloader")
+    pkg_file <- tempfile()
+    downloader::download(url =
+        'https://github.com/mareframe/mfdb/archive/1.x.tar.gz',
+        mode = 'wb', destfile = pkg_file)
+    install.packages(pkg_file, repos = NULL, type = 'source')
+
+This should install and/or update dependencies, such as DBI and RPostgreSQL.
 
 Using
 -----
 
-Before doing anything, you (or your R script) will need to connect to the
-database:
+For an introduction to the package, read the ``package?mfdb`` help file in R.
 
-    > mdb <- mfdb()
-
-See the help entry for the ``mfdb`` function for more information.
-
-There are also a selection of example scripts to read through in the ``demo/``
-folder.
+There are a selection of example scripts in the ``demo/`` folder. The
+``example-*`` scripts show the full process of importing data from specified
+sources into the database, then querying this to aggregate into various gadget
+model files. The ``inttest-*`` scripts demonstrate other aspects, and also
+function as tests to ensure that the library works correctly (thus the ``ok()``
+function calls).
 
 Acknowledgements
 ----------------
