@@ -57,12 +57,12 @@ following:
     \item{mfdb_interval()}{
         Group irregular ranges together.
         For example, \code{length = mfdb_interval('len', c(0, 10, 100, 1000))}
-        results in "len0", "len10", "len100", and "len1000".
+        results in "len0", "len10", "len100" (1000 is the upper bound to len100).
     }
     \item{mfdb_step_interval()}{
         Group regular ranges together.
         For example, \code{length = mfdb_step_interval('len', to = 100, by = 10)}
-        results in "len0", "len10", ... , "len100".
+        results in "len0", "len10", ... , "len90".
     }
 }
 
