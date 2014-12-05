@@ -43,10 +43,18 @@ Also, you can install the ``postgresql`` package using:
 
 Some additional instructions are available here: https://wiki.debian.org/PostgreSql
 
+Now, create an ``mf`` database that the user on your computer owns:
+
+    $ echo $USER  # Check to see who you are, I'm lentinj
+    lentinj
+    $ su
+    # su - postgres
+    $ psql
+    postgres=# CREATE USER lentinj
+    postgres=# CREATE DATABASE mf OWNER lentinj;
+
 If you don't want to use a system-wide database, then investigate https://github.com/mareframe/mfdb-workspace
 which keeps all the required R dependencies and PostgreSQL database in the local directory.
-
-Otherwise create a database called ``mf`` as per the distribution instructions.
 
 ### Linux (Redhat / Fedora)
 
@@ -61,10 +69,18 @@ Also, you can install the ``postgresql`` package using:
 
 Some additional instructions are available here: https://fedoraproject.org/wiki/PostgreSQL
 
+Now, create an ``mf`` database that the user on your computer owns:
+
+    $ echo $USER  # Check to see who you are, I'm lentinj
+    lentinj
+    $ su
+    # su - postgres
+    $ psql
+    postgres=# CREATE USER lentinj
+    postgres=# CREATE DATABASE mf OWNER lentinj;
+
 If you don't want to use a system-wide database, then investigate https://github.com/mareframe/mfdb-workspace
 which keeps all the required R dependencies and PostgreSQL database in the local directory.
-
-Otherwise create a database called ``mf`` as per the distribution instructions.
 
 ### Microsoft Windows
 
