@@ -35,7 +35,7 @@ ok_group("Area File", {
         year = rep(c(1998, 1999), each = 12),
         month = c(1:12, 1:12),
         areacell = c(rep('45G01', times = 24)),
-        temperature = c(1:12, 25:36)))
+        temperature = c(0.5, 1.2, 2.4, 3.5, 4.6, 5.7, 6.1, 7.4, 8.9, 10, 11, 12, 25:36)))
 
     # Initalise a gadget directory to output into
     gd <- gadget_directory(tempfile())
@@ -59,14 +59,14 @@ ok_group("Area File", {
         "temperature\t",
         "; -- data --",
         "; year\tstep\tarea\ttemperature",
-        "1998\t1\t1\t2",
-        "1998\t2\t1\t5",
-        "1998\t3\t1\t8",
-        "1998\t4\t1\t11",
-        "1999\t1\t1\t26",
-        "1999\t2\t1\t29",
-        "1999\t3\t1\t32",
-        "1999\t4\t1\t35"
+        paste0("1998\t1\t1\t", round(mean(c(0.5, 1.2, 2.4)), 1)),
+        paste0("1998\t2\t1\t", round(mean(c(3.5, 4.6, 5.7)), 1)),
+        paste0("1998\t3\t1\t", round(mean(c(6.1, 7.4, 8.9)), 1)),
+        paste0("1998\t4\t1\t", round(mean(c(10, 11, 12)), 1)),
+        paste0("1999\t1\t1\t", round(mean(25:27), 1)),
+        paste0("1999\t2\t1\t", round(mean(28:30), 1)),
+        paste0("1999\t3\t1\t", round(mean(31:33), 1)),
+        paste0("1999\t4\t1\t", round(mean(34:36), 1)),
         ), "Areafile on disk matches")
 })
 

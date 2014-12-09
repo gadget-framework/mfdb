@@ -82,7 +82,7 @@ schema_from_0 <- function(mdb) {
         "areacell_id", "INT", "Areacell data relates to",
         "year", "INT NOT NULL", "Year sample was undertaken",
         "month", "INT NOT NULL", "Month sample was undertaken",
-        "temperature", "INT NOT NULL", "Temperature at this point in time"
+        "temperature", "REAL NOT NULL", "Temperature at this point in time"
     ), keys = c(
         "UNIQUE(case_study_id, areacell_id, year, month)",
         "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)"
