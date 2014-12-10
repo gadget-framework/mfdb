@@ -21,11 +21,11 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
     tryCatch(mfdb_send(mdb,
         "DROP ",
         "TABLE ", table_name), error = function (e) {
-            if (!is.null(mdb)) mdb$logger$debug(paste("Ignored", e))
+            mdb$logger$debug(paste("Ignored", e))
         })
     mfdb_send(mdb, paste(
             "CREATE",
-            (if (!is.null(mdb) && !mdb$save_temp_tables) "TEMPORARY"),
+            (if (!mdb$save_temp_tables) "TEMPORARY"),
             "TABLE",
             table_name,
             "(sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value ", datatype,
@@ -43,7 +43,7 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
                 ", ", sql_quote(set[1, 'name']), " AS name",
                 ", areacell_id AS value",
                 " FROM division",
-                " WHERE case_study_id = ", sql_quote(if (is.null(mdb$case_study_id)) -1 else mdb$case_study_id),
+                " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
                 " AND division IN ", sql_quote(unique(set[,'value']), always_bracket = TRUE, always_quote = TRUE))
         }
     } else {
@@ -53,6 +53,8 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
 
     # Index the lookup table to speed up queries
     mfdb_send(mdb, sql_create_index(table_name, c('value', 'name', 'sample')))
+
+    invisible(NULL)
 }
 
 select_clause.mfdb_group <- function(mdb, x, col, outputname) {

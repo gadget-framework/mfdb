@@ -82,10 +82,10 @@ mfdb_fetch <- function(mdb, ...) {
 # Send a query without the fetch
 mfdb_send <- function(mdb, ...) {
     query <- paste0(c(...), collapse = "")
-    if (is.null(mdb)) {
+    if (class(mdb$db) == 'dbNull') {
         cat(query)
         cat("\n")
-        return()
+        return(mdb$db)
     }
     mdb$logger$debug(query)
     res <- dbSendQuery(mdb$db, query)
@@ -102,7 +102,7 @@ mfdb_insert <- function(mdb, table_name, data_in, returning = "", extra = c()) {
                 paste0(vapply(seq_len(nrow(r)), function (i) { sql_quote(c(r[i,], extra), always_bracket = TRUE) }, ""), collapse = ","),
             (if (nzchar(returning)) paste0(c(" RETURNING ", returning), collapse = "") else ""),
             NULL)
-        if (is.null(mdb)) return(0)
+        if (class(res) == 'dbNull') return(if (is.null(nrow(r))) 1 else nrow(r))
         out <- if (nzchar(returning)) DBI::dbFetch(res) else DBI::dbGetRowsAffected(res)
         DBI::dbClearResult(res)
         return(out)
@@ -139,6 +139,7 @@ mfdb_update <- function(mdb, table_name, data_in, returning = "", extra = c(), w
             " WHERE ", table_name, "_id = ", sql_quote(r[[id_col]]),
             vapply(names(where), function (n) paste0(" AND ", n, "=", sql_quote(where[[n]])), ""),
             NULL)
+        if (class(res) == 'dbNull') return(if (is.null(nrow(r))) 1 else nrow(r))
         out <- if (nzchar(returning)) DBI::dbFetch(res) else DBI::dbGetRowsAffected(res)
         if (out != 1) stop("update should affect one row not ", out)
         DBI::dbClearResult(res)
