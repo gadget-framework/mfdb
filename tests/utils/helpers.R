@@ -63,17 +63,11 @@ cmp_file <- function (gd, filename, ...) {
 }
 
 # Replace function with new one, optionally returning to normal after expr
-mock_functions <- function(ns, new_funcs, expr = NULL) {
+mock_functions <- function(ns, new_funcs, expr) {
     assign_list <- function (ns, replacements) {
         for (k in names(replacements)) {
             assignInNamespace(k, replacements[[k]], ns)
         }
-    }
-
-    # Without an expression, just assign permanently
-    if (is.null(expr)) {
-        assign_list(ns, new_funcs)
-        return(NULL);
     }
 
     # Replace temporarily, put the old ones back again
