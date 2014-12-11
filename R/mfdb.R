@@ -40,8 +40,13 @@ mfdb <- function(case_study_name,
     mfdb_update_taxonomy(mdb)
 
     # Look up case study ID
-    case_study_id <- case_study[case_study$name == case_study_name, 'id']
-    if (length(case_study_id) != 1) {
+    res <- mfdb_fetch(mdb,
+        "SELECT case_study_id",
+        " FROM case_study",
+        " WHERE name = ", sql_quote(case_study_name))
+    if (length(res) == 1) {
+        case_study_id <- res[1,1]
+    } else {
         stop("Unknown case study ", case_study_name)
     }
 
