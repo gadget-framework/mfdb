@@ -136,14 +136,14 @@ mfdb_cs_taxonomy <- c("areacell", "sampling_type")
 
 # Populate tables with package-provided data
 mfdb_update_taxonomy <- function(mdb) {
-    mfdb_import_taxonomy(mdb, "case_study", case_study)
-    mfdb_import_taxonomy(mdb, "institute", institute)
-    mfdb_import_taxonomy(mdb, "gear", gear)
-    mfdb_import_taxonomy(mdb, "vessel", vessel)
+    mfdb_import_taxonomy(mdb, "case_study", mfdb::case_study)
+    mfdb_import_taxonomy(mdb, "institute", mfdb::institute)
+    mfdb_import_taxonomy(mdb, "gear", mfdb::gear)
+    mfdb_import_taxonomy(mdb, "vessel", mfdb::vessel)
 
-    mfdb_import_taxonomy(mdb, "sex", sex)
-    mfdb_import_taxonomy(mdb, "maturity_stage", maturity_stage)
-    mfdb_import_taxonomy(mdb, "species", species)
+    mfdb_import_taxonomy(mdb, "sex", mfdb::sex)
+    mfdb_import_taxonomy(mdb, "maturity_stage", mfdb::maturity_stage)
+    mfdb_import_taxonomy(mdb, "species", mfdb::species)
 }
 
 # Create any required indexes, if they don't already exist
