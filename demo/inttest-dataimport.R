@@ -30,6 +30,9 @@ mdb2 <- mfdb('Baltic', db_params = db_params, save_temp_tables = TRUE)
 ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE species_id = 9999999999")[1,] == 
   mfdb::species[mfdb::species$name == 'TBX', c('name', 'description')]), "Entry for 9999999999 matches package")
 
+# Can't connect to an unknown case study
+ok(cmp_error(mfdb('Camel', db_params = db_params), "Unknown"))
+
 ok_group("Areacell/divisions", {
     # Can't populate divisions yet, no areacells defined
     ok(cmp_error(mfdb_import_division(mdb, list(divA = c('45G01', '45G02', '45G03'))), 'areacell vocabulary'), "Areacell not populated yet")
