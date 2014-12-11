@@ -67,7 +67,7 @@ ok_group("Area File", {
         paste0("1999\t2\t1\t", round(mean(28:30), 1)),
         paste0("1999\t3\t1\t", round(mean(31:33), 1)),
         paste0("1999\t4\t1\t", round(mean(34:36), 1)),
-        ), "Areafile on disk matches")
+        NULL), "Areafile on disk matches")
 })
 
 ok_group("Length / weight / age samples", {
