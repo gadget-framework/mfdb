@@ -6,21 +6,23 @@ mfdb <- function(case_study_name,
     logger <- getLogger('mfdb')
 
     # Try a selection of host strings until we connect to something
-    db_params <- c(db_params, list(drv = PostgreSQL(), dbname = "mf"))
+    db_defaults = list(dbname = "mf", drv = PostgreSQL())
     db_guesses <- list(
-        list(),
         list(host = "/tmp"),
-        list(host = "/tmp/pg_mfdb"),
         list(host = "/var/tmp"),
-        list(host = "localhost"))
+        list(host = "localhost"),
+        list(host = "localhost", user = "mf", password = "mf"),
+        list(host = "/tmp/pg_mfdb"))
     for (guess in db_guesses) {
-        db_combined <- c(guess, db_params)[!duplicated(c(guess, db_params))]
-        logger$info(paste0("Trying to connect to: ", capture.output(str(db_combined)), sep = ""))
-        db_connection <- tryCatch(do.call(dbConnect, db_combined), error = function (e) NULL)
+        db_combined <- c(db_params, guess, db_defaults)
+        db_combined <- db_combined[!duplicated(names(db_combined))]
+        logger$info(paste0(
+            "Trying to connect to: ",
+            paste(capture.output(str(db_combined)), collapse = "\n")))
+        db_connection <- tryCatch(do.call(DBI::dbConnect, db_combined), error = function (e) NULL)
         if (!is.null(db_connection)) break
     }
     if (is.null(db_connection)) {
-        logger$error(paste0("Failed to connect, tried: ", capture.output(str(c(db_guesses, db_params))), sep = ""))
         stop("Could not find a local mf database")
     }
 

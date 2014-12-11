@@ -21,8 +21,10 @@
         name from \code{mfdb::case_study}.
     }
     \item{db_params}{
-        Extra parameters to supply to a \code{DBI} connection object. By
-        default it will search for a PostgreSQL "mf" database locally.
+        Extra parameters to supply to \code{DBI::dbConnect}. By default it will
+        search for a "mf" database locally, but you can override any of the parameters,
+        in particular \code{host}, \code{dbname}, \code{user}, \code{password}.
+        See \code{methods?RPostgreSQL::dbConnect} for more information.
     }
     \item{destroy_schema}{
         Optional boolean. If true, all mfdb tables will be dropped, allowing

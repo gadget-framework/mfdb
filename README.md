@@ -91,7 +91,10 @@ To install PostgreSQL, download the latest database installer from here:
 
 http://www.enterprisedb.com/products-services-training/pgdownload#windows
 
-Create a database called ``mf``. http://www.postgresql.org/docs/9.3/static/tutorial-createdb.html
+Find the psql shell in the start menu, and create both an ``mf`` database and user:
+
+    postgres=# CREATE USER mf PASSWORD 'mf';
+    postgres=# CREATE DATABASE mf OWNER mf;
 
 ### Apple OS X
 
