@@ -184,5 +184,6 @@ Maintainer: Jamie Lentin <jamie.lentin@shuttlethread.com>
 }
 
 \seealso{
-\code{\link[gadgetr:gadgetr-package]{gadgetr}}
+\href{https://github.com/bthe/rgadget}{rgadget},
+\href{http://www.hafro.is/gadget/userguide/userguide.html}{Gadget user guide}
 }
