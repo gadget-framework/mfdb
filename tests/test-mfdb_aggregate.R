@@ -38,9 +38,32 @@ ok_group("Aggregates with character", local({
     ok(cmp(where_clause(mdb, c("a", "b"), 'tbl.boar_id'), "(tbl.boar_id IN ('a','b'))"))
 }, asNamespace('mfdb')))
 
-ok_group("Aggregates with lookup tables", local({
+ok_group("Aggregates with global taxonomies", local({
+    pre_query(mdb, "c", "out")  # Just check nothing happens
+
+    ok(cmp(sample_clause(mdb, "c", "tbl.gear_id", "out"), "0"), "Sample clause")
+
+    ok(cmp(
+        select_clause(mdb, 'a', 'tbl.gear_id', 'out'),
+        "(SELECT name FROM gear WHERE gear_id = tbl.gear_id) AS out"))
+
+    ok(cmp(from_clause(mdb, "c", "tbl.gear_id", "out"), c()), "From clause")
+
     ok(cmp(where_clause(mdb, c("GEA"), 'tbl.gear_id'),
         "(tbl.gear_id IN (SELECT gear_id FROM gear WHERE name IN ('GEA')))"))
+}, asNamespace('mfdb')))
+
+ok_group("Aggregates with CS-specific taxonomies", local({
+    pre_query(mdb, "c", "out")  # Just check nothing happens
+
+    ok(cmp(sample_clause(mdb, "c", "tbl.sampling_type_id", "out"), "0"), "Sample clause")
+
+    ok(cmp(
+        select_clause(mdb, 'a', 'tbl.sampling_type_id', 'out'),
+        "(SELECT name FROM sampling_type WHERE case_study_id = 5 AND sampling_type_id = tbl.sampling_type_id) AS out"))
+
+    ok(cmp(from_clause(mdb, "c", "tbl.sampling_type_id", "out"), c()), "From clause")
+
     ok(cmp(where_clause(mdb, c("SEA"), 'tbl.sampling_type_id'),
         "(tbl.sampling_type_id IN (SELECT sampling_type_id FROM sampling_type WHERE case_study_id = 5 AND name IN ('SEA')))"))
 }, asNamespace('mfdb')))

@@ -367,4 +367,35 @@ ok_group("Filtering of samples", {
                 mean(c(54,23,65,12,22,9))),
             stringsAsFactors = FALSE)),
        "Data still exists")
+
+    # Should be able to group by species
+    ok(cmp(
+        mfdb_sample_meanlength(mdb, c('species'), list(
+            species = c('COD', 'HAD'),
+            year = 1998:2000))[["0.0.0.0"]][,c("year", "step", "area", "species", "number", "mean")],
+        data.frame(
+            year = c(1998, 1998),
+            step = c("all", "all"),
+            area = c("all", "all"),
+            species = c("COD", "HAD"),
+            number = c(12, 12),
+            mean = c(
+                mean(c( 10, 50, 30, 10, 35, 46,  65, 62, 36, 35, 34, 22)),
+                mean(c( 35, 64, 23, 13, 99, 83,  54, 23, 65, 12, 22,  9))),
+            stringsAsFactors = FALSE)),
+       "Can group by species (COD & HAD)")
+    ok(cmp(
+        mfdb_sample_meanlength(mdb, c('species'), list(
+            species = c('COD'),
+            year = 1998:2000))[["0.0.0.0"]][,c("year", "step", "area", "species", "number", "mean")],
+        data.frame(
+            year = c(1998),
+            step = c("all"),
+            area = c("all"),
+            species = c("COD"),
+            number = c(12),
+            mean = c(
+                mean(c( 10, 50, 30, 10, 35, 46,  65, 62, 36, 35, 34, 22))),
+            stringsAsFactors = FALSE)),
+       "Can group by species (just COD)")
 })

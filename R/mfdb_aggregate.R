@@ -34,7 +34,28 @@ from_clause.mfdb_aggregate <- function(mdb, x, col, outputname) c()
 pre_query.numeric <- pre_query.mfdb_aggregate
 sample_clause.numeric <- sample_clause.mfdb_aggregate
 select_clause.numeric <- function(mdb, x, col, outputname) {
-    paste(col, "AS", outputname)
+    lookup <- gsub('(.*\\.)|_id', '', col)
+
+    # Look up in global taxonomy
+    if ((lookup %in% mfdb_taxonomy)) {
+        return(paste0(
+            "(SELECT name",
+            " FROM ", lookup,
+            " WHERE ", lookup, "_id = ", col,
+            ") AS ", outputname))
+    }
+
+    # Look up in CS-specific taxonomy
+    if ((lookup %in% mfdb_cs_taxonomy)) {
+        return(paste0(
+            "(SELECT name",
+            " FROM ", lookup,
+            " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
+            " AND ", lookup, "_id = ", col,
+            ") AS ", outputname))
+    }
+
+    return(paste(col, "AS", outputname))
 }
 from_clause.numeric <- from_clause.mfdb_aggregate
 where_clause.numeric <- function(mdb, x, col, outputname) {
