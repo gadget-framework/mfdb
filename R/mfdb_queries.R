@@ -118,7 +118,7 @@ mfdb_sample_grouping <- function (mdb,
     }
 
     # Call pre-query for all groups
-    for (col in group_cols) {
+    for (col in union(group_cols, filter_cols)) {
         x <- pre_query(mdb, params[[col]], ifelse(col == 'timestep', 'step', col))
     }
 
@@ -132,12 +132,11 @@ mfdb_sample_grouping <- function (mdb,
             NULL), collapse = ","),
         " FROM ", paste(c(
             paste(core_table, "c"),
-            clauses(group_cols, from_clause),
+            clauses(union(group_cols, filter_cols), from_clause),
             NULL), collapse = ","),
         " WHERE ", paste(c(
             paste("c.case_study_id =", sql_quote(mdb$case_study_id)),
-            clauses(group_cols, where_clause),
-            clauses(setdiff(filter_cols, group_cols), where_clause),
+            clauses(union(group_cols, filter_cols), where_clause),
             NULL), collapse = " AND "),
         " GROUP BY ", paste(seq_len(length(group_cols) + 1), collapse=","),
         " ORDER BY ", paste(seq_len(length(group_cols) + 1), collapse=","),
