@@ -128,6 +128,28 @@ ok_group("Can write likelihood components", {
         "[fleet]",
         "[likelihood]",
         "likelihoodfiles\tlikelihood"))
+
+    # Add one to a new likelihood file
+    gadget_dir_write(gd, gadget_likelihood_component("understocking", likelihoodfile="dahood", name="bad-to-the-bone", weight = 0.8))
+    ok(cmp_file(gd, "main",
+        ver_string,
+        "timefile\t",
+        "areafile\t",
+        "printfiles\t; Required comment",
+        "[stock]",
+        "[tagging]",
+        "[otherfood]",
+        "[fleet]",
+        "[likelihood]",
+        "likelihoodfiles\tlikelihood\tdahood"))
+    ok(cmp_file(gd, "dahood",
+        ver_string,
+        "; ",
+        "[component]",
+        "name\tbad-to-the-bone",
+        "weight\t0.8",
+        "type\tunderstocking",
+        NULL))
 })
 
 ###############################################################################

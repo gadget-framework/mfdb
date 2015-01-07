@@ -1,11 +1,16 @@
-gadget_likelihood_component <- function (type, ...) {
-    switch(type,
-        penalty = gadget_penalty_component(...),
-        understocking = gadget_understocking_component(...),
-        catchstatistics = gadget_catchstatistics_component(...),
-        catchdistribution = gadget_catchdistribution_component(...),
-        stockdistribution = gadget_stockdistribution_component(...),
-        stop(paste("Unknown likelihood component", type)))
+gadget_likelihood_component <- function (type, weight = 0, name = type, likelihoodfile = 'likelihood', ...) {
+    obj <- structure(c(
+        list(name = name, weight = weight, type = type),
+        switch(type,
+            penalty = gadget_penalty_component(name, ...),
+            understocking = gadget_understocking_component(name, ...),
+            catchstatistics = gadget_catchstatistics_component(name, ...),
+            catchdistribution = gadget_catchdistribution_component(name, ...),
+            stockdistribution = gadget_stockdistribution_component(name, ...),
+            stop(paste("Unknown likelihood component", type)))
+    ), likelihoodfile = likelihoodfile, class = c(
+        paste0("gadget_", type, "_component"),
+        "gadget_likelihood_component"))
 }
 
 fname <- function (dir, ...) {
@@ -40,8 +45,9 @@ gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
     }
 
     # Update mainfile and likelihood file
-    gadget_mainfile_update(gd, likelihoodfiles = 'likelihood')
-    gadget_likelihoodfile_update(gd, 'likelihood', obj)
+    likelihoodfile <- if (is.null(attr(obj, 'likelihoodfile'))) 'likelihood' else attr(obj, 'likelihoodfile')
+    gadget_mainfile_update(gd, likelihoodfiles = likelihoodfile)
+    gadget_likelihoodfile_update(gd, likelihoodfile, obj)
 
     # Write out each file-based component
     for (x in obj) {
@@ -53,31 +59,21 @@ gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
 
 ### Internal constructors for each component type
 
-gadget_penalty_component <- function (weight = 0, name = "penalty", data = NULL) {
-    if (!length(data)) {
-        data = data.frame(
+gadget_penalty_component <- function (name, data = NULL) {
+    list(datafile = gadget_file(
+        fname('Data', name, '.penaltyfile'),
+        data = if (length(data) > 0) data else data.frame(
             switch = c("default"),
             power = c(2),
-            stringsAsFactors = FALSE)
-    }
-    structure(list(
-        name = name,
-        weight = weight,
-        type = "penalty",
-        datafile = gadget_file(
-            fname('Data', name, '.penaltyfile'),
-            data = data)), class = c("gadget_penalty_component", "gadget_likelihood_component"))
+            stringsAsFactors = FALSE)))
 }
 
-gadget_understocking_component <- function (weight = 0, name = "understocking") {
-    structure(list(
-        name = name,
-        weight = weight,
-        type = "understocking"), class = c("gadget_understocking_component", "gadget_likelihood_component"))
+gadget_understocking_component <- function (name) {
+    list()
 }
 
-gadget_catchstatistics_component <- function (weight = 0,
-        name = "catchstatistics",
+gadget_catchstatistics_component <- function (
+        name,
         data_function = NULL,
         data = NULL, area = NULL, age = NULL,
         fleetnames = c(), stocknames = c()) {
@@ -105,20 +101,17 @@ gadget_catchstatistics_component <- function (weight = 0,
         stop(paste("Unknown generator function", attr(data, "generator")))
     }
 
-    structure(list(
-        name = name,
-        weight = weight,
-        type = "catchstatistics",
+    list(
         datafile = gadget_file(fname('Data', prefix, data_function), data=data),
         "function" = data_function,
         areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area),
         ageaggfile  = agg_file('age', prefix, if(is.null(age)) attr(data, "age") else age),
         fleetnames = fleetnames,
-        stocknames = stocknames), class = c("gadget_catchstatistics_component", "gadget_likelihood_component"))
+        stocknames = stocknames)
 }
 
-gadget_catchdistribution_component <- function (weight = 0,
-        name = "catchdistribution",
+gadget_catchdistribution_component <- function (
+        name,
         data_function = 'sumofsquares',
         data_function_params = list(),
         aggregationlevel = FALSE,
@@ -129,25 +122,25 @@ gadget_catchdistribution_component <- function (weight = 0,
 
     prefix <- paste0('catchdistribution.', name, '.')
 
-    structure(c(list(
-        name = name,
-        weight = weight,
-        type = "catchdistribution",
-        datafile = gadget_file(fname('Data', prefix, data_function), data=data),
-        "function" = data_function),
-        data_function_params, list(
-        aggregationlevel = if (aggregationlevel) 1 else 0,
-        overconsumption = if (overconsumption) 1 else 0,
-        epsilon = epsilon,
-        areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area),
-        ageaggfile  = agg_file('age', prefix, if(is.null(age)) attr(data, "age") else age),
-        lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length),
-        fleetnames = fleetnames,
-        stocknames = stocknames)), class = c("gadget_catchdistribution_component", "gadget_likelihood_component"))
+    c(
+        list(
+            datafile = gadget_file(fname('Data', prefix, data_function), data=data),
+            "function" = data_function
+        ),
+        data_function_params,
+        list(
+            aggregationlevel = if (aggregationlevel) 1 else 0,
+            overconsumption = if (overconsumption) 1 else 0,
+            epsilon = epsilon,
+            areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area),
+            ageaggfile  = agg_file('age', prefix, if(is.null(age)) attr(data, "age") else age),
+            lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length),
+            fleetnames = fleetnames,
+            stocknames = stocknames))
 }
 
-gadget_stockdistribution_component <- function (weight = 0,
-        name = "stockdistribution",
+gadget_stockdistribution_component <- function (
+        name,
         data_function = 'sumofsquares',
         overconsumption = FALSE,
         epsilon = 10,
@@ -160,10 +153,7 @@ gadget_stockdistribution_component <- function (weight = 0,
         names(data)[4] <- 'stock'
     }
 
-    structure(c(list(
-        name = name,
-        weight = weight,
-        type = "stockdistribution",
+    list(
         datafile = gadget_file(fname('Data', prefix, data_function), data=data),
         "function" = data_function,
         overconsumption = if (overconsumption) 1 else 0,
@@ -172,7 +162,7 @@ gadget_stockdistribution_component <- function (weight = 0,
         ageaggfile  = agg_file('age', prefix, if(is.null(age)) attr(data, "age") else age),
         lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length),
         fleetnames = fleetnames,
-        stocknames = stocknames)), class = c("gadget_stockdistribution_component", "gadget_likelihood_component"))
+        stocknames = stocknames)
 }
 
 agg_file <- function (type, prefix, data) {

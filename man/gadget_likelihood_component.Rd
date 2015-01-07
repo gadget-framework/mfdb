@@ -7,7 +7,7 @@
 }
 
 \usage{
-gadget_likelihood_component(type, ...)
+gadget_likelihood_component(type, weight = 0, name = type, likelihoodfile = 'likelihood', ...)
 }
 
 \arguments{
@@ -15,19 +15,21 @@ gadget_likelihood_component(type, ...)
         Type of group to create. One of penalty, understocking, catchstatistics,
         catchdistribution, stockdistribution.
     }
+    \item{name}{
+        A descriptive name for the component
+    }
+    \item{weight}{
+        A numeric weighting
+    }
+    \item{likelihoodfile}{
+        The likelihood file this component should end up in
+    }
     \item{...}{
         Extra parameters for the group. See details.
     }
 }
 
 \details{
-The arguments you can supply will depend on the the component you are creating.
-All will understand the following
-\describe{
-    \item{name}{A descriptive name for the component}
-    \item{weight}{A numeric weighting}
-}
-
 In addition, \code{penalty} understands:
 \describe{
     \item{data}{A \code{data.frame} with 2 columns, "switch" and "power"}
