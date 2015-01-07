@@ -144,14 +144,15 @@ mfdb_sample_grouping <- function (mdb,
         " ORDER BY ", paste(seq_len(length(group_cols) + 1), collapse=","),
         NULL)
 
-    # Break data up by sample and annotate each
-    samples <- unique(out$sample)
-    structure(lapply(samples, function (sample) {
+    # Break data up by sample and annotate each with the value for group_cols
+    lapply(split(out, list(out$sample)), function (sample) {
         do.call(structure, c(
-            list(out[out$sample == sample,names(out) != 'sample']),
+            list(
+                sample[,names(sample) != 'sample', drop = FALSE],
+                generator = generator),
             structure(
                 lapply(group_cols, function(col) params[[col]]),
-                names = group_cols),
-            list(generator = generator)))
-    }), names = samples)
+                names = group_cols)
+        ))
+    })
 }

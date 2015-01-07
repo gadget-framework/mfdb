@@ -234,7 +234,7 @@ ok_group("Filtering of samples", {
             age = mfdb_group(all = 1:1000),
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000)),
-            list()),
+            { moo <- data.frame(); split(moo, list(moo$samples)) }),
         "sampling_type MOO empty")
 
     # Without any aggregation on, we get the whole lot
