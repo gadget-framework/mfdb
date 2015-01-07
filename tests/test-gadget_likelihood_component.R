@@ -26,38 +26,55 @@ ok_group("Can use as.character on gadget_likelihood_components", {
     expect_equal(comp$type, "penalty")
 })
 
-ok_group("Name, type and weight behave the same with all components", {
-    for (type in all_components) {
+for (type in all_components) {
+    ok_group(paste("Name, type and weight for component", type), {
         if (type == "catchstatistics") {
             c <- gadget_likelihood_component(type,
                 data = data.frame(), data_function = "customfunction")
+        } else if (type == "catchdistribution") {
+            c <- gadget_likelihood_component(
+                "catchdistribution",
+                data = data.frame(year = 1, step = 1, area = 1, age = 1, length = 1, number = 1))
+        } else if (type == "stockdistribution") {
+            c <- gadget_likelihood_component(
+                "stockdistribution",
+                data = data.frame(year = 1, step = 1, area = 1, aardvark = 1, length = 1, number = 1))
         } else {
             c <- gadget_likelihood_component(type)
         }
 
         # Class should match type
-        expect_equal(class(c), c(
+        ok(cmp(class(c), c(
             paste0("gadget_", type, "_component"),
-            "gadget_likelihood_component"))
+            "gadget_likelihood_component")), "Has correct class")
 
         # Type and name should match the name we gave
-        expect_equal(c$type, type)
-        expect_equal(c$name, type)
-        # Weight defaults to 0
-        expect_equal(c$weight, 0)
+        ok(cmp(c$type, type), "Type set")
+        ok(cmp(c$name, type), "Default name same as type")
+        ok(cmp(c$weight, 0), "Weight defaults to 0")
 
         # Can customise name & weight
         if (type == "catchstatistics") {
             c <- gadget_likelihood_component(type,
                 name = "gerald", weight = 0.542,
                 data = data.frame(), data_function = "customfunction")
+        } else if (type == "catchdistribution") {
+            c <- gadget_likelihood_component(
+                "catchdistribution",
+                name = "gerald", weight = 0.542,
+                data = data.frame(year = 1, step = 1, area = 1, age = 1, length = 1, number = 1))
+        } else if (type == "stockdistribution") {
+            c <- gadget_likelihood_component(
+                "stockdistribution",
+                name = "gerald", weight = 0.542,
+                data = data.frame(year = 1, step = 1, area = 1, aardvark = 1, length = 1, number = 1))
         } else {
             c <- gadget_likelihood_component(type, name = "gerald", weight = 0.542)
         }
-        expect_equal(c$name, "gerald")
-        expect_equal(c$weight, 0.542)
-    }
-})
+        ok(cmp(c$name, "gerald"), "Can set name")
+        ok(cmp(c$weight, 0.542), "Can set weight")
+    })
+}
 
 ok_group("Can write likelihood components", {
     # Create a temporary directory, starts off empty
@@ -184,10 +201,17 @@ ok_group("Function either provided explicitly or based on generator", {
             data = data.frame(), data_function = "customfunction")[['function']],
         "customfunction")
 
-    expect_equal(
-        gadget_likelihood_component("catchstatistics",
-            data = structure(data.frame(), generator = "mfdb_sample_meanlength_stddev"))[['function']],
-        "lengthgivenstddev")
+    ok(cmp(
+        gadget_likelihood_component("catchstatistics", data = structure(
+            data.frame(year = 1990, step = 1, area = 1, age = 1, number = 1, mean = 1, stddev = 1),
+            generator = "mfdb_sample_meanlength_stddev"))[['function']],
+        "lengthgivenstddev"), "Guessed function given generator")
+
+    ok(cmp_error(
+        gadget_likelihood_component("catchstatistics", data = structure(
+            data.frame(year = 1990, step = 1, area = 1, age = 1, number = 1, mean = 1),
+            generator = "mfdb_sample_meanlength_stddev")),
+        "stddev"), "Noticed missing column")
 })
 
 ###############################################################################
@@ -199,7 +223,7 @@ ok_group("Aggregation files", {
             name="cd",
             weight = 0.8,
             data = structure(
-                data.frame(a = c(1,2,3), b = c(4,5,6)),
+                data.frame(year = 1, step = 1, area = 1, age = 1, length = 1, number = 1),
                 area = if (agg_type == 'area') agg else NULL,
                 age = if (agg_type == 'age') agg else NULL,
                 length = if (agg_type == 'len') agg else NULL,

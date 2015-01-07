@@ -1,5 +1,6 @@
     Unreleased
 
+    * Inspect data.frame columns when making a likelihood component
     * Allow writing to alternative likelihood files
     * When grouping by vectors with taxonomies, don't return integer values
     * Need temperature to 1 dp

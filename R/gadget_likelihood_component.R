@@ -101,6 +101,15 @@ gadget_catchstatistics_component <- function (
         stop(paste("Unknown generator function", attr(data, "generator")))
     }
 
+    # Make sure we have the columns we need
+    compare_cols(names(data), list(
+        lengthcalcstddev = c("year", "step", "area", "age", "number", "mean"),
+        lengthgivenstddev = c("year", "step", "area", "age", "number", "mean", "stddev"),
+        weightgivenstddev = c("year", "step", "area", "age", "number", "mean", "stddev"),
+        weightnostddev = c("year", "step", "area", "age", "number", "mean"),
+        lengthnostddev = c("year", "step", "area", "age", "number", "mean"),
+        null = NULL)[[data_function]])
+
     list(
         datafile = gadget_file(fname('Data', prefix, data_function), data=data),
         "function" = data_function,
@@ -121,6 +130,9 @@ gadget_catchdistribution_component <- function (
         fleetnames = c(), stocknames = c()) {
 
     prefix <- paste0('catchdistribution.', name, '.')
+
+    # Make sure we have the columns we need
+    compare_cols(names(data), c("year", "step", "area", "age", "length", "number"))
 
     c(
         list(
@@ -147,6 +159,9 @@ gadget_stockdistribution_component <- function (
         data = NULL, area = NULL, age = NULL, length = NULL,
         fleetnames = c(), stocknames = c()) {
     prefix <- paste0('stockdistribution.', name, '.')
+
+    # Make sure we have the columns we need
+    compare_cols(names(data), c("year", "step", "area", NA, "length", "number"))
 
     # For stock distribution, anything in column 4 should be called stock
     if (length(names(data)) > 4) {
@@ -192,4 +207,24 @@ agg_file <- function (type, prefix, data) {
     return(gadget_file(
         fname('Aggfiles', prefix, type, '.agg'),
         components=list(comp)))
+}
+
+# Make sure the data frame colums match what is required
+compare_cols <- function (actual, expected) {
+    if (is.null(expected)) return(invisible(NULL))
+
+    # Fill NAs in expected with whatever we did get
+    expected[is.na(expected)] <- actual[is.na(expected)]
+
+    if (!isTRUE(all.equal(actual, expected))) {
+        stop(paste(c(
+            "Expected data to have columns '",
+            paste(expected, collapse=","),
+            "', not '",
+            paste(actual, collapse=","),
+            "'",
+            NULL
+            ), collapse = ""))
+    }
+    return(invisible(NULL))
 }
