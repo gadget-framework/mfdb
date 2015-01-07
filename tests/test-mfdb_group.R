@@ -74,7 +74,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         "INSERT INTO temp_out (sample,name,value) VALUES (1,'camels',44),(1,'aardvarks',88),(2,'camels',44),(2,'aardvarks',88)",
         "CREATE INDEX ON temp_out (value,name,sample)",
         NULL)), "Created temporary table")
-    ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
+    ok(cmp(sample_clause(mdb, g, "col", "out"), "temp_out.sample"), "Sample clause")
     ok(cmp(select_clause(mdb, g, "col", "out"), "temp_out.name AS out"), "Select clause")
     ok(cmp(from_clause(mdb, g, "col", "out"), "temp_out"), "From clause")
     ok(cmp(where_clause(mdb, g, "col", "out"), "col = temp_out.value"), "Where clause")
@@ -87,7 +87,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         "INSERT INTO temp_out (sample,name,value) VALUES (1,'g1',55),(1,'g1',55),(1,'g2',88),(1,'g2',88),(2,'g1',44),(2,'g1',44),(2,'g2',99),(2,'g2',88)",
         "CREATE INDEX ON temp_out (value,name,sample)",
         NULL)), "Created temporary table")
-    ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
+    ok(cmp(sample_clause(mdb, g, "col", "out"), "temp_out.sample"), "Sample clause")
     ok(cmp(select_clause(mdb, g, "col", "out"), "temp_out.name AS out"), "Select clause")
     ok(cmp(from_clause(mdb, g, "col", "out"), "temp_out"), "From clause")
     ok(cmp(where_clause(mdb, g, "col", "out"), "col = temp_out.value"), "Where clause")

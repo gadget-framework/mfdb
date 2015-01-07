@@ -99,6 +99,10 @@ mfdb_bootstrap_group <- function (count, group) {
     invisible(bs_group)
 }
 
+sample_clause.mfdb_bootstrap_group <- function(mdb, x, col, outputname) {
+    paste0("temp_", outputname, ".sample")
+}
+
 # Denormalise the nesting and convert into a list of strings
 denormalize <- function(group, samp_count = 0) UseMethod("denormalize")
 # Break down each sample

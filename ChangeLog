@@ -7,6 +7,7 @@
     * More notes on how to install under windows
     * Rework mfdb()'s ability to guess where DB is
 
+    * Fix sampling for bootstrap groups
     * Should run pre_query and from_clause for filter_cols too, just in case
       they are an mfdb_group
     * Use DB to find out case study ID---might be a remote DB
