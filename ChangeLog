@@ -1,0 +1,17 @@
+    Unreleased
+
+    * Allow writing to alternative likelihood files
+    * When grouping by vectors with taxonomies, don't return integer values
+    * Need temperature to 1 dp
+    * More notes on how to install under windows
+    * Rework mfdb()'s ability to guess where DB is
+
+    * Should run pre_query and from_clause for filter_cols too, just in case
+      they are an mfdb_group
+    * Use DB to find out case study ID---might be a remote DB
+    * R CMD check fixes
+
+2014-08-23  Jamie Lentin  <lentinj@shuttlethread.com>
+
+    Version 1.0-0
+    Initial release.
