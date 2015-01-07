@@ -3,3 +3,4 @@ example-iceland			Example script generating model files from Iceland data
 inttest-gadgetdirectory		Demonstrate importing data and writing to GADGET directory
 inttest-dataimport		Exercise data loading
 inttest-samples			Exercise sampling of data
+inttest-bootstrap		Exercise taking bootstrap samples of data
