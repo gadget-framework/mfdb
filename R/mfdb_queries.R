@@ -7,6 +7,7 @@ mfdb_area_size <- function (mdb, params) {
         filter_cols = c(),
         calc_cols = c("SUM(c.size) size"),
         core_table = "areacell",
+        col_defs = list(area = "c.areacell_id"),
         generator = "mfdb_area_size")
 }
 
@@ -17,6 +18,7 @@ mfdb_temperature <- function (mdb, params = list()) {
         group_cols = c("year", "timestep", "area"),
         filter_cols = c(),
         calc_cols = c("AVG(c.temperature) temperature"),
+        col_defs = list(year = "c.year", timestep = "c.month", area = "c.areacell_id"),
         core_table = "temperature",
         generator = "mfdb_temperature")
 }
