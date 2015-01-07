@@ -37,14 +37,20 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
     if (table_name == 'temp_area') {
         # Decompose divisions into areacells first
         for (set in split(denormalized, list(denormalized$sample, denormalized$name))) {
-            mfdb_send(mdb,
-                "INSERT INTO ", table_name,
-                " SELECT ", sql_quote(set[1, 'sample']), " AS sample",
-                ", ", sql_quote(set[1, 'name']), " AS name",
-                ", areacell_id AS value",
-                " FROM division",
-                " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-                " AND division IN ", sql_quote(unique(set[,'value']), always_bracket = TRUE, always_quote = TRUE))
+            # Can't insert 2 copies of a division at the same time, so insert
+            # unique subsets of divisions until there's none left
+            divisions <- set[,'value']
+            while(length(divisions) > 0) {
+                mfdb_send(mdb,
+                    "INSERT INTO ", table_name,
+                    " SELECT ", sql_quote(set[1, 'sample']), " AS sample",
+                    ", ", sql_quote(set[1, 'name']), " AS name",
+                    ", areacell_id AS value",
+                    " FROM division",
+                    " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
+                    " AND division IN ", sql_quote(unique(divisions), always_bracket = TRUE, always_quote = TRUE))
+                divisions <- divisions[duplicated(divisions)]
+            }
         }
     } else {
         # Populate table based on denormalized group
