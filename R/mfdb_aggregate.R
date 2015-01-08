@@ -25,10 +25,17 @@ where_clause <- function(mdb, x, col, outputname) {
     UseMethod("where_clause", x)
 }
 
+agg_summary <- function(mdb, x, data) {
+    if (is.null(x)) return(NULL)
+    if (!('mfdb_aggregate' %in% class(x)) && is.list(x)) return(x)
+    UseMethod("agg_summary", x)
+}
+
 # Add some do-nothing cases where definining the function is optional
 pre_query.mfdb_aggregate <- function(mdb, x, outputname) NULL
 sample_clause.mfdb_aggregate <- function(mdb, x, col, outputname) "0"
 from_clause.mfdb_aggregate <- function(mdb, x, col, outputname) c()
+agg_summary.mfdb_aggregate <- function(mdb, x, data) as.list(x)
 
 # Numeric vectors, first checked to see if there's a lookup
 pre_query.numeric <- pre_query.mfdb_aggregate
@@ -94,6 +101,9 @@ where_clause.numeric <- function(mdb, x, col, outputname) {
         if (NA %in% x) paste0(" OR ", col, " IS NULL"),
         ")"))
 }
+agg_summary.numeric <- function(mdb, x, data) {
+    as.list(structure(x, names = x))
+}
 
 # Character vectors work the same as numeric vector
 pre_query.character     <- pre_query.numeric
@@ -101,3 +111,4 @@ sample_clause.character <- sample_clause.numeric
 select_clause.character <- select_clause.numeric
 from_clause.character   <- from_clause.numeric
 where_clause.character  <- where_clause.numeric
+agg_summary.character <- agg_summary.numeric

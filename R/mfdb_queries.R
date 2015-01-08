@@ -147,12 +147,11 @@ mfdb_sample_grouping <- function (mdb,
     # Break data up by sample and annotate each with the value for group_cols
     lapply(split(out, list(out$sample)), function (sample) {
         do.call(structure, c(
-            list(
-                sample[,names(sample) != 'sample', drop = FALSE],
-                generator = generator),
+            list(sample[,names(sample) != 'sample', drop = FALSE]),
             structure(
-                lapply(group_cols, function(col) params[[col]]),
-                names = group_cols)
+                lapply(group_cols, function(col) agg_summary(mdb, params[[col]], sample)),
+                names = group_cols),
+            list(generator = generator)
         ))
     })
 }

@@ -100,3 +100,12 @@ fake_mdb <- function(save_temp_tables = FALSE, case_study_id = 0) {
             db = structure(list(), class="dbNull"),
         class = "mfdb")))
 }
+
+# Allow us to use agg_summary outside the package
+agg_summary_args <- NULL
+agg_summary <- function(...) {
+    agg_summary_args <<- list(...)
+    local({
+        do.call(agg_summary, agg_summary_args)
+    }, asNamespace('mfdb'))
+}

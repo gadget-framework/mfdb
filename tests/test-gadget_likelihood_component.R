@@ -224,9 +224,9 @@ ok_group("Aggregation files", {
             weight = 0.8,
             data = structure(
                 data.frame(year = 1, step = 1, area = 1, age = 1, length = 1, number = 1),
-                area = if (agg_type == 'area') agg else NULL,
-                age = if (agg_type == 'age') agg else NULL,
-                length = if (agg_type == 'len') agg else NULL,
+                area = if (agg_type == 'area') agg_summary(fake_mdb(), agg, data.frame()) else NULL,
+                age = if (agg_type == 'age') agg_summary(fake_mdb(), agg, data.frame()) else NULL,
+                length = if (agg_type == 'len') agg_summary(fake_mdb(), agg, data.frame()) else NULL,
                 generator = "mfdb_sample_meanlength")
             ))
         do.call(cmp_file, c(

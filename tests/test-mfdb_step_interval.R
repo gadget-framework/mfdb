@@ -11,15 +11,15 @@ ok_group("Can generate objects", {
         c("mfdb_step_interval", "mfdb_aggregate"))
 })
 
-ok_group("Can convert mfdb_step_intervals into lists", {
+ok_group("Can convert mfdb_step_intervals into lists", local({
     g <<- mfdb_step_interval('l', 10)
     ok(cmp(
-        as.list(mfdb_step_interval('l', 10, from = 10, to = 50)),
+        agg_summary(mdb, mfdb_step_interval('l', 10, from = 10, to = 50), data.frame()),
         list(l10 = c(10, 20), l20 = c(20, 30), l30 = c(30, 40), l40 = c(40, 50))),
         "Can convert closed interval to list")
 
-    ok(cmp_error(as.list(mfdb_step_interval('l', 10)), "to"), "Must provide 'to' for now")
-})
+    ok(cmp_error(agg_summary(mdb, mfdb_step_interval('l', 10), data.frame()), "to"), "Must provide 'to' for now")
+}, asNamespace('mfdb')))
 
 ok_group("Aggregates with close_ended mfdb_step_interval", local({
     g <<- mfdb_step_interval('l', 10)

@@ -1,6 +1,5 @@
 \name{mfdb_interval}
 \alias{mfdb_interval}
-\alias{as.list.mfdb_interval}
 
 \title{MareFrame DB intervals}
 \description{
@@ -9,7 +8,6 @@
 
 \usage{
 mfdb_interval(prefix, vect, open_ended = FALSE)
-\method{as.list}{mfdb_interval}(x, ...)
 }
 
 \arguments{
@@ -22,12 +20,6 @@ mfdb_interval(prefix, vect, open_ended = FALSE)
     \item{open_ended}{
         If true, the last group will include everything >= the last value in vect
     }
-    \item{x}{
-        The \code{mfdb_interval} to convert to a list for use in \code{gadget_file}
-    }
-    \item{...}{
-        Ignored.
-    }
 }
 
 \examples{
@@ -36,13 +28,4 @@ g1 <- mfdb_interval("len", c(40, 60, 80))
 
 ## Use seq to make life easier
 g2 <- mfdb_interval("len", seq(40, 80, by = 20))
-
-## Convert to list representation
-as.list(g2)
-\dontrun{
-$len40
-[1] 40 60
-
-$len60
-[1] 60 80
-}}
+}

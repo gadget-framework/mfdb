@@ -26,7 +26,8 @@ where_clause.mfdb_step_interval <- function(mdb, x, col, outputname) {
 }
 
 # Return a list of the form "group" = c("min", "max"), as required by gadget_file
-as.list.mfdb_step_interval <- function(x, ...) {
+agg_summary.mfdb_step_interval <- function(mdb, x, data) {
+    #TODO: No longer true, can guess from the data
     if (is.null(x$to)) stop("Cannot convert to list without 'to' provided in mfdb_step_interval")
     out <- seq(from = x$from, to = x$to, by = x$by)
     names(out) <- paste0(x$prefix, out)

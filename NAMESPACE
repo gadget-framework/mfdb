@@ -8,11 +8,9 @@ export(mfdb_bootstrap_group)
 
 # mfdb_interval.R
 export(mfdb_interval)
-S3method(as.list, mfdb_interval)
 
 # mfdb_step_interval.R
 export(mfdb_step_interval)
-S3method(as.list, mfdb_step_interval)
 
 # mfdb.R
 importFrom(DBI, dbConnect, dbDisconnect, dbDriver, dbSendQuery, dbFetch, dbGetQuery, dbCommit, dbRollback, dbGetRowsAffected, dbClearResult, dbWriteTable)
@@ -40,7 +38,6 @@ export(mfdb_sample_meanweight_stddev)
 
 # mfdb_unaggregated.R
 export(mfdb_unaggregated)
-S3method(as.list, mfdb_unaggregated)
 
 # gadget_areafile.R
 export(gadget_areafile)

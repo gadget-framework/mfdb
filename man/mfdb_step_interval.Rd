@@ -1,6 +1,5 @@
 \name{mfdb_step_interval}
 \alias{mfdb_step_interval}
-\alias{as.list.mfdb_step_interval}
 
 \title{MareFrame DB intervals}
 \description{
@@ -9,7 +8,6 @@
 
 \usage{
 mfdb_step_interval(prefix, by, from = 0, to = NULL, open_ended = FALSE)
-\method{as.list}{mfdb_step_interval}(x, ...)
 }
 
 \arguments{
@@ -24,12 +22,6 @@ mfdb_step_interval(prefix, by, from = 0, to = NULL, open_ended = FALSE)
     }
     \item{open_ended}{
         If true, there should be a final group representing everything above "to".
-    }
-    \item{x}{
-        An \code{mfdb_step_interval} object.
-    }
-    \item{...}{
-        Nothing should be specfied (required by generic signature).
     }
 }
 

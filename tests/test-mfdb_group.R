@@ -78,6 +78,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
     ok(cmp(select_clause(mdb, g, "col", "out"), "temp_out.name AS out"), "Select clause")
     ok(cmp(from_clause(mdb, g, "col", "out"), "temp_out"), "From clause")
     ok(cmp(where_clause(mdb, g, "col", "out"), "col = temp_out.value"), "Where clause")
+    ok(cmp(agg_summary(mdb, g, data.frame(sample = 1)), list()), "Aggregation summary")
 
     set.seed(123456)
     g <<- mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99)))

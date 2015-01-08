@@ -8,6 +8,8 @@
     * More notes on how to install under windows
     * Rework mfdb()'s ability to guess where DB is
 
+    * Don't overload as.list for mfdb_aggregates, use an internal generic
+      function instead
     * Fix sampling for bootstrap groups
     * Should run pre_query and from_clause for filter_cols too, just in case
       they are an mfdb_group
