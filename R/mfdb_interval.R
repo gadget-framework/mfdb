@@ -34,6 +34,6 @@ where_clause.mfdb_interval <- function(mdb, x, col, outputname) {
 }
 
 # Return a list of the form "group" = c("min", "max"), as required by gadget_file
-agg_summary.mfdb_interval <- function(mdb, x, data) {
+agg_summary.mfdb_interval <- function(mdb, x, col, data) {
     mapply(c, x[1:length(x) - 1], x[2:length(x)], SIMPLIFY = FALSE)
 }

@@ -12,7 +12,10 @@ where_clause.mfdb_unaggregated <- function(mdb, x, col, outputname) {
     if (x$omitNA) paste0(col, " IS NOT NULL") else c()
 }
 
-agg_summary.mfdb_unaggregated <- function(mdb, x, data) {
-    # TODO: Write out something based on data
-    list(X = 'X')
+agg_summary.mfdb_unaggregated <- function(mdb, x, col, data) {
+    if (is.null(data[[col]])) {
+        stop("Column ", col, " missing from data")
+    }
+    vals <- unique(data[[col]])
+    as.list(structure(vals, names = vals))
 }

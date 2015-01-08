@@ -218,15 +218,16 @@ ok_group("Function either provided explicitly or based on generator", {
 ok_group("Aggregation files", {
     cmp_agg <- function (agg_type, agg, ...) {
         gd <- gadget_directory(tempfile())
+        agg_summ <- agg_summary(fake_mdb(), agg, 'col', data.frame(col = 1:5))
         gadget_dir_write(gd, gadget_likelihood_component(
             "catchdistribution",
             name="cd",
             weight = 0.8,
             data = structure(
                 data.frame(year = 1, step = 1, area = 1, age = 1, length = 1, number = 1),
-                area = if (agg_type == 'area') agg_summary(fake_mdb(), agg, data.frame()) else NULL,
-                age = if (agg_type == 'age') agg_summary(fake_mdb(), agg, data.frame()) else NULL,
-                length = if (agg_type == 'len') agg_summary(fake_mdb(), agg, data.frame()) else NULL,
+                area = if (agg_type == 'area') agg_summ else NULL,
+                age = if (agg_type == 'age') agg_summ else NULL,
+                length = if (agg_type == 'len') agg_summ else NULL,
                 generator = "mfdb_sample_meanlength")
             ))
         do.call(cmp_file, c(
@@ -261,7 +262,11 @@ ok_group("Aggregation files", {
 
     ok(cmp_agg('age', mfdb_unaggregated(),
         ver_string,
-        "X\tX",
+        "1\t1",
+        "2\t2",
+        "3\t3",
+        "4\t4",
+        "5\t5",
         NULL), "mfdb_unaggregated")
 
     ok(cmp_agg('len', mfdb_interval("len", seq(0, 50, by = 10)),

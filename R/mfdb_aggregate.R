@@ -25,7 +25,7 @@ where_clause <- function(mdb, x, col, outputname) {
     UseMethod("where_clause", x)
 }
 
-agg_summary <- function(mdb, x, data) {
+agg_summary <- function(mdb, x, col, data) {
     if (is.null(x)) return(NULL)
     if (!('mfdb_aggregate' %in% class(x)) && is.list(x)) return(x)
     UseMethod("agg_summary", x)
@@ -35,7 +35,7 @@ agg_summary <- function(mdb, x, data) {
 pre_query.mfdb_aggregate <- function(mdb, x, outputname) NULL
 sample_clause.mfdb_aggregate <- function(mdb, x, col, outputname) "0"
 from_clause.mfdb_aggregate <- function(mdb, x, col, outputname) c()
-agg_summary.mfdb_aggregate <- function(mdb, x, data) as.list(x)
+agg_summary.mfdb_aggregate <- function(mdb, x, col, data) as.list(x)
 
 # Numeric vectors, first checked to see if there's a lookup
 pre_query.numeric <- pre_query.mfdb_aggregate
@@ -101,7 +101,7 @@ where_clause.numeric <- function(mdb, x, col, outputname) {
         if (NA %in% x) paste0(" OR ", col, " IS NULL"),
         ")"))
 }
-agg_summary.numeric <- function(mdb, x, data) {
+agg_summary.numeric <- function(mdb, x, col, data) {
     as.list(structure(x, names = x))
 }
 
