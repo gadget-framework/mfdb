@@ -77,7 +77,7 @@ rm(ldist.aug)
 # Create a gadget directory, define some defaults to use with our queries below
 gd <- gadget_directory("example-iceland-model")
 defaults <- list(
-    area = mfdb_group("101" = reitmapping$SUBDIVISION),
+    area = mfdb_group("101" = unique(reitmapping$SUBDIVISION)),
     timestep = mfdb_timestep_quarterly,
     year = 1984:2012)
 

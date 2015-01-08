@@ -1,5 +1,6 @@
     Unreleased
 
+    * Fix iceland example so we only include each subdivision once
     * Add an example for using bootstrapping
     * Inspect data.frame columns when making a likelihood component
     * Allow writing to alternative likelihood files
