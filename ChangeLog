@@ -1,4 +1,6 @@
-    Unreleased
+2015-01-09  Jamie Lentin  <lentinj@shuttlethread.com>
+
+    Version 1.1-0
 
     * Base aggreations for open intervals and unaggreated data on returned data
     * Fix iceland example so we only include each subdivision once
