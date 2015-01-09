@@ -50,27 +50,35 @@ ok_group("Unaggregated length / weight / age samples", {
             species = c('COD'),
             length = c(310,350,330,310,335,346, 365,362,336,335,334,322)))
 
-    # Bootstrap sample area sizes
+    # Fix random number generation so we can test the results
+    # Otherwise results will change for each run
     set.seed(35)
+
+    # We want 1 area, that's a combination of A and B
     area_group <- mfdb_group(all = c("divA", "divB"))
+    # We want to take 5 samples "all" with replacement
     area_bootstrap_group <- mfdb_bootstrap_group(5, area_group)
     agg <- mfdb_area_size(mdb, params = list(area = area_bootstrap_group))
+
+    # Instead of the normal 1, we get back 5 data frames
     ok(cmp(length(agg), 5), "Got 5 distinct groupings")
 
+    # In the first case, all = divB & divA
     ok(cmp(agg[[1]], structure(
         data.frame(
             area = 'all',
-            size = 400 + (10 + 200),
+            size = 400 + (10 + 200),  # divB + divA
             stringsAsFactors = FALSE
         ),
         area = list(all = c("divB", "divA")),
         generator = "mfdb_area_size"
     )), "divB, divA")
 
+    # In the second, all = divB & divB
     ok(cmp(agg[[2]], structure(
         data.frame(
             area = 'all',
-            size = 400 + 400,
+            size = 400 + 400,  # divB + divB
             stringsAsFactors = FALSE
         ),
         area = list(all = c("divB", "divB")),
