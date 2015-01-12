@@ -39,19 +39,14 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
     })
 }
 
-mfdb_import_survey <- function (mdb, data_in, ...) {
-    survey_metadata <- list(...)
-
+mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
     # Sanitise data
-    survey_metadata <- list(
-        data_source = sanitise_col(mdb, survey_metadata, 'data_source'),
-        case_study_id = c(mdb$case_study_id),
-        institute_id = sanitise_col(mdb, survey_metadata, 'institute', lookup = 'institute', default = c(NA)),
-        gear_id = sanitise_col(mdb, survey_metadata, 'gear', lookup = 'gear', default = c(NA)),
-        vessel_id = sanitise_col(mdb, survey_metadata, 'vessel', lookup = 'vessel', default = c(NA)),
-        sampling_type_id = sanitise_col(mdb, survey_metadata, 'sampling_type', lookup = 'sampling_type', default = c(NA)))
     survey_sample <- data.frame(
         case_study_id = c(mdb$case_study_id),
+        institute_id = sanitise_col(mdb, data_in, 'institute', lookup = 'institute', default = c(NA)),
+        gear_id = sanitise_col(mdb, data_in, 'gear', lookup = 'gear', default = c(NA)),
+        vessel_id = sanitise_col(mdb, data_in, 'vessel', lookup = 'vessel', default = c(NA)),
+        sampling_type_id = sanitise_col(mdb, data_in, 'sampling_type', lookup = 'sampling_type', default = c(NA)),
         year = sanitise_col(mdb, data_in, 'year'),
         month = sanitise_col(mdb, data_in, 'month'),
         areacell_id = sanitise_col(mdb, data_in, 'areacell', lookup = 'areacell'),
@@ -87,17 +82,15 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
 
     # Remove data_source and re-insert
     mfdb_transaction(mdb, {
-        dbSendQuery(mdb$db, paste0("DELETE FROM sample WHERE survey_id = (SELECT survey_id FROM survey WHERE ",
-            " case_study_id IN ", sql_quote(mdb$case_study_id, always_bracket = TRUE),
-            " AND data_source = ", sql_quote(survey_metadata$data_source), ")"))
-        dbSendQuery(mdb$db, paste0("DELETE FROM survey WHERE ",
-            " case_study_id IN ", sql_quote(mdb$case_study_id, always_bracket = TRUE),
-            " AND data_source = ", sql_quote(survey_metadata$data_source)))
-        res <- mfdb_insert(mdb, 'survey', survey_metadata, returning = "survey_id")
+        data_source_id <- get_data_source_id(mdb, data_source)
+        mfdb_send(mdb, "DELETE FROM sample",
+            " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
+            " AND data_source_id = ", sql_quote(data_source_id),
+            NULL)
         mfdb_send(mdb,
             "INSERT INTO sample",
-            " (", paste(names(survey_sample), collapse=","), ", survey_id)",
-            " SELECT ", paste(names(survey_sample), collapse=","), ", ", sql_quote(res$survey_id),
+            " (", paste(names(survey_sample), collapse=","), ", data_source_id)",
+            " SELECT ", paste(names(survey_sample), collapse=","), ", ", sql_quote(data_source_id),
             " FROM mfdb_temp_insert")
     })
     mfdb_send(mdb, "DROP TABLE mfdb_temp_insert");
@@ -209,4 +202,25 @@ sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL)
         col <- new_levels[as.numeric(col)]
     }
     return(col)
+}
+
+# Fetch / create a data source ID.
+get_data_source_id <- function(mdb, data_source) {
+    if (length(data_source) > 1) {
+        stop("data_source should not be a vector with more than 1 element")
+    }
+    res <- mfdb_fetch(mdb, "SELECT data_source_id FROM data_source",
+        " WHERE case_study_id IN ", sql_quote(mdb$case_study_id, always_bracket = TRUE),
+        " AND name = ", sql_quote(data_source),
+        NULL)
+    if (nrow(res) > 0) {
+        return(res[1,1])
+    }
+
+    # Doesn't exist yet, create
+    res <- mfdb_insert(mdb, 'data_source', c(
+        case_study_id = mdb$case_study_id,
+        name = data_source,
+        NULL), returning = "data_source_id")
+    return(res$data_source_id)
 }

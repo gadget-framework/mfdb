@@ -6,7 +6,7 @@ mfdb_show_schema <- function() {
 
 # Destroy everything in current schema
 mfdb_destroy_schema <- function(mdb) {
-    for(t in c('sample', 'survey', 'temperature', 'division', mfdb_taxonomy, mfdb_cs_taxonomy, 'case_study', 'mfdb_schema')) {
+    for(t in c('sample', 'survey', 'temperature', 'division', mfdb_cs_taxonomy, mfdb_taxonomy, 'mfdb_schema')) {
         mdb$logger$info(paste("Removing table", t))
         tryCatch(mfdb_send(mdb, "DROP TABLE ", t, " CASCADE"), error = function(e) {
             if(grepl("does not exist", e$message)) return();
@@ -63,7 +63,7 @@ schema_from_0 <- function(mdb) {
     for (t in mfdb_cs_taxonomy) {
         mfdb_create_table(mdb, t, "", cols = c(
             "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
-            paste0(t, "_id"), "INT", "Numeric ID for this entry",
+            paste0(t, "_id"), ifelse(t == "data_source", "SERIAL", "INT"), "Numeric ID for this entry",
             "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
             if (t == "areacell") c(
                 "size", "INT", "Size of areacell",
@@ -80,7 +80,6 @@ schema_from_0 <- function(mdb) {
             NULL
         ))
     }
-
 
     mfdb_create_table(mdb, "division", "Grouping of area cells into divisions", cols = c(
         "division_id", "SERIAL PRIMARY KEY", "",
@@ -104,25 +103,16 @@ schema_from_0 <- function(mdb) {
         "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)"
     ))
 
-    mfdb_create_table(mdb, "survey", "Description of survey", cols = c(
-        "survey_id", "SERIAL PRIMARY KEY", "",
+    mfdb_create_table(mdb, "sample", "Samples within a survey", cols = c(
+        "sample_id", "SERIAL PRIMARY KEY", "",
+        "data_source_id", "INT", "",
         "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
-        "data_source", "VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
 
         "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
         "vessel_id", "INT REFERENCES vessel(vessel_id)", "Vessel used",
-        "sampling_type_id", "INT", "Sampling type"
-    ), keys = c(
-        "UNIQUE(data_source)",
-        "FOREIGN KEY(case_study_id, sampling_type_id) REFERENCES sampling_type(case_study_id, sampling_type_id)"
-    ))
+        "sampling_type_id", "INT", "Sampling type",
 
-    mfdb_create_table(mdb, "sample", "Samples within survey", cols = c(
-        "sample_id", "SERIAL PRIMARY KEY", "",
-        "survey_id", "INT REFERENCES survey(survey_id)", "",
-        "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
-        # Grouping columns
         "year", "INT NOT NULL", "Year sample was undertaken",
         "month", "INT NOT NULL", "Month sample was undertaken",
         "areacell_id", "INT", "Areacell data relates to",
@@ -139,11 +129,15 @@ schema_from_0 <- function(mdb) {
         "count", "INT NOT NULL DEFAULT 1", "Number of fish meeting this criteria"
     ), keys = c(
         "CHECK(month BETWEEN 1 AND 12)",
-        "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)"))
+        "FOREIGN KEY(case_study_id, data_source_id) REFERENCES data_source(case_study_id, data_source_id)",
+        "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)",
+        "FOREIGN KEY(case_study_id, sampling_type_id) REFERENCES sampling_type(case_study_id, sampling_type_id)",
+        NULL
+    ))
 }
 
 mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sex", "maturity_stage", "species")
-mfdb_cs_taxonomy <- c("areacell", "sampling_type")
+mfdb_cs_taxonomy <- c("areacell", "sampling_type", "data_source")
 
 # Populate tables with package-provided data
 mfdb_update_taxonomy <- function(mdb) {
