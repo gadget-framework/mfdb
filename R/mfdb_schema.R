@@ -42,35 +42,50 @@ mfdb_update_schema <- function(mdb) {
 
 # Create MFDB schema from scratch, or print commands
 schema_from_0 <- function(mdb) {
-    create_taxonomy <- function(name, desc, id_type = "INT") {
-        mfdb_create_table(mdb, name, desc, cols = c(
-            if (name %in% mfdb_cs_taxonomy) c("case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to"),
-            paste0(name, "_id"), id_type, "Numeric ID for this entry",
-            "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
-            "description", "VARCHAR(1024)", "Long description"
-        ), keys = c(
-            paste0(c("PRIMARY KEY(", (if (name %in% mfdb_cs_taxonomy) "case_study_id, "), paste0(name, "_id"), ")"), collapse = ""),
-            "CHECK(name ~ '^[A-Za-z0-9_.]+$')",
-            paste0("UNIQUE(", ifelse(name %in% mfdb_cs_taxonomy, "case_study_id,", ""), "name)")
-        ))
-    }
-
     mfdb_create_table(mdb, "mfdb_schema", "Table to keep track of schema version", cols = c(
         "version", "INT NOT NULL", "Version of MFDB schema"))
     mfdb_insert(mdb, "mfdb_schema", list(version = package_major_version()))
 
-    create_taxonomy("case_study", "")
-    mfdb_create_table(mdb, "areacell", "Vocabulary of available area cells", cols = c(
-        "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
-        "areacell_id", "INT", "",
-        "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data",
-        "size", "INT", "Size of areacell"
-    ), keys = c(
-        "PRIMARY KEY(case_study_id, areacell_id)"
-    ))
+    # Create all required taxonomy tables
+    for (t in mfdb_taxonomy) {
+        mfdb_create_table(mdb, t, "", cols = c(
+            paste0(t, "_id"), ifelse(t == "species", "BIGINT", "INT"), "Numeric ID for this entry",
+            "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
+            "description", "VARCHAR(1024)", "Long description",
+            NULL
+        ), keys = c(
+            paste0(c("PRIMARY KEY(", paste0(t, "_id"), ")"), collapse = ""),
+            "CHECK(name ~ '^[A-Za-z0-9_.\\-]+$')",
+            paste0("UNIQUE(name)"),
+            NULL
+        ))
+    }
+    for (t in mfdb_cs_taxonomy) {
+        mfdb_create_table(mdb, t, "", cols = c(
+            "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
+            paste0(t, "_id"), "INT", "Numeric ID for this entry",
+            "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
+            if (t == "areacell") c(
+                "size", "INT", "Size of areacell",
+                NULL
+            ) else c(
+                "description", "VARCHAR(1024)", "Long description",
+                NULL
+            ),
+            NULL
+        ), keys = c(
+            paste0(c("PRIMARY KEY(case_study_id, ", paste0(t, "_id"), ")"), collapse = ""),
+            "CHECK(name ~ '^[A-Za-z0-9_.\\-]+$')",
+            paste0("UNIQUE(case_study_id, name)"),
+            NULL
+        ))
+    }
+
+
     mfdb_create_table(mdb, "division", "Grouping of area cells into divisions", cols = c(
         "division_id", "SERIAL PRIMARY KEY", "",
         "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
+
         "division", "VARCHAR(10) NOT NULL", "",
         "areacell_id", "INT", "Contained areacell"
     ), keys = c(
@@ -79,6 +94,7 @@ schema_from_0 <- function(mdb) {
     mfdb_create_table(mdb, "temperature", "Time-series data for areacell temperature", cols = c(
         "temperature_id", "SERIAL PRIMARY KEY", "",
         "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
+
         "areacell_id", "INT", "Areacell data relates to",
         "year", "INT NOT NULL", "Year sample was undertaken",
         "month", "INT NOT NULL", "Month sample was undertaken",
@@ -88,14 +104,11 @@ schema_from_0 <- function(mdb) {
         "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)"
     ))
 
-    create_taxonomy("institute", "")
-    create_taxonomy("gear", "")
-    create_taxonomy("vessel", "")
-    create_taxonomy("sampling_type", "")
     mfdb_create_table(mdb, "survey", "Description of survey", cols = c(
         "survey_id", "SERIAL PRIMARY KEY", "",
         "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
         "data_source", "VARCHAR(1024) NOT NULL", "Name of file/URL data came from",
+
         "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
         "vessel_id", "INT REFERENCES vessel(vessel_id)", "Vessel used",
@@ -105,9 +118,6 @@ schema_from_0 <- function(mdb) {
         "FOREIGN KEY(case_study_id, sampling_type_id) REFERENCES sampling_type(case_study_id, sampling_type_id)"
     ))
 
-    create_taxonomy("sex", "")
-    create_taxonomy("maturity_stage", "")
-    create_taxonomy("species", "", id_type = "BIGINT")
     mfdb_create_table(mdb, "sample", "Samples within survey", cols = c(
         "sample_id", "SERIAL PRIMARY KEY", "",
         "survey_id", "INT REFERENCES survey(survey_id)", "",
@@ -120,6 +130,7 @@ schema_from_0 <- function(mdb) {
         "age", "INT", "Age (years)",
         "sex_id", "INT REFERENCES sex(sex_id)", "Sex ID",
         "maturity_stage_id", "INT REFERENCES maturity_stage(maturity_stage_id)", "Maturity Stage ID",
+
         "length", "REAL", "Length of fish / mean length of all fish",
         "length_var", "REAL", "Length variance of all fish (given aggregated data)",
         "length_min", "INT", "Minimum theoretical value in this group",
