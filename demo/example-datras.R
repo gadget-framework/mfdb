@@ -59,18 +59,18 @@ tmp <- codL[c('Year','Quarter','areacell','Species','Sex','LngtCm','Count')]
 names(tmp) <- c('year','month','areacell','species','sex','length','count')
 tmp <- subset(tmp,!is.na(length))
 tmp$count <- round(tmp$count)
+tmp$sampling_type <- 'RES'
 mfdb_import_survey(mdb,
                    data_source = 'example-datras-codL',
-                   sampling_type = 'RES',
                    tmp)
 
 # Import cod age data as a separate survey
 tmp <- codA[c('Year','Quarter','areacell','Species','Sex','Age','LngtCm')]
 names(tmp) <- c('year','month','areacell','species','sex','age','length')
 tmp <- subset(tmp,!is.na(age))
+tmp$sampling_type <- 'RES'
 mfdb_import_survey(mdb,
                    data_source = 'example-datras-codA',
-                   sampling_type = 'RES',
                    tmp)
 
 # Create a gadget directory, define some defaults to use with our queries below

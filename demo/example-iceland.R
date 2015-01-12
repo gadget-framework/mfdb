@@ -45,9 +45,9 @@ comm.ldist$species <- 'COD'
 comm.ldist <- subset(comm.ldist, areacell %in% reitmapping$GRIDCELL) 
 comm.ldist$sex <- c('M','F')[comm.ldist$sex]
 comm.ldist$age <- 0
+comm.ldist$sampling_type <- 'SEA'
 mfdb_import_survey(mdb,
                    data_source = 'example-iceland-comm.ldist',
-                   sampling_type = 'SEA',
                    comm.ldist)
 rm(comm.ldist)
 
@@ -68,9 +68,9 @@ ldist.aug <- subset(ldist.aug,!is.na(areacell))
 ldist.aug <- subset(ldist.aug,areacell %in% reitmapping$GRIDCELL) 
 ldist.aug$sex <- c('M','F')[ldist.aug$sex]
 ldist.aug$age <- 0
+ldist.aug$sampling_type <- 'IGFS'
 mfdb_import_survey(mdb,
                    data_source = 'example-iceland-ldist.aug',
-                   sampling_type = 'IGFS', 
                    ldist.aug)
 rm(ldist.aug)
 

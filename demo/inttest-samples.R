@@ -196,11 +196,11 @@ ok_group("Filtering of samples", {
     # Import several surveys with different metadata set
     mfdb_import_survey(mdb,
         data_source = 'survey1',
-        institute = 'MRI',
-        gear = 'GIL',
-        vessel = '1.RSH',
-        sampling_type = 'SEA',
         data.frame(
+            institute = 'MRI',
+            gear = 'GIL',
+            vessel = '1.RSH',
+            sampling_type = 'SEA',
             year = c('1998'),
             month = c(1:12),
             areacell = c('45G01'),
@@ -211,11 +211,11 @@ ok_group("Filtering of samples", {
             weight = c(100,500,300,100,350,460, 650,320,360,350,340,220)))
     mfdb_import_survey(mdb,
         data_source = 'survey2',
-        institute = 'ICES',
-        gear = 'DSE',
-        vessel = '2.RSH',
-        sampling_type = 'SEA',
         data.frame(
+            institute = 'ICES',
+            gear = 'DSE',
+            vessel = '2.RSH',
+            sampling_type = 'SEA',
             year = c('1998'),
             month = c(1:12),
             areacell = c('45G01'),

@@ -97,7 +97,7 @@ mfdb_sample_grouping <- function (mdb,
             institute = "c.institute_id", gear = "c.gear_id", vessel = "c.vessel_id",
             sampling_type = "c.sampling_type_id", species ="c.species_id", sex = "c.sex_id"),
         calc_cols = c(),
-        core_table = "(SELECT sur.institute_id, sur.gear_id, sur.vessel_id, sur.sampling_type_id, sam.* FROM sample sam INNER JOIN survey sur ON sam.survey_id = sur.survey_id)",
+        core_table = "sample",
         generator = "mfdb_sample_grouping") {
 
     # Call relevant clause function for all group_cols
