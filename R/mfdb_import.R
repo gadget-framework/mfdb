@@ -66,6 +66,14 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
         weight_var = sanitise_col(mdb, data_in, 'weight_var', default = c(NA)),
         count = sanitise_col(mdb, data_in, 'count', default = c(1)))
 
+    # Fetch table definition from DB, so we can recreate for temporary table
+    cols <- mfdb_fetch(mdb, "SELECT column_name, data_type",
+        " FROM information_schema.columns",
+        " WHERE table_schema = 'public' AND table_name = 'sample'",
+        NULL
+    )
+    rownames(cols) <- cols$column_name
+
     # Likely to be pretty big, so pre-load data into a temporary table
     mdb$logger$info("Writing sample rows to temporary table")
     tryCatch(mfdb_send(mdb, "DROP TABLE mfdb_temp_insert"), error = function(e) {
@@ -73,21 +81,8 @@ mfdb_import_survey <- function (mdb, data_in, ...) {
         stop(e)
     })
     mfdb_send(mdb, "SET CLIENT_ENCODING TO 'LATIN1'") # Not sure.
-    dbWriteTable(mdb$db, "mfdb_temp_insert", survey_sample, row.names = FALSE, field.types = list(
-        case_study_id = 'INT',
-        year = 'INT',
-        month = 'INT',
-        areacell_id = 'INT',
-        species_id = 'BIGINT',
-        age = 'INT',
-        sex_id = 'INT',
-        maturity_stage_id = 'INT',
-        length = 'REAL',
-        length_var = 'REAL',
-        length_min = 'INT',
-        weight = 'REAL',
-        weight_var = 'REAL',
-        count = 'INT'))
+    dbWriteTable(mdb$db, "mfdb_temp_insert", survey_sample, row.names = FALSE,
+        field.types = structure(cols[names(survey_sample), 'data_type'], names = names(survey_sample)))
     mfdb_send(mdb, "SET CLIENT_ENCODING TO 'UTF8'")
 
     # Remove data_source and re-insert
