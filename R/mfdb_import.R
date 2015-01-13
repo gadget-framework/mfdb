@@ -142,33 +142,11 @@ mfdb_import_temperature <- function(mdb, data_in) {
 
 # Import sampling type data
 mfdb_import_sampling_type <- function(mdb, data_in) {
-    table_name <- 'sampling_type'
-    cs_specific <- TRUE
-
-    # Fetch all existing ids, quit if all are there
-    existing <- mfdb_fetch(mdb,
-        "SELECT sampling_type_id id, name FROM sampling_type",
-        " WHERE case_study_id = ", mdb$case_study_id,
-        " ORDER BY 1")
-
-    # Reformat input data
-    data_in <- data.frame(
-        sampling_type_id = sanitise_col(mdb, data_in, 'id', default = seq_len(length(data_in))),
+    mfdb_import_taxonomy(mdb, 'sampling_type', data.frame(
+        id = sanitise_col(mdb, data_in, 'id', default = seq_len(length(data_in))),
         name = sanitise_col(mdb, data_in, 'name'),
         description = sanitise_col(mdb, data_in, 'description', default = c("")))
-
-    # Either add or update rows. Removing is risky, since we might have dependent data.
-    # Also don't want to remove data if partitioned by case study
-    mfdb_transaction(mdb, {
-        mfdb_insert(mdb,
-            table_name,
-            data_in[!(data_in$sampling_type_id %in% existing$id),],
-            extra = (if (cs_specific) c(case_study_id = mdb$case_study_id) else c()))
-        mfdb_update(mdb,
-            table_name,
-            data_in[data_in$sampling_type_id %in% existing$id,],
-            where = if (cs_specific) list(case_study_id = mdb$case_study_id) else c())
-    })
+    )
 }
 
 # Check column content, optionally resolving lookup
