@@ -42,6 +42,16 @@ mfdb_update_schema <- function(mdb) {
 
 # Create MFDB schema from scratch, or print commands
 schema_from_0 <- function(mdb) {
+    fk <- function (...) {
+        tbls <- c(...)[c(...) %in% mfdb_taxonomy]
+        cs_tbls <- c(...)[c(...) %in% mfdb_cs_taxonomy]
+        c(
+            if (length(cs_tbls) > 0) paste0("FOREIGN KEY(case_study_id, ", cs_tbls, "_id) REFERENCES ", cs_tbls, "(case_study_id, ", cs_tbls, "_id)"),
+            if (length(tbls) > 0) paste0("FOREIGN KEY(", tbls, "_id) REFERENCES ", tbls, "(", tbls, "_id)"),
+            NULL
+        )
+    }
+
     mfdb_create_table(mdb, "mfdb_schema", "Table to keep track of schema version", cols = c(
         "version", "INT NOT NULL", "Version of MFDB schema"))
     mfdb_insert(mdb, "mfdb_schema", list(version = package_major_version()))
@@ -100,7 +110,7 @@ schema_from_0 <- function(mdb) {
         "temperature", "REAL NOT NULL", "Temperature at this point in time"
     ), keys = c(
         "UNIQUE(case_study_id, areacell_id, year, month)",
-        "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)"
+        fk('areacell')
     ))
 
     mfdb_create_table(mdb, "sample", "Samples within a survey", cols = c(
@@ -129,10 +139,7 @@ schema_from_0 <- function(mdb) {
         "count", "INT NOT NULL DEFAULT 1", "Number of fish meeting this criteria"
     ), keys = c(
         "CHECK(month BETWEEN 1 AND 12)",
-        "FOREIGN KEY(case_study_id, data_source_id) REFERENCES data_source(case_study_id, data_source_id)",
-        "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)",
-        "FOREIGN KEY(case_study_id, sampling_type_id) REFERENCES sampling_type(case_study_id, sampling_type_id)",
-        NULL
+        fk('data_source', 'areacell', 'sampling_type')
     ))
 }
 
