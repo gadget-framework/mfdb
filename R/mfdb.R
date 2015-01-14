@@ -10,6 +10,7 @@ mfdb <- function(case_study_name,
     db_guesses <- list(
         list(host = "/tmp"),
         list(host = "/var/tmp"),
+        list(host = "/var/run/postgresql"),
         list(host = "localhost"),
         list(host = "localhost", user = "mf", password = "mf"),
         list(host = "/tmp/pg_mfdb"))
