@@ -17,6 +17,7 @@ ok_group("mfdb", {
         ok(cmp(attempts, list(
             list(host = "/tmp", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(host = "/var/tmp", dbname = "mf", drv = 'PostgreSQLDriver'),
+            list(host = "/var/run/postgresql", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(host = "localhost", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(host = "localhost", user = "mf", password = "mf", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(host = "/tmp/pg_mfdb", dbname = "mf", drv = 'PostgreSQLDriver')
@@ -27,6 +28,7 @@ ok_group("mfdb", {
         ok(cmp(attempts, list(
             list(dbname = "mfdb", host = "/tmp", drv = 'PostgreSQLDriver'),
             list(dbname = "mfdb", host = "/var/tmp", drv = 'PostgreSQLDriver'),
+            list(dbname = "mfdb", host = "/var/run/postgresql", drv = 'PostgreSQLDriver'),
             list(dbname = "mfdb", host = "localhost", drv = 'PostgreSQLDriver'),
             list(dbname = "mfdb", host = "localhost", user = "mf", password = "mf", drv = 'PostgreSQLDriver'),
             list(dbname = "mfdb", host = "/tmp/pg_mfdb", drv = 'PostgreSQLDriver')
@@ -37,6 +39,7 @@ ok_group("mfdb", {
         ok(cmp(attempts, list(
             list(user = "frank", password = "frank", host = "/tmp", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(user = "frank", password = "frank", host = "/var/tmp", dbname = "mf", drv = 'PostgreSQLDriver'),
+            list(user = "frank", password = "frank", host = "/var/run/postgresql", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(user = "frank", password = "frank", host = "localhost", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(user = "frank", password = "frank", host = "localhost", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(user = "frank", password = "frank", host = "/tmp/pg_mfdb", dbname = "mf", drv = 'PostgreSQLDriver')
@@ -47,6 +50,7 @@ ok_group("mfdb", {
         ok(cmp(attempts, list(
             list(user = "frank", password = "frank", host = "/tmp", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(user = "frank", password = "frank", host = "/var/tmp", dbname = "mf", drv = 'PostgreSQLDriver'),
+            list(user = "frank", password = "frank", host = "/var/run/postgresql", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(user = "frank", password = "frank", host = "localhost", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(user = "frank", password = "frank", host = "localhost", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(user = "frank", password = "frank", host = "/tmp/pg_mfdb", dbname = "mf", drv = 'PostgreSQLDriver')
@@ -55,6 +59,7 @@ ok_group("mfdb", {
         attempts <<- list()
         ok(cmp_error(mfdb('Test', db_params = list(host = "db.com", user = "frank", password = "frank")), 'database'), "Didn't connect to db")
         ok(cmp(attempts, list(
+            list(host = "db.com", user = "frank", password = "frank", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(host = "db.com", user = "frank", password = "frank", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(host = "db.com", user = "frank", password = "frank", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(host = "db.com", user = "frank", password = "frank", dbname = "mf", drv = 'PostgreSQLDriver'),
