@@ -11,7 +11,7 @@ source('mfdb/tests/utils/helpers.R')
 source('mfdb/tests/utils/inttest-helpers.R')
 
 # Empty database
-mfdb('', destroy_schema = TRUE)
+mfdb('', db_params = db_params, destroy_schema = TRUE)
 
 #TODO: Connecting to empty database without ability to populate fails
 
