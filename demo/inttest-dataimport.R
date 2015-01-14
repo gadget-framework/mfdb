@@ -76,6 +76,16 @@ ok_group("Areacell/divisions", {
             area = area_group,
             generator = "mfdb_area_size"))),
         "Can combine divA & B and get combined size")
+
+    # Can change the area size and update the report
+    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(10)))
+    area_group <- mfdb_group(divA = c("divA"), divB = c("divB"), divAB = c("divA", "divB"))
+    ok(cmp(mfdb_area_size(mdb, list(area = area_group)),
+        list("0" = structure(
+            data.frame(area = c("divA", "divAB", "divB"), size = c(30, 50, 20), stringsAsFactors = FALSE),
+            area = area_group,
+            generator = "mfdb_area_size"))),
+        "Get new combined size after updating area sizes")
 })
 
 ok_group("Temperature", {
