@@ -1,8 +1,10 @@
 \name{mfdb-data}
 \alias{mfdb-data}
-\alias{gear}
 \alias{case_study}
+\alias{fleet}
+\alias{gear}
 \alias{institute}
+\alias{market_category}
 \alias{maturity_stage}
 \alias{sex}
 \alias{species}
@@ -14,9 +16,11 @@
 }
 
 \usage{
-gear
 case_study
+fleet
+gear
 institute
+market_category
 maturity_stage
 sex
 species
