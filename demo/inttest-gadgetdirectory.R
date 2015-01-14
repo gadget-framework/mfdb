@@ -12,7 +12,7 @@ source('mfdb/tests/utils/helpers.R')
 source('mfdb/tests/utils/inttest-helpers.R')
 
 # Empty database, so we start from scratch
-mfdb('', destroy_schema = TRUE)
+mfdb('', db_params = db_params, destroy_schema = TRUE)
 
 # Open a connection to the DB for the Iceland case study, and open an output
 # directory to save files in
