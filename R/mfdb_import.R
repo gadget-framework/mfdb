@@ -12,16 +12,20 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
     data_in <- data_in[order(data_in$id), c('id', 'name', extra_cols)]
     names(data_in) <- c(id_col, 'name', extra_cols)
 
+    # Crush factors in data.frame
+    for (n in names(data_in)) {
+        if (is.factor(data_in[[n]])) data_in[[n]] <- as.character(data_in[[n]])
+    }
+
     # Fetch all existing ids, quit if all are there
     existing <- mfdb_fetch(mdb,
-        "SELECT ", table_name, "_id id, name",
+        "SELECT ", id_col, ", name, ", paste(extra_cols, collapse = ", "),
         " FROM ", table_name,
         if (cs_specific) c(" WHERE case_study_id = ", mdb$case_study_id) else "",
         " ORDER BY 1")
 
-    if (nrow(existing) > 0 && is.logical(all.equal(data_in[[id_col]], existing$id))
-                           && is.logical(all.equal(as.character(data_in$name), as.character(existing$name)))) {
-        mdb$logger$debug(paste0("Taxonomy ", table_name ," up-to-date"))
+    if (nrow(existing) > 0 && identical(all.equal(data_in, existing), TRUE)) {
+        mdb$logger$info(paste0("Taxonomy ", table_name ," up-to-date"))
         return()
     }
 
@@ -30,11 +34,11 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
     mfdb_transaction(mdb, {
         mfdb_insert(mdb,
             table_name,
-            data_in[!(data_in[[id_col]] %in% existing$id),],
+            data_in[!(data_in[[id_col]] %in% existing[[id_col]]),],
             extra = (if (cs_specific) c(case_study_id = mdb$case_study_id) else c()))
         mfdb_update(mdb,
             table_name,
-            data_in[data_in[[id_col]] %in% existing$id,],
+            data_in[data_in[[id_col]] %in% existing[[id_col]],],
             where = if (cs_specific) list(case_study_id = mdb$case_study_id) else c())
     })
 }
