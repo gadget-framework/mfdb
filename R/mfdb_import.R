@@ -43,6 +43,22 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
     })
 }
 
+# Import any cs_specific taxonomies
+mfdb_import_cs_taxonomy <- function(mdb, table_name, data_in) {
+    if (!(table_name %in% mfdb_cs_taxonomy)) {
+        stop("Unknown table name ", table_name)
+    }
+    mfdb_import_taxonomy(mdb, table_name,
+        data.frame(
+            id = sanitise_col(mdb, data_in, 'id', default = seq_len(length(data_in))),
+            name = sanitise_col(mdb, data_in, 'name'),
+            description = sanitise_col(mdb, data_in, 'description', default = c("")),
+            size = sanitise_col(mdb, data_in, 'size', default = c(NA))),
+        extra_cols = if (table_name == 'areacell') c('size') else c('description'))
+}
+mfdb_import_area <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'areacell', data_in)
+mfdb_import_sampling_type <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'sampling_type', data_in)
+
 mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
     # Sanitise data
     survey_sample <- data.frame(
@@ -100,16 +116,6 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
     mfdb_send(mdb, "DROP TABLE mfdb_temp_insert");
 }
 
-# Import area data
-mfdb_import_area <- function(mdb, data_in) {
-    mfdb_import_taxonomy(mdb, 'areacell',
-        data.frame(
-            id = sanitise_col(mdb, data_in, 'id'),
-            name = sanitise_col(mdb, data_in, 'name'),
-            size = sanitise_col(mdb, data_in, 'size', default = c(NA))),
-        extra_cols = c('size'))
-}
-
 # Import divisions
 mfdb_import_division <- function (mdb, data_in) {
     if(!is.list(data_in)) {
@@ -142,15 +148,6 @@ mfdb_import_temperature <- function(mdb, data_in) {
             areacell_id = sanitise_col(mdb, data_in, 'areacell', lookup = 'areacell'),
             temperature = sanitise_col(mdb, data_in, 'temperature')))
     })
-}
-
-# Import sampling type data
-mfdb_import_sampling_type <- function(mdb, data_in) {
-    mfdb_import_taxonomy(mdb, 'sampling_type', data.frame(
-        id = sanitise_col(mdb, data_in, 'id', default = seq_len(length(data_in))),
-        name = sanitise_col(mdb, data_in, 'name'),
-        description = sanitise_col(mdb, data_in, 'description', default = c("")))
-    )
 }
 
 # Check column content, optionally resolving lookup
