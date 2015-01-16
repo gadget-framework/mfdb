@@ -44,17 +44,19 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
 }
 
 # Import any cs_specific taxonomies
-mfdb_import_cs_taxonomy <- function(mdb, table_name, data_in) {
-    if (!(table_name %in% mfdb_cs_taxonomy)) {
-        stop("Unknown table name ", table_name)
+mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
+    if (!(taxonomy_name %in% mfdb_cs_taxonomy)) {
+        stop(
+            "Unknown taxonomy name '", taxonomy_name,
+            "' should be one of ", paste(mfdb_cs_taxonomy, collapse = ", "))
     }
-    mfdb_import_taxonomy(mdb, table_name,
+    mfdb_import_taxonomy(mdb, taxonomy_name,
         data.frame(
             id = sanitise_col(mdb, data_in, 'id', default = seq_len(length(data_in$name))),
             name = sanitise_col(mdb, data_in, 'name'),
             description = sanitise_col(mdb, data_in, 'description', default = c("")),
             size = sanitise_col(mdb, data_in, 'size', default = c(NA))),
-        extra_cols = if (table_name == 'areacell') c('size') else c('description'))
+        extra_cols = if (taxonomy_name == 'areacell') c('size') else c('description'))
 }
 mfdb_import_area <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'areacell', data_in)
 mfdb_import_sampling_type <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'sampling_type', data_in)

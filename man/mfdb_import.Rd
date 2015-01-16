@@ -4,6 +4,7 @@
 \alias{mfdb_import_division}
 \alias{mfdb_import_temperature}
 \alias{mfdb_import_sampling_type}
+\alias{mfdb_import_cs_taxonomy}
 
 \title{MareFrame Import functions}
 \description{
@@ -16,10 +17,14 @@
     mfdb_import_division(mdb, data_in)
     mfdb_import_temperature(mdb, data_in)
     mfdb_import_sampling_type(mdb, data_in)
+    mfdb_import_cs_taxonomy(mdb, taxonomy_name, data_in)
 }
 \arguments{
     \item{mdb}{
         Database connection created by \code{mfdb()}.
+    }
+    \item{taxonomy_name}{
+        The name of the taxonomy to import, one of \code{areacell}, \code{sampling_type}
     }
     \item{data_in}{
         A \code{data.frame} of survey data to import, see details.
@@ -78,11 +83,13 @@ areacells. The \code{data_in} should be a data.frame with the following columns:
     \item{temperature}{The temperature at given location/time}
 }
 
-\code{mfdb_import_sampling_type} imports names of sampling types for this case
-study. The \code{data_in} should be a data.frame with the following columns:
+\code{mfdb_import_cs_taxonomy} imports names into a taxonomy table, 
+\code{mfdb_import_sampling_type} is a special case that imports names of
+sampling types into the \code{sampling_type} taxonomy table.
+The \code{data_in} should be a data.frame with the following columns:
 
 \describe{
-    \item{id}{A numeric ID for this sampling type}
+    \item{id}{A numeric ID for this name}
     \item{name}{Required. A vector of short names to use in data, e.g. "SEA"}
     \item{description}{Optional. A vector of descriptive names, e.g. "sea sampling"}
 }
