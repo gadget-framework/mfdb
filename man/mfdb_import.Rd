@@ -1,5 +1,6 @@
 \name{mfdb_import}
 \alias{mfdb_import_survey}
+\alias{mfdb_import_survey_index}
 \alias{mfdb_import_area}
 \alias{mfdb_import_division}
 \alias{mfdb_import_temperature}
@@ -13,6 +14,7 @@
 
 \usage{
     mfdb_import_survey(mdb, data_in, data_source = 'default_sample')
+    mfdb_import_survey_index(mdb, data_in, data_source = 'default_index')
     mfdb_import_area(mdb, data_in)
     mfdb_import_division(mdb, data_in)
     mfdb_import_temperature(mdb, data_in)
@@ -57,6 +59,19 @@ in which case then only existing data with the same \code{data_source} will be r
     \item{weight}{Optional, default \code{c(NA)}. Weight of sample / mean weight of all samples}
     \item{weight_var}{Optional, default \code{c(NA)}. Sample variance, if data is already aggregated}
     \item{count}{Optional, default \code{c(1)}. Number of samples this row represents (i.e. if the data is aggregated)}
+}
+
+\code{mfdb_import_survey_index} adds indicies that can be used as abundance information, for example.
+Before using \code{mfdb_import_survey_index}, make sure that the \code{index_type} you intend to use
+exists by using \link{mfdb_import_cs_taxonomy}. The \code{data_in} should be a data.frame with the
+following columns:
+
+\describe{
+    \item{index_type}{Required. the name of the index data you are storing, e.g. 'acoustic'}
+    \item{year}{Required. Year each sample was taken, e.g. \code{c(2000,2001)}}
+    \item{month}{Required. Month (1--12) each sample was taken, e.g. \code{c(1,12)}}
+    \item{areacell}{Required. Areacell sample was taken within}
+    \item{value}{Value of the index at this point in space/time}
 }
 
 \code{mfdb_import_area} imports areacell information for your case study. The
