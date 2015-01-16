@@ -1,5 +1,6 @@
     Unreleased
 
+    * Add mfdb_import_cs_taxonomy, to allow changing any of the taxonomies
     * Remove the distinction between survey data and survey metadata
 
 2015-01-14  Jamie Lentin  <lentinj@shuttlethread.com>
