@@ -23,65 +23,102 @@ mfdb_temperature <- function (mdb, params = list()) {
         generator = "mfdb_temperature")
 }
 
+abundance_core_table <- function (mdb, abundance_index) {
+    if (is.null(abundance_index)) {
+        return(c("sample", "c.count"))
+    } else {
+        return(c(paste0(
+            "(SELECT sam.*, AVG(si.value) abundance",
+            " FROM sample sam, survey_index si",
+            " WHERE si.index_type_id = ",
+                "(SELECT index_type_id",
+                " FROM index_type",
+                " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
+                " AND name = ", sql_quote(abundance_index),
+                ")",
+            " AND sam.case_study_id = si.case_study_id",
+            " AND sam.areacell_id = si.areacell_id",
+            " AND sam.year = si.year",
+            " AND sam.month = si.month",
+            " GROUP BY 1",
+            ")"), "c.abundance"))
+    }
+}
+
 # Return year, step, area, ... , number (of samples)
-mfdb_sample_count <- function (mdb, cols, params) {
+mfdb_sample_count <- function (mdb, cols, params, abundance_index = NULL) {
+    abundance <- abundance_core_table(mdb, abundance_index)
     mfdb_sample_grouping(mdb,
         params = params,
+        core_table = abundance[[1]],
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            "SUM(c.count) AS number"),
+            paste0("SUM(", abundance[[2]], ") AS number"),
+            NULL),
         generator = "mfdb_sample_count")
 }
 
 # Return year,step,area,age,number (# of samples),mean (length)
-mfdb_sample_meanlength <- function (mdb, cols, params) {
+mfdb_sample_meanlength <- function (mdb, cols, params, abundance_index = NULL) {
+    abundance <- abundance_core_table(mdb, abundance_index)
     out <- mfdb_sample_grouping(mdb,
         params = params,
+        core_table = abundance[[1]],
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            "SUM(c.count) AS number",
-            "AVG(c.count * c.length) * (COUNT(*)::float / SUM(c.count)) AS mean"),
+            paste0("SUM(", abundance[[2]], ") AS number"),
+            paste0("AVG(", abundance[[2]], " * c.length) * (COUNT(*)::float / SUM(", abundance[[2]], ")) AS mean"),
+            NULL),
         generator = "mfdb_sample_meanlength")
     out
 }
 
 # Return year,step,area,age,number (# of samples),mean (length), stddev (length)
-mfdb_sample_meanlength_stddev <- function (mdb, cols, params) {
+mfdb_sample_meanlength_stddev <- function (mdb, cols, params, abundance_index = NULL) {
     # SCHEMA: Need a weighted stddev function
     # TODO: Do we need to know the resolution of the input data to avoid oversampling?
+    abundance <- abundance_core_table(mdb, abundance_index)
     out <- mfdb_sample_grouping(mdb,
         params = params,
+        core_table = abundance[[1]],
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            "SUM(c.count) AS number",
-            "AVG(c.count * c.length) * (COUNT(*)::float / SUM(c.count)) AS mean",
-            "0 AS stddev"),
+            paste0("SUM(", abundance[[2]], ") AS number"),
+            paste0("AVG(", abundance[[2]], " * c.length) * (COUNT(*)::float / SUM(", abundance[[2]], ")) AS mean"),
+            "0 AS stddev",
+            NULL),
         generator = "mfdb_sample_meanlength_stddev")
     out
 }
 
 # Return year,step,area,age,number (# of samples),mean (weight)
-mfdb_sample_meanweight <- function (mdb, cols, params) {
+mfdb_sample_meanweight <- function (mdb, cols, params, abundance_index = NULL) {
+    abundance <- abundance_core_table(mdb, abundance_index)
     out <- mfdb_sample_grouping(mdb,
         params = params,
+        core_table = abundance[[1]],
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            "SUM(c.count) AS number",
-            "AVG(c.count * c.weight) * (COUNT(*)::float / SUM(c.count)) AS mean"),
+            paste0("SUM(", abundance[[2]], ") AS number"),
+            paste0("AVG(", abundance[[2]], " * c.weight) * (COUNT(*)::float / SUM(", abundance[[2]], ")) AS mean"),
+            NULL),
         generator = "mfdb_sample_meanweight")
     out
 }
 
 # Return year,step,area,age,number (# of samples),mean (weight), stddev (weight)
-mfdb_sample_meanweight_stddev <- function (mdb, cols, params) {
+mfdb_sample_meanweight_stddev <- function (mdb, cols, params, abundance_index = NULL) {
     # SCHEMA: Don't have weight_stddev, aggregation function
+    abundance <- abundance_core_table(mdb, abundance_index)
     out <- mfdb_sample_grouping(mdb,
         params = params,
+        core_table = abundance[[1]],
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            "SUM(c.count) AS number",
-            "AVG(c.count * c.weight) * (COUNT(*)::float / SUM(c.count)) AS mean",
-            "0 AS stddev"),
+            paste0("SUM(", abundance[[2]], ") AS number"),
+            paste0("AVG(", abundance[[2]], " * c.weight) * (COUNT(*)::float / SUM(", abundance[[2]], ")) AS mean"),
+            "0 AS stddev",
+            NULL),
         generator = "mfdb_sample_meanweight_stddev")
     out
 }
