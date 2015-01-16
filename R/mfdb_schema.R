@@ -6,7 +6,7 @@ mfdb_show_schema <- function() {
 
 # Destroy everything in current schema
 mfdb_destroy_schema <- function(mdb) {
-    for(t in c('sample', 'survey', 'temperature', 'division', mfdb_cs_taxonomy, mfdb_taxonomy, 'mfdb_schema')) {
+    for(t in c('sample', 'survey', 'temperature', 'division', 'survey_index', mfdb_cs_taxonomy, mfdb_taxonomy, 'mfdb_schema')) {
         mdb$logger$info(paste("Removing table", t))
         tryCatch(mfdb_send(mdb, "DROP TABLE ", t, " CASCADE"), error = function(e) {
             if(grepl("does not exist", e$message)) return();
@@ -91,6 +91,20 @@ schema_from_0 <- function(mdb) {
         ))
     }
 
+    mfdb_create_table(mdb, "survey_index", "Indices used to modify surveys", cols = c(
+        "survey_index_id", "SERIAL PRIMARY KEY", "",
+        "data_source_id", "INT", "",
+        "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
+        "index_type_id", "INT", "",
+
+        "areacell_id", "INT", "Areacell data relates to",
+        "year", "INT NOT NULL", "Year sample was taken",
+        "month", "INT NOT NULL", "Month sample was taken",
+        "value", "REAL NOT NULL", "Value at this point in time"
+    ), keys = c(
+        fk('data_source', 'index_type', 'areacell')
+    ))
+
     mfdb_create_table(mdb, "division", "Grouping of area cells into divisions", cols = c(
         "division_id", "SERIAL PRIMARY KEY", "",
         "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
@@ -144,7 +158,7 @@ schema_from_0 <- function(mdb) {
 }
 
 mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sex", "maturity_stage", "species")
-mfdb_cs_taxonomy <- c("areacell", "sampling_type", "data_source")
+mfdb_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type")
 
 # Populate tables with package-provided data
 mfdb_update_taxonomy <- function(mdb) {

@@ -105,6 +105,34 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
     })
 }
 
+mfdb_import_survey_index <- function (mdb, data_in, data_source = 'default_index') {
+    data_in <- data.frame(
+        case_study_id = c(mdb$case_study_id),
+        areacell_id = sanitise_col(mdb, data_in, 'areacell', lookup = 'areacell'),
+        index_type_id = sanitise_col(mdb, data_in, 'index_type', lookup = 'index_type'),
+        year = sanitise_col(mdb, data_in, 'year'),
+        month = sanitise_col(mdb, data_in, 'month'),
+        value = sanitise_col(mdb, data_in, 'value'))
+
+    temp_tbl <- mfdb_bulk_copy(mdb, 'survey_index', data_in)
+
+    # Remove data_source and re-insert
+    tryCatch(mfdb_transaction(mdb, {
+        data_source_id <- get_data_source_id(mdb, data_source)
+        mfdb_send(mdb, "DELETE FROM survey_index",
+            " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
+            " AND data_source_id = ", sql_quote(data_source_id),
+            NULL)
+        mfdb_send(mdb,
+            "INSERT INTO survey_index",
+            " (", paste(names(data_in), collapse=","), ", data_source_id)",
+            " SELECT ", paste(names(data_in), collapse=","), ", ", sql_quote(data_source_id),
+            " FROM ", temp_tbl)
+    }), finally = function (e) {
+        mfdb_send(mdb, "DROP TABLE ", temp_tbl)
+    })
+}
+
 # Import divisions
 mfdb_import_division <- function (mdb, data_in) {
     if(!is.list(data_in)) {
