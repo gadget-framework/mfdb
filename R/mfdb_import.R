@@ -50,7 +50,7 @@ mfdb_import_cs_taxonomy <- function(mdb, table_name, data_in) {
     }
     mfdb_import_taxonomy(mdb, table_name,
         data.frame(
-            id = sanitise_col(mdb, data_in, 'id', default = seq_len(length(data_in))),
+            id = sanitise_col(mdb, data_in, 'id', default = seq_len(length(data_in$name))),
             name = sanitise_col(mdb, data_in, 'name'),
             description = sanitise_col(mdb, data_in, 'description', default = c("")),
             size = sanitise_col(mdb, data_in, 'size', default = c(NA))),
