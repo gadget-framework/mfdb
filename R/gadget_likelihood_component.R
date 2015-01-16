@@ -4,9 +4,16 @@ gadget_likelihood_component <- function (type, weight = 0, name = type, likeliho
         switch(type,
             penalty = gadget_penalty_component(name, ...),
             understocking = gadget_understocking_component(name, ...),
-            catchstatistics = gadget_catchstatistics_component(name, ...),
             catchdistribution = gadget_catchdistribution_component(name, ...),
+            catchstatistics = gadget_catchstatistics_component(name, ...),
             stockdistribution = gadget_stockdistribution_component(name, ...),
+            surveyindicies = gadget_surveyindicies_component(name, ...),
+            surveydistribution = gadget_surveydistribution_component(name, ...),
+            stomachcontent = gadget_stomachcontent_component(name, ...),
+            recaptures = gadget_recaptures_component(name, ...),
+            recstatistics = gadget_recstatistics_component(name, ...),
+            migrationpenalty = gadget_migrationpenalty_component(name, ...),
+            catchinkilos = gadget_catchinkilos_component(name, ...),
             stop(paste("Unknown likelihood component", type)))
     ), likelihoodfile = likelihoodfile, class = c(
         paste0("gadget_", type, "_component"),
@@ -178,6 +185,105 @@ gadget_stockdistribution_component <- function (
         lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length),
         fleetnames = fleetnames,
         stocknames = stocknames)
+}
+
+# http://www.hafro.is/gadget/userguide/userguide.html#x1-1090008.6
+gadget_surveyindicies_component <- function (
+        name,
+        sitype = 'lengths',
+        biomass = 0,
+        data = NULL,
+        area = NULL,
+        ...) {
+    prefix <- paste0('surveyindicies.', name, '.')
+
+    if (!('fittype' %in% names(c(...)))) {
+        stop("fittype missing. It is a required parameter")
+    }
+
+    if (sitype == 'lengths') {
+        compare_cols(names(data), c("year", "step", "area", "length", "number"))
+        length <- c(...)['length']
+        si_cols <- list(
+            lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length))
+
+    } else if (sitype == 'ages') {
+        compare_cols(names(data), c("year", "step", "area", "age", "number"))
+        age <- c(...)['age']
+        si_cols <- list(
+            ageaggfile  = agg_file('age', prefix, if(is.null(age)) attr(data, "age") else age))
+
+    } else if (sitype == 'fleets') {
+        compare_cols(names(data), c("year", "step", "area", "length", "number"))
+        length <- c(...)['length']
+        si_cols <- list(
+            lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length),
+            fleetnames = c(...)['fleetnames'])
+
+    } else if (sitype == 'acoustic') {
+        compare_cols(names(data), c("year", "step", "area", "survey", "acoustic"))
+        si_cols <- list(surveynames = c(...)['surveynames'])
+
+    } else if (sitype == 'effort') {
+        compare_cols(names(data), c("year", "step", "area", "fleet", "effort"))
+        si_cols <- list(fleetnames = c(...)['fleetnames'])
+
+    } else {
+        stop("Unknown sitype", sitype)
+    }
+
+    # Mix in other default columns
+    return(c(
+        list(
+            datafile = gadget_file(fname('Data', prefix, sitype), data=data),
+            sitype = sitype,
+            biomass = biomass,
+            areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area)),
+        si_cols,
+        list(stocknames = c(...)['stocknames']),
+        na.omit(c(...)[c('fittype', 'slope', 'intercept')]),
+        NULL))
+}
+
+gadget_surveydistribution_component <- function (
+        name,
+        data = NULL) {
+    stop("Not implemented")
+}
+
+gadget_stomachcontent_component <- function (
+        name,
+        data = NULL) {
+    stop("Not implemented")
+}
+
+gadget_recaptures_component <- function (
+        name,
+        data = NULL) {
+    stop("Not implemented")
+}
+
+gadget_recstatistics_component <- function (
+        name,
+        data = NULL) {
+    stop("Not implemented")
+}
+
+# http://www.hafro.is/gadget/userguide/userguide.html#x1-1380008.11
+gadget_migrationpenalty_component <- function (
+        name,
+        stockname = c(),
+        powercoeffs = c()) {
+
+    list(
+        stockname = stockname,
+        powercoeffs = powercoeffs)
+}
+
+gadget_catchinkilos_component <- function (
+        name,
+        data = NULL) {
+    stop("Not implemented")
 }
 
 agg_file <- function (type, prefix, data) {
