@@ -166,6 +166,33 @@ mfdb_update <- function(mdb, table_name, data_in, returning = "", extra = c(), w
     }
 }
 
+# Pre-load data into temporary table, return name of temporary table
+mfdb_bulk_copy <- function(mdb, target_table, data_in) {
+    temp_tbl <- "mfdb_temp_insert"
+
+    # Fetch table definition from DB, so we can recreate for temporary table
+    cols <- mfdb_fetch(mdb, "SELECT column_name, data_type",
+        " FROM information_schema.columns",
+        " WHERE table_schema = 'public'",
+        " AND table_name = ", sql_quote(target_table),
+        NULL
+    )
+    rownames(cols) <- cols$column_name
+    if (nrow(cols) == 0) stop("Didn't find table ", target_table)
+
+    mdb$logger$info("Writing rows to temporary table")
+    tryCatch(mfdb_send(mdb, "DROP TABLE ", temp_tbl), error = function(e) {
+        if(grepl("does not exist", e$message)) return();
+        stop(e)
+    })
+    mfdb_send(mdb, "SET CLIENT_ENCODING TO 'LATIN1'") # Not sure.
+    dbWriteTable(mdb$db, temp_tbl, data_in, row.names = FALSE,
+        field.types = structure(cols[names(data_in), 'data_type'], names = names(data_in)))
+    mfdb_send(mdb, "SET CLIENT_ENCODING TO 'UTF8'")
+
+    return(temp_tbl)
+}
+
 mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
     items <- matrix(c(
         cols,
