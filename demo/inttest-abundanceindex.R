@@ -84,7 +84,7 @@ ok_group("Unaggregated length / weight / age samples", {
         stringsAsFactors = FALSE
     )), "index_type"), "Noticed we used a made-up index")
 
-    # Make up 2 indexes
+    # Import some data for an acoustic index
     mfdb_import_survey_index(mdb, data_source = 'acoustic_index1', data.frame(
         index_type = 'acoustic',
         year = '1998',
@@ -99,6 +99,8 @@ ok_group("Unaggregated length / weight / age samples", {
         areacell = '45G02',
         #              -----Q1----- -----Q2----- -----Q3----- -----Q4-----
         value =      c(24, 23, 22,  21, 20, 19,  18, 17, 16,  15, 14, 13  )))
+
+    # Import some data for our guesswork index
     mfdb_import_survey_index(mdb, data_source = 'guesswork_index1', data.frame(
         index_type = 'guesswork',
         year = '1998',
@@ -114,7 +116,50 @@ ok_group("Unaggregated length / weight / age samples", {
         #              -----Q1----- -----Q2----- -----Q3----- -----Q4-----
         value =      c(124,123,122, 121,120,119, 118,117,116, 115,114,113 )))
 
-    # Use our 'acoustic' index on divA, note 'guesswork' doesn't sneak in.
+    # Without setting an abundance_index, we use the count from the raw data for totals and means
+    area_group <- mfdb_group(divA = c("divA"))
+    length_group <- mfdb_interval("len", seq(0, 500, by = 100))
+    ok(cmp(
+        unattr(mfdb_sample_meanlength(mdb, c('length'), list(
+            year = 1998,
+            area = area_group,
+            timestep = mfdb_timestep_quarterly,
+            length = length_group))[[1]]),
+        data.frame(
+                year = c(1998),
+                step = as.character(c(1,1,1,2,2,2,3,3,3,4,4)),
+                area = c("divA"),
+                length = c(
+                    "len100", "len200",         "len300",
+                    "len100", "len200",         "len300",
+                    "len100", "len200",         "len300",
+                    "len100", "len200",
+                    NULL),
+                number = c(
+                    2 + 2,    1,                2 + 1 + 2,
+                    1,        2 + 1 + 2 + 1,    1,
+                    1 + 1,    2 + 2,            1 + 1,
+                    2 + 2,    2 + 1 + 2 + 1,
+                    NULL),
+                mean = c(
+                    weighted.mean(c(111, 112), c(2, 2)), # len100 results in Q1
+                    weighted.mean(c(251), c(1)), # len200 results in Q1
+                    weighted.mean(c(331, 352, 332), c(2, 1, 2)), # len300 results in Q1
+
+                    weighted.mean(c(111), c(1)), # len100 results in Q2 . . .
+                    weighted.mean(c(231, 212, 232, 242), c(2, 1, 2, 1)),
+                    weighted.mean(c(341), c(1)),
+
+                    weighted.mean(c(161, 132), c(1, 1)),
+                    weighted.mean(c(261, 262), c(2, 2)),
+                    weighted.mean(c(331, 362), c(1, 1)),
+
+                    weighted.mean(c(121, 122), c(2, 2)),
+                    weighted.mean(c(231, 231, 232, 232), c(2, 1, 2, 1)),
+                    NULL),
+                stringsAsFactors = FALSE)), "Used acoustic index instead of count")
+
+    # Use our 'acoustic' index instead of count
     area_group <- mfdb_group(divA = c("divA"))
     length_group <- mfdb_interval("len", seq(0, 500, by = 100))
     ok(cmp(
@@ -140,11 +185,11 @@ ok_group("Unaggregated length / weight / age samples", {
                     1 + 13,   2 + 3 + 14 + 15,
                     NULL),
                 mean = c(
-                    weighted.mean(c(111, 112), c(12, 24)),
-                    weighted.mean(c(251), c(9)),
-                    weighted.mean(c(331, 352, 332), c(10, 23, 22)),
+                    weighted.mean(c(111, 112), c(12, 24)), # len100 results in Q1
+                    weighted.mean(c(251), c(9)), # len200 results in Q1
+                    weighted.mean(c(331, 352, 332), c(10, 23, 22)), # len300 results in Q1
 
-                    weighted.mean(c(111), c(9)),
+                    weighted.mean(c(111), c(9)), # len100 results in Q2 . . .
                     weighted.mean(c(231, 212, 232, 242), c(8, 21, 20, 19)),
                     weighted.mean(c(341), c(7)),
 
@@ -157,7 +202,7 @@ ok_group("Unaggregated length / weight / age samples", {
                     NULL),
                 stringsAsFactors = FALSE)), "Used acoustic index instead of count")
 
-    # Add another set of values, mean of indicies is used instead
+    # Add another set of values for the same area. We use the mean of these values as abundance
     mfdb_import_survey_index(mdb, data_source = 'acoustic_index1_1', data.frame(
         index_type = 'acoustic',
         year = '1998',
