@@ -81,27 +81,12 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
         weight_var = sanitise_col(mdb, data_in, 'weight_var', default = c(NA)),
         count = sanitise_col(mdb, data_in, 'count', default = c(1)))
 
-    # Fetch table definition from DB, so we can recreate for temporary table
-    cols <- mfdb_fetch(mdb, "SELECT column_name, data_type",
-        " FROM information_schema.columns",
-        " WHERE table_schema = 'public' AND table_name = 'sample'",
-        NULL
-    )
-    rownames(cols) <- cols$column_name
 
     # Likely to be pretty big, so pre-load data into a temporary table
-    mdb$logger$info("Writing sample rows to temporary table")
-    tryCatch(mfdb_send(mdb, "DROP TABLE mfdb_temp_insert"), error = function(e) {
-        if(grepl("does not exist", e$message)) return();
-        stop(e)
-    })
-    mfdb_send(mdb, "SET CLIENT_ENCODING TO 'LATIN1'") # Not sure.
-    dbWriteTable(mdb$db, "mfdb_temp_insert", survey_sample, row.names = FALSE,
-        field.types = structure(cols[names(survey_sample), 'data_type'], names = names(survey_sample)))
-    mfdb_send(mdb, "SET CLIENT_ENCODING TO 'UTF8'")
+    temp_tbl <- mfdb_bulk_copy(mdb, 'sample', survey_sample)
 
     # Remove data_source and re-insert
-    mfdb_transaction(mdb, {
+    tryCatch(mfdb_transaction(mdb, {
         data_source_id <- get_data_source_id(mdb, data_source)
         mfdb_send(mdb, "DELETE FROM sample",
             " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
@@ -111,9 +96,11 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
             "INSERT INTO sample",
             " (", paste(names(survey_sample), collapse=","), ", data_source_id)",
             " SELECT ", paste(names(survey_sample), collapse=","), ", ", sql_quote(data_source_id),
-            " FROM mfdb_temp_insert")
+            " FROM ", temp_tbl,
+            NULL)
+    }), finally = function (e) {
+        mfdb_send(mdb, "DROP TABLE ", temp_tbl)
     })
-    mfdb_send(mdb, "DROP TABLE mfdb_temp_insert");
 }
 
 # Import divisions
