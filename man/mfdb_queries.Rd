@@ -16,17 +16,18 @@
 \usage{
 mfdb_area_size(mdb, params)
 mfdb_temperature(mdb, params)
-mfdb_sample_count(mdb, cols, params)
-mfdb_sample_meanlength(mdb, cols, params)
-mfdb_sample_meanlength_stddev(mdb, cols, params)
-mfdb_sample_meanweight(mdb, cols, params)
-mfdb_sample_meanweight_stddev(mdb, cols, params)
+mfdb_sample_count(mdb, cols, params, abundance_index = NULL)
+mfdb_sample_meanlength(mdb, cols, params, abundance_index = NULL)
+mfdb_sample_meanlength_stddev(mdb, cols, params, abundance_index = NULL)
+mfdb_sample_meanweight(mdb, cols, params, abundance_index = NULL)
+mfdb_sample_meanweight_stddev(mdb, cols, params, abundance_index = NULL)
 }
 
 \arguments{
     \item{mdb}{An object created by \code{mfdb}()}
     \item{cols}{Any additonal columns to group by, see details.}
     \item{params}{A list of parameters, see details.}
+    \item{abundance_index}{Optional. What to use as a measure of abundance?}
 }
 
 \details{
@@ -85,6 +86,11 @@ concatenation to keep some defaults, for example:
 defaults <- list(year = 1998:2000)
 mfdb_sample_meanlength(mdb, c('age'), c(list(), defaults))
 }
+
+\code{abundance_index} allows you to apply another measure of abundance to your
+data as grouping. If it contains the name of a survey index (see
+\link{mfdb_import_survey_index}), then this will be used instead of count when
+weighting the mean & standard deviation.
 
 }
 
