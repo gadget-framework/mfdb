@@ -122,12 +122,11 @@ mfdb_insert <- function(mdb, table_name, data_in, returning = "", extra = c()) {
         # Nothing to insert
         return(0)
     } else {
-        # Insert rows
-        batch_size <- 1000
-        return(sum(vapply(
-            seq(0, nrow(data_in) %/% batch_size),
-            function (i) { insert_row(data_in[(i * batch_size):min(nrow(data_in), (i+1) * batch_size - 1),]) },
-            0)))
+        # Insert rows in ~1000 row chunks, combine results
+        res <- do.call(rbind, lapply(
+            split(data_in, seq_len(nrow(data_in)) %/% 1000),
+            insert_row))
+        return(if (nzchar(returning)) res else sum(res))
     }
 }
 

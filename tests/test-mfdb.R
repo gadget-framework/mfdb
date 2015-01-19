@@ -94,6 +94,13 @@ ok_group("mfdb_insert", {
         "Returned: 2005 ")),
         "Insert multiple batches, inserts for each batch gets summed")
 
+    ok(cmp(mfdb_insert("moo", data.frame(moo_id = 1:2005, oink = 1:2005), returning = 'moo_id'), c(
+        paste0("INSERT INTO moo (moo_id,oink) VALUES ", paste0(vapply(1:999, function (i) { paste0("(", i, ",", i, ")")}, ""), collapse = ","), " RETURNING moo_id"),
+        paste0("INSERT INTO moo (moo_id,oink) VALUES ", paste0(vapply(1000:1999, function (i) { paste0("(", i, ",", i, ")")}, ""), collapse = ","), " RETURNING moo_id"),
+        paste0("INSERT INTO moo (moo_id,oink) VALUES ", paste0(vapply(2000:2005, function (i) { paste0("(", i, ",", i, ")")}, ""), collapse = ","), " RETURNING moo_id"),
+        "Returned: 999 1000 6 ")),
+        "Insert multiple batches, get back a vector (this is the closest we get to returning)")
+
     ok(cmp(mfdb_insert("moo", list(moo_id = 8, oink = "x"), returning = 'moo_id'), c(
         "INSERT INTO moo (moo_id,oink) VALUES (8,'x') RETURNING moo_id",
         "Returned: 1 ")), # TODO: This needs to actually test RETURNING
