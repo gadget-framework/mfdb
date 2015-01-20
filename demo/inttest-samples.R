@@ -399,3 +399,32 @@ ok_group("Filtering of samples", {
             stringsAsFactors = FALSE)),
        "Can group by species (just COD)")
 })
+
+ok_group("Invalid parameters", {
+    ok(cmp(
+        mfdb_sample_count(mdb, c(), list(
+            camelcamelcamel = "No thanks",
+            vessel = '2.RSH',
+            area = mfdb_group(divA = c("divA")),
+            timestep = mfdb_timestep_biannually,
+            age = mfdb_group(all = 1:1000),
+            length = mfdb_interval("len", seq(0, 100, by = 10)),
+            year = 1998:2000))[["0.0.0"]][,c("step", "number")],
+        data.frame(
+            step = c("1", "2"),
+            number = c(6, 6),
+            stringsAsFactors = FALSE)),
+       "Useless camelcamelcamel parameter ignored")
+
+    ok(cmp_error(
+        mfdb_sample_count(mdb, c("camelcamelcamel"), list(
+            camelcamelcamel = "No thanks",
+            vessel = '2.RSH',
+            area = mfdb_group(divA = c("divA")),
+            timestep = mfdb_timestep_biannually,
+            age = mfdb_group(all = 1:1000),
+            length = mfdb_interval("len", seq(0, 100, by = 10)),
+            year = 1998:2000))[["0.0.0"]][,c("step", "number")],
+        "camelcamelcamel"),
+       "Cannot use camelcamelcamel as a column")
+})

@@ -4,7 +4,6 @@ mfdb_area_size <- function (mdb, params) {
     mfdb_sample_grouping(mdb,
         params = params,
         group_cols = c("area"),
-        filter_cols = c(),
         calc_cols = c("SUM(c.size) size"),
         core_table = "areacell",
         col_defs = list(area = "c.areacell_id"),
@@ -16,7 +15,6 @@ mfdb_temperature <- function (mdb, params = list()) {
     mfdb_sample_grouping(mdb,
         params = params,
         group_cols = c("year", "timestep", "area"),
-        filter_cols = c(),
         calc_cols = c("AVG(c.temperature) temperature"),
         col_defs = list(year = "c.year", timestep = "c.month", area = "c.areacell_id"),
         core_table = "temperature",
@@ -127,7 +125,6 @@ mfdb_sample_meanweight_stddev <- function (mdb, cols, params, abundance_index = 
 mfdb_sample_grouping <- function (mdb,
         params = list(),
         group_cols = c("year", "timestep", "area", "age"),
-        filter_cols = c("length", "institute", "gear", "vessel", "sampling_type", "species", "sex"),
         col_defs = list(
             year = "c.year", timestep = "c.month", area = "c.areacell_id", age = "c.age",
             maturity_stage = "c.maturity_stage_id", length = "c.length",
@@ -149,12 +146,15 @@ mfdb_sample_grouping <- function (mdb,
     # Importing is probably done, so create indexes if we need to
     mfdb_finish_import(mdb)
 
-    # Do we know what these map to in SQL?
-    for (col in c(group_cols, filter_cols)) {
+    # All group_cols should be valid
+    for (col in group_cols) {
         if (is.null(col_defs[[col]])) {
             stop("Unknown column ", col)
         }
     }
+
+    # Pick out any extra params we can make use of, ignore rest
+    filter_cols <- intersect(names(params), names(col_defs))
 
     # Call pre-query for all groups
     for (col in union(group_cols, filter_cols)) {
