@@ -6,7 +6,7 @@ mfdb_show_schema <- function() {
 
 # Destroy everything in current schema
 mfdb_destroy_schema <- function(mdb) {
-    for(t in c('sample', 'survey', 'temperature', 'division', 'survey_index', mfdb_cs_taxonomy, mfdb_taxonomy, 'mfdb_schema')) {
+    for(t in c('prey', 'predator', 'sample', 'survey', 'temperature', 'division', 'survey_index', mfdb_cs_taxonomy, mfdb_taxonomy, 'mfdb_schema')) {
         mdb$logger$info(paste("Removing table", t))
         tryCatch(mfdb_send(mdb, "DROP TABLE ", t, " CASCADE"), error = function(e) {
             if(grepl("does not exist", e$message)) return();
@@ -155,9 +155,52 @@ schema_from_0 <- function(mdb) {
         "CHECK(month BETWEEN 1 AND 12)",
         fk('data_source', 'areacell', 'sampling_type')
     ))
+
+    mfdb_create_table(mdb, "predator", "Predators in predator/prey sample", cols = c(
+        "predator_id", "SERIAL PRIMARY KEY", "",
+        "data_source_id", "INT", "",
+        "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
+
+        "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
+        "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
+        "vessel_id", "INT REFERENCES vessel(vessel_id)", "Vessel used",
+        "sampling_type_id", "INT", "Sampling type",
+
+        "year", "INT NOT NULL", "Year sample was undertaken",
+        "month", "INT NOT NULL", "Month sample was undertaken",
+        "areacell_id", "INT", "Areacell data relates to",
+
+        "stomach_name", "VARCHAR(128) NOT NULL", "Stomach identifier",
+        "species_id", "BIGINT REFERENCES species(species_id)", "",
+        "age", "INT", "Age (years)",
+        "sex_id", "INT REFERENCES sex(sex_id)", "Sex ID",
+        "maturity_stage_id", "INT REFERENCES maturity_stage(maturity_stage_id)", "Maturity Stage ID",
+        "stomach_state_id", "INT REFERENCES stomach_state(stomach_state_id)", "Status of stomach when caught",
+
+        "length", "REAL", "Length of predator",
+        "weight", "REAL", "Weight of predator",
+        NULL
+    ), keys = c(
+        "CHECK(month BETWEEN 1 AND 12)",
+        fk('data_source', 'areacell', 'sampling_type')
+    ))
+
+    mfdb_create_table(mdb, "prey", "Prey in predator/prey sample", cols = c(
+        "prey_id", "SERIAL PRIMARY KEY", "",
+        "predator_id", "INT REFERENCES predator(predator_id)", "The stomach this sample was found in",
+
+        "species_id", "BIGINT REFERENCES species(species_id)", "",
+        "digestion_stage_id", "INT REFERENCES digestion_stage(digestion_stage_id)", "Digestion stage",
+
+        "length", "REAL", "Length of prey / mean length of all prey",
+        "weight", "REAL", "Weight of prey / mean weight of all prey",
+        "count", "INT NOT NULL DEFAULT 1", "Number of prey meeting this criteria",
+        NULL
+    ), keys = c(
+    ))
 }
 
-mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sex", "maturity_stage", "species")
+mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage")
 mfdb_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type")
 
 # Populate tables with package-provided data

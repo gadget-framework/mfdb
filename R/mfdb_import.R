@@ -167,6 +167,71 @@ mfdb_import_temperature <- function(mdb, data_in) {
     })
 }
 
+# Import 2 data frames, one for predators, one for prey
+mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "default_stomach") {
+    predator_data <- data.frame(
+        case_study_id = c(mdb$case_study_id),
+
+        institute_id = sanitise_col(mdb, predator_data, 'institute', lookup = 'institute', default = c(NA)),
+        gear_id = sanitise_col(mdb, predator_data, 'gear', lookup = 'gear', default = c(NA)),
+        vessel_id = sanitise_col(mdb, predator_data, 'vessel', lookup = 'vessel', default = c(NA)),
+        sampling_type_id = sanitise_col(mdb, predator_data, 'sampling_type', lookup = 'sampling_type', default = c(NA)),
+
+        year = sanitise_col(mdb, predator_data, 'year'),
+        month = sanitise_col(mdb, predator_data, 'month'),
+        areacell_id = sanitise_col(mdb, predator_data, 'areacell', lookup = 'areacell'),
+
+        stomach_name = sanitise_col(mdb, predator_data, 'stomach_name'),
+        species_id = sanitise_col(mdb, predator_data, 'species', lookup = 'species', default = c(NA)),
+        age = sanitise_col(mdb, predator_data, 'age', default = c(NA)),
+        sex_id = sanitise_col(mdb, predator_data, 'sex', lookup = 'sex', default = c(NA)),
+        maturity_stage_id = sanitise_col(mdb, predator_data, 'maturity_stage', lookup = 'maturity_stage', default = c(NA)),
+        stomach_state_id = sanitise_col(mdb, predator_data, 'stomach_state', lookup = 'stomach_state', default = c(NA)),
+
+        length = sanitise_col(mdb, predator_data, 'length', default = c(NA)),
+        weight = sanitise_col(mdb, predator_data, 'weight', default = c(NA)),
+        stringsAsFactors = TRUE)
+    prey_data <- data.frame(
+        predator_id = as.factor(sanitise_col(mdb, prey_data, 'stomach_name')),
+        species_id = sanitise_col(mdb, prey_data, 'species', lookup = 'species', default = c(NA)),
+        digestion_stage_id = sanitise_col(mdb, prey_data, 'digestion_stage', lookup = 'digestion_stage', default = c(NA)),
+
+        length = sanitise_col(mdb, prey_data, 'length', default = c(NA)),
+        weight = sanitise_col(mdb, prey_data, 'weight', default = c(NA)),
+        count = sanitise_col(mdb, prey_data, 'count', default = c(1)),
+        stringsAsFactors = TRUE)
+
+    mfdb_transaction(mdb, {
+        data_source_id <- get_data_source_id(mdb, data_source)
+
+        # Delete everything with matching data_source
+        mfdb_send(mdb, "DELETE FROM prey WHERE predator_id IN",
+            "(SELECT predator_id FROM predator",
+            " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
+            " AND data_source_id = ", sql_quote(data_source_id),
+            ")",
+            NULL)
+        mfdb_send(mdb, "DELETE FROM predator",
+            " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
+            " AND data_source_id = ", sql_quote(data_source_id),
+            NULL)
+
+        # Insert predator data, returning all IDs
+        res <- mfdb_insert(mdb, 'predator', predator_data,
+            extra = c(data_source_id = data_source_id),
+            returning = "predator_id")
+
+        # Map predator names to database IDs
+        mapping <- structure(
+            res$predator_id,
+            names = as.character(predator_data$stomach_name))
+        levels(prey_data$predator_id) <- mapping[levels(prey_data$predator_id)]
+
+        # Insert prey data
+        res <- mfdb_insert(mdb, 'prey', prey_data)
+    })
+}
+
 # Check column content, optionally resolving lookup
 sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL) {
     data_col_name <- grep(col_name, names(data_in), ignore.case=TRUE, value=TRUE)
