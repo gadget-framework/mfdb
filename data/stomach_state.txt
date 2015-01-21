@@ -1,0 +1,7 @@
+"id" "name" "description"
+1	Empty		""
+2	Full		""
+3	Regurgitated	""
+4	Remains		"Only skeletal remains"
+5	Inverted	"Stomach inverted"
+99	Lost		""
