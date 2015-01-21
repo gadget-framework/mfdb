@@ -109,3 +109,8 @@ agg_summary <- function(...) {
         do.call(agg_summary, agg_summary_args)
     }, asNamespace('mfdb'))
 }
+
+# Bodge around unittest "your test ended prematurely" brokenness
+.Last <- function() {
+    tryCatch(stop(NULL), error = function (e) invisible(NULL))
+}
