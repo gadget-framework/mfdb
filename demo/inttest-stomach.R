@@ -40,19 +40,19 @@ ok_group("Stomach data", {
         predator_data = shuffle_df(table_string("
 stomach_name	year	month	areacell	species	length	weight
 A		2000	1	45G01		COD	21	210
-D		2000	1	45G01		COD	34	240
 B		2000	1	45G01		COD	62	420
 C		2000	1	45G01		COD	33	430
+D		2000	1	45G01		COD	34	240
         ")),
         prey_data = shuffle_df(table_string("
 stomach_name	species_id	digestion_stage_id	length	weight	count
 A		CAP		1			1	10	5
 A		CLL		5			4	40	1
+B		CAP		4			1	10	5
+B		CAP		5			1	10	8
 C		CLL		2			3.5	9.5	3
 D		CAP		1			1.4	10	1
 D		CLL		5			4	40	1
-B		CAP		4			1	10	5
-B		CAP		5			1	10	8
 
         ")))
 
