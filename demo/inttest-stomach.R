@@ -92,7 +92,7 @@ E		CAP		1			1.4	10	1
              ratio = c(
                  # digested CAP in B (stages 4 & 5) out of A, B, C
                  1 / 3,
-                 # undigested CAP in A out of A, B, C
+                 # undigested CAP in A, B out of A, B, C
                  2 / 3,
                  # undigested CAP in D, E out of D, E
                  2 / 2,
