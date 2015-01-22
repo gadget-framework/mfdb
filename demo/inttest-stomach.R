@@ -40,39 +40,62 @@ ok_group("Stomach data", {
         predator_data = shuffle_df(table_string("
 stomach_name	year	month	areacell	species	length	weight
 A		2000	1	45G01		COD	21	210
-B		2000	1	45G01		COD	62	420
-C		2000	1	45G01		COD	33	430
-D		2000	1	45G01		COD	34	240
+B		2000	1	45G01		COD	34	220
+C		2000	1	45G01		COD	34	230
+
+D		2000	1	45G01		COD	62	320
+E		2000	1	45G01		COD	33	330
+
+G		2000	1	45G01		COD	34	430
         ")),
         prey_data = shuffle_df(table_string("
 stomach_name	species_id	digestion_stage_id	length	weight	count
 A		CAP		1			1	10	5
-A		CLL		5			4	40	1
+A		CAP		1			4	40	1
+B		CAP		1			1	10	5
 B		CAP		4			1	10	5
 B		CAP		5			1	10	8
+B		CAP		5			1	10	5
 C		CLL		2			3.5	9.5	3
+
 D		CAP		1			1.4	10	1
 D		CLL		5			4	40	1
-
+E		CAP		1			1.4	10	1
         ")))
 
-     # Find out the ratio of capelin in each stomach
+     # Find out the ratio of capelin in stomachs
      ok(cmp_table(
-         mfdb_stomach_ratio(mdb, c("predator_weight", "digestion_stage"), list(
+         mfdb_stomach_ratio(mdb, c("predator_weight"), list(
              predator_weight = mfdb_interval("w", c(200,300,400,500)),
-             digestion_stage = mfdb_unaggregated(),
              prey_species = 'CAP')),
          data.frame(
              year = 'all', step = 'all', area = 'all',
-             predator_weight = c('w200', 'w400', 'w400'),
-             digestion_stage = c(1,4,5),
+             predator_weight = c('w200', 'w300'),
              ratio = c(
-                 # stage-1 CAP in A + D / Everything in A + D
-                 (5 + 1) / (sum(5, 1) + sum(1, 1)),
-                 # stage-4 CAP in B / Everything in B + C
-                 (5) / (sum(5, 8)),
-                 # stage-5 CAP in B / Everything in B + C
-                 (8) / (sum(5, 8)),
+                 # CAP in A, B out of A, B, C
+                 2 / 3,
+                 # CAP in D, E out of D, E
+                 2 / 2,
+                 NULL),
+             stringsAsFactors = FALSE)), "Aggregated & got ratio")
+
+     # Find out the ratio of capelin, grouped by digestion stage
+     ok(cmp_table(
+         mfdb_stomach_ratio(mdb, c("predator_weight", "digestion_stage"), list(
+             predator_weight = mfdb_interval("w", c(200,300,400,500)),
+             digestion_stage = mfdb_group(undigested = 1, digested = 2:5),
+             prey_species = 'CAP')),
+         data.frame(
+             year = 'all', step = 'all', area = 'all',
+             predator_weight = c('w200', 'w200', 'w300'),
+             digestion_stage = c('digested', 'undigested', 'undigested'),
+             ratio = c(
+                 # digested CAP in B (stages 4 & 5) out of A, B, C
+                 1 / 3,
+                 # undigested CAP in A out of A, B, C
+                 2 / 3,
+                 # undigested CAP in D, E out of D, E
+                 2 / 2,
                  NULL),
              stringsAsFactors = FALSE)), "Aggregated & got ratio")
 })

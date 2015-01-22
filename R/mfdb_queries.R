@@ -123,49 +123,72 @@ mfdb_sample_meanweight_stddev <- function (mdb, cols, params, abundance_index = 
 
 # Return ratio of selected prey in stomach to all prey by count
 mfdb_stomach_ratio <- function (mdb, cols, params) {
-    out <- mfdb_sample_grouping(mdb,
+    pred_col_defs <- c(
+        data_source = 'c.data_source',
+
+        institute = 'c.institute',
+        gear = 'c.gear',
+        vessel = 'c.vessel',
+        sampling_type = 'c.sampling_type',
+
+        year = 'c.year',
+        timestep = 'c.month',
+        area = 'c.areacell',
+
+        predator_species = 'c.species_id',
+        age = 'c.age',
+        sex = 'c.sex_id',
+        maturity_stage = 'c.maturity_stage_id',
+        stomach_state = 'c.stomach_state_id',
+        predator_length = 'c.length',
+        predator_weight = 'c.weight',
+        NULL)
+
+    prey_col_defs <- c(
+        prey_species = 'prey.species_id',
+        digestion_stage = 'prey.digestion_stage_id',
+        prey_length = 'prey.length',
+        prey_weight = 'prey.weight',
+        prey_count = 'prey.count',
+        prey_ratio = 'prey.ratio',
+        NULL)
+
+    # Group without prey options first
+    without_prey <- mfdb_sample_grouping(mdb,
+        core_table = "predator",
+        col_defs = as.list(c(pred_col_defs)),
+        group_cols = c("year", "timestep", "area", intersect(cols, names(pred_col_defs))),
+        calc_cols = c(
+            "COUNT(DISTINCT c.predator_id) stomachs_total",
+            NULL),
         params = params,
+        generator = "mfdb_stomach_ratio")
+
+    # Group with prey restrictions
+    with_prey <- mfdb_sample_grouping(mdb,
         core_table = "predator",
         join_tables = c(
-            "INNER JOIN prey ON c.predator_id = prey.predator_id",
+            paste0("INNER JOIN prey ON c.predator_id = prey.predator_id"),
             NULL),
-        col_defs = as.list(c(
-            data_source = 'c.data_source',
-
-            institute = 'c.institute',
-            gear = 'c.gear',
-            vessel = 'c.vessel',
-            sampling_type = 'c.sampling_type',
-
-            year = 'c.year',
-            timestep = 'c.month',
-            area = 'c.areacell',
-
-            predator_species = 'c.species_id',
-            age = 'c.age',
-            sex = 'c.sex_id',
-            maturity_stage = 'c.maturity_stage_id',
-            stomach_state = 'c.stomach_state_id',
-            predator_length = 'c.length',
-            predator_weight = 'c.weight',
-
-            prey_species = 'prey.species_id',
-            digestion_stage = 'prey.digestion_stage_id',
-            prey_length = 'prey.length',
-            prey_weight = 'prey.weight',
-            prey_count = 'prey.count',
-            prey_ratio = 'prey.ratio',
-            NULL)),
+        col_defs = as.list(c(pred_col_defs, prey_col_defs)),
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            "SUM(prey.count) number",
-            "ARRAY_AGG(DISTINCT prey.predator_id) AS predator_ids",
+            "COUNT(DISTINCT c.predator_id) ratio",  # NB: This is really stomachs at this stage
             NULL),
-        post_cols = c(
-            "q.number::float / (SELECT SUM(prey.count) FROM prey WHERE predator_id = ANY(predator_ids)) ratio",
-            NULL),
-        generator = "mfdb_sample_meanweight_stddev")
-    out
+        params = params,
+        generator = "mfdb_stomach_ratio")
+    # TODO: We are regenerating temporary tables twice. This is wasteful.
+
+    if (length(with_prey) == 0) return(list())
+    # TODO: Bootstrapping is very likely broken
+    if (length(with_prey) != length(without_prey)) stop("Don't support bootstrapping for stomachs")
+
+    # Merge each of the data frames together, work out ratio
+    merged <- mapply(merge, with_prey, without_prey, SIMPLIFY = FALSE)
+    for (i in seq_len(length(with_prey))) {
+        with_prey[[i]]$ratio <- merged[[i]]$ratio / merged[[i]]$stomachs_total
+    }
+    with_prey
 }
 
 # Group up sample data by area, age or length
@@ -178,8 +201,6 @@ mfdb_sample_grouping <- function (mdb,
             institute = "c.institute_id", gear = "c.gear_id", vessel = "c.vessel_id",
             sampling_type = "c.sampling_type_id", species ="c.species_id", sex = "c.sex_id"),
         calc_cols = c(),
-        # post_cols: If specified, query is wrapped with another query, with these columns instead of calc_cols
-        post_cols = c(),
         core_table = "sample",
         # join_tables: JOIN statements to attach to the main table
         join_tables = c(),
@@ -213,14 +234,6 @@ mfdb_sample_grouping <- function (mdb,
     }
 
     out <- mfdb_fetch(mdb,
-        if (length(post_cols) > 0) c(
-            "SELECT ", paste(c(
-                "sample",
-                vapply(group_cols, function (col) ifelse(col == 'timestep', 'step', col), ""),
-                post_cols,
-                NULL), collapse = ","),
-            " FROM (",
-            NULL),
         "SELECT ", paste(c(
             paste(paste(
                 clauses(group_cols, sample_clause),
@@ -229,7 +242,7 @@ mfdb_sample_grouping <- function (mdb,
             calc_cols,
             NULL), collapse = ","),
         " FROM ", paste(c(
-            paste(c(paste(core_table, "c"), join_tables), collapse = " "),
+            paste(c(core_table, "c", join_tables), collapse = " "),
             clauses(union(group_cols, filter_cols), from_clause),
             NULL), collapse = ","),
         " WHERE ", paste(c(
@@ -238,7 +251,6 @@ mfdb_sample_grouping <- function (mdb,
             NULL), collapse = " AND "),
         " GROUP BY ", paste(seq_len(length(group_cols) + 1), collapse=","),
         " ORDER BY ", paste(seq_len(length(group_cols) + 1), collapse=","),
-        if (length(post_cols) > 0) c(") q"),
         NULL)
 
     # Break data up by sample and annotate each with the value for group_cols
