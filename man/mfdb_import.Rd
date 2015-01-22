@@ -6,6 +6,7 @@
 \alias{mfdb_import_temperature}
 \alias{mfdb_import_sampling_type}
 \alias{mfdb_import_cs_taxonomy}
+\alias{mfdb_import_stomach}
 
 \title{MareFrame Import functions}
 \description{
@@ -20,6 +21,7 @@
     mfdb_import_temperature(mdb, data_in)
     mfdb_import_sampling_type(mdb, data_in)
     mfdb_import_cs_taxonomy(mdb, taxonomy_name, data_in)
+    mfdb_import_stomach(mdb, predator_data, prey_data, data_source = "default_stomach")
 }
 \arguments{
     \item{mdb}{
@@ -28,7 +30,7 @@
     \item{taxonomy_name}{
         The name of the taxonomy to import, one of \code{areacell}, \code{sampling_type}
     }
-    \item{data_in}{
+    \item{data_in, predator_data, prey_data}{
         A \code{data.frame} of survey data to import, see details.
     }
     \item{data_source}{
@@ -107,6 +109,44 @@ The \code{data_in} should be a data.frame with the following columns:
     \item{id}{A numeric ID for this name}
     \item{name}{Required. A vector of short names to use in data, e.g. "SEA"}
     \item{description}{Optional. A vector of descriptive names, e.g. "sea sampling"}
+}
+
+\code{mfdb_import_stomach} imports data on predators and prey. The predator and prey
+data are stored separately, however they should be linked by the \code{stomach_name} column.
+If a prey has a stomach name that doesn't match a predator, then an error will be returned.
+
+The \code{predator_data} should be a data.frame with the following columns:
+\describe{
+    \item{stomach_name}{Required. An arbitary name that provides a link between the predator and prey tables}
+
+    \item{institute}{Optional. An institute name, see mfdb::institute for possible values}
+    \item{gear}{Optional. Gear name, see mfdb::gear for possible values}
+    \item{vessel}{Optional. Vessel name, see mfdb::vessel for possible values}
+    \item{sampling_type}{Optional. A sampling_type, see mfdb::sampling_type for possible values}
+
+    \item{year}{Required. Year each sample was taken, e.g. \code{c(2000,2001)}}
+    \item{month}{Required. Month (1--12) each sample was taken, e.g. \code{c(1,12)}}
+    \item{areacell}{Required. Areacell sample was taken within}
+
+    \item{species}{Optional, default \code{c(NA)}. Species of sample, see mfdb::species for possible values}
+    \item{age}{Optional, default \code{c(NA)}. Age of sample, or mean age}
+    \item{sex}{Optional, default \code{c(NA)}. Sex of sample, see mfdb::sex for possible values}
+    \item{maturity_stage}{Optional, default \code{c(NA)}. Maturity stage of sample, see mfdb::maturity_stage for possible values}
+    \item{stomach_state}{Optional, default \code{c(NA)}. Stomach state of sample, see mfdb::stomach_state for possible values}
+
+    \item{length}{Optional, default \code{c(NA)}. Length of sample}
+    \item{weight}{Optional, default \code{c(NA)}. Weight of sample}
+}
+
+The \code{prey_data} should be a data.frame with the following columns:
+\describe{
+    \item{stomach_name}{Required. The stomach name of the predator this was found in}
+    \item{species}{Optional, default \code{c(NA)}. Species of sample, see mfdb::species for possible values}
+    \item{digestion_stage}{Optional, default \code{c(NA)}. Stage of digestion of the sample, see mfdb::digestion_stage for possible values}
+
+    \item{length}{Optional, default \code{c(NA)}. Length of sample / mean length of all samples}
+    \item{weight}{Optional, default \code{c(NA)}. Weight of sample / mean weight of all samples}
+    \item{count}{Optional, default \code{c(1)}. Number of samples this row represents (i.e. if the data is aggregated)}
 }
 
 }

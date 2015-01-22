@@ -5,3 +5,4 @@ inttest-dataimport		Exercise data loading
 inttest-samples			Exercise sampling of data
 inttest-bootstrap		Exercise taking bootstrap samples of data
 inttest-abundanceindex		Excerise using something else as an abundance index (e.g. for acoustic data)
+inttest-stomach			Excerise predator / prey relationship stomach data

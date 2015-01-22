@@ -1,6 +1,7 @@
 \name{mfdb-data}
 \alias{mfdb-data}
 \alias{case_study}
+\alias{digestion_stage}
 \alias{fleet}
 \alias{gear}
 \alias{institute}
@@ -8,6 +9,7 @@
 \alias{maturity_stage}
 \alias{sex}
 \alias{species}
+\alias{stomach_state}
 \alias{vessel}
 
 \title{MareFrame DB Datasets}
