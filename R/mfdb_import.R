@@ -222,10 +222,14 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
             returning = "predator_id")
 
         # Map predator names to database IDs
-        mapping <- structure(
+        newlevels <- structure(
             res$predator_id,
-            names = as.character(predator_data$stomach_name))
-        levels(prey_data$predator_id) <- mapping[levels(prey_data$predator_id)]
+            names = as.character(predator_data$stomach_name))[levels(prey_data$predator_id)]
+        if (any(is.na(newlevels))) {
+            stop("Prey data mentions stomachs not in predator data: ",
+                paste(levels(prey_data$predator_id)[is.na(newlevels)], collapse = ","))
+        }
+        levels(prey_data$predator_id) <- newlevels
 
         # Insert prey data
         res <- mfdb_insert(mdb, 'prey', prey_data)

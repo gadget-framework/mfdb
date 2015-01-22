@@ -100,3 +100,62 @@ E		CAP		1			1.4	10	1
              stringsAsFactors = FALSE)), "Aggregated & got ratio")
 })
 
+ok_group("Predator/Prey mismatch", {
+    ok(cmp_error(mfdb_import_stomach(mdb,
+        data_source = "cod2000",
+        predator_data = shuffle_df(table_string("
+stomach_name	year	month	areacell	species	length	weight
+AA		2000	1	45G02		COD	21	210
+BB		2000	1	45G02		COD	34	220
+CC		2000	1	45G02		COD	34	230
+        ")),
+        prey_data = shuffle_df(table_string("
+stomach_name	species_id	digestion_stage_id	length	weight	count
+AA		CAP		1			1	10	5
+AA		CAP		1			4	40	1
+BB		CAP		1			1	10	5
+XX		CLL		2			3.5	9.5	3
+BB		CAP		4			1	10	5
+YY		CLL		2			3.5	9.5	3
+        "))), "stomachs.*XX.*YY"), "Complained that XX and YY are unknown stomachs")
+
+     ok(cmp_table(
+         mfdb_stomach_ratio(mdb, c("predator_weight"), list(
+             predator_weight = mfdb_interval("w", c(200,300,400,500)),
+             prey_species = 'CAP')),
+         data.frame(
+             year = 'all', step = 'all', area = 'all',
+             predator_weight = c('w200', 'w300'),
+             ratio = c(
+                 # CAP in A, B out of A, B, C
+                 2 / 3,
+                 # CAP in D, E out of D, E
+                 2 / 2,
+                 NULL),
+             stringsAsFactors = FALSE)), "Old data is still available in table")
+
+    # Replace data, should modify the output of queries
+    mfdb_import_stomach(mdb,
+        data_source = "cod2000",
+        predator_data = shuffle_df(table_string("
+stomach_name	year	month	areacell	species	length	weight
+AA		2000	1	45G02		COD	21	210
+BB		2000	1	45G02		COD	34	220
+CC		2000	1	45G02		COD	34	230
+        ")),
+        prey_data = shuffle_df(table_string("
+stomach_name	species_id	digestion_stage_id	length	weight	count
+AA		CAP		1			1	10	5
+        ")))
+     ok(cmp_table(
+         mfdb_stomach_ratio(mdb, c("predator_weight"), list(
+             predator_weight = mfdb_interval("w", c(200,300,400,500)),
+             prey_species = 'CAP')),
+         data.frame(
+             year = 'all', step = 'all', area = 'all',
+             predator_weight = c('w200'),
+             ratio = c(
+                 1 / 3,
+                 NULL),
+             stringsAsFactors = FALSE)), "Old data was replaced")
+})

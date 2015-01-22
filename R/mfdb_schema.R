@@ -158,8 +158,8 @@ schema_from_0 <- function(mdb) {
 
     mfdb_create_table(mdb, "predator", "Predators in predator/prey sample", cols = c(
         "predator_id", "SERIAL PRIMARY KEY", "",
-        "data_source_id", "INT", "",
-        "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
+        "data_source_id", "INT NOT NULL", "",
+        "case_study_id", "INT NOT NULL REFERENCES case_study(case_study_id)", "Case study data is relevant to",
 
         "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
@@ -187,7 +187,7 @@ schema_from_0 <- function(mdb) {
 
     mfdb_create_table(mdb, "prey", "Prey in predator/prey sample", cols = c(
         "prey_id", "SERIAL PRIMARY KEY", "",
-        "predator_id", "INT REFERENCES predator(predator_id)", "The stomach this sample was found in",
+        "predator_id", "INT NOT NULL REFERENCES predator(predator_id)", "The stomach this sample was found in",
 
         "species_id", "BIGINT REFERENCES species(species_id)", "",
         "digestion_stage_id", "INT REFERENCES digestion_stage(digestion_stage_id)", "Digestion stage",
