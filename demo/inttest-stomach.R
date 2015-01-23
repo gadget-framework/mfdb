@@ -29,11 +29,11 @@ shuffle_df <- function(df) df[sample(nrow(df)),]
 mfdb('', db_params = db_params, destroy_schema = TRUE)
 mdb <- mfdb('Test', db_params = db_params, save_temp_tables = TRUE)
 
-ok_group("Stomach data", {
-    # Set-up areas/divisions
-    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(10,200,400)))
-    mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G03')))
+# Set-up areas/divisions
+mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(10,200,400)))
+mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G03')))
 
+ok_group("Stomach data", {
     # Import a stomach survey
     mfdb_import_stomach(mdb,
         data_source = "cod2000",
@@ -98,6 +98,58 @@ E		CAP		1			1.4	10	1
                  2 / 2,
                  NULL),
              stringsAsFactors = FALSE)), "Aggregated & got ratio")
+})
+
+ok_group("Stomach content likelihood compoment", {
+     gd <- gadget_directory(tempfile())
+     # Find out the ratio of capelin in stomachs
+     res <- mfdb_stomach_presenceratio(mdb, c("predator_length", "prey_length"), list(
+             predator_length = mfdb_interval("cod", c(20,30,40,50)),
+             prey_length = mfdb_interval("cap", c(1,1.3,3,5)),
+             prey_species = 'CAP'))
+
+     gadget_dir_write(gd, gadget_likelihood_component(
+         "stomachcontent",
+         name = "cod-stomachs",
+         prey_labels = c("codimm", "codmat", "codother"),
+         prey_digestion_coefficients = 3:1,
+         predator_names = c("cuthbert", "dibble"),
+         data = res[[1]]))
+
+     ok(cmp_file(gd, "likelihood",
+         ver_string,
+         "; ",
+         "[component]",
+         "name\tcod-stomachs",
+         "weight\t0",
+         "type\tstomachcontent",
+         "function\tscsimple",
+         "datafile\tData/stomachcontent.cod-stomachs.scsimple",
+         "epsilon\t10",
+         "areaaggfile\tAggfiles/stomachcontent.cod-stomachs.area.agg",
+         "predatornames\tcuthbert\tdibble",
+         "predatorlengths\t",
+         "lenaggfile\tAggfiles/stomachcontent.cod-stomachs.len.agg",
+         "preyaggfile\tAggfiles/stomachcontent.cod-stomachs.prey.agg",
+         NULL), "likelihood file contains stomachcontent component")
+    ok(cmp_file(gd, "Aggfiles/stomachcontent.cod-stomachs.prey.agg",
+        ver_string,
+        "; ",
+        "cap1\t",
+        "codimm\tcodmat",
+        "lengths\t1\t1.3",
+        "digestioncoefficients\t3\t2\t1",
+        "; ",
+        "cap1.3\t",
+        "codimm\tcodmat",
+        "lengths\t1.3\t3",
+        "digestioncoefficients\t3\t2\t1",
+        "; ",
+        "cap3\t",
+        "codimm\tcodmat",
+        "lengths\t3\t5",
+        "digestioncoefficients\t3\t2\t1",
+        NULL), "prey aggregation file")
 })
 
 ok_group("Predator/Prey mismatch", {
