@@ -153,18 +153,9 @@ mfdb_import_division <- function (mdb, data_in) {
 
 # Import temperature data for entire region
 mfdb_import_temperature <- function(mdb, data_in) {
-    mfdb_transaction(mdb, {
-        dbSendQuery(mdb$db, paste0(
-            "DELETE FROM temperature WHERE",
-            " case_study_id IN ", sql_quote(mdb$case_study_id, always_bracket = TRUE),
-            ""))
-        res <- mfdb_insert(mdb, 'temperature', data.frame(
-            case_study_id = c(mdb$case_study_id),
-            year = sanitise_col(mdb, data_in, 'year'),
-            month = sanitise_col(mdb, data_in, 'month'),
-            areacell_id = sanitise_col(mdb, data_in, 'areacell', lookup = 'areacell'),
-            temperature = sanitise_col(mdb, data_in, 'temperature')))
-    })
+    data_in$value <- data_in$temperature
+    data_in$index_type = 'temperature'
+    mfdb_import_survey_index(mdb, data_in, data_source = "default_temperature")
 }
 
 # Import 2 data frames, one for predators, one for prey
