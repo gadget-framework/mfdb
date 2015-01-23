@@ -7,7 +7,7 @@ gadget_areafile <- function (size, temperature, area = attr(size, 'area')) {
         0)
 
     # Round temperature results
-    temperature$temperature <- round(temperature$temperature, 1)
+    temperature$mean <- round(temperature$mean, 1)
 
     # Make sure sizes coming in match the aggregation file
     mapped_sizes <- vapply(names(area), function(n) {

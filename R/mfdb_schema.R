@@ -6,7 +6,7 @@ mfdb_show_schema <- function() {
 
 # Destroy everything in current schema
 mfdb_destroy_schema <- function(mdb) {
-    for(t in c('prey', 'predator', 'sample', 'survey', 'temperature', 'division', 'survey_index', mfdb_cs_taxonomy, mfdb_taxonomy, 'mfdb_schema')) {
+    for(t in c('prey', 'predator', 'sample', 'survey', 'division', 'survey_index', mfdb_cs_taxonomy, mfdb_taxonomy, 'mfdb_schema')) {
         mdb$logger$info(paste("Removing table", t))
         tryCatch(mfdb_send(mdb, "DROP TABLE ", t, " CASCADE"), error = function(e) {
             if(grepl("does not exist", e$message)) return();
@@ -114,18 +114,6 @@ schema_from_0 <- function(mdb) {
     ), keys = c(
         "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)"
     ))
-    mfdb_create_table(mdb, "temperature", "Time-series data for areacell temperature", cols = c(
-        "temperature_id", "SERIAL PRIMARY KEY", "",
-        "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
-
-        "areacell_id", "INT", "Areacell data relates to",
-        "year", "INT NOT NULL", "Year sample was undertaken",
-        "month", "INT NOT NULL", "Month sample was undertaken",
-        "temperature", "REAL NOT NULL", "Temperature at this point in time"
-    ), keys = c(
-        "UNIQUE(case_study_id, areacell_id, year, month)",
-        fk('areacell')
-    ))
 
     mfdb_create_table(mdb, "sample", "Samples within a survey", cols = c(
         "sample_id", "SERIAL PRIMARY KEY", "",
@@ -208,6 +196,14 @@ mfdb_update_taxonomy <- function(mdb) {
     for (t in mfdb_taxonomy) {
         mfdb_import_taxonomy(mdb, t, get(t, pos = as.environment("package:mfdb")))
     }
+}
+
+# Populate case-study taxonomy tables with default data
+mfdb_update_cs_taxonomy <- function(mdb) {
+    mfdb_import_cs_taxonomy(mdb, "index_type", data.frame(
+        id = c(99999),
+        name = 'temperature',
+        stringsAsFactors = FALSE))
 }
 
 # Create any required indexes, if they don't already exist

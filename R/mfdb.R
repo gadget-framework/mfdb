@@ -59,6 +59,8 @@ mfdb <- function(case_study_name,
             state = new.env(),
             db = db_connection), class = "mfdb")
 
+    mfdb_update_cs_taxonomy(mdb)
+
     invisible(mdb)
 }
 
