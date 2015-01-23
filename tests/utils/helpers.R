@@ -57,9 +57,10 @@ expect_true <- function(exp) {
 }
 
 cmp_file <- function (gd, filename, ...) {
-    cmp(
-        strsplit(as.character(gadget_dir_read(gd, filename)), "\n")[[1]],
-        c(...))
+    f <- file(file.path(gd$dir, filename))
+    lines <- readLines(f, n = -1)
+    close(f)
+    cmp(lines, c(...))
 }
 
 # Replace function with new one, optionally returning to normal after expr
