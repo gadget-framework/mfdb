@@ -251,10 +251,47 @@ gadget_surveydistribution_component <- function (
     stop("Not implemented")
 }
 
+# http://www.hafro.is/gadget/userguide/userguide.html#x1-1300008.8
 gadget_stomachcontent_component <- function (
         name,
+        data_function = 'scsimple',
+        epsilon = 10,
+        area = NULL,
+        length = NULL,
+        prey_length = NULL,
+        prey_labels = c(""),
+        prey_digestion_coefficients = c(1,0,0),
+        predator_names = c(),
         data = NULL) {
-    stop("Not implemented")
+
+    prefix <- paste0('stomachcontent.', name, '.')
+
+    # Make sure we have the columns we need
+    compare_cols(names(data), c("year", "step", "area", NA, NA, "ratio"))
+
+    # Generate prey file
+    if(is.null(prey_length)) prey_length <- attr(data, "prey_length")
+    if(is.null(prey_length)) stop("Data should group by prey_length to build prey aggregation file")
+    prey_components <- lapply(names(prey_length), function (name) {
+        structure(
+            list(
+                name = NULL,
+                lbls = (if (length(prey_labels) > 1) prey_labels[seq(2,length(prey_labels))]),
+                lengths = c(min(prey_length[[name]]), max(prey_length[[name]])),
+                digestioncoefficients = prey_digestion_coefficients),
+            names = c(name, prey_labels[[1]], 'lengths', 'digestioncoefficients'),
+            preamble = "")
+    })
+
+    list(
+        "function" = data_function,
+        datafile = gadget_file(fname('Data', prefix, data_function), data=data),
+        epsilon = epsilon,
+        areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area),
+        predatornames = predator_names,
+        predatorlengths = NULL,
+        lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length),
+        preyaggfile = gadget_file(fname('Aggfiles', prefix, 'prey.agg'),components=prey_components))
 }
 
 gadget_recaptures_component <- function (

@@ -8,6 +8,7 @@ all_components <- c(
         "catchdistribution",
         "catchstatistics",
         "stockdistribution",
+        "stomachcontent",
         "migrationpenalty",
         NULL)
 
@@ -41,6 +42,11 @@ for (type in all_components) {
             c <- gadget_likelihood_component(
                 "stockdistribution",
                 data = data.frame(year = 1, step = 1, area = 1, aardvark = 1, length = 1, number = 1))
+        } else if (type == "stomachcontent") {
+            c <- gadget_likelihood_component(
+                "stomachcontent",
+                data = data.frame(year = 1, step = 1, area = 1, predator = 1, prey = 1, ratio = 1),
+                prey_length = list(a = c(1,4)))
         } else {
             c <- gadget_likelihood_component(type)
         }
@@ -70,6 +76,12 @@ for (type in all_components) {
                 "stockdistribution",
                 name = "gerald", weight = 0.542,
                 data = data.frame(year = 1, step = 1, area = 1, aardvark = 1, length = 1, number = 1))
+        } else if (type == "stomachcontent") {
+            c <- gadget_likelihood_component(
+                "stomachcontent",
+                name = "gerald", weight = 0.542,
+                data = data.frame(year = 1, step = 1, area = 1, predator = 1, prey = 1, ratio = 1),
+                prey_length = list(a = c(1,4)))
         } else {
             c <- gadget_likelihood_component(type, name = "gerald", weight = 0.542)
         }
