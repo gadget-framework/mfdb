@@ -38,7 +38,7 @@ export(mfdb_sample_meanlength_stddev)
 export(mfdb_sample_meanlength)
 export(mfdb_sample_meanweight)
 export(mfdb_sample_meanweight_stddev)
-export(mfdb_stomach_ratio)
+export(mfdb_stomach_presenceratio)
 
 # mfdb_unaggregated.R
 export(mfdb_unaggregated)

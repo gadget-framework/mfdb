@@ -6,7 +6,7 @@
 \alias{mfdb_sample_meanlength}
 \alias{mfdb_sample_meanweight}
 \alias{mfdb_sample_meanweight_stddev}
-\alias{mfdb_stomach_ratio}
+\alias{mfdb_stomach_presenceratio}
 
 \title{MareFrame DB queries}
 
@@ -22,7 +22,7 @@ mfdb_sample_meanlength(mdb, cols, params, abundance_index = NULL)
 mfdb_sample_meanlength_stddev(mdb, cols, params, abundance_index = NULL)
 mfdb_sample_meanweight(mdb, cols, params, abundance_index = NULL)
 mfdb_sample_meanweight_stddev(mdb, cols, params, abundance_index = NULL)
-mfdb_stomach_ratio(mdb, cols, params)
+mfdb_stomach_presenceratio(mdb, cols, params)
 }
 
 \arguments{

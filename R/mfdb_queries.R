@@ -122,7 +122,7 @@ mfdb_sample_meanweight_stddev <- function (mdb, cols, params, abundance_index = 
 }
 
 # Return ratio of selected prey in stomach to all prey by count
-mfdb_stomach_ratio <- function (mdb, cols, params) {
+mfdb_stomach_presenceratio <- function (mdb, cols, params) {
     pred_col_defs <- c(
         data_source = 'c.data_source',
 
@@ -162,7 +162,7 @@ mfdb_stomach_ratio <- function (mdb, cols, params) {
             "COUNT(DISTINCT c.predator_id) stomachs_total",
             NULL),
         params = params,
-        generator = "mfdb_stomach_ratio")
+        generator = "mfdb_stomach_presenceratio")
 
     # Group with prey restrictions
     with_prey <- mfdb_sample_grouping(mdb,
@@ -176,7 +176,7 @@ mfdb_stomach_ratio <- function (mdb, cols, params) {
             "COUNT(DISTINCT c.predator_id) ratio",  # NB: This is really stomachs at this stage
             NULL),
         params = params,
-        generator = "mfdb_stomach_ratio")
+        generator = "mfdb_stomach_presenceratio")
     # TODO: We are regenerating temporary tables twice. This is wasteful.
 
     if (length(with_prey) == 0) return(list())

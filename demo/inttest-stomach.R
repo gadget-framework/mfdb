@@ -65,7 +65,7 @@ E		CAP		1			1.4	10	1
 
      # Find out the ratio of capelin in stomachs
      ok(cmp_table(
-         mfdb_stomach_ratio(mdb, c("predator_weight"), list(
+         mfdb_stomach_presenceratio(mdb, c("predator_weight"), list(
              predator_weight = mfdb_interval("w", c(200,300,400,500)),
              prey_species = 'CAP')),
          data.frame(
@@ -81,7 +81,7 @@ E		CAP		1			1.4	10	1
 
      # Find out the ratio of capelin, grouped by digestion stage
      ok(cmp_table(
-         mfdb_stomach_ratio(mdb, c("predator_weight", "digestion_stage"), list(
+         mfdb_stomach_presenceratio(mdb, c("predator_weight", "digestion_stage"), list(
              predator_weight = mfdb_interval("w", c(200,300,400,500)),
              digestion_stage = mfdb_group(undigested = 1, digested = 2:5),
              prey_species = 'CAP')),
@@ -120,7 +120,7 @@ YY		CLL		2			3.5	9.5	3
         "))), "stomachs.*XX.*YY"), "Complained that XX and YY are unknown stomachs")
 
      ok(cmp_table(
-         mfdb_stomach_ratio(mdb, c("predator_weight"), list(
+         mfdb_stomach_presenceratio(mdb, c("predator_weight"), list(
              predator_weight = mfdb_interval("w", c(200,300,400,500)),
              prey_species = 'CAP')),
          data.frame(
@@ -148,7 +148,7 @@ stomach_name	species_id	digestion_stage_id	length	weight	count
 AA		CAP		1			1	10	5
         ")))
      ok(cmp_table(
-         mfdb_stomach_ratio(mdb, c("predator_weight"), list(
+         mfdb_stomach_presenceratio(mdb, c("predator_weight"), list(
              predator_weight = mfdb_interval("w", c(200,300,400,500)),
              prey_species = 'CAP')),
          data.frame(
