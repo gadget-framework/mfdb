@@ -1,5 +1,6 @@
     Unreleased
 
+    * Give examples of invalid data if import fails
     * Add surveyindicies, migrationpenalty likelihood components
     * Allow specifying an abundance_index when fetching mean length
     * Add survey_index table and index_type taxonomy, to store acoustic data

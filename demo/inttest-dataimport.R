@@ -43,7 +43,7 @@ ok_group("Areacell/divisions", {
     ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM division WHERE case_study_id = 0")[1,1], 3), "Inserted 3 rows into division")
 
     # Can't populate with invalid areacells, divC was rolled back so still 3 rows
-    ok(cmp_error(mfdb_import_division(mdb, list(divB = c('45G01', '45G02', '45G08'), divC = c('45G01'))), 'areacell vocabulary'), "Invalid areacell values")
+    ok(cmp_error(mfdb_import_division(mdb, list(divB = c('45G01', '45G02', '45G08'), divC = c('45G01'))), 'areacell vocabulary.*45G08'), "Invalid areacell values")
     ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM division WHERE case_study_id = 0")[1,1], 3), "Inserted 3 rows into division")
 
     # Worked this time
