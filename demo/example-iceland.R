@@ -120,3 +120,77 @@ gadget_dir_write(gd, gadget_likelihood_component("catchdistribution",
                                                  fleetnames = c("comm"),
                                                  stocknames = c("codimm", "codmat")))
 rm(aggdata)
+
+proc.time()
+
+# Stomach data
+
+# ### ffiskar - Predator
+# synis.id - survey id (Join to get year/month/lat/lon)
+# flokk.id - category id
+#
+# faerslunumer - entry number (not unique to synis.id)
+# ranfiskur - predator (TODO: count? Type?)
+# lengd - length of predator
+# 
+# fj.fmaga - Prey in stomach? (0/1)
+# fj.omelt - Undigested? (0/1)
+# fj.tomra - Empty stomachs? (0/1)
+# fj.aelt - Vomited? (0/1)
+# kvarnanr - otolith number (an identifier) "biologists can use the otoliths recovered...to determine the type of fish they ate."
+# fj.uthverfir - number with stomachs inverted / inside out
+# lenfi - (prey) length category
+# 
+# The other one I use is fhopar:
+# ### fhopar - Prey
+# flokk.id - category id (TODO: Can we use this as a stomach ID, does it link to the other table)
+# faeduhopur - prey group (can be down to the species or as far as even a phylum I think ... these are in latin thanksfully)
+# fjoldi - number
+# thyngd - weight
+# meltingarstig - State of digestion 1:undigested--5:completely digested
+
+# Map some of the prey species
+prey_species <- c(
+    "ammodytx" = "SAX",
+    "amphipod" = "AAZ",
+    "pand bor" = "PRA",
+    NULL)
+
+# Select predators and prey for autumn survey
+stations <- subset(stodvar, synaflokkur == 30) ## autumn survey 35
+predators <- subset(ffiskar, synis.id %in% stations$synis.id & ranfiskur == 1)
+predators <- merge(predators, stations[c('synis.id','ar','man','lat','lon')])
+preys <- subset(fhopar, flokk.id %in% predators$flokk.id)
+
+mfdb_import_stomach(mdb,
+    data_source = "stomach-synaflokkur-30",
+    predator_data = data.frame(
+        stomach_name = predators$flokk.id,
+        year = predators$ar,
+        month = predators$man,
+        areacell = d2sr(predators$lat, -predators$lon),
+        species = 'COD',
+        length = predators$lengd,
+        stringsAsFactors = TRUE),
+    prey_data = data.frame(
+        stomach_name = preys$flokk.id,
+        species = prey_species[preys$faeduhopur],
+        digestion_stage = preys$meltingarstig,
+        length = preys$thyngd,
+        count = preys$fjoldi,
+        stringsAsFactors = TRUE))
+
+# Find out the ratio of pand bor in stomachs
+res <- mfdb_stomach_presenceratio(mdb, c("predator_length", "prey_length"), list(
+        predator_length = mfdb_step_interval("cod", 10, to = 200),
+        prey_length = mfdb_step_interval("pra", 50, to = 100, open_ended = TRUE),
+        prey_species = 'PRA'))
+
+gadget_dir_write(gd, gadget_likelihood_component(
+    "stomachcontent",
+    prey_labels = c("praimm", "pramat"),
+    prey_digestion_coefficients = 3:1,
+    predator_names = c("cod"),
+    data = res[[1]]))
+
+proc.time()
