@@ -108,14 +108,14 @@ Installing
 You can use devtools to install this directly:
 
     # install.packages("devtools")
-    devtools::install_github("mareframe/mfdb", ref = "1.x")
+    devtools::install_github("mareframe/mfdb", ref = "2.x")
 
 Or without:-
 
     # install.packages("downloader")
     pkg_file <- tempfile()
     downloader::download(url =
-        'https://github.com/mareframe/mfdb/archive/1.x.tar.gz',
+        'https://github.com/mareframe/mfdb/archive/2.x.tar.gz',
         mode = 'wb', destfile = pkg_file)
     install.packages(pkg_file, repos = NULL, type = 'source')
 
