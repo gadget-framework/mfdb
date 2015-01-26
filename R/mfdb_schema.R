@@ -33,7 +33,7 @@ mfdb_update_schema <- function(mdb) {
         stop(paste(
             "DB Schema version", schema_version[1][1],
             "does not match package version", package_major_version(),
-            "no upgrade step available. call mdb(destroy_schema = TRUE) first.",
+            "no upgrade step available. call mfdb(destroy_schema = TRUE) first.",
             "Warning: This *will destroy* any existing data"))
     } else {
         mdb$logger$debug("Schema up-to-date")
