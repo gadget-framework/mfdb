@@ -168,8 +168,8 @@ mfdb_update <- function(mdb, table_name, data_in, returning = "", extra = c(), w
 }
 
 # Pre-load data into temporary table, return name of temporary table
-mfdb_bulk_copy <- function(mdb, target_table, data_in) {
-    temp_tbl <- "mfdb_temp_insert"
+mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
+    temp_tbl <- basename(tempfile(pattern = "temp_insert_", tmpdir = ""))
 
     # Fetch table definition from DB, so we can recreate for temporary table
     cols <- mfdb_fetch(mdb, "SELECT column_name, data_type",
@@ -191,7 +191,9 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in) {
         field.types = structure(cols[names(data_in), 'data_type'], names = names(data_in)))
     mfdb_send(mdb, "SET CLIENT_ENCODING TO 'UTF8'")
 
-    return(temp_tbl)
+    tryCatch(fn(temp_tbl), finally = function (e) {
+        mfdb_send(mdb, "DROP TABLE ", temp_tbl)
+    })
 }
 
 mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
