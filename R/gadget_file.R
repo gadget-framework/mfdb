@@ -18,9 +18,10 @@ print.gadget_file <- function (x, ...) {
         if (is.character(name) && nzchar(name)) cat(paste0('[', name,']\n'))
 
         # properties are in key\tvalue1\tvalue2... form
-        if(length(comp) > 0) for (i in 1:length(comp)) {
+        for (i in seq_len(length(comp))) {
             cat(names(comp)[[i]], "\t", sep = "")
-            cat(paste(comp[[i]], collapse = "\t"), sep = "")
+            cat(comp[[i]], sep = "\t")
+
             if (length(attr(comp[[i]], "comment")) > 0) {
                 if (length(comp[[i]]) > 0) cat("\t\t")
                 cat("; ", attr(comp[[i]], "comment"), sep = "")
