@@ -85,10 +85,8 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
 
 
     # Likely to be pretty big, so pre-load data into a temporary table
-    temp_tbl <- mfdb_bulk_copy(mdb, 'sample', survey_sample)
-
-    # Remove data_source and re-insert
-    tryCatch(mfdb_transaction(mdb, {
+    temp_tbl <- mfdb_bulk_copy(mdb, 'sample', survey_sample, function (temp_tbl) mfdb_transaction(mdb, {
+        # Remove data_source and re-insert
         data_source_id <- get_data_source_id(mdb, data_source)
         mfdb_send(mdb, "DELETE FROM sample",
             " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
@@ -100,9 +98,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
             " SELECT ", paste(names(survey_sample), collapse=","), ", ", sql_quote(data_source_id),
             " FROM ", temp_tbl,
             NULL)
-    }), finally = function (e) {
-        mfdb_send(mdb, "DROP TABLE ", temp_tbl)
-    })
+    }))
 }
 
 mfdb_import_survey_index <- function (mdb, data_in, data_source = 'default_index') {
@@ -114,10 +110,8 @@ mfdb_import_survey_index <- function (mdb, data_in, data_source = 'default_index
         month = sanitise_col(mdb, data_in, 'month'),
         value = sanitise_col(mdb, data_in, 'value'))
 
-    temp_tbl <- mfdb_bulk_copy(mdb, 'survey_index', data_in)
-
-    # Remove data_source and re-insert
-    tryCatch(mfdb_transaction(mdb, {
+    temp_tbl <- mfdb_bulk_copy(mdb, 'survey_index', data_in, function (temp_tbl) mfdb_transaction(mdb, {
+        # Remove data_source and re-insert
         data_source_id <- get_data_source_id(mdb, data_source)
         mfdb_send(mdb, "DELETE FROM survey_index",
             " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
@@ -128,9 +122,7 @@ mfdb_import_survey_index <- function (mdb, data_in, data_source = 'default_index
             " (", paste(names(data_in), collapse=","), ", data_source_id)",
             " SELECT ", paste(names(data_in), collapse=","), ", ", sql_quote(data_source_id),
             " FROM ", temp_tbl)
-    }), finally = function (e) {
-        mfdb_send(mdb, "DROP TABLE ", temp_tbl)
-    })
+    }))
 }
 
 # Import divisions
