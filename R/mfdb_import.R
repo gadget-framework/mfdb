@@ -205,14 +205,14 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
             returning = "predator_id")
 
         # Map predator names to database IDs
-        newlevels <- structure(
+        new_levels <- structure(
             res$predator_id,
             names = as.character(predator_data$stomach_name))[levels(prey_data$predator_id)]
-        if (any(is.na(newlevels))) {
+        if (any(is.na(new_levels))) {
             stop("Prey data mentions stomachs not in predator data: ",
-                paste(levels(prey_data$predator_id)[is.na(newlevels)], collapse = ","))
+                paste(levels(prey_data$predator_id)[is.na(new_levels)], collapse = ","))
         }
-        levels(prey_data$predator_id) <- newlevels
+        levels(prey_data$predator_id) <- new_levels
 
         # Insert prey data
         res <- mfdb_insert(mdb, 'prey', prey_data)
@@ -230,6 +230,12 @@ sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL)
 
     if (!is.null(lookup)) {
         col <- factor(col)
+
+        # No levels means column is just NA.
+        if (length(levels(col)) == 0) {
+            return(c(NA))
+        }
+
         # Fetch corresponding id for each level
         new_levels <- mfdb_fetch(mdb,
             "SELECT name, ", lookup, "_id FROM ", lookup, " AS id",
@@ -241,9 +247,12 @@ sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL)
         row.names(new_levels) <- new_levels$name
 
         new_levels <- new_levels[levels(col), paste0(lookup, '_id')]
-        if (length(new_levels[is.na(new_levels)]) > 0) {
-            # TODO: Decent error message
-            stop("Data does not match ", lookup, " vocabulary")
+        if (any(is.na(new_levels))) {
+            mismatches <- levels(col)[is.na(new_levels)]
+            stop("Input data has items that don't match ", lookup, " vocabulary: ",
+                paste(head(mismatches, n = 50), collapse = ","),
+                ifelse(length(mismatches) > 50, ', ...', ''),
+                NULL)
         }
 
         # Return vector with proper levels
