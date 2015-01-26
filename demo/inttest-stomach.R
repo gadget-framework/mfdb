@@ -136,20 +136,47 @@ ok_group("Stomach content likelihood compoment", {
         ver_string,
         "; ",
         "cap1\t",
-        "codimm\tcodmat",
+        "codimm\tcodmat\tcodother",
         "lengths\t1\t1.3",
         "digestioncoefficients\t3\t2\t1",
         "; ",
         "cap1.3\t",
-        "codimm\tcodmat",
+        "codimm\tcodmat\tcodother",
         "lengths\t1.3\t3",
         "digestioncoefficients\t3\t2\t1",
         "; ",
         "cap3\t",
-        "codimm\tcodmat",
+        "codimm\tcodmat\tcodother",
         "lengths\t3\t5",
         "digestioncoefficients\t3\t2\t1",
         NULL), "prey aggregation file")
+
+     # Still works whe there's only 1 prey label
+     gadget_dir_write(gd, gadget_likelihood_component(
+         "stomachcontent",
+         name = "cod-stomachs",
+         prey_labels = c("cod"),
+         prey_digestion_coefficients = 3:1,
+         predator_names = c("cuthbert", "dibble"),
+         data = res[[1]]))
+    ok(cmp_file(gd, "Aggfiles/stomachcontent.cod-stomachs.prey.agg",
+        ver_string,
+        "; ",
+        "cap1\t",
+        "cod\t",
+        "lengths\t1\t1.3",
+        "digestioncoefficients\t3\t2\t1",
+        "; ",
+        "cap1.3\t",
+        "cod\t",
+        "lengths\t1.3\t3",
+        "digestioncoefficients\t3\t2\t1",
+        "; ",
+        "cap3\t",
+        "cod\t",
+        "lengths\t3\t5",
+        "digestioncoefficients\t3\t2\t1",
+        NULL), "prey aggregation file (only one label)")
 })
 
 ok_group("Predator/Prey mismatch", {
