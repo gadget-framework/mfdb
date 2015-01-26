@@ -184,7 +184,7 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
         count = sanitise_col(mdb, prey_data, 'count', default = c(1)),
         stringsAsFactors = TRUE)
 
-    mfdb_transaction(mdb, {
+    temp_tbl <- mfdb_bulk_copy(mdb, 'predator', predator_data, function (temp_predator) mfdb_transaction(mdb, {
         data_source_id <- get_data_source_id(mdb, data_source)
 
         # Delete everything with matching data_source
@@ -200,9 +200,13 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
             NULL)
 
         # Insert predator data, returning all IDs
-        res <- mfdb_insert(mdb, 'predator', predator_data,
-            extra = c(data_source_id = data_source_id),
-            returning = "predator_id")
+        res <- mfdb_fetch(mdb,
+            "INSERT INTO predator",
+            " (", paste(names(predator_data), collapse=","), ", data_source_id)",
+            " SELECT ", paste(names(predator_data), collapse=","), ", ", sql_quote(data_source_id),
+            " FROM ", temp_predator,
+            " RETURNING predator_id",
+            NULL)
 
         # Map predator names to database IDs
         new_levels <- structure(
@@ -216,7 +220,7 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
 
         # Insert prey data
         res <- mfdb_insert(mdb, 'prey', prey_data)
-    })
+    }))
 }
 
 # Check column content, optionally resolving lookup
