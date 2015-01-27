@@ -129,7 +129,7 @@ mfdb_sample_meanweight_stddev <- function (mdb, cols, params, abundance_index = 
 # Return ratio of selected prey in stomach to all prey by count
 mfdb_stomach_presenceratio <- function (mdb, cols, params) {
     pred_col_defs <- c(
-        data_source = 'c.data_source',
+        data_source = 'c.data_source_id',
 
         institute = 'c.institute',
         gear = 'c.gear',
@@ -201,6 +201,7 @@ mfdb_sample_grouping <- function (mdb,
         params = list(),
         group_cols = c("year", "timestep", "area", "age"),
         col_defs = list(
+            data_source = "c.data_source_id",
             year = "c.year", timestep = "c.month", area = "c.areacell_id", age = "c.age",
             maturity_stage = "c.maturity_stage_id", length = "c.length",
             institute = "c.institute_id", gear = "c.gear_id", vessel = "c.vessel_id",

@@ -47,6 +47,7 @@ ok_group("Unaggregated length / weight / age samples", {
             year = 1998:2000,
             area = area_group,
             timestep = mfdb_timestep_biannually,
+            data_source = "survey1",
             age = age_group,
             length = length_group)),
         list("0.0.0.0" = structure(
