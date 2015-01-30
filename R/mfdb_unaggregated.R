@@ -14,5 +14,5 @@ where_clause.mfdb_unaggregated <- function(mdb, x, col, outputname) {
 
 as.list.mfdb_unaggregated <- function(x, ...) {
     # Put out placeholder for now, need to restructure to get something useful
-    list(X = 'X')
+    list(X='X')
 }

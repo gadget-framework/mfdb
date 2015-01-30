@@ -1,10 +1,11 @@
 gadget_likelihood_component <- function (type, ...) {
     switch(type,
-        penalty = gadget_penalty_component(...),
-        understocking = gadget_understocking_component(...),
-        catchstatistics = gadget_catchstatistics_component(...),
-        catchdistribution = gadget_catchdistribution_component(...),
-        stockdistribution = gadget_stockdistribution_component(...),
+           penalty = gadget_penalty_component(...),
+           understocking = gadget_understocking_component(...),
+           catchstatistics = gadget_catchstatistics_component(...),
+           catchdistribution = gadget_catchdistribution_component(...),
+           stockdistribution = gadget_stockdistribution_component(...),
+           surveyindices = gadget_surveyindices_component(...),
         stop(paste("Unknown likelihood component", type)))
 }
 
@@ -35,11 +36,11 @@ gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
         if (is.null(attr(likelihood$components[[i]], "preamble"))) {
             attr(likelihood$components[[i]], "preamble") <- ""
         }
-
+        
         gadget_dir_write(gd, likelihood)
     }
-
-    # Update mainfile and likelihood file
+    
+    ## Update mainfile and likelihood file
     gadget_mainfile_update(gd, likelihoodfiles = 'likelihood')
     gadget_likelihoodfile_update(gd, 'likelihood', obj)
 
@@ -202,4 +203,120 @@ agg_file <- function (type, prefix, data) {
     return(gadget_file(
         fname('Aggfiles', prefix, type, '.agg'),
         components=list(comp)))
+}
+
+
+
+gadget_surveyindices_component <-
+  function (weight = 0,
+            name = "surveyindices",
+            sitype = 'lengths',
+            data_function = 'fixedslopeloglinearfit',
+            biomass = 0,
+            fitparameters = list(beta=1),
+            data = NULL, areas = NULL, ages = NULL, lengths = NULL,
+            fleetnames = c(), stocknames = c(), surveynames = c()) {
+    prefix <- paste0('surveyindices.', name, '.')
+
+    fit.type <- function(data_function,fitparameters){
+        if(tolower(data_function)=='fixedslopeloglinearfit' |
+           data_function == 1) {
+            paste('fixedslopeloglinearfit',
+                  sprintf('slope\t\t%s',fitparameters$beta),
+                  sep='\n')
+        } else if(tolower(data_function)=='linearfit' |
+           data_function == 2) {
+            'linearfit'
+        } else if(tolower(data_function)=='loglinearfit' |
+           data_function == 3) {
+            'loglinearfit'
+        } else if(tolower(data_function)=='fixedslopelinearfit' |
+           data_function == 4) {
+            paste('fixedslopelinearfit',
+                  sprintf('slope\t\t%s',fitparameters$beta),
+                  sep='\n')
+        } else if(tolower(data_function)=='fixedinterceptlinearfit' |
+           data_function == 5) {
+            paste('fixedinterceptlinearfit',
+                  sprintf('intercept\t\t%s',fitparameters$alpha),
+                  sep='\n')
+        } else if(tolower(data_function)=='fixedinterceptloglinearfit' |
+           data_function == 6) {
+            paste('fixedinterceptloglinearfit',
+                  sprintf('intercept\t\t%s',fitparameters$alpha),
+                  sep='\n')
+        } else if(tolower(data_function)=='fixedlinearfit' |
+           data_function == 7) {
+            paste('fixedlinearfit',
+                  sprintf('intercept\t\t%s',fitparameters$alpha),
+                  sprintf('slope\t\t%s',fitparameters$beta),
+                  sep='\n')
+        } else if(tolower(data_function)=='fixedloglinearfit' |
+           data_function == 8) {
+            paste('fixedloglinearfit',
+                  sprintf('intercept\t\t%s',fitparameters$alpha),
+                  sprintf('slope\t\t%s',fitparameters$beta),
+                  sep='\n')
+        }
+    }
+    
+    sibase <-
+        list(name = name,
+             weight = weight,
+             type = "surveyindices",
+             datafile = gadget_file(paste0(prefix, data_function),
+                 data=data),
+             sitype = sitype,
+             biomass = biomass,
+             areaaggfile = gadget_file(paste0(prefix, 'area.agg'),
+                 components=list(if(is.null(areas))
+                     attr(data, "areas") else areas)))
+    
+    
+    if(sitype == 'lengths'){
+        structure(c(append(sibase,list(
+                         lenaggfile  = gadget_file(paste0(prefix, 'len.agg'),
+                             components=list(if(is.null(lengths))
+                                 attr(data, "lengths") else lengths)),
+                         stocknames = stocknames,
+                         fittype = fit.type(data_function,fitparameters)))),
+                  class = c("gadget_surveyindices_component",
+                      "gadget_likelihood_component"))
+    } else if(sitype == 'age'){
+        structure(c(append(sibase,list(
+                         ageaggfile  = gadget_file(paste0(prefix, 'age.agg'),
+                             components=list(if(is.null(ages))
+                                 attr(data, "ages") else ages)),
+                         stocknames = stocknames,
+                         fittype = fit.type(data_function,fitparameters)))),
+                  class = c("gadget_surveyindices_component",
+                      "gadget_likelihood_component"))
+    } else if (sitype == 'fleets'){
+        structure(c(append(sibase,list(
+                         lenaggfile  = gadget_file(paste0(prefix, 'len.agg'),
+                             components=list(if(is.null(lengths))
+                                 attr(data, "lengths") else lengths)),
+                         fleetnames = fleetnames,
+                         stocknames = stocknames,
+                         fittype = fit.type(data_function,fitparameters)))),
+                  class = c("gadget_surveyindices_component",
+                      "gadget_likelihood_component"))
+        
+    } else if(sitype == 'acoustic'){
+        structure(c(append(sibase,list(
+                         surveynames = fleetnames,
+                         stocknames = stocknames,
+                         fittype = fit.type(data_function,fitparameters)))),
+                  class = c("gadget_surveyindices_component",
+                      "gadget_likelihood_component"))
+    } else if(sitype == 'effort'){
+        structure(c(append(sibase,list(
+                         fleetnames = fleetnames,
+                         stocknames = stocknames,
+                         fittype = fit.type(data_function,fitparameters)))),
+                  class = c("gadget_surveyindices_component",
+                      "gadget_likelihood_component"))
+    } else {
+        warning(sprintf('Sitype %s not recognized',sitype))
+    }
 }

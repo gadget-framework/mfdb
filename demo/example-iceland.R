@@ -120,3 +120,32 @@ gadget_dir_write(gd, gadget_likelihood_component("catchdistribution",
                                                  fleetnames = c("comm"),
                                                  stocknames = c("codimm", "codmat")))
 rm(aggdata)
+
+
+igfs.SI1 <- mfdb_sample_count(mdb, c('age', 'length'), c(list(
+    sampling_type = 'IGFS',
+    length = mfdb_interval("len", c(4,17))),
+    defaults))
+
+igfs.SI2 <- mfdb_sample_count(mdb, c('age', 'length'), c(list(
+    sampling_type = 'IGFS',
+    length = mfdb_interval("len", c(17,33))),
+    defaults))
+
+igfs.SI3 <- mfdb_sample_count(mdb, c('age', 'length'), c(list(
+    sampling_type = 'IGFS',
+    length = mfdb_interval("len", c(33,140))),
+    defaults))
+
+gadget_dir_write(gd, gadget_likelihood_component("surveyindices",
+                                                 name = "si.gp1",
+                                                 weight = 1,
+                                                 data = igfs.SI1[[1]],
+                                                 stocknames = c("codimm")))
+
+
+gadget_dir_write(gd, gadget_likelihood_component("surveyindices",
+                                                 name = "si.gp1",
+                                                 weight = 1,
+                                                 data = igfs.SI1[[1]],
+                                                 stocknames = c("codimm", "codmat")))
