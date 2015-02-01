@@ -67,7 +67,7 @@ Also, you can install the ``postgresql`` package using:
 
     yum install postgresql-server
 
-Some additional instructions are available here: https://fedoraproject.org/wiki/PostgreSQL
+Some additional instructions are available here: https://fedoraproject.org/wiki/PostgreSQL and some tips when troubleshooting CentOS installations can be found at: http://stackoverflow.com/questions/17633422/psql-fatal-database-user-does-not-exist
 
 Now, create an ``mf`` database that the user on your computer owns:
 
