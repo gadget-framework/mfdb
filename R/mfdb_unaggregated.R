@@ -4,9 +4,7 @@ mfdb_unaggregated <- function (omitNA = FALSE) {
     group
 }
 
-select_clause.mfdb_unaggregated <- function(mdb, x, col, outputname) {
-    paste0(col, " AS ", outputname)
-}
+select_clause.mfdb_unaggregated <- select_clause.numeric
 
 where_clause.mfdb_unaggregated <- function(mdb, x, col, outputname) {
     if (x$omitNA) paste0(col, " IS NOT NULL") else c()
