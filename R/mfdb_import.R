@@ -70,7 +70,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
         vessel_id = sanitise_col(mdb, data_in, 'vessel', lookup = 'vessel', default = c(NA)),
         sampling_type_id = sanitise_col(mdb, data_in, 'sampling_type', lookup = 'sampling_type', default = c(NA)),
         year = sanitise_col(mdb, data_in, 'year'),
-        month = sanitise_col(mdb, data_in, 'month'),
+        month = sanitise_col(mdb, data_in, 'month', test = function (x) x %in% 1:12),
         areacell_id = sanitise_col(mdb, data_in, 'areacell', lookup = 'areacell'),
         species_id = sanitise_col(mdb, data_in, 'species', lookup = 'species', default = c(NA)),
         age = sanitise_col(mdb, data_in, 'age', default = c(NA)),
@@ -161,7 +161,7 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
         sampling_type_id = sanitise_col(mdb, predator_data, 'sampling_type', lookup = 'sampling_type', default = c(NA)),
 
         year = sanitise_col(mdb, predator_data, 'year'),
-        month = sanitise_col(mdb, predator_data, 'month'),
+        month = sanitise_col(mdb, predator_data, 'month', test = function (x) x %in% 1:12),
         areacell_id = sanitise_col(mdb, predator_data, 'areacell', lookup = 'areacell'),
 
         stomach_name = sanitise_col(mdb, predator_data, 'stomach_name'),
@@ -224,13 +224,24 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
 }
 
 # Check column content, optionally resolving lookup
-sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL) {
+sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL, test = NULL) {
     data_col_name <- grep(col_name, names(data_in), ignore.case=TRUE, value=TRUE)
     if (length(data_col_name) == 0) {
         if (!is.null(default)) return(default);
         stop("Input data is missing ", col_name)
     }
     col <- data_in[[data_col_name[[1]]]]
+
+    if (!is.null(test)) {
+        mismatches <- test(col)
+        if (!all(mismatches)) {
+            mismatches <- col[!mismatches]
+            stop("Input data has items that don't match condition: ",
+                paste(head(mismatches, n = 50), collapse = ","),
+                ifelse(length(mismatches) > 50, ', ...', ''),
+                NULL)
+        }
+    }
 
     if (!is.null(lookup)) {
         col <- factor(col)
