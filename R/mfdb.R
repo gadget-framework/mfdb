@@ -192,9 +192,7 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
         field.types = structure(cols[names(data_in), 'data_type'], names = names(data_in)))
     mfdb_send(mdb, "SET CLIENT_ENCODING TO 'UTF8'")
 
-    tryCatch(fn(temp_tbl), finally = function (e) {
-        mfdb_send(mdb, "DROP TABLE ", temp_tbl)
-    })
+    tryCatch(fn(temp_tbl), finally = mfdb_send(mdb, "DROP TABLE ", temp_tbl))
 }
 
 mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
