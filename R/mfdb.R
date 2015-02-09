@@ -79,43 +79,46 @@ mfdb_disconnect <- function(mdb) {
     dbDisconnect(mdb$db)
 }
 
-# Perform query and return all results
-mfdb_fetch <- function(mdb, ...) {
+# Concatenate queries together and send to database
+mfdb_send <- function(mdb, ..., result = "") {
     query <- paste0(c(...), collapse = "")
-    mdb$logger$debug(query)
-    res <- dbSendQuery(mdb$db, query)
-    out <- dbFetch(res)
-    dbClearResult(res)
-    return(out)
-}
 
-# Send a query without the fetch
-mfdb_send <- function(mdb, ...) {
-    query <- paste0(c(...), collapse = "")
     if (class(mdb$db) == 'dbNull') {
         cat(query)
         cat("\n")
-        return(mdb$db)
+        if (result == "rowcount") return(mdb$ret_rowcount)
+        if (result == "rows") return(mdb$ret_rows)
+        return(mdb$ret_recordset)
     }
-    mdb$logger$debug(query)
+
     res <- dbSendQuery(mdb$db, query)
+
+    if (result == "rowcount") {
+        out <- DBI::dbGetRowsAffected(res)
+        dbClearResult(res)
+        return(out)
+    }
+    if (result == "rows") {
+        out <- DBI::dbFetch(res)
+        dbClearResult(res)
+        return(out)
+    }
+    return(res)
 }
+mfdb_fetch <- function(mdb, ...) mfdb_send(mdb, ..., result = "rows")
 
 # Insert a vector row or data.frame of rows into table_name
 mfdb_insert <- function(mdb, table_name, data_in, returning = "", extra = c()) {
     insert_row <- function (r) {
-        res <- mfdb_send(mdb, "INSERT INTO ", paste(table_name, collapse = ""),
+        if (class(mdb$db) == 'dbNull') mdb$ret_rowcount <- mdb$ret_rows <- if (is.null(nrow(r))) 1 else nrow(r)
+        mfdb_send(mdb, "INSERT INTO ", paste(table_name, collapse = ""),
             " (", paste(c(names(r), names(extra)), collapse=","), ") VALUES ",
             if (is.null(nrow(r)))
                 sql_quote(c(r, extra), always_bracket = TRUE)
             else
                 paste0(vapply(seq_len(nrow(r)), function (i) { sql_quote(c(r[i,], extra), always_bracket = TRUE) }, ""), collapse = ","),
             (if (nzchar(returning)) paste0(c(" RETURNING ", returning), collapse = "") else ""),
-            NULL)
-        if (class(res) == 'dbNull') return(if (is.null(nrow(r))) 1 else nrow(r))
-        out <- if (nzchar(returning)) DBI::dbFetch(res) else DBI::dbGetRowsAffected(res)
-        DBI::dbClearResult(res)
-        return(out)
+            result = ifelse(nzchar(returning), "rows", "rowcount"))
     }
     if (!is.data.frame(data_in)) {
         # Insert single row
@@ -137,7 +140,8 @@ mfdb_update <- function(mdb, table_name, data_in, returning = "", extra = c(), w
     id_col <- paste0(table_name, '_id')
 
     update_row <- function (r) {
-        res <- mfdb_send(mdb,
+        if (class(mdb$db) == 'dbNull') mdb$ret_rowcount <- mdb$ret_rows <- if (is.null(nrow(r))) 1 else nrow(r)
+        out <- mfdb_send(mdb,
             "UPDATE ", table_name,
             " SET ",
             paste0(c(
@@ -147,11 +151,8 @@ mfdb_update <- function(mdb, table_name, data_in, returning = "", extra = c(), w
             ), collapse = ","),
             " WHERE ", table_name, "_id = ", sql_quote(r[[id_col]]),
             vapply(names(where), function (n) paste0(" AND ", n, "=", sql_quote(where[[n]])), ""),
-            NULL)
-        if (class(res) == 'dbNull') return(if (is.null(nrow(r))) 1 else nrow(r))
-        out <- if (nzchar(returning)) DBI::dbFetch(res) else DBI::dbGetRowsAffected(res)
+            result = "rowcount")
         if (out != 1) stop("update should affect one row not ", out)
-        DBI::dbClearResult(res)
         return(out)
     }
 
