@@ -195,6 +195,37 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
     tryCatch(fn(temp_tbl), finally = mfdb_send(mdb, "DROP TABLE ", temp_tbl))
 }
 
+# Temporarily remove constraints from a table
+mfdb_disable_constraints <- function(mdb, table_name, code_block) {
+    # Based on http://blog.hagander.net/archives/131-Automatically-dropping-and-creating-constraints.html
+
+    # Get a list of constraints and the order to recreate them
+    namespace <- "public"
+    constraints <- mfdb_fetch(mdb,
+        "SELECT conname AS name",
+        ", pg_get_constraintdef(pg_constraint.oid) AS definition",
+        " FROM pg_constraint",
+        " INNER JOIN pg_class ON conrelid=pg_class.oid",
+        " INNER JOIN pg_namespace ON pg_namespace.oid=pg_class.relnamespace",
+        " WHERE nspname IN ", sql_quote(namespace, always_bracket = TRUE),
+        " AND relname IN ", sql_quote(table_name, always_bracket = TRUE),
+        " ORDER BY CASE WHEN contype='f' THEN 0 ELSE 1 END DESC,contype DESC,nspname DESC,relname DESC,conname DESC",
+        NULL)
+
+    tryCatch({
+        mdb$logger$info(paste0("Removing constraints from ", table_name))
+        for (cname in rev(constraints$name)) mfdb_send(mdb,
+            "ALTER TABLE ", namespace, ".", table_name,
+            " DROP CONSTRAINT ", cname, "")
+        code_block
+    }, finally = {
+        mdb$logger$info(paste0("Reinstating constraints on ", table_name))
+        for(i in 1:nrow(constraints)) mfdb_send(mdb,
+            "ALTER TABLE ", namespace, ".", table_name,
+            " ADD CONSTRAINT ", constraints[i, "name"], " ", constraints[i, "definition"])
+    })
+}
+
 mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
     items <- matrix(c(
         cols,

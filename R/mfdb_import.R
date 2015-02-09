@@ -85,7 +85,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
 
 
     # Likely to be pretty big, so pre-load data into a temporary table
-    temp_tbl <- mfdb_bulk_copy(mdb, 'sample', survey_sample, function (temp_tbl) mfdb_transaction(mdb, {
+    temp_tbl <- mfdb_bulk_copy(mdb, 'sample', survey_sample, function (temp_tbl) mfdb_disable_constraints(mdb, 'sample', mfdb_transaction(mdb, {
         # Remove data_source and re-insert
         data_source_id <- get_data_source_id(mdb, data_source)
         mfdb_send(mdb, "DELETE FROM sample",
@@ -98,7 +98,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
             " SELECT ", paste(names(survey_sample), collapse=","), ", ", sql_quote(data_source_id),
             " FROM ", temp_tbl,
             NULL)
-    }))
+    })))
 }
 
 mfdb_import_survey_index <- function (mdb, data_in, data_source = 'default_index') {
