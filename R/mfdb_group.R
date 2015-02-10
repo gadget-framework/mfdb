@@ -91,7 +91,7 @@ mfdb_group_numbered <- function (prefix, ...) {
     do.call(mfdb_group, items)
 }
 
-mfdb_bootstrap_group <- function (count, group) {
+mfdb_bootstrap_group <- function (count, group, seed = NULL) {
     if (!('mfdb_group' %in% class(group))) {
         stop("Second argument should be a mfdb_group")
     }
@@ -99,9 +99,20 @@ mfdb_bootstrap_group <- function (count, group) {
         stop("Count should be equal or greater than 1")
     }
 
+    # Save PRNG state and set seed / reset it
+    old_seed <- tryCatch(get(".Random.seed", pos = globalenv()), error = function (e) NULL)
+    set.seed(seed, kind = "Mersenne-Twister")
+
     bs_group <- structure(
             lapply(1:count, function(i) { lapply(group, function (g) { if (length(g) == 1) g else sample(g, replace = TRUE) }) }),
             class = c("mfdb_bootstrap_group", "mfdb_group", "mfdb_aggregate"))
+
+    # Restore PRNG to how it was before
+    if (is.null(old_seed)) {
+        set.seed(NULL)
+    } else {
+        assign(".Random.seed", old_seed, pos = globalenv())
+    }
     invisible(bs_group)
 }
 

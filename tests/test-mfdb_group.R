@@ -87,8 +87,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         aardvarks = 88
     )), "Aggregation summary (sample 2)")
 
-    set.seed(123456)
-    g <<- mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99)))
+    g <<- mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99)), seed = 123456)
     ok(cmp(capture.output(pre_query(mdb, g, "out")), c(
         "DROP TABLE temp_out",
         "CREATE  TABLE temp_out (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )",
@@ -109,8 +108,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
     )), "Aggregation summary (sample 2)")
 
     # Test a few more random combinations
-    set.seed(8081)
-    g <<- mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99)))
+    g <<- mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99)), seed = 8081)
     ok(cmp(capture.output(pre_query(mdb, g, "out")), c(
         "DROP TABLE temp_out",
         "CREATE  TABLE temp_out (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )",
@@ -118,8 +116,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         "CREATE INDEX ON temp_out (value,name,sample)",
         NULL)), "Created temporary table")
 
-    set.seed(203785)
-    g <<- mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99)))
+    g <<- mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99)), seed = 203785)
     ok(cmp(capture.output(pre_query(mdb, g, "out")), c(
         "DROP TABLE temp_out",
         "CREATE  TABLE temp_out (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )",
@@ -147,3 +144,23 @@ ok_group("Aggregates with mfdb_group areas", local({
         "CREATE INDEX ON temp_area (value,name,sample)",
         NULL)), "Created temporary table")
 }, asNamespace('mfdb')))
+
+ok_group("Seed handling", {
+    # Helper to define groups with a given seed
+    bs_group <- function (seed) { mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99)), seed = seed) }
+
+    # Repeatedly manage to make the same sample group (also tested by above tests)
+    ok(cmp(bs_group(99), bs_group(99)), "Forced seed creates the same group")
+
+    # Seed before == seed after
+    old_seed <- .Random.seed
+    bs_group(433)
+    ok(cmp(old_seed, .Random.seed), "The PRNG state got restored with set seed")
+    old_seed <- .Random.seed
+    bs_group(NULL)
+    ok(cmp(old_seed, .Random.seed), "The PRNG state got restored with NULL seed")
+
+    # Works if there is no seed set yet
+    remove(".Random.seed", pos = globalenv())
+    ok(cmp(bs_group(123456), bs_group(123456)), "Managed to generate groups before seed is set")
+})

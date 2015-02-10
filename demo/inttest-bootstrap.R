@@ -50,14 +50,11 @@ ok_group("Unaggregated length / weight / age samples", {
             species = c('COD'),
             length = c(310,350,330,310,335,346, 365,362,336,335,334,322)))
 
-    # Fix random number generation so we can test the results
-    # Otherwise results will change for each run
-    set.seed(35)
-
     # We want 1 area, that's a combination of A and B
     area_group <- mfdb_group(all = c("divA", "divB"))
     # We want to take 5 samples "all" with replacement
-    area_bootstrap_group <- mfdb_bootstrap_group(5, area_group)
+    # We fix the seed to 35, so we get the same samples every time this script is run
+    area_bootstrap_group <- mfdb_bootstrap_group(5, area_group, seed = 35)
     agg <- mfdb_area_size(mdb, params = list(area = area_bootstrap_group))
 
     # Instead of the normal 1, we get back 5 data frames

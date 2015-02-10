@@ -25,7 +25,7 @@ mfdb_timestep_quarterly
 mfdb_group_numbered(prefix, ...)
 
 # make (count) mfdb_groups, by sampling (count) times from (group)
-mfdb_bootstrap_group(count, group)
+mfdb_bootstrap_group(count, group, seed = NULL)
 }
 \arguments{
     \item{...}{
@@ -43,8 +43,12 @@ mfdb_bootstrap_group(count, group)
         replacement from.
     }
     \item{count}{
-        For \code{mfdb_bootstrap_group}, How many times to sample each member
+        For \code{mfdb_bootstrap_group}, how many times to sample each member
         of the given group.
+    }
+    \item{seed}{
+        For \code{mfdb_bootstrap_group}, if you want your groups to remain
+        consistent across sessions, then specify a random integer as per RNG.
     }
 }
 
