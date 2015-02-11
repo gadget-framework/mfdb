@@ -178,7 +178,7 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
         col_defs = as.list(c(pred_col_defs, prey_col_defs)),
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            "COUNT(DISTINCT c.predator_id) ratio",  # NB: This is really stomachs at this stage
+            "COUNT(DISTINCT c.predator_id) stomachs_present",
             NULL),
         params = params,
         generator = "mfdb_stomach_presenceratio")
@@ -188,12 +188,15 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
     # TODO: Bootstrapping is very likely broken
     if (length(with_prey) != length(without_prey)) stop("Don't support bootstrapping for stomachs")
 
-    # Merge each of the data frames together, work out ratio
-    merged <- mapply(merge, with_prey, without_prey, SIMPLIFY = FALSE)
-    for (i in seq_len(length(with_prey))) {
-        with_prey[[i]]$ratio <- merged[[i]]$ratio / merged[[i]]$stomachs_total
-    }
-    with_prey
+    # Merge data frames together, return with ratio of present / total
+    mapply(function (w, wo) {
+        merged <- merge(w, wo)
+        merged$ratio <- merged$stomachs_present / merged$stomachs_total
+        do.call(structure, c(
+            list(merged[, c("year", "step", "area", cols, "ratio"), drop = FALSE]),
+            attributes(w)[c("year", "timestep", "area", cols, "generator")],
+            NULL))
+    }, with_prey, without_prey, SIMPLIFY = FALSE)
 }
 
 # Group up sample data by area, age or length
