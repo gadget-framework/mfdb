@@ -262,9 +262,29 @@ mfdb_sample_grouping <- function (mdb,
         " ORDER BY ", paste(seq_len(length(group_cols) + 1), collapse=","),
         NULL)
 
+    # No data, so fake enough to generate list of empty frames
+    if (nrow(out) == 0) {
+        # Get list of probable sample names
+        samples <- lapply(group_cols, function(col) {
+            if("mfdb_bootstrap_group" %in% class(params[[col]])) {
+                s <- seq(0, length(params[[col]]) - 1)
+                return(vapply(s, as.character, ""))
+            }
+            return(c("0"))
+        })
+        # Flatten this into a vector of concatenated sample names
+        denormalised <- apply(
+            do.call(data.frame, samples),
+            1,
+            function(x) paste(x, collapse="."))
+        out <- data.frame(sample = denormalised)
+    }
+
     # Break data up by sample and annotate each with the value for group_cols
     lapply(split(out, list(out$sample)), function (sample) {
         subset <- sample[,names(sample) != 'sample', drop = FALSE]
+        # 0-column, 1-row data-frames make no sense
+        if (ncol(subset) == 0) subset <- data.frame()
         rownames(subset) <- NULL
         do.call(structure, c(
             list(subset),

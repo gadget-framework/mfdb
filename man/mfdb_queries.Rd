@@ -97,8 +97,11 @@ weighting the mean & standard deviation.
 }
 
 \value{
-    All will return a list of data.frame objects. Precisely what columns
-    these will contain depends on the function called.
+    All will return a list of data.frame objects. If there was no bootstrapping
+    requested, there will be only one. Otherwise, there will be one for each
+    sample.
+
+    The columns of these data frames depends on the function called.
     \describe{
         \item{mfdb_temperature}{
             Returns year, step, area, (mean) temperature

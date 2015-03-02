@@ -235,7 +235,12 @@ ok_group("Filtering of samples", {
             age = mfdb_group(all = 1:1000),
             length = mfdb_interval("len", seq(0, 100, by = 10)),
             year = 1998:2000)),
-            { moo <- data.frame(); split(moo, list(moo$samples)) }),
+            list("0.0.0" = structure(
+                data.frame(),
+                year = list("1998" = 1998, "1999" = 1999, "2000" = 2000),
+                timestep = mfdb_timestep_biannually,
+                area = mfdb_group(divA = c("divA")),
+                generator = "mfdb_sample_meanlength"))),
         "sampling_type MOO empty")
 
     # Without any aggregation on, we get the whole lot
@@ -339,15 +344,15 @@ ok_group("Filtering of samples", {
 
     # Intersection gives nothing
     ok(cmp(
-        mfdb_sample_meanlength(mdb, c(), list(
+        nrow(mfdb_sample_meanlength(mdb, c(), list(
             gear = 'GIL',
             vessel = '2.RSH',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
             length = mfdb_interval("len", seq(0, 100, by = 10)),
-            year = 1998:2000))[["0.0.0"]][,c("step", "number", "mean")],
-        NULL),
+            year = 1998:2000))[["0.0.0"]]),
+        0),
        "GIL & 2.RSH returns nothing")
 
     # Should be able to re-import sampling types

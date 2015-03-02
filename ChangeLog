@@ -1,5 +1,6 @@
     Unreleased
 
+    * Query functions should always return a list of data.frames, even if there is no data
     * Implement catchinkilos likelihood component
     * Give examples of invalid data if import fails
     * Add surveyindicies, migrationpenalty likelihood components

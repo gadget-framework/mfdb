@@ -112,3 +112,20 @@ ok_group("Unaggregated length / weight / age samples", {
         generator = "mfdb_area_size"
     )), "divB, divB")
 })
+
+ok_group("Bootstrapped empty results", {
+    # Take 5 samples of an empty region
+    area_group <- mfdb_group(all = c("aardvark"))
+    area_bootstrap_group <- mfdb_bootstrap_group(5, area_group, seed = 35)
+    agg <- mfdb_area_size(mdb, params = list(area = area_bootstrap_group))
+    ok(cmp(names(agg), c(
+        "0", "1", "2", "3", "4",
+        NULL)), "Still got 5 data.frames")
+
+    area_group <- mfdb_group(all = c("aardvark"))
+    area_bootstrap_group <- mfdb_bootstrap_group(5, area_group, seed = 35)
+    agg <- mfdb_sample_meanlength(mdb, c(), params = list(area = area_bootstrap_group))
+    ok(cmp(names(agg), c(
+        "0.0.0", "0.0.1", "0.0.2", "0.0.3", "0.0.4",
+        NULL)), "Still got 5 data.frames")
+})
