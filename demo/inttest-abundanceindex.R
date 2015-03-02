@@ -31,7 +31,7 @@ ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE speci
   mfdb::species[mfdb::species$name == 'TBX', c('name', 'description')]), "Entry for 9999999999 matches package")
 ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM species")[1,1], nrow(mfdb::species)), "Species has right number of entries")
 
-ok_group("Unaggregated length / weight / age samples", {
+ok_group("Using a survey_index as measure of abundance", {
     # Set-up areas/divisions
     mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(10,200,400)))
     mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G03')))
@@ -73,16 +73,6 @@ ok_group("Unaggregated length / weight / age samples", {
         "acoustic",
         "guesswork",
         NULL)))
-
-    # Can't import an index that we haven't predefined
-    ok(cmp_error(mfdb_import_survey_index(mdb, data_source = 'acoustic_index1', data.frame(
-        index_type = 'magic',
-        year = '1998',
-        month = 1:12,
-        areacell = '45G01',
-        value = c(1),
-        stringsAsFactors = FALSE
-    )), "index_type"), "Noticed we used a made-up index")
 
     # Import some data for an acoustic index
     mfdb_import_survey_index(mdb, data_source = 'acoustic_index1', data.frame(
@@ -249,7 +239,9 @@ ok_group("Unaggregated length / weight / age samples", {
                     weighted.mean(c(231, 231, 232, 232), c(avg(2,52), avg(3,53), 14, 15)),
                     NULL),
                 stringsAsFactors = FALSE)), "Took mean of multiple index values")
+})
 
+ok_group("Missing values in a survey_index", {
     # Put holes in acoustic_index2, we then get holes in the return data
     mfdb_import_survey_index(mdb, data_source = 'acoustic_index2', data.frame(
         index_type = 'acoustic',
@@ -297,4 +289,22 @@ ok_group("Unaggregated length / weight / age samples", {
                     weighted.mean(c(231, 231), c(avg(2,52), avg(3,53))),
                     NULL),
                 stringsAsFactors = FALSE)), "Took mean of multiple index values")
+})
+
+ok_group("Importing unknown indices", {
+    # Create some index types
+    mfdb_import_cs_taxonomy(mdb, 'index_type', data.frame(name = c(
+        "acoustic",
+        "guesswork",
+        NULL)))
+
+    # Can't import an index that we haven't predefined
+    ok(cmp_error(mfdb_import_survey_index(mdb, data_source = 'acoustic_index1', data.frame(
+        index_type = 'magic',
+        year = '1998',
+        month = 1:12,
+        areacell = '45G01',
+        value = c(1),
+        stringsAsFactors = FALSE
+    )), "index_type"), "Noticed we used a made-up index")
 })
