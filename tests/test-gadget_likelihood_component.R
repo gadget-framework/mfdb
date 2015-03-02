@@ -10,6 +10,7 @@ all_components <- c(
         "stockdistribution",
         "stomachcontent",
         "migrationpenalty",
+        "catchinkilos",
         NULL)
 
 ok_group("Can generate gadget_likelihood_component objects", {
@@ -43,6 +44,9 @@ for (type in all_components) {
         default_opts <- list(type,
             data = data.frame(year = 1, step = 1, area = 1, predator = 1, prey = 1, ratio = 1),
             prey_length = list(a = c(1,4)))
+    } else if (type == "catchinkilos") {
+        default_opts <- list(type,
+            data = data.frame(year = 1, step = 1, area = 1, fleet = 1, biomass = 1))
     } else {
         default_opts <- list(type)
     }
@@ -317,4 +321,27 @@ ok_group("surveyindicies", {
         surveynames = c("cuthbert", "dibble")))
     ok(cmp(class(component)[[1]], 'gadget_surveyindicies_component'), "Made effort sitype")
 
+})
+
+###############################################################################
+ok_group("catchinkilos", {
+    # aggregationlevel = 0
+    comp <- gadget_likelihood_component(
+        'catchinkilos',
+        data = data.frame(year = 1, step = 1:3, area = 1, fleet = 1, biomass = 11:13),
+        aggregationlevel = 0)
+    ok(cmp(names(comp$datafile$data), c("year", "step", "area", "fleet", "biomass")), "Has step column")
+
+    # aggregationlevel = 1
+    ok(cmp_error(
+        gadget_likelihood_component(
+            'catchinkilos',
+            data = data.frame(year = 1, step = 1:3, area = 1, fleet = 1, biomass = 11:13),
+            aggregationlevel = 1),
+        "step"), "Noticed that step values weren't identical")
+    comp <- gadget_likelihood_component(
+        'catchinkilos',
+        data = data.frame(year = 1, step = 5, area = 1, fleet = 1, biomass = 11:13),
+        aggregationlevel = 1)
+    ok(cmp(names(comp$datafile$data), c("year", "area", "fleet", "biomass")), "step column removed")
 })

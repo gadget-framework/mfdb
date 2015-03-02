@@ -319,8 +319,32 @@ gadget_migrationpenalty_component <- function (
 
 gadget_catchinkilos_component <- function (
         name,
-        data = NULL) {
-    stop("Not implemented")
+        data = NULL,
+        data_function = 'sumofsquares',
+        aggregationlevel = 0,
+        epsilon = 10,
+        area = NULL,
+        fleetnames = c(), stocknames = c()) {
+    prefix <- paste0('stomachcontent.', name, '.')
+
+    # Make sure we have the columns we need
+    compare_cols(names(data), c("year", "step", "area", "fleet", "biomass"))
+    if (aggregationlevel == 1) {
+        # Dump step column, since it should be all equal
+        if (nrow(data) > 0 && !isTRUE(all.equal(data[,"step"], rep(data[1, "step"], times = nrow(data))))) {
+            stop("if aggregationlevel is 1, all step values should be identical")
+        }
+        data <- data[,c("year", "area", "fleet", "biomass"), drop = FALSE]
+    }
+
+    list(
+        datafile = gadget_file(fname('Data', prefix, data_function), data=data),
+        "function" = data_function,
+        aggregationlevel = aggregationlevel,
+        epsilon = epsilon,
+        areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area),
+        fleetnames = fleetnames,
+        stocknames = stocknames)
 }
 
 agg_file <- function (type, prefix, data) {
