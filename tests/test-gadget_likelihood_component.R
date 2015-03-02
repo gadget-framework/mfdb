@@ -30,63 +30,43 @@ ok_group("Can use as.character on gadget_likelihood_components", {
 })
 
 for (type in all_components) {
+    if (type == "catchstatistics") {
+        default_opts <- list(type,
+            data = data.frame(), data_function = "customfunction")
+    } else if (type == "catchdistribution") {
+        default_opts <- list(type,
+            data = data.frame(year = 1, step = 1, area = 1, age = 1, length = 1, number = 1))
+    } else if (type == "stockdistribution") {
+        default_opts <- list(type,
+            data = data.frame(year = 1, step = 1, area = 1, aardvark = 1, length = 1, number = 1))
+    } else if (type == "stomachcontent") {
+        default_opts <- list(type,
+            data = data.frame(year = 1, step = 1, area = 1, predator = 1, prey = 1, ratio = 1),
+            prey_length = list(a = c(1,4)))
+    } else {
+        default_opts <- list(type)
+    }
+
     ok_group(paste("Name, type and weight for component", type), {
-        if (type == "catchstatistics") {
-            c <- gadget_likelihood_component(type,
-                data = data.frame(), data_function = "customfunction")
-        } else if (type == "catchdistribution") {
-            c <- gadget_likelihood_component(
-                "catchdistribution",
-                data = data.frame(year = 1, step = 1, area = 1, age = 1, length = 1, number = 1))
-        } else if (type == "stockdistribution") {
-            c <- gadget_likelihood_component(
-                "stockdistribution",
-                data = data.frame(year = 1, step = 1, area = 1, aardvark = 1, length = 1, number = 1))
-        } else if (type == "stomachcontent") {
-            c <- gadget_likelihood_component(
-                "stomachcontent",
-                data = data.frame(year = 1, step = 1, area = 1, predator = 1, prey = 1, ratio = 1),
-                prey_length = list(a = c(1,4)))
-        } else {
-            c <- gadget_likelihood_component(type)
-        }
+        comp <- do.call(gadget_likelihood_component, default_opts)
 
         # Class should match type
-        ok(cmp(class(c), c(
+        ok(cmp(class(comp), c(
             paste0("gadget_", type, "_component"),
             "gadget_likelihood_component")), "Has correct class")
 
         # Type and name should match the name we gave
-        ok(cmp(c$type, type), "Type set")
-        ok(cmp(c$name, type), "Default name same as type")
-        ok(cmp(c$weight, 0), "Weight defaults to 0")
+        ok(cmp(comp$type, type), "Type set")
+        ok(cmp(comp$name, type), "Default name same as type")
+        ok(cmp(comp$weight, 0), "Weight defaults to 0")
 
         # Can customise name & weight
-        if (type == "catchstatistics") {
-            c <- gadget_likelihood_component(type,
-                name = "gerald", weight = 0.542,
-                data = data.frame(), data_function = "customfunction")
-        } else if (type == "catchdistribution") {
-            c <- gadget_likelihood_component(
-                "catchdistribution",
-                name = "gerald", weight = 0.542,
-                data = data.frame(year = 1, step = 1, area = 1, age = 1, length = 1, number = 1))
-        } else if (type == "stockdistribution") {
-            c <- gadget_likelihood_component(
-                "stockdistribution",
-                name = "gerald", weight = 0.542,
-                data = data.frame(year = 1, step = 1, area = 1, aardvark = 1, length = 1, number = 1))
-        } else if (type == "stomachcontent") {
-            c <- gadget_likelihood_component(
-                "stomachcontent",
-                name = "gerald", weight = 0.542,
-                data = data.frame(year = 1, step = 1, area = 1, predator = 1, prey = 1, ratio = 1),
-                prey_length = list(a = c(1,4)))
-        } else {
-            c <- gadget_likelihood_component(type, name = "gerald", weight = 0.542)
-        }
-        ok(cmp(c$name, "gerald"), "Can set name")
-        ok(cmp(c$weight, 0.542), "Can set weight")
+        comp <- do.call(gadget_likelihood_component, c(
+            default_opts,
+            list(name = "gerald", weight = 0.542),
+            NULL))
+        ok(cmp(comp$name, "gerald"), "Can set name")
+        ok(cmp(comp$weight, 0.542), "Can set weight")
     })
 }
 
