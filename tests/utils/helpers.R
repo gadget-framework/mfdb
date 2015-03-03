@@ -104,3 +104,12 @@ agg_summary <- function(...) {
         do.call(agg_summary, agg_summary_args)
     }, asNamespace('mfdb'))
 }
+
+# Parse a string into a data.frame
+table_string <- function (str) {
+    read.table(
+        textConnection(str),
+        blank.lines.skip = TRUE,
+        header = TRUE,
+        stringsAsFactors = FALSE)
+}

@@ -10,14 +10,6 @@ library(mfdb)
 source('mfdb/tests/utils/helpers.R')
 source('mfdb/tests/utils/inttest-helpers.R')
 
-table_string <- function (str) {
-    read.table(
-        textConnection(str),
-        blank.lines.skip = TRUE,
-        header = TRUE,
-        stringsAsFactors = FALSE)
-}
-
 cmp_table <- function(tbls, expected) {
     ok(cmp(length(tbls), 1), "result only returned one data.frame")
     cmp(tbls[[1]][names(tbls[[1]])], expected)
