@@ -104,7 +104,7 @@ where_clause.numeric <- function(mdb, x, col, outputname) {
         ")"))
 }
 agg_summary.numeric <- function(mdb, x, col, data) {
-    as.list(structure(x, names = x))
+    as.list(structure(x[!is.na(x)], names = x[!is.na(x)]))
 }
 
 # Character vectors work the same as numeric vector
