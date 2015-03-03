@@ -1,6 +1,7 @@
 \name{mfdb_queries}
 \alias{mfdb_area_size}
 \alias{mfdb_temperature}
+\alias{mfdb_survey_index_mean}
 \alias{mfdb_sample_count}
 \alias{mfdb_sample_meanlength_stddev}
 \alias{mfdb_sample_meanlength}
@@ -17,6 +18,7 @@
 \usage{
 mfdb_area_size(mdb, params)
 mfdb_temperature(mdb, params)
+mfdb_survey_index_mean(mdb, cols, params)
 mfdb_sample_count(mdb, cols, params, abundance_index = NULL)
 mfdb_sample_meanlength(mdb, cols, params, abundance_index = NULL)
 mfdb_sample_meanlength_stddev(mdb, cols, params, abundance_index = NULL)
@@ -105,6 +107,9 @@ weighting the mean & standard deviation.
     \describe{
         \item{mfdb_temperature}{
             Returns year, step, area, (mean) temperature
+        }
+        \item{mfdb_survey_index_mean}{
+            Returns year, step, area, (group cols), (mean) survey index
         }
         \item{mfdb_sample_count}{
             Returns year,step,area,(group cols),number (of samples)

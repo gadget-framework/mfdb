@@ -221,11 +221,11 @@ gadget_surveyindicies_component <- function (
             fleetnames = c(...)['fleetnames'])
 
     } else if (sitype == 'acoustic') {
-        compare_cols(names(data), c("year", "step", "area", "survey", "acoustic"))
+        compare_cols(names(data), c("year", "step", "area", NA, NA))
         si_cols <- list(surveynames = c(...)['surveynames'])
 
     } else if (sitype == 'effort') {
-        compare_cols(names(data), c("year", "step", "area", "fleet", "effort"))
+        compare_cols(names(data), c("year", "step", "area", NA, NA))
         si_cols <- list(fleetnames = c(...)['fleetnames'])
 
     } else {

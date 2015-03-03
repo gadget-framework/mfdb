@@ -12,16 +12,26 @@ mfdb_area_size <- function (mdb, params) {
 
 # Return year, step, area, temperature (mean)
 mfdb_temperature <- function (mdb, params = list()) {
-    mfdb_survey_index_mean(mdb, c(list(index_type = 'temperature'), params))
+    mfdb_survey_index_mean(mdb, c(), c(list(index_type = 'temperature'), params))
 }
 
 # Return year, step, area, mean value
-mfdb_survey_index_mean <- function (mdb, params = list()) {
+mfdb_survey_index_mean <- function (mdb, cols, params) {
+    if (!('index_type' %in% names(params))) {
+        str(params)
+        stop("Need to supply 'index_type' in params. Querying all indicies makes little sense")
+    }
     mfdb_sample_grouping(mdb,
         params = params,
-        group_cols = c("year", "timestep", "area"),
+        group_cols = c("year", "timestep", "area", cols),
         calc_cols = c("AVG(c.value) mean"),
-        col_defs = list(year = "c.year", timestep = "c.month", area = "c.areacell_id"),
+        col_defs = list(
+            data_source = 'c.data_source_id',
+            index_type = "c.index_type_id",
+
+            area = "c.areacell_id",
+            year = "c.year",
+            timestep = "c.month"),
         core_table = "survey_index",
         generator = "mfdb_survey_index_mean")
 }
