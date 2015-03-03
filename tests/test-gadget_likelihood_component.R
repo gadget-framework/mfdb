@@ -72,6 +72,28 @@ for (type in all_components) {
         ok(cmp(comp$name, "gerald"), "Can set name")
         ok(cmp(comp$weight, 0.542), "Can set weight")
     })
+
+    ok_group(paste("Filenames for component", type), {
+        contains <- function(pattern, x) {
+            if(length(grep(pattern, x, value = FALSE)) > 0) {
+                TRUE
+            } else {
+                 paste0(x, " does not contain ", pattern)
+            }
+        }
+
+        comp <- do.call(gadget_likelihood_component, c(
+            default_opts,
+            list(name = "gerald", weight = 0.542),
+            NULL))
+        for (key in names(comp)) {
+            if ("gadget_file" %in% class(comp[[key]]) && comp$type != "penalty") {
+                ok(contains(
+                    paste0("^Data/", comp$type, "\\.", comp$name, "\\."),
+                    comp$datafile$filename), "Filename starts with name and type")
+            }
+        }
+    })
 }
 
 ok_group("Can write likelihood components", {

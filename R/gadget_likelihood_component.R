@@ -85,8 +85,6 @@ gadget_catchstatistics_component <- function (
         data = NULL, area = NULL, age = NULL,
         fleetnames = c(), stocknames = c()) {
 
-    prefix <- paste0('catchstatistics.', name, '.')
-
     if (is.null(data)) {
         stop("No data provided")
     }
@@ -118,10 +116,10 @@ gadget_catchstatistics_component <- function (
         null = NULL)[[data_function]])
 
     list(
-        datafile = gadget_file(fname('Data', prefix, data_function), data=data),
+        datafile = gadget_file(fname('Data', fname_prefix(sys.call(0), name), data_function), data=data),
         "function" = data_function,
-        areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area),
-        ageaggfile  = agg_file('age', prefix, if(is.null(age)) attr(data, "age") else age),
+        areaaggfile = agg_file('area', fname_prefix(sys.call(0), name), if(is.null(area)) attr(data, "area") else area),
+        ageaggfile  = agg_file('age', fname_prefix(sys.call(0), name), if(is.null(age)) attr(data, "age") else age),
         fleetnames = fleetnames,
         stocknames = stocknames)
 }
@@ -136,14 +134,12 @@ gadget_catchdistribution_component <- function (
         data = NULL, area = NULL, age = NULL, length = NULL,
         fleetnames = c(), stocknames = c()) {
 
-    prefix <- paste0('catchdistribution.', name, '.')
-
     # Make sure we have the columns we need
     compare_cols(names(data), c("year", "step", "area", "age", "length", "number"))
 
     c(
         list(
-            datafile = gadget_file(fname('Data', prefix, data_function), data=data),
+            datafile = gadget_file(fname('Data', fname_prefix(sys.call(0), name), data_function), data=data),
             "function" = data_function
         ),
         data_function_params,
@@ -151,9 +147,9 @@ gadget_catchdistribution_component <- function (
             aggregationlevel = if (aggregationlevel) 1 else 0,
             overconsumption = if (overconsumption) 1 else 0,
             epsilon = epsilon,
-            areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area),
-            ageaggfile  = agg_file('age', prefix, if(is.null(age)) attr(data, "age") else age),
-            lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length),
+            areaaggfile = agg_file('area', fname_prefix(sys.call(0), name), if(is.null(area)) attr(data, "area") else area),
+            ageaggfile  = agg_file('age', fname_prefix(sys.call(0), name), if(is.null(age)) attr(data, "age") else age),
+            lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name), if(is.null(length)) attr(data, "length") else length),
             fleetnames = fleetnames,
             stocknames = stocknames))
 }
@@ -165,8 +161,6 @@ gadget_stockdistribution_component <- function (
         epsilon = 10,
         data = NULL, area = NULL, age = NULL, length = NULL,
         fleetnames = c(), stocknames = c()) {
-    prefix <- paste0('stockdistribution.', name, '.')
-
     # Make sure we have the columns we need
     compare_cols(names(data), c("year", "step", "area", NA, "length", "number"))
 
@@ -176,13 +170,13 @@ gadget_stockdistribution_component <- function (
     }
 
     list(
-        datafile = gadget_file(fname('Data', prefix, data_function), data=data),
+        datafile = gadget_file(fname('Data', fname_prefix(sys.call(0), name), data_function), data=data),
         "function" = data_function,
         overconsumption = if (overconsumption) 1 else 0,
         epsilon = epsilon,
-        areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area),
-        ageaggfile  = agg_file('age', prefix, if(is.null(age)) attr(data, "age") else age),
-        lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length),
+        areaaggfile = agg_file('area', fname_prefix(sys.call(0), name), if(is.null(area)) attr(data, "area") else area),
+        ageaggfile  = agg_file('age', fname_prefix(sys.call(0), name), if(is.null(age)) attr(data, "age") else age),
+        lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name), if(is.null(length)) attr(data, "length") else length),
         fleetnames = fleetnames,
         stocknames = stocknames)
 }
@@ -195,8 +189,6 @@ gadget_surveyindicies_component <- function (
         data = NULL,
         area = NULL,
         ...) {
-    prefix <- paste0('surveyindicies.', name, '.')
-
     if (!('fittype' %in% names(c(...)))) {
         stop("fittype missing. It is a required parameter")
     }
@@ -205,19 +197,19 @@ gadget_surveyindicies_component <- function (
         compare_cols(names(data), c("year", "step", "area", "length", "number"))
         length <- c(...)['length']
         si_cols <- list(
-            lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length))
+            lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name), if(is.null(length)) attr(data, "length") else length))
 
     } else if (sitype == 'ages') {
         compare_cols(names(data), c("year", "step", "area", "age", "number"))
         age <- c(...)['age']
         si_cols <- list(
-            ageaggfile  = agg_file('age', prefix, if(is.null(age)) attr(data, "age") else age))
+            ageaggfile  = agg_file('age', fname_prefix(sys.call(0), name), if(is.null(age)) attr(data, "age") else age))
 
     } else if (sitype == 'fleets') {
         compare_cols(names(data), c("year", "step", "area", "length", "number"))
         length <- c(...)['length']
         si_cols <- list(
-            lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length),
+            lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name), if(is.null(length)) attr(data, "length") else length),
             fleetnames = c(...)['fleetnames'])
 
     } else if (sitype == 'acoustic') {
@@ -235,10 +227,10 @@ gadget_surveyindicies_component <- function (
     # Mix in other default columns
     return(c(
         list(
-            datafile = gadget_file(fname('Data', prefix, sitype), data=data),
+            datafile = gadget_file(fname('Data', fname_prefix(sys.call(0), name), sitype), data=data),
             sitype = sitype,
             biomass = biomass,
-            areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area)),
+            areaaggfile = agg_file('area', fname_prefix(sys.call(0), name), if(is.null(area)) attr(data, "area") else area)),
         si_cols,
         list(stocknames = c(...)['stocknames']),
         na.omit(c(...)[c('fittype', 'slope', 'intercept')]),
@@ -263,9 +255,6 @@ gadget_stomachcontent_component <- function (
         prey_digestion_coefficients = c(1,0,0),
         predator_names = c(),
         data = NULL) {
-
-    prefix <- paste0('stomachcontent.', name, '.')
-
     # Make sure we have the columns we need
     compare_cols(names(data), c("year", "step", "area", NA, NA, "ratio"))
 
@@ -285,13 +274,13 @@ gadget_stomachcontent_component <- function (
 
     list(
         "function" = data_function,
-        datafile = gadget_file(fname('Data', prefix, data_function), data=data),
+        datafile = gadget_file(fname('Data', fname_prefix(sys.call(0), name), data_function), data=data),
         epsilon = epsilon,
-        areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area),
+        areaaggfile = agg_file('area', fname_prefix(sys.call(0), name), if(is.null(area)) attr(data, "area") else area),
         predatornames = predator_names,
         predatorlengths = NULL,
-        lenaggfile  = agg_file('len', prefix, if(is.null(length)) attr(data, "length") else length),
-        preyaggfile = gadget_file(fname('Aggfiles', prefix, 'prey.agg'),components=prey_components))
+        lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name), if(is.null(length)) attr(data, "length") else length),
+        preyaggfile = gadget_file(fname('Aggfiles', fname_prefix(sys.call(0), name), 'prey.agg'),components=prey_components))
 }
 
 gadget_recaptures_component <- function (
@@ -325,8 +314,6 @@ gadget_catchinkilos_component <- function (
         epsilon = 10,
         area = NULL,
         fleetnames = c(), stocknames = c()) {
-    prefix <- paste0('stomachcontent.', name, '.')
-
     # Make sure we have the columns we need
     compare_cols(names(data), c("year", "step", "area", "fleet", "biomass"))
     if (aggregationlevel == 1) {
@@ -338,11 +325,11 @@ gadget_catchinkilos_component <- function (
     }
 
     list(
-        datafile = gadget_file(fname('Data', prefix, data_function), data=data),
+        datafile = gadget_file(fname('Data', fname_prefix(sys.call(0), name), data_function), data=data),
         "function" = data_function,
         aggregationlevel = aggregationlevel,
         epsilon = epsilon,
-        areaaggfile = agg_file('area', prefix, if(is.null(area)) attr(data, "area") else area),
+        areaaggfile = agg_file('area', fname_prefix(sys.call(0), name), if(is.null(area)) attr(data, "area") else area),
         fleetnames = fleetnames,
         stocknames = stocknames)
 }
@@ -394,4 +381,13 @@ compare_cols <- function (actual, expected) {
             ), collapse = ""))
     }
     return(invisible(NULL))
+}
+
+# Prefix for filenames based on callee and likelihood name
+fname_prefix <- function (fn, name) {
+    paste0(
+        gsub(".*gadget_([^_]+)_component.*", "\\1", fn)[[1]],
+        '.',
+        name,
+        '.')
 }
