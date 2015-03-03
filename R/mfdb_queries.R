@@ -4,7 +4,7 @@ mfdb_area_size <- function (mdb, params) {
     mfdb_sample_grouping(mdb,
         params = params,
         group_cols = c("area"),
-        calc_cols = c("SUM(c.size) size"),
+        calc_cols = c("SUM(c.size) AS size"),
         core_table = "areacell",
         col_defs = list(area = "c.areacell_id"),
         generator = "mfdb_area_size")
@@ -24,7 +24,7 @@ mfdb_survey_index_mean <- function (mdb, cols, params) {
     mfdb_sample_grouping(mdb,
         params = params,
         group_cols = c("year", "timestep", "area", cols),
-        calc_cols = c("AVG(c.value) mean"),
+        calc_cols = c("AVG(c.value) AS mean"),
         col_defs = list(
             data_source = 'c.data_source_id',
             index_type = "c.index_type_id",
@@ -174,7 +174,7 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
         col_defs = as.list(c(pred_col_defs)),
         group_cols = c("year", "timestep", "area", intersect(cols, names(pred_col_defs))),
         calc_cols = c(
-            "COUNT(DISTINCT c.predator_id) stomachs_total",
+            "COUNT(DISTINCT c.predator_id) AS stomachs_total",
             NULL),
         params = params,
         generator = "mfdb_stomach_presenceratio")
@@ -188,7 +188,7 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
         col_defs = as.list(c(pred_col_defs, prey_col_defs)),
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            "COUNT(DISTINCT c.predator_id) stomachs_present",
+            "COUNT(DISTINCT c.predator_id) AS stomachs_present",
             NULL),
         params = params,
         generator = "mfdb_stomach_presenceratio")
