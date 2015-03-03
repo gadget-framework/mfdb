@@ -335,16 +335,6 @@ gadget_catchinkilos_component <- function (
 }
 
 agg_file <- function (type, prefix, data) {
-    if (is.null(data)) {
-        # Data isn't aggregated, so leave a placeholder for now
-        data <- list(all = 'X')
-    } else if (class(data) == 'integer' || class(data) == 'character') {
-        # Convert 1:5 to a list of 1 = 1, 2 = 2, ...
-        data <- structure(
-            lapply(data, function (x) x),
-            names = data)
-    }
-
     if (type == 'area') {
         # Areas should just be a => 1, b => 2, ...
         comp <- structure(

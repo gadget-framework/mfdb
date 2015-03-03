@@ -1,32 +1,26 @@
 # Generics for mfdb_aggregates, called for each portion of the query
 # Handle NULL here, grouping everything together
 pre_query <- function(mdb, x, outputname) {
-    if (is.null(x)) return(NULL)
     UseMethod("pre_query", x)
 }
 
 sample_clause <- function(mdb, x, col, outputname) {
-    if (is.null(x)) return("0")
     UseMethod("sample_clause", x)
 }
 
 select_clause <- function(mdb, x, col, outputname) {
-    if (is.null(x)) return(paste0("'all' AS ", outputname))
     UseMethod("select_clause", x)
 }
 
 from_clause <- function(mdb, x, col, outputname) {
-    if (is.null(x)) return(c())
     UseMethod("from_clause", x)
 }
 
 where_clause <- function(mdb, x, col, outputname) {
-    if (is.null(x)) return(c())
     UseMethod("where_clause", x)
 }
 
 agg_summary <- function(mdb, x, col, data) {
-    if (is.null(x)) return(NULL)
     if (!('mfdb_aggregate' %in% class(x)) && is.list(x)) return(x)
     UseMethod("agg_summary", x)
 }
@@ -36,6 +30,14 @@ pre_query.mfdb_aggregate <- function(mdb, x, outputname) NULL
 sample_clause.mfdb_aggregate <- function(mdb, x, col, outputname) "0"
 from_clause.mfdb_aggregate <- function(mdb, x, col, outputname) c()
 agg_summary.mfdb_aggregate <- function(mdb, x, col, data) as.list(x)
+
+# NULL implies everything grouped under an "all"
+pre_query.NULL <- pre_query.mfdb_aggregate
+sample_clause.NULL <- sample_clause.mfdb_aggregate
+select_clause.NULL <- function(mdb, x, col, outputname) paste0("'all' AS ", outputname)
+from_clause.NULL <- from_clause.mfdb_aggregate
+where_clause.NULL <- function(mdb, x, col, outputname) c()
+agg_summary.NULL <- function(mdb, x, col, data) list(all = 'X')
 
 # Numeric vectors, first checked to see if there's a lookup
 pre_query.numeric <- pre_query.mfdb_aggregate

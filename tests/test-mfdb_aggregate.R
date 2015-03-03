@@ -10,6 +10,7 @@ ok_group("Aggregates with NULL", local({
     ok(cmp(select_clause(mdb, NULL, "col", "out"), "'all' AS out"), "Select clause")
     ok(cmp(from_clause(mdb, NULL, "col", "out"), c()), "From clause")
     ok(cmp(where_clause(mdb, NULL, "col", "out"), c()), "Where clause")
+    ok(cmp(agg_summary(mdb, NULL, "col", list(data.frame())), list(all = 'X')), "Agg summary")
 }, asNamespace('mfdb')))
 
 ok_group("Aggregates with numeric", local({
