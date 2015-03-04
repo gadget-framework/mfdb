@@ -12,7 +12,7 @@ source('mfdb/tests/utils/inttest-helpers.R')
 
 unattr <- function (obj) {
     attr(obj, "year") <- NULL
-    attr(obj, "timestep") <- NULL
+    attr(obj, "step") <- NULL
     attr(obj, "area") <- NULL
     attr(obj, "length") <- NULL
     attr(obj, "generator") <- NULL

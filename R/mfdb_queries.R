@@ -31,7 +31,7 @@ mfdb_survey_index_mean <- function (mdb, cols, params) {
 
             area = "c.areacell_id",
             year = "c.year",
-            timestep = "c.month"),
+            step = "c.month"),
         core_table = "survey_index",
         generator = "mfdb_survey_index_mean")
 }
@@ -147,7 +147,7 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
         sampling_type = 'c.sampling_type',
 
         year = 'c.year',
-        timestep = 'c.month',
+        step = 'c.month',
         area = 'c.areacell',
 
         predator_species = 'c.species_id',
@@ -204,7 +204,7 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
         merged$ratio <- merged$stomachs_present / merged$stomachs_total
         do.call(structure, c(
             list(merged[, c("year", "step", "area", cols, "ratio"), drop = FALSE]),
-            attributes(w)[c("year", "timestep", "area", cols, "generator")],
+            attributes(w)[c("year", "step", "area", cols, "generator")],
             NULL))
     }, with_prey, without_prey, SIMPLIFY = FALSE)
 }
@@ -215,7 +215,7 @@ mfdb_sample_grouping <- function (mdb,
         group_cols = c("year", "timestep", "area", "age"),
         col_defs = list(
             data_source = "c.data_source_id",
-            year = "c.year", timestep = "c.month", area = "c.areacell_id", age = "c.age",
+            year = "c.year", step = "c.month", area = "c.areacell_id", age = "c.age",
             maturity_stage = "c.maturity_stage_id", length = "c.length",
             institute = "c.institute_id", gear = "c.gear_id", vessel = "c.vessel_id",
             sampling_type = "c.sampling_type_id", species ="c.species_id", sex = "c.sex_id"),
@@ -225,13 +225,19 @@ mfdb_sample_grouping <- function (mdb,
         join_tables = c(),
         generator = "mfdb_sample_grouping") {
 
+    # Bodge timestep -> step inconsistency
+    group_cols <- gsub("^timestep$", "step", group_cols)
+    if ('step' %in% group_cols && 'timestep' %in% names(params)) {
+        params$step <- params$timestep
+    }
+
     # Call relevant clause function for all group_cols
     clauses <- function (cols, fn) {
         unlist(lapply(cols, function (col) fn(
                 mdb,
                 params[[col]],
                 col_defs[[col]],
-                ifelse(col == 'timestep', 'step', col))))
+                col)))
     }
 
     # Importing is probably done, so create indexes if we need to
@@ -257,7 +263,7 @@ mfdb_sample_grouping <- function (mdb,
             paste(paste(
                 clauses(group_cols, sample_clause),
                 NULL, collapse = "|| '.' ||"), "AS bssample"),
-            clauses(group_cols, select_clause),
+            gsub("AS ([a-zA-Z0-9_]+)$", "AS grp_\\1", clauses(group_cols, select_clause)),
             calc_cols,
             NULL), collapse = ","),
         " FROM ", paste(c(
@@ -268,9 +274,16 @@ mfdb_sample_grouping <- function (mdb,
             paste("c.case_study_id =", sql_quote(mdb$case_study_id)),
             clauses(union(group_cols, filter_cols), where_clause),
             NULL), collapse = " AND "),
-        " GROUP BY ", paste(seq_len(length(group_cols) + 1), collapse=","),
-        " ORDER BY ", paste(seq_len(length(group_cols) + 1), collapse=","),
+        " GROUP BY ", paste(c(
+            "bssample",
+            paste0("grp_", group_cols),
+            NULL), collapse=","),
+        " ORDER BY ", paste(c(
+            "bssample",
+            paste0("grp_", group_cols),
+            NULL), collapse=","),
         NULL)
+    names(out) <- gsub("grp_(.*)", "\\1", names(out))
 
     # No data, so fake enough to generate list of empty frames
     if (nrow(out) == 0) {
@@ -292,10 +305,17 @@ mfdb_sample_grouping <- function (mdb,
 
     # Break data up by sample and annotate each with the value for group_cols
     lapply(split(out, list(out$bssample)), function (sample) {
-        subset <- sample[,names(sample) != 'bssample', drop = FALSE]
-        # 0-column, 1-row data-frames make no sense
-        if (ncol(subset) == 0) subset <- data.frame()
-        rownames(subset) <- NULL
+        if (identical(names(sample), c('bssample'))) {
+            # No data, just generating dummy groups
+            subset <- data.frame()
+        } else {
+            # Select our final output columns
+            subset <- sample[,c(
+                group_cols,
+                gsub(".*\\s+AS\\s+(\\w+)", "\\1", calc_cols),
+                NULL), drop = FALSE]
+            rownames(subset) <- NULL
+        }
         do.call(structure, c(
             list(subset),
             structure(

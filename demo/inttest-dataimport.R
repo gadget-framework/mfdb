@@ -117,7 +117,7 @@ ok_group("Temperature", {
                     mean(25:27), mean(28:30), mean(31:33), mean(34:36)),
                 stringsAsFactors = FALSE),
             year = as.list(structure(1998:2000, names = 1998:2000)),
-            timestep = mfdb_timestep_quarterly,
+            step = mfdb_timestep_quarterly,
             area = area_group,
             generator = "mfdb_survey_index_mean"))),
         "Can collate temperatures by quarter")
@@ -145,7 +145,7 @@ ok_group("Temperature", {
                     mean(20:22), mean(23:25), mean(26:28), mean(29:31)),
                 stringsAsFactors = FALSE),
             year = as.list(structure(1998:2000, names = 1998:2000)),
-            timestep = mfdb_timestep_quarterly,
+            step = mfdb_timestep_quarterly,
             area = area_group,
             generator = "mfdb_survey_index_mean"))),
         "Second import cleared previous data")
