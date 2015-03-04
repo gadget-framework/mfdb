@@ -17,13 +17,11 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
     group <- x
     datatype <- "INT"
 
-    # Turn mfdb_group into a temporary table to join to
-    # Remove the table if it exists, and recreate it
-    tryCatch(mfdb_send(mdb,
-        "DROP ",
-        "TABLE ", table_name), error = function (e) {
-            mdb$logger$debug(paste("Ignored", e))
-        })
+    # If the table already exists, nothing to do
+    if (mfdb_table_exists(mdb, attr(x, 'table_name'))) {
+        return(invisible(NULL))
+    }
+
     mfdb_send(mdb, paste(
             "CREATE",
             (if (!mdb$save_temp_tables) "TEMPORARY"),

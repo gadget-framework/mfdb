@@ -1,5 +1,6 @@
     Unreleased
 
+    * Only recreate new temporary tables for groups once
     * Add mfdb_survey_index_mean, for retrieving acoustic indicies
     * Query functions should always return a list of data.frames, even if there is no data
     * Implement catchinkilos likelihood component
