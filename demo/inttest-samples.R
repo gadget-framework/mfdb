@@ -227,10 +227,11 @@ ok_group("Filtering of samples", {
             weight = c(110,510,310,110,310,410, 610,310,310,310,310,230)))
 
     # MOO sampling_type has no dat
+    area_group <- mfdb_group(divA = c("divA"))
     ok(cmp(
         mfdb_sample_meanlength(mdb, c(), list(
             sampling_type = 'MOO',
-            area = mfdb_group(divA = c("divA")),
+            area = area_group,
             timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
             length = mfdb_interval("len", seq(0, 100, by = 10)),
@@ -239,7 +240,7 @@ ok_group("Filtering of samples", {
                 data.frame(),
                 year = list("1998" = 1998, "1999" = 1999, "2000" = 2000),
                 timestep = mfdb_timestep_biannually,
-                area = mfdb_group(divA = c("divA")),
+                area = area_group,
                 generator = "mfdb_sample_meanlength"))),
         "sampling_type MOO empty")
 

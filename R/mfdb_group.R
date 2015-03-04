@@ -4,19 +4,20 @@
 # )
 mfdb_group <- function (...) {
     group <- structure(list(...),
+            table_name = paste(
+                "temp",
+                paste0(sample(letters, 5, replace = TRUE), collapse=""),
+                sep = "_"),
             class = c("mfdb_group", "mfdb_aggregate"))
 
     invisible(group)
 }
 
 pre_query.mfdb_group <- function(mdb, x, outputname) {
-    table_name <- paste0("temp_", outputname)
     group <- x
     datatype <- "INT"
 
     # Turn mfdb_group into a temporary table to join to
-    if (is.null(group)) stop(paste("You must provide a mfdb_group for", table_name))
-    #TODO: Assign random ID attribute to group, use this as table name or re-use table if it already has one
     # Remove the table if it exists, and recreate it
     tryCatch(mfdb_send(mdb,
         "DROP ",
@@ -27,14 +28,14 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
             "CREATE",
             (if (!mdb$save_temp_tables) "TEMPORARY"),
             "TABLE",
-            table_name,
+            attr(x, 'table_name'),
             "(sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value ", datatype,
             ")"))
 
     # Break down group into single table
     denormalized <- denormalize(group)
 
-    if (table_name == 'temp_area') {
+    if (outputname == 'area') {
         # Decompose divisions into areacells first
         for (set in split(denormalized, list(denormalized$sample, denormalized$name))) {
             # Can't insert 2 copies of a division at the same time, so insert
@@ -42,7 +43,7 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
             divisions <- set[,'value']
             while(length(divisions) > 0) {
                 mfdb_send(mdb,
-                    "INSERT INTO ", table_name,
+                    "INSERT INTO ", attr(x, 'table_name'),
                     " SELECT ", sql_quote(set[1, 'sample']), " AS sample",
                     ", ", sql_quote(set[1, 'name']), " AS name",
                     ", areacell_id AS value",
@@ -54,25 +55,25 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
         }
     } else {
         # Populate table based on denormalized group
-        mfdb_insert(mdb, table_name, denormalized)
+        mfdb_insert(mdb, attr(x, 'table_name'), denormalized)
     }
 
     # Index the lookup table to speed up queries
-    mfdb_send(mdb, sql_create_index(table_name, c('value', 'name', 'sample')))
+    mfdb_send(mdb, sql_create_index(attr(x, 'table_name'), c('value', 'name', 'sample')))
 
     invisible(NULL)
 }
 
 select_clause.mfdb_group <- function(mdb, x, col, outputname) {
-    paste0("temp_", outputname, ".name AS ", outputname)
+    paste0(attr(x, 'table_name'), ".name AS ", outputname)
 }
 
 from_clause.mfdb_group <- function(mdb, x, col, outputname) {
-    paste0("temp_", outputname)
+    paste0(attr(x, 'table_name'))
 }
 
 where_clause.mfdb_group <- function(mdb, x, col, outputname) {
-    paste0(col, " = ", "temp_", outputname, ".value")
+    paste0(col, " = ", attr(x, 'table_name'), ".value")
 }
 
 # Some default time groupings
@@ -105,6 +106,7 @@ mfdb_bootstrap_group <- function (count, group, seed = NULL) {
 
     bs_group <- structure(
             lapply(1:count, function(i) { lapply(group, function (g) { if (length(g) == 1) g else sample(g, replace = TRUE) }) }),
+            table_name = paste0(attr(group, 'table_name'), "_bs", count, seed),
             class = c("mfdb_bootstrap_group", "mfdb_group", "mfdb_aggregate"))
 
     # Restore PRNG to how it was before
@@ -117,7 +119,7 @@ mfdb_bootstrap_group <- function (count, group, seed = NULL) {
 }
 
 sample_clause.mfdb_bootstrap_group <- function(mdb, x, col, outputname) {
-    paste0("temp_", outputname, ".sample")
+    paste0(attr(x, 'table_name'), ".sample")
 }
 
 agg_summary.mfdb_bootstrap_group <- function(mdb, x, col, data) {
