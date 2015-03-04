@@ -13,9 +13,10 @@ mfdb_group <- function (...) {
     invisible(group)
 }
 
-pre_query.mfdb_group <- function(mdb, x, outputname) {
+pre_query.mfdb_group <- function(mdb, x, col) {
     group <- x
     datatype <- "INT"
+    lookup <- gsub('(.*\\.)|_id', '', col)
 
     # If the table already exists, nothing to do
     if (mfdb_table_exists(mdb, attr(x, 'table_name'))) {
@@ -33,7 +34,7 @@ pre_query.mfdb_group <- function(mdb, x, outputname) {
     # Break down group into single table
     denormalized <- denormalize(group)
 
-    if (outputname == 'area') {
+    if (lookup == 'areacell') {
         # Decompose divisions into areacells first
         for (set in split(denormalized, list(denormalized$sample, denormalized$name))) {
             # Can't insert 2 copies of a division at the same time, so insert

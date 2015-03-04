@@ -5,7 +5,7 @@ source('utils/helpers.R')
 mdb <- list(case_study_id = 5)
 
 ok_group("Aggregates with NULL", local({
-    pre_query(mdb, NULL, "out")  # Just check nothing happens
+    pre_query(mdb, NULL, "col")  # Just check nothing happens
     ok(cmp(sample_clause(mdb, NULL, "col", "out"), "0"), "Sample clause")
     ok(cmp(select_clause(mdb, NULL, "col", "out"), "'all' AS out"), "Select clause")
     ok(cmp(from_clause(mdb, NULL, "col", "out"), c()), "From clause")
@@ -14,7 +14,7 @@ ok_group("Aggregates with NULL", local({
 }, asNamespace('mfdb')))
 
 ok_group("Aggregates with numeric", local({
-    pre_query(mdb, 5, "out")  # Just check nothing happens
+    pre_query(mdb, 5, "col")  # Just check nothing happens
 
     ok(cmp(sample_clause(mdb, 5, "col", "out"), "0"), "Sample clause")
 
@@ -32,7 +32,7 @@ ok_group("Aggregates with numeric", local({
 }, asNamespace('mfdb')))
 
 ok_group("Aggregates with character", local({
-    pre_query(mdb, "c", "out")  # Just check nothing happens
+    pre_query(mdb, "c", "col")  # Just check nothing happens
 
     ok(cmp(sample_clause(mdb, "c", "col", "out"), "0"), "Sample clause")
 
@@ -46,7 +46,7 @@ ok_group("Aggregates with character", local({
 }, asNamespace('mfdb')))
 
 ok_group("Aggregates with global taxonomies", local({
-    pre_query(mdb, "c", "out")  # Just check nothing happens
+    pre_query(mdb, "c", "col")  # Just check nothing happens
 
     ok(cmp(sample_clause(mdb, "c", "tbl.gear_id", "out"), "0"), "Sample clause")
 
@@ -63,7 +63,7 @@ ok_group("Aggregates with global taxonomies", local({
 }, asNamespace('mfdb')))
 
 ok_group("Aggregates with CS-specific taxonomies", local({
-    pre_query(mdb, "c", "out")  # Just check nothing happens
+    pre_query(mdb, "c", "col")  # Just check nothing happens
 
     ok(cmp(sample_clause(mdb, "c", "tbl.sampling_type_id", "out"), "0"), "Sample clause")
 

@@ -1,6 +1,6 @@
 # Generics for mfdb_aggregates, called for each portion of the query
 # Handle NULL here, grouping everything together
-pre_query <- function(mdb, x, outputname) {
+pre_query <- function(mdb, x, col) {
     UseMethod("pre_query", x)
 }
 
@@ -26,7 +26,7 @@ agg_summary <- function(mdb, x, col, data) {
 }
 
 # Add some do-nothing cases where definining the function is optional
-pre_query.mfdb_aggregate <- function(mdb, x, outputname) NULL
+pre_query.mfdb_aggregate <- function(mdb, x, col) NULL
 sample_clause.mfdb_aggregate <- function(mdb, x, col, outputname) "0"
 from_clause.mfdb_aggregate <- function(mdb, x, col, outputname) c()
 agg_summary.mfdb_aggregate <- function(mdb, x, col, data) as.list(x)

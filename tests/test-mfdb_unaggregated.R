@@ -8,7 +8,7 @@ g <- NULL
 ok_group("Aggregates with mfdb_unaggregated(omitNA = FALSE)", local({
     g <<- mfdb_unaggregated()
 
-    pre_query(mdb, g, "out")  # Just check nothing happens
+    pre_query(mdb, g, "col")  # Just check nothing happens
     ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
     ok(cmp(select_clause(mdb, g, "col", "out"), "col AS out"), "Select clause")
     ok(cmp(from_clause(mdb, g, "col", "out"), c()), "From clause")
@@ -27,7 +27,7 @@ ok_group("Aggregates with mfdb_unaggregated(omitNA = FALSE)", local({
 ok_group("Aggregates with mfdb_unaggregated(omitNA = TRUE)", local({
     g <<- mfdb_unaggregated(omitNA = TRUE)
 
-    pre_query(mdb, g, "out")  # Just check nothing happens
+    pre_query(mdb, g, "col")  # Just check nothing happens
     ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
     ok(cmp(select_clause(mdb, g, "col", "out"), "col AS out"), "Select clause")
     ok(cmp(from_clause(mdb, g, "col", "out"), c()), "From clause")
