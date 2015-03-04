@@ -121,10 +121,10 @@ sample_clause.mfdb_bootstrap_group <- function(mdb, x, col, outputname) {
 }
 
 agg_summary.mfdb_bootstrap_group <- function(mdb, x, col, data) {
-    if (length(data$sample) < 1) stop("Need some data to know which group was used")
+    if (length(data$bssample) < 1) stop("Need some data to know which group was used")
 
     # Pick out the list for this sample
-    as.list(x[[data$sample[[1]]]])
+    as.list(x[[data$bssample[[1]]]])
 }
 
 # Denormalise the nesting and convert into a list of strings

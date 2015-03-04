@@ -78,11 +78,11 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
     ok(cmp(select_clause(mdb, g, "col", "out"), "temp_out.name AS out"), "Select clause")
     ok(cmp(from_clause(mdb, g, "col", "out"), "temp_out"), "From clause")
     ok(cmp(where_clause(mdb, g, "col", "out"), "col = temp_out.value"), "Where clause")
-    ok(cmp(agg_summary(mdb, g, 'x', data.frame(sample = 1)), list(
+    ok(cmp(agg_summary(mdb, g, 'x', data.frame(bssample = 1)), list(
         camels = 44,
         aardvarks = 88
     )), "Aggregation summary (sample 1)")
-    ok(cmp(agg_summary(mdb, g, 'x', data.frame(sample = 2)), list(
+    ok(cmp(agg_summary(mdb, g, 'x', data.frame(bssample = 2)), list(
         camels = 44,
         aardvarks = 88
     )), "Aggregation summary (sample 2)")
@@ -98,11 +98,11 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
     ok(cmp(select_clause(mdb, g, "col", "out"), "temp_out.name AS out"), "Select clause")
     ok(cmp(from_clause(mdb, g, "col", "out"), "temp_out"), "From clause")
     ok(cmp(where_clause(mdb, g, "col", "out"), "col = temp_out.value"), "Where clause")
-    ok(cmp(agg_summary(mdb, g, 'x', data.frame(sample = 1)), list(
+    ok(cmp(agg_summary(mdb, g, 'x', data.frame(bssample = 1)), list(
         g1 = c(55, 55),
         g2 = c(88, 88)
     )), "Aggregation summary (sample 1)")
-    ok(cmp(agg_summary(mdb, g, 'x', data.frame(sample = 2)), list(
+    ok(cmp(agg_summary(mdb, g, 'x', data.frame(bssample = 2)), list(
         g1 = c(44, 44),
         g2 = c(99, 88)
     )), "Aggregation summary (sample 2)")
@@ -123,11 +123,11 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         "INSERT INTO temp_out (sample,name,value) VALUES (1,'g1',55),(1,'g1',55),(1,'g2',99),(1,'g2',99),(2,'g1',44),(2,'g1',44),(2,'g2',88),(2,'g2',99)",
         "CREATE INDEX ON temp_out (value,name,sample)",
         NULL)), "Created temporary table")
-    ok(cmp(agg_summary(mdb, g, 'x', data.frame(sample = 1)), list(
+    ok(cmp(agg_summary(mdb, g, 'x', data.frame(bssample = 1)), list(
         g1 = c(55, 55),
         g2 = c(99, 99)
     )), "Aggregation summary (sample 1)")
-    ok(cmp(agg_summary(mdb, g, 'x', data.frame(sample = 2)), list(
+    ok(cmp(agg_summary(mdb, g, 'x', data.frame(bssample = 2)), list(
         g1 = c(44, 44),
         g2 = c(88, 99)
     )), "Aggregation summary (sample 2)")

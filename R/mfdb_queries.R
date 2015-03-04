@@ -256,7 +256,7 @@ mfdb_sample_grouping <- function (mdb,
         "SELECT ", paste(c(
             paste(paste(
                 clauses(group_cols, sample_clause),
-                NULL, collapse = "|| '.' ||"), "AS sample"),
+                NULL, collapse = "|| '.' ||"), "AS bssample"),
             clauses(group_cols, select_clause),
             calc_cols,
             NULL), collapse = ","),
@@ -287,12 +287,12 @@ mfdb_sample_grouping <- function (mdb,
             do.call(data.frame, samples),
             1,
             function(x) paste(x, collapse="."))
-        out <- data.frame(sample = denormalised)
+        out <- data.frame(bssample = denormalised)
     }
 
     # Break data up by sample and annotate each with the value for group_cols
-    lapply(split(out, list(out$sample)), function (sample) {
-        subset <- sample[,names(sample) != 'sample', drop = FALSE]
+    lapply(split(out, list(out$bssample)), function (sample) {
+        subset <- sample[,names(sample) != 'bssample', drop = FALSE]
         # 0-column, 1-row data-frames make no sense
         if (ncol(subset) == 0) subset <- data.frame()
         rownames(subset) <- NULL
