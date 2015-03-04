@@ -20,10 +20,10 @@ ok_group("Can generate objects", {
 
 ok_group("Elements are named by prefixes", local({
     expect_equal(
-        agg_summary(mdb, mfdb_interval("l", c(10,20,25,30)), 'x', data.frame()),
+        agg_summary(mdb, mfdb_interval("l", c(10,20,25,30)), 'col', 'out', data.frame()),
         list(l10 = c(10,20), l20 = c(20,25), l25 = c(25,30)))
     expect_equal(
-        agg_summary(mdb, mfdb_interval("l", c(5,15,25,30)), 'x', data.frame()),
+        agg_summary(mdb, mfdb_interval("l", c(5,15,25,30)), 'col', 'out', data.frame()),
         list(l5 = c(5,15), l15 = c(15,25), l25 = c(25,30)))
 }, asNamespace('mfdb')))
 

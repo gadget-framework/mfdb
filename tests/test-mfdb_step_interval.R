@@ -14,16 +14,16 @@ ok_group("Can generate objects", {
 ok_group("Can convert mfdb_step_intervals into lists", local({
     g <<- mfdb_step_interval('l', 10)
     ok(cmp(
-        agg_summary(mdb, mfdb_step_interval('l', 10, from = 10, to = 50), 'len', data.frame()),
+        agg_summary(mdb, mfdb_step_interval('l', 10, from = 10, to = 50), 'c.len', 'len', data.frame()),
         list(l10 = c(10, 20), l20 = c(20, 30), l30 = c(30, 40), l40 = c(40, 50))),
         "Can convert closed interval to list")
 
     ok(cmp_error(
-        agg_summary(mdb, mfdb_step_interval('l', 10), 'claire', data.frame()),
+        agg_summary(mdb, mfdb_step_interval('l', 10), 'c.claire', 'claire', data.frame()),
         "claire"), "Can't convert open interval without data")
 
     ok(cmp(
-        agg_summary(mdb, mfdb_step_interval('l', 10), 'len', data.frame(len = c(1, 24, 32, 22))),
+        agg_summary(mdb, mfdb_step_interval('l', 10), 'c.len', 'len', data.frame(len = c(1, 24, 32, 22))),
         list(l0 = c(0, 10), l10 = c(10, 20), l20 = c(20, 30), l30 = c(30, 40))),
         "Can convert open interval using returned data")
 }, asNamespace('mfdb')))

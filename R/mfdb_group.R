@@ -121,7 +121,7 @@ sample_clause.mfdb_bootstrap_group <- function(mdb, x, col, outputname) {
     paste0(attr(x, 'table_name'), ".sample")
 }
 
-agg_summary.mfdb_bootstrap_group <- function(mdb, x, col, data) {
+agg_summary.mfdb_bootstrap_group <- function(mdb, x, col, outputname, data) {
     if (length(data$bssample) < 1) stop("Need some data to know which group was used")
 
     # Pick out the list for this sample

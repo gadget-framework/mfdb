@@ -26,15 +26,15 @@ where_clause.mfdb_step_interval <- function(mdb, x, col, outputname) {
 }
 
 # Return a list of the form "group" = c("min", "max"), as required by gadget_file
-agg_summary.mfdb_step_interval <- function(mdb, x, col, data) {
+agg_summary.mfdb_step_interval <- function(mdb, x, col, outputname, data) {
     if (!is.null(x$to)) {
         to <- x$to
     } else {
         # Work out the smallest value on sequence bigger than the largest value returned
-        if (is.null(data[[col]])) {
-            stop("Column ", col, " missing from data")
+        if (is.null(data[[outputname]])) {
+            stop("Column ", outputname, " missing from data")
         }
-        to <- max(data[[col]])
+        to <- max(data[[outputname]])
         to <- to - to %% x$by + x$by
     }
     out <- seq(from = x$from, to = to, by = x$by)

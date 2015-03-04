@@ -299,7 +299,7 @@ mfdb_sample_grouping <- function (mdb,
         do.call(structure, c(
             list(subset),
             structure(
-                lapply(group_cols, function(col) agg_summary(mdb, params[[col]], col, sample)),
+                lapply(group_cols, function(col) agg_summary(mdb, params[[col]], col_defs[[col]], col, sample)),
                 names = group_cols),
             list(generator = generator)
         ))

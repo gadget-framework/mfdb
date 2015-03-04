@@ -238,7 +238,7 @@ ok_group("Function either provided explicitly or based on generator", {
 ok_group("Aggregation files", {
     cmp_agg <- function (agg_type, agg, ...) {
         gd <- gadget_directory(tempfile())
-        agg_summ <- agg_summary(fake_mdb(), agg, 'col', data.frame(col = 1:5))
+        agg_summ <- agg_summary(fake_mdb(), agg, 'c.col', 'col', data.frame(col = 1:5))
         gadget_dir_write(gd, gadget_likelihood_component(
             "catchdistribution",
             name="cd",
