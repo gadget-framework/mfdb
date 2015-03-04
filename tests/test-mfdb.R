@@ -180,3 +180,30 @@ ok_group("mfdb_disable_constraints", {
         "ALTER TABLE public.tbl1 ADD CONSTRAINT const3 c",
         "[1] \"Oh noes\"")), "Removed and replaced constraints when something went wrong")
 })
+
+ok_group("mfdb_table_exists", {
+    table_exists <- function(table_name, ret) {
+        mdb <- fake_mdb()
+        mdb$ret_rows <- ret
+        out <- capture.output(tryCatch({
+            out <- mfdb:::mfdb_table_exists(mdb, table_name)
+            cat("Returned:", out, "\n")
+        }, error = function (e) e$message))
+        return(out)
+    }
+
+    ok(cmp(table_exists("carol", ret = data.frame(count = 1)), c(
+        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema IN ('public') AND table_name IN ('carol')",
+        "Returned: TRUE ",
+        NULL)), "SQL looks good")
+
+    ok(cmp(table_exists("carol", ret = data.frame(count = 0)), c(
+        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema IN ('public') AND table_name IN ('carol')",
+        "Returned: FALSE ",
+        NULL)), "Can alter return value")
+
+    ok(cmp(table_exists(c("frank", "carol"), ret = data.frame(count = c(0, 1))), c(
+        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema IN ('public') AND table_name IN ('frank','carol')",
+        "Returned: FALSE TRUE ",
+        NULL)), "Vectorises")
+})
