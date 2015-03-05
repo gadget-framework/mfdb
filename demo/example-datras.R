@@ -13,7 +13,9 @@ if (!file.exists('example-datras-data/NS-IBTS_1995.zip')) {
     downloadExchange("NS-IBTS",1995:2005)
     setwd(oldwd)
 }
-d <- readExchangeDir(path = 'example-datras-data')
+ignore <- capture.output({
+    d <- readExchangeDir(path = 'example-datras-data')
+})
 cod <- subset(d,Species == 'Gadus morhua')
 
 # Retrieve length data
