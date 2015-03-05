@@ -227,11 +227,11 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
 }
 
 # Do the given tables already exist?
-mfdb_table_exists <- function(mdb, table_name, schema = 'public') {
+mfdb_table_exists <- function(mdb, table_name) {
     mfdb_fetch(mdb,
         "SELECT COUNT(*)",
         " FROM information_schema.tables",
-        " WHERE table_schema IN ", sql_quote(schema, always_bracket = TRUE),
+        " WHERE table_schema NOT IN ('information_schema', 'pg_catalog')",
         " AND table_name IN ", sql_quote(table_name, always_bracket = TRUE))[, c(1)] > 0
 }
 
