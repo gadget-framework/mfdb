@@ -223,3 +223,65 @@ ok_group("Maturity stage samples", {
         "len90\t90\t100",
         NULL), "len aggregation file")
 })
+
+ok_group("Samples with NULL groupings", {
+    # Set-up areas/divisions
+    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
+    mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G01')))
+
+    # Import a survey
+    mfdb_import_survey(mdb,
+        data_source = 'survey1',
+        data.frame(
+            year = c('1998'),
+            month = c(1:12),
+            areacell = c('45G01'),
+            species = c('COD'),
+            maturity_stage = c(  1,  2,  3,  1,  2,  3,   1,  2,  3,  1,  2,  3),
+            age =            c(  1,  2,  1,  2,  1,  2,   1,  2,  1,  2,  1,  2),
+            length =         c( 10, 50, 30, 10, 35, 46,  65, 62, 36, 35, 34, 22),
+            count =          c(100,500,300,100,350,460, 650,320,360,350,340,220)))
+
+    # Initalise a gadget directory to output into
+    gd <- gadget_directory(tempfile())
+
+    # Treat the maturity stage as a stock, divide up into mature and immature
+    agg_data <- mfdb_sample_meanweight(mdb, c('age'), list(
+            year = 1998:2000,
+            area = mfdb_group(divA = c("divA")),
+            age = NULL,
+            timestep = mfdb_timestep_biannually))
+
+    # Write it into a likelihood component
+    gadget_dir_write(gd, gadget_likelihood_component(
+        'catchstatistics', data = agg_data[[1]]))
+
+    # Likelihood file has a component
+    ok(cmp_file(gd, "likelihood",
+        ver_string,
+        "; ",
+        "[component]",
+        "name\tcatchstatistics",
+        "weight\t0",
+        "type\tcatchstatistics",
+        "datafile\tData/catchstatistics.catchstatistics.weightnostddev",
+        "function\tweightnostddev",
+        "areaaggfile\tAggfiles/catchstatistics.catchstatistics.area.agg",
+        "ageaggfile\tAggfiles/catchstatistics.catchstatistics.age.agg",
+        "fleetnames\t",
+        "stocknames\t"
+        ), "Likelihood file updated")
+
+    # Data files written
+    ok(cmp_file(gd, "Data/catchstatistics.catchstatistics.weightnostddev",
+        ver_string,
+        "; -- data --",
+        "; year\tstep\tarea\tage\tnumber\tmean",
+        "1998\t1\tdivA\tall\t1810\tNA",
+        "1998\t2\tdivA\tall\t2240\tNA",
+        NULL), "datafile updated")
+    ok(cmp_file(gd, "Aggfiles/catchstatistics.catchstatistics.age.agg",
+        ver_string,
+        "all\t1\t3",
+        NULL), "age aggregation file autodiscovered min and max")
+})

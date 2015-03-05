@@ -2,16 +2,64 @@ library(mfdb)
 library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
-mdb <- list(case_study_id = 5)
+mdb <- fake_mdb(case_study_id = 5)
+
+cap <- function(code) {
+    capture.output({
+        x <- code
+        cat("Return Value:\n")
+        str(x)
+    })
+}
 
 ok_group("Aggregates with NULL", local({
     pre_query(mdb, NULL, "col")  # Just check nothing happens
     ok(cmp(sample_clause(mdb, NULL, "col", "out"), "0"), "Sample clause")
-    ok(cmp(select_clause(mdb, NULL, "col", "out"), "'all' AS out"), "Select clause")
+    ok(cmp(select_clause(mdb, NULL, "col", "out"), c(
+        "'all' AS out",
+        "MIN(col) AS min_out",
+        "MAX(col) AS max_out",
+        NULL)), "Select clause")
     ok(cmp(from_clause(mdb, NULL, "col", "out"), c()), "From clause")
     ok(cmp(where_clause(mdb, NULL, "col", "out"), c()), "Where clause")
-    ok(cmp(agg_summary(mdb, NULL, "col", "out", list(data.frame())), list(all = 'X')), "Agg summary")
+    ok(cmp(agg_summary(mdb, NULL, "col", "out", data.frame(
+        out = 'all',
+        min_out = c(2,2,2),
+        max_out = c(8,8,8),
+        stringsAsFactors = FALSE)), list(all = c(2,8))), "Agg summary")
 }, asNamespace('mfdb')))
+
+mdb$ret_rows <- data.frame(name = c('cuthbert', 'dibble', 'grub'), stringsAsFactors = FALSE)
+ok_group("Aggregates with NULL for a taxonomy", local({
+    pre_query(mdb, NULL, "col")  # Just check nothing happens
+    ok(cmp(sample_clause(mdb, NULL, 'tbl.gear_id', 'gear'), "0"), "Sample clause")
+    ok(cmp(select_clause(mdb, NULL, 'tbl.gear_id', 'gear'), c(
+        "'all' AS gear",
+        NULL)), "Select clause (no min or max)")
+    ok(cmp(from_clause(mdb, NULL, 'tbl.gear_id', 'gear'), c()), "From clause")
+    ok(cmp(where_clause(mdb, NULL, 'tbl.gear_id', 'gear'), c()), "Where clause")
+    ok(cmp(cap(agg_summary(mdb, NULL, 'tbl.gear_id', 'gear', data.frame(
+        gear = 'all',
+        stringsAsFactors = FALSE))), c(
+        "SELECT name FROM gear",
+        "Return Value:",
+        "List of 1",
+        " $ all: chr [1:3] \"cuthbert\" \"dibble\" \"grub\"",
+        NULL)), "Agg summary")
+
+    ok(cmp(select_clause(mdb, NULL, 'tbl.sampling_type_id', 'sampling_type'), c(
+        "'all' AS sampling_type",
+        NULL)), "Select clause (CS taxonomy)")
+    ok(cmp(cap(agg_summary(mdb, NULL, 'tbl.sampling_type_id', 'sampling_type', data.frame(
+        sampling_type = 'all',
+        stringsAsFactors = FALSE))), c(
+        "SELECT name FROM sampling_type WHERE case_study_id = 5",
+        "Return Value:",
+        "List of 1",
+        " $ all: chr [1:3] \"cuthbert\" \"dibble\" \"grub\"",
+        NULL)), "Agg summary (CS taxonomy)")
+}, asNamespace('mfdb')))
+mdb$ret_rows <- NULL
 
 ok_group("Aggregates with numeric", local({
     pre_query(mdb, 5, "col")  # Just check nothing happens

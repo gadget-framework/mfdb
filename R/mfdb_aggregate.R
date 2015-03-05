@@ -34,10 +34,45 @@ agg_summary.mfdb_aggregate <- function(mdb, x, col, outputname, data) as.list(x)
 # NULL implies everything grouped under an "all"
 pre_query.NULL <- pre_query.mfdb_aggregate
 sample_clause.NULL <- sample_clause.mfdb_aggregate
-select_clause.NULL <- function(mdb, x, col, outputname) paste0("'all' AS ", outputname)
+select_clause.NULL <- function(mdb, x, col, outputname) {
+    lookup <- gsub('(.*\\.)|_id', '', col)
+
+    if ((lookup %in% mfdb_taxonomy)) {
+        return(paste0("'all' AS ", outputname))
+    }
+
+    if ((lookup %in% mfdb_cs_taxonomy)) {
+        return(paste0("'all' AS ", outputname))
+    }
+
+    return(c(
+        paste0("'all' AS ", outputname),
+        paste0("MIN(", col, ") AS ", "min_", outputname),
+        paste0("MAX(", col, ") AS ", "max_", outputname),
+        NULL))
+}
 from_clause.NULL <- from_clause.mfdb_aggregate
 where_clause.NULL <- function(mdb, x, col, outputname) c()
-agg_summary.NULL <- function(mdb, x, col, outputname, data) list(all = 'X')
+agg_summary.NULL <- function(mdb, x, col, outputname, data) {
+    lookup <- gsub('(.*\\.)|_id', '', col)
+
+    if ((lookup %in% mfdb_taxonomy)) {
+        return(list(all = mfdb_fetch(mdb, "SELECT name FROM ", lookup)$name))
+    }
+
+    if ((lookup %in% mfdb_cs_taxonomy)) {
+        return(list(all = mfdb_fetch(mdb,
+            "SELECT name",
+            " FROM ", lookup,
+            " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
+            NULL)$name))
+    }
+
+    return(list(all = c(
+        data[1, paste0("min_", outputname)],
+        data[1, paste0("max_", outputname)],
+        NULL)))
+}
 
 # Numeric vectors, first checked to see if there's a lookup
 pre_query.numeric <- pre_query.mfdb_aggregate

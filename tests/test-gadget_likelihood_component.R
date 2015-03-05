@@ -275,11 +275,6 @@ ok_group("Aggregation files", {
         "4\t4",
         NULL), "1:4 converted into 1 group for each")
 
-    ok(cmp_agg('age', NULL,
-        ver_string,
-        "all\tX",
-        NULL), "Make our best guess at an 'all' aggregation")
-
     ok(cmp_agg('age', mfdb_unaggregated(),
         ver_string,
         "1\t1",
