@@ -2,7 +2,6 @@
 library(mfdb)
 library(fjolst)
 library(geo)
-library(plyr)
 library(data.table)
 
 # Create connection to MFDB database, as the Icelandic case study
@@ -13,11 +12,19 @@ reitmapping <- read.table(
     system.file("demo-data", "reitmapping.tsv", package="mfdb"),
     header=TRUE,
     as.is=TRUE)
+predator_mapping <- data.frame(
+    GRIDCELL =  c(2842, 2872, 2882, 2892, 3372, 3382, 4392, 5382, 5872, 5882, 6362, 6372, 6842, 6852),
+    DIVISION    = c(rep(201, 10), rep(202, 4)),
+    SUBDIVISION = c(2010, 2011, 2012, 2013, 2014, 2015, 2015, 2016, 2017, 2018, 2020, 2021, 2022, 2023),
+    stringsAsFactors = FALSE)
+
 mfdb_import_area(mdb, data.frame(
-    id = 1:nrow(reitmapping),
-    name = reitmapping$GRIDCELL,
+    name = c(reitmapping$GRIDCELL, predator_mapping$GRIDCELL),
     size = c(5)))
-mfdb_import_division(mdb, dlply(reitmapping, 'SUBDIVISION', function(x) x$GRIDCELL))
+mfdb_import_division(mdb, c(
+    lapply(split(reitmapping, list(reitmapping$SUBDIVISION)), function (l) l[,'GRIDCELL']),
+    lapply(split(predator_mapping, list(predator_mapping$SUBDIVISION)), function (l) l[,'GRIDCELL']),
+    NULL))
 mfdb_import_temperature(mdb, data.frame(
     year = 2012,
     month = 1:12,
@@ -77,7 +84,7 @@ rm(ldist.aug)
 # Create a gadget directory, define some defaults to use with our queries below
 gd <- gadget_directory("example-iceland-model")
 defaults <- list(
-    area = mfdb_group("101" = unique(reitmapping$SUBDIVISION)),
+    area = mfdb_group("101" = unique(c(reitmapping$SUBDIVISION, predator_mapping$GRIDCELL))),
     timestep = mfdb_timestep_quarterly,
     year = 1984:2012)
 
