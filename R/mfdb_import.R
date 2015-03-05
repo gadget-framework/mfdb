@@ -41,6 +41,7 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
             data_in[data_in[[id_col]] %in% existing[[id_col]],],
             where = if (cs_specific) list(case_study_id = mdb$case_study_id) else c())
     })
+    invisible(NULL)
 }
 
 # Import any cs_specific taxonomies
@@ -57,6 +58,7 @@ mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
             description = sanitise_col(mdb, data_in, 'description', default = c("")),
             size = sanitise_col(mdb, data_in, 'size', default = c(NA))),
         extra_cols = if (taxonomy_name == 'areacell') c('size') else c('description'))
+    invisible(NULL)
 }
 mfdb_import_area <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'areacell', data_in)
 mfdb_import_sampling_type <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'sampling_type', data_in)
