@@ -277,7 +277,7 @@ ok_group("Aggregation files", {
 
     ok(cmp_agg('age', NULL,
         ver_string,
-        "all\tX",
+        "all\t1\t2\t3\t4\t5\t6\t7\t8\t9\t10\t11\t12\t13\t14\t15\t16\t17\t18\t19\t20\t21\t22\t23\t24\t25\t26\t27\t28\t29\t30\t31\t32\t33\t34\t35\t36\t37\t38\t39\t40\t41\t42\t43\t44\t45\t46\t47\t48\t49\t50\t51\t52\t53\t54\t55\t56\t57\t58\t59\t60\t61\t62\t63\t64\t65\t66\t67\t68\t69\t70\t71\t72\t73\t74\t75\t76\t77\t78\t79\t80\t81\t82\t83\t84\t85\t86\t87\t88\t89\t90\t91\t92\t93\t94\t95\t96\t97\t98\t99\t100",
         NULL), "Make our best guess at an 'all' aggregation")
 
     ok(cmp_agg('age', mfdb_unaggregated(),
@@ -311,37 +311,37 @@ ok_group("Aggregation files", {
 })
 
 ###############################################################################
-ok_group("surveyindicies", {
-    component <- gadget_likelihood_component('surveyindicies', name = 'si', sitype = 'lengths', fittype = 'linearfit', data = structure(
+ok_group("surveyindices", {
+    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'lengths', fittype = 'linearfit', data = structure(
         data.frame(year = 1998, step = 1:2, area = 101, length = c(100,200), number = c(2,4)),
         area = list(all = 101),
         length = list(len100 = c(100,500))))
-    ok(cmp(class(component)[[1]], 'gadget_surveyindicies_component'), "Made lengths sitype")
+    ok(cmp(class(component)[[1]], 'gadget_surveyindices_component'), "Made lengths sitype")
 
-    component <- gadget_likelihood_component('surveyindicies', name = 'si', sitype = 'ages', fittype = 'linearfit', data = structure(
+    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'ages', fittype = 'linearfit', data = structure(
         data.frame(year = 1998, step = 1:2, area = 101, age = c(100,200), number = c(2,4)),
         area = list(all = 101),
         age = list(age100 = c(100,500))))
-    ok(cmp(class(component)[[1]], 'gadget_surveyindicies_component'), "Made ages sitype")
+    ok(cmp(class(component)[[1]], 'gadget_surveyindices_component'), "Made ages sitype")
 
-    component <- gadget_likelihood_component('surveyindicies', name = 'si', sitype = 'fleets', fittype = 'linearfit', data = structure(
+    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'fleets', fittype = 'linearfit', data = structure(
         data.frame(year = 1998, step = 1:2, area = 101, length = c(100,200), number = c(2,4)),
         area = list(all = 101),
         fleetnames = c("cuthbert", "dibble"),
         length = list(len100 = c(100,500))))
-    ok(cmp(class(component)[[1]], 'gadget_surveyindicies_component'), "Made fleets sitype")
+    ok(cmp(class(component)[[1]], 'gadget_surveyindices_component'), "Made fleets sitype")
 
-    component <- gadget_likelihood_component('surveyindicies', name = 'si', sitype = 'acoustic', fittype = 'linearfit', data = structure(
+    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'acoustic', fittype = 'linearfit', data = structure(
         data.frame(year = 1998, step = 1:2, area = 101, survey = c(100,200), acoustic = c(2,4)),
         area = list(all = 101),
         surveynames = c("cuthbert", "dibble")))
-    ok(cmp(class(component)[[1]], 'gadget_surveyindicies_component'), "Made acoustic sitype")
+    ok(cmp(class(component)[[1]], 'gadget_surveyindices_component'), "Made acoustic sitype")
 
-    component <- gadget_likelihood_component('surveyindicies', name = 'si', sitype = 'effort', fittype = 'linearfit', data = structure(
+    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'effort', fittype = 'linearfit', data = structure(
         data.frame(year = 1998, step = 1:2, area = 101, fleet = c(100,200), effort = c(2,4)),
         area = list(all = 101),
         surveynames = c("cuthbert", "dibble")))
-    ok(cmp(class(component)[[1]], 'gadget_surveyindicies_component'), "Made effort sitype")
+    ok(cmp(class(component)[[1]], 'gadget_surveyindices_component'), "Made effort sitype")
 
 })
 

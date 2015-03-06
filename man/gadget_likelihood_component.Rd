@@ -73,7 +73,7 @@ In addition, \code{penalty} understands:
     \item{stocknames}{List of stock names}
 }
 
-\code{surveyindicies} understands:
+\code{surveyindices} understands:
 \describe{
     \item{sitype}{What data the component is based on, see GADGET manual}
     \item{biomass}{0 or 1, defaults to 0}
