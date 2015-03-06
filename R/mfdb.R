@@ -68,7 +68,11 @@ mfdb <- function(case_study_name,
 mfdb_finish_import <- function(mdb) {
     if (!exists('index_created', where = mdb$state)) {
         mfdb_create_indexes(mdb)
-        mfdb_send(mdb, "ANALYZE")
+        tables <- mfdb_fetch(mdb,
+            "SELECT table_name",
+            " FROM information_schema.tables",
+            " WHERE table_schema = 'public' OR table_schema LIKE 'pg_temp%'")[, c(1)]
+        for (t in tables) mfdb_send(mdb, "ANALYZE ", t)
         assign('index_created', TRUE, pos = mdb$state)
     }
 }
