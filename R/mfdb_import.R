@@ -7,14 +7,22 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
     }
     cs_specific <- (table_name %in% mfdb_cs_taxonomy)
 
+    # Check there's something to do first
+    if (nrow(data_in) == 0) {
+        mdb$logger$info(paste0("Taxonomy ", table_name ," no updates to make"))
+        return()
+    }
+
     # Order incoming data by id
     id_col <- paste0(table_name, '_id')
     data_in <- data_in[order(data_in$id), c('id', 'name', extra_cols)]
     names(data_in) <- c(id_col, 'name', extra_cols)
 
-    # Crush factors in data.frame
+    # Crush factors in data.frame, convert integer names to character
     for (n in names(data_in)) {
-        if (is.factor(data_in[[n]])) data_in[[n]] <- as.character(data_in[[n]])
+        if (n == "name" || is.factor(data_in[[n]])) {
+            data_in[[n]] <- as.character(data_in[[n]])
+        }
     }
 
     # Fetch all existing ids, quit if all are there
