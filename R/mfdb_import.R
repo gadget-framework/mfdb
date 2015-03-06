@@ -15,7 +15,7 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
 
     # Order incoming data by id
     id_col <- paste0(table_name, '_id')
-    data_in <- data_in[order(data_in$id), c('id', 'name', extra_cols)]
+    data_in <- data_in[c('id', 'name', extra_cols)]
     names(data_in) <- c(id_col, 'name', extra_cols)
 
     # Crush factors in data.frame, convert integer names to character
@@ -32,23 +32,33 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
         if (cs_specific) c(" WHERE case_study_id = ", mdb$case_study_id) else "",
         " ORDER BY 1")
 
-    if (nrow(existing) > 0 && identical(all.equal(data_in, existing), TRUE)) {
-        mdb$logger$info(paste0("Taxonomy ", table_name ," up-to-date"))
-        return()
+    # Throw away rows which don't need updating
+    if (nrow(existing) > 0) {
+        data_in <- data_in[!(data_in$name %in% merge(
+            existing[, c('name', extra_cols)],
+            data_in[,  c('name', extra_cols)])$name), ]
+        if (nrow(data_in) == 0) {
+            mdb$logger$info(paste0("Taxonomy ", table_name ," up-to-date"))
+            return()
+        }
     }
+    mdb$logger$info(paste0("Taxonomy ", table_name ," needs updating"))
 
-    # Either add or update rows. Removing is risky, since we might have dependent data.
-    # Also don't want to remove data if partitioned by case study
     mfdb_transaction(mdb, {
+        # TODO: Given data_in's ids are so irrelevant at this point, why keep here?
+        # New rows should be inserted
         mfdb_insert(mdb,
             table_name,
-            data_in[!(data_in[[id_col]] %in% existing[[id_col]]),],
+            data_in[data_in$name == setdiff(data_in$name, existing$name), ],
             extra = (if (cs_specific) c(case_study_id = mdb$case_study_id) else c()))
-        mfdb_update(mdb,
+
+        # Rows with matching names should be updated, but existing ids kept
+        if (nrow(existing) > 0) mfdb_update(mdb,
             table_name,
-            data_in[data_in[[id_col]] %in% existing[[id_col]],],
+            merge(existing[, c(id_col, 'name')], data_in[, c('name', extra_cols)]),
             where = if (cs_specific) list(case_study_id = mdb$case_study_id) else c())
     })
+
     invisible(NULL)
 }
 

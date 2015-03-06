@@ -1,5 +1,6 @@
     Unreleased
 
+    * Should use name to compare new/old items in taxonomies, not id
     * Give meaningful errors (or just sort it) when lists are handed to gadget_likelihood_function
     * ANALYZE only our tables, so we don't trigger warnings
     * Don't match partial names (e.g. age --> maturity_stage) when importing data
