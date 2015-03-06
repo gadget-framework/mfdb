@@ -2,6 +2,8 @@
 
     * Autodiscover min and max for 'all' columns
     * Only recreate new temporary tables for groups once
+    * Use arbitary 1:100 for 'all' aggregation
+    * Correct spelling of surveyindices
     * Add mfdb_survey_index_mean, for retrieving acoustic indicies
     * Query functions should always return a list of data.frames, even if there is no data
     * Implement catchinkilos likelihood component

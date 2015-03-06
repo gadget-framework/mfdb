@@ -7,7 +7,7 @@ gadget_likelihood_component <- function (type, weight = 0, name = type, likeliho
             catchdistribution = gadget_catchdistribution_component(name, ...),
             catchstatistics = gadget_catchstatistics_component(name, ...),
             stockdistribution = gadget_stockdistribution_component(name, ...),
-            surveyindicies = gadget_surveyindicies_component(name, ...),
+            surveyindices = gadget_surveyindices_component(name, ...),
             surveydistribution = gadget_surveydistribution_component(name, ...),
             stomachcontent = gadget_stomachcontent_component(name, ...),
             recaptures = gadget_recaptures_component(name, ...),
@@ -182,7 +182,7 @@ gadget_stockdistribution_component <- function (
 }
 
 # http://www.hafro.is/gadget/userguide/userguide.html#x1-1090008.6
-gadget_surveyindicies_component <- function (
+gadget_surveyindices_component <- function (
         name,
         sitype = 'lengths',
         biomass = 0,

@@ -90,11 +90,11 @@ ok_group("Generating an acoustic index likelihood component", {
 
     # Put this into a likelihood component
     gadget_dir_write(gd, gadget_likelihood_component(
-        'surveyindicies',
+        'surveyindices',
         sitype = 'acoustic',
         fittype = 'loglinearfit',
         data = agg[[1]]))
-    ok(cmp_file(gd, "Data/surveyindicies.surveyindicies.acoustic",
+    ok(cmp_file(gd, "Data/surveyindices.surveyindices.acoustic",
         ver_string,
         "; -- data --",
         "; year\tstep\tarea\tdata_source\tmean",
