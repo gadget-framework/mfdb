@@ -231,14 +231,14 @@ ok_group("Samples with NULL groupings", {
 
     # Import a survey
     mfdb_import_survey(mdb,
-        data_source = 'survey1',
+        data_source = 'samples-with-null-groupings',
         data.frame(
             year = c('1998'),
             month = c(1:12),
             areacell = c('45G01'),
-            species = c('COD'),
+            species = c('CLL'),
             maturity_stage = c(  1,  2,  3,  1,  2,  3,   1,  2,  3,  1,  2,  3),
-            age =            c(  1,  2,  1,  2,  1,  2,   1,  2,  1,  2,  1,  2),
+            age =            c(  8,  9, 10,  7,  8, 15,  10, 10, 10, 10, 11, 12),
             length =         c( 10, 50, 30, 10, 35, 46,  65, 62, 36, 35, 34, 22),
             count =          c(100,500,300,100,350,460, 650,320,360,350,340,220)))
 
@@ -250,6 +250,7 @@ ok_group("Samples with NULL groupings", {
             year = 1998:2000,
             area = mfdb_group(divA = c("divA")),
             age = NULL,
+            species = 'CLL',
             timestep = mfdb_timestep_biannually))
 
     # Write it into a likelihood component
@@ -282,6 +283,6 @@ ok_group("Samples with NULL groupings", {
         NULL), "datafile updated")
     ok(cmp_file(gd, "Aggfiles/catchstatistics.catchstatistics.age.agg",
         ver_string,
-        "all\t1\t3",
+        "all\t7\t15",
         NULL), "age aggregation file autodiscovered min and max")
 })

@@ -41,7 +41,7 @@ E		2000	1	45G01		COD	33	330
 G		2000	1	45G01		COD	34	430
         ")),
         prey_data = shuffle_df(table_string("
-stomach_name	species_id	digestion_stage_id	length	weight	count
+stomach_name	species	digestion_stage	length	weight	count
 A		CAP		1			1	10	5
 A		CAP		1			4	40	1
 B		CAP		1			1	10	5
@@ -181,7 +181,7 @@ BB		2000	1	45G02		COD	34	220
 CC		2000	1	45G02		COD	34	230
         ")),
         prey_data = shuffle_df(table_string("
-stomach_name	species_id	digestion_stage_id	length	weight	count
+stomach_name	species	digestion_stage	length	weight	count
 AA		CAP		1			1	10	5
 AA		CAP		1			4	40	1
 BB		CAP		1			1	10	5
@@ -215,7 +215,7 @@ BB		2000	1	45G02		COD	34	220
 CC		2000	1	45G02		COD	34	230
         ")),
         prey_data = shuffle_df(table_string("
-stomach_name	species_id	digestion_stage_id	length	weight	count
+stomach_name	species	digestion_stage	length	weight	count
 AA		CAP		1			1	10	5
         ")))
      ok(cmp_table(

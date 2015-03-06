@@ -1,5 +1,6 @@
     Unreleased
 
+    * Don't match partial names (e.g. age --> maturity_stage) when importing data
     * Autodiscover min and max for 'all' columns
     * Only recreate new temporary tables for groups once
     * Use arbitary 1:100 for 'all' aggregation

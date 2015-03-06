@@ -227,18 +227,19 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
 
 # Check column content, optionally resolving lookup
 sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL, test = NULL) {
-    data_col_name <- grep(col_name, names(data_in), ignore.case=TRUE, value=TRUE)
+    data_col_name <- grep(paste0('^', col_name, '$'), names(data_in), ignore.case=TRUE, value=TRUE)
     if (length(data_col_name) == 0) {
         if (!is.null(default)) return(default);
         stop("Input data is missing ", col_name)
     }
-    col <- data_in[[data_col_name[[1]]]]
+    col <- data_in[,data_col_name[[1]]]
 
     if (!is.null(test)) {
         mismatches <- test(col)
         if (!all(mismatches)) {
             mismatches <- col[!mismatches]
-            stop("Input data has items that don't match condition: ",
+            stop(
+                paste0("Column ", data_col_name[[1]], " has items that don't match condition: "),
                 paste(head(mismatches, n = 50), collapse = ","),
                 ifelse(length(mismatches) > 50, ', ...', ''),
                 NULL)

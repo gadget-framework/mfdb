@@ -96,7 +96,7 @@ ok_group("Temperature", {
     # Notice missing columns
     ok(cmp_error(mfdb_import_temperature(mdb, data.frame(
         year = c(1998),
-        areacell_id = c('45G01', '45G01', '45G01'),
+        areacell = c('45G01', '45G01', '45G01'),
         temperature = c(1,2,4))), "month"), "Notice month column is missing")
 
     # Import works
