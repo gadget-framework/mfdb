@@ -1,20 +1,23 @@
 gadget_likelihood_component <- function (type, weight = 0, name = type, likelihoodfile = 'likelihood', ...) {
+    # Formulate arguments to hand down to next function
+    args <- list(name = name, ...)
+    if(!is.null(args$data) && !is.data.frame(args$data)) {
+        if (length(args$data) == 1 && is.data.frame(args$data[[1]])) {
+            # List-wrapped data.frame from mfdb_*, be nice and unwrap it.
+            args$data <- args$data[[1]]
+        } else {
+            stop("data supplied for ", name, " is a ", class(args$data), ", not a data.frame.")
+        }
+    }
+
+    # Call appropriate function
+    if(gsub("[a-z]", "", type) != "") stop("Malformed component type ", type)
+    obj <- do.call(paste0(c("gadget", type, "component"), collapse = "_"), args)
+
+    # Wrap up with common bits of class
     obj <- structure(c(
         list(name = name, weight = weight, type = type),
-        switch(type,
-            penalty = gadget_penalty_component(name, ...),
-            understocking = gadget_understocking_component(name, ...),
-            catchdistribution = gadget_catchdistribution_component(name, ...),
-            catchstatistics = gadget_catchstatistics_component(name, ...),
-            stockdistribution = gadget_stockdistribution_component(name, ...),
-            surveyindices = gadget_surveyindices_component(name, ...),
-            surveydistribution = gadget_surveydistribution_component(name, ...),
-            stomachcontent = gadget_stomachcontent_component(name, ...),
-            recaptures = gadget_recaptures_component(name, ...),
-            recstatistics = gadget_recstatistics_component(name, ...),
-            migrationpenalty = gadget_migrationpenalty_component(name, ...),
-            catchinkilos = gadget_catchinkilos_component(name, ...),
-            stop(paste("Unknown likelihood component", type)))
+        obj
     ), likelihoodfile = likelihoodfile, class = c(
         paste0("gadget_", type, "_component"),
         "gadget_likelihood_component"))

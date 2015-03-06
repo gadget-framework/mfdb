@@ -16,7 +16,11 @@ all_components <- c(
 ok_group("Can generate gadget_likelihood_component objects", {
     expect_error(
         gadget_likelihood_component("aardvark"),
-        "Unknown likelihood component aardvark")
+        "aardvark")
+
+    expect_error(
+        gadget_likelihood_component("e12 ; bobby tables"),
+        "e12 ; bobby tables")
 
     expect_equal(
         class(gadget_likelihood_component("penalty")),
@@ -28,6 +32,20 @@ ok_group("Can use as.character on gadget_likelihood_components", {
     expect_equal(comp$name, "wibble")
     expect_equal(comp$weight, 0.5)
     expect_equal(comp$type, "penalty")
+})
+
+ok_group("Can nest data.frame in a list", {
+    df <- data.frame(year = 1, step = 1, area = 1, fleet = 1, biomass = 1)
+
+    comp <- gadget_likelihood_component("catchinkilos", data = df)
+    ok(cmp(comp$datafile$data, df), "Data included with regular data.frame")
+
+    comp <- gadget_likelihood_component("catchinkilos", data = list(df))
+    ok(cmp(comp$datafile$data, df), "Data included with nested data.frame")
+
+    ok(cmp_error(
+        gadget_likelihood_component("catchinkilos", data = list(df, df)),
+        "list"), "More than one item causes an error")
 })
 
 for (type in all_components) {
