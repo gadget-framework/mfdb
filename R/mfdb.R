@@ -271,6 +271,12 @@ mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
 
 # Execute code block within a DB transaction, roll back on error, commit otherwise
 mfdb_transaction <- function(mdb, transaction) {
+    if (class(mdb$db) == 'dbNull') {
+        # Short-circuit when in tests
+        transaction
+        return(invisible(TRUE))
+    }
+
     mdb$logger$info("Starting transaction...")
     dbSendQuery(mdb$db, "BEGIN TRANSACTION")
     ret <- tryCatch(transaction, error = function (e) { e })
