@@ -187,10 +187,7 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
     if (nrow(cols) == 0) stop("Didn't find table ", target_table)
 
     mdb$logger$info("Writing rows to temporary table")
-    tryCatch(mfdb_send(mdb, "DROP TABLE ", temp_tbl), error = function(e) {
-        if(grepl("does not exist", e$message)) return();
-        stop(e)
-    })
+    if (mfdb_table_exists(mdb, temp_tbl)) mfdb_send(mdb, "DROP TABLE ", temp_tbl)
     mfdb_send(mdb, "SET CLIENT_ENCODING TO 'LATIN1'") # Not sure.
     dbWriteTable(mdb$db, temp_tbl, data_in, row.names = FALSE,
         field.types = structure(cols[names(data_in), 'data_type'], names = names(data_in)))

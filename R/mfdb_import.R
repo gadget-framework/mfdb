@@ -205,7 +205,8 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
         count = sanitise_col(mdb, prey_data, 'count', default = c(1)),
         stringsAsFactors = TRUE)
 
-    temp_tbl <- mfdb_bulk_copy(mdb, 'predator', predator_data, function (temp_predator) mfdb_transaction(mdb, {
+    # NB: Postgresql has transactional DDL, so this is fine.
+    mfdb_transaction(mdb, mfdb_disable_constraints(mdb, 'prey', mfdb_disable_constraints(mdb, 'predator', {
         data_source_id <- get_data_source_id(mdb, data_source)
 
         # Delete everything with matching data_source
@@ -221,13 +222,15 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
             NULL)
 
         # Insert predator data, returning all IDs
-        res <- mfdb_fetch(mdb,
-            "INSERT INTO predator",
-            " (", paste(names(predator_data), collapse=","), ", data_source_id)",
-            " SELECT ", paste(names(predator_data), collapse=","), ", ", sql_quote(data_source_id),
-            " FROM ", temp_predator,
-            " RETURNING predator_id",
-            NULL)
+        res <- mfdb_bulk_copy(mdb, 'predator', predator_data, function (temp_predator) {
+            mfdb_fetch(mdb,
+                "INSERT INTO predator",
+                " (", paste(names(predator_data), collapse=","), ", data_source_id)",
+                " SELECT ", paste(names(predator_data), collapse=","), ", ", sql_quote(data_source_id),
+                " FROM ", temp_predator,
+                " RETURNING predator_id",
+                NULL)
+        })
 
         # Map predator names to database IDs
         new_levels <- structure(
@@ -240,8 +243,15 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
         levels(prey_data$predator_id) <- new_levels
 
         # Insert prey data
-        res <- mfdb_insert(mdb, 'prey', prey_data)
-    }))
+        mfdb_bulk_copy(mdb, 'prey', prey_data, function (temp_prey) {
+            mfdb_send(mdb,
+                "INSERT INTO prey",
+                " (", paste(names(prey_data), collapse=","), ")",
+                " SELECT ", paste(names(prey_data), collapse=","),
+                " FROM ", temp_prey,
+                NULL)
+        })
+    })))
 }
 
 # Check column content, optionally resolving lookup
