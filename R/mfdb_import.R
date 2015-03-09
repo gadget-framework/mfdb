@@ -45,8 +45,9 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
     mdb$logger$info(paste0("Taxonomy ", table_name ," needs updating"))
 
     mfdb_transaction(mdb, {
-        # TODO: Given data_in's ids are so irrelevant at this point, why keep here?
         # New rows should be inserted
+        # NB: We don't handle the case of new data having the same ID as existing data.
+        #     In practice this probably won't happen, but a reasonable solution would be nice.
         mfdb_insert(mdb,
             table_name,
             data_in[data_in$name == setdiff(data_in$name, existing$name), ],
