@@ -56,7 +56,7 @@ ok_group("Area File", {
         "; a\tb",
         "areas\t1\t2",
         "size\t5\t10",
-        "temperature\t",
+        "temperature",
         "; -- data --",
         "; year\tstep\tarea\tmean",
         paste0("1998\t1\t1\t", round(mean(c(0.5, 1.2, 2.4)), 1)),

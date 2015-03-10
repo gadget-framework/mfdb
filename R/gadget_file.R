@@ -1,7 +1,8 @@
-gadget_file <- function (file_name, components = list(), data = NULL) {
+gadget_file <- function (file_name, components = list(), data = NULL, file_type = c()) {
     structure(list(
         filename = file_name,
         components = as.list(components),
+        file_type = c(file_type),
         data = data), class = "gadget_file")
 }
 
@@ -15,7 +16,13 @@ print.gadget_file <- function (x, ...) {
         # Print all preambles as comments
         cat(preamble_str(comp))
 
-        if (is.character(name) && nzchar(name)) cat(paste0('[', name,']\n'))
+        if (!is.character(name) || !nzchar(name)) {
+            # No name, do nothing
+        } else if ('bare_component' %in% x$file_type) {
+            cat(paste0(name,'\n'))
+        } else {
+            cat(paste0('[', name,']\n'))
+        }
 
         # properties are in key\tvalue1\tvalue2... form
         for (i in seq_len(length(comp))) {
@@ -70,7 +77,7 @@ gadget_dir_write.gadget_file <- function(gd, obj) {
 }
 
 # Load gadget file into memory
-read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
+read.gadget_file <- function(file_name, file_type = c(), fileEncoding = "UTF-8") {
     extract <- function (pattern, line) {
         m <- regmatches(line, regexec(pattern, line))[[1]]
         if (length(m) > 1) m[2:length(m)] else c()
@@ -134,7 +141,10 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
         }
 
         # Start of new component
-        x <- extract("^\\[(\\w+)\\]", line)
+        x <- extract(ifelse(
+            "bare_component" %in% file_type,
+            "^(\\w+)$",
+            "^\\[(\\w+)\\]"), line)
         if (length(x) > 0) {
             if(is.null(comp_name)) {
                 components[[1]] <- cur_comp
@@ -169,5 +179,9 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
             next
         }
     }
-    gadget_file(basename(file_name), components = components, data = data)
+    gadget_file(
+        basename(file_name),
+        components = components,
+        data = data,
+        file_type = file_type)
 }

@@ -27,7 +27,7 @@ ok_group("Can write area files", {
         "; divA\tdivX\tdivB\tdivC\tdivD",
         "areas\t1\t2\t3\t4\t5",
         "size\t15\t0\t25\t10\t0",
-        "temperature\t",
+        "temperature",
         "; -- data --",
         "; year\tstep\tarea\tmean",
         "1998\tq1\t1\t1",

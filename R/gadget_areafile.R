@@ -26,11 +26,15 @@ gadget_areafile <- function (size, temperature, area = attr(size, 'area')) {
 gadget_dir_write.gadget_areafile <- function(gd, obj) {
 
     # Write out areafile
-    gadget_dir_write(gd, gadget_file("Modelfiles/area", components = list(structure(list(
-        areas = obj$areas,
-        size = obj$size,
-        temperature = ""  # NB: Hack in a line with just "temperature"
-    ), preamble = paste(obj$labels, collapse = "\t"))), data = obj$temperature))
+    gadget_dir_write(gd, gadget_file(
+        "Modelfiles/area",
+        components = list(
+            structure(
+                list(areas = obj$areas, size = obj$size),
+                preamble = paste(obj$labels, collapse = "\t")),
+            temperature = list()),
+        data = obj$temperature,
+        file_type = c("bare_component")))
 
     # Add to mainfile
     gadget_mainfile_update(gd, areafile = "Modelfiles/area")
