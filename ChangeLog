@@ -1,4 +1,6 @@
-    Unreleased
+2015-03-10  Jamie Lentin  <lentinj@shuttlethread.com>
+
+    Version 2.0-0
 
     * Bulk-load prey data, speeding up stomach import
     * Should use name to compare new/old items in taxonomies, not id
