@@ -71,6 +71,15 @@ gadget_dir_write.gadget_file <- function(gd, obj) {
         recursive = TRUE,
         showWarnings = FALSE)
     fh = file(file.path(gd$dir, obj$filename), "w")
+
+    # For each component, inspect for any stored gadget_files and write these out first
+    for (i in seq_len(length(obj$components))) {
+        for (j in which("gadget_file" == lapply(obj$components[[i]], class))) {
+            gadget_dir_write(gd, obj$components[[i]][[j]])
+            obj$components[[i]][[j]] <- obj$components[[i]][[j]]$filename
+        }
+    }
+
     tryCatch(
         capture.output(print(obj), file = fh),
         finally = close(fh))
