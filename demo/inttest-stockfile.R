@@ -78,37 +78,71 @@ year	month	areacell	species	maturity_stage	length	age	weight
 
     ok(cmp_file(gd, "Modelfiles/cod.imm",
         ver_string,
-        "refweightfile\tModelfiles/cod.imm.refwgt",
         "stockname\tcod.imm",
         "minage\t1",
         "maxage\t2",
-        "minlength\t10",
-        "maxlength\t20",
+        "minlength\t0",
+        "maxlength\t100",
+        "dl\t10",
+        "refweightfile\tModelfiles/cod.imm.refwgt",
         NULL), "Immature cod stockfile")
     ok(cmp_file(gd, "Modelfiles/cod.imm.refwgt",
         ver_string,
         "; -- data --",
-        "; length\tmean",
+        "; length\tweight",
         "10\t375",
         "20\t216.666666666667",
         NULL), "Immature cod stock refweightfile")
 
     ok(cmp_file(gd, "Modelfiles/cod.mat",
        ver_string,
-        "refweightfile\tModelfiles/cod.mat.refwgt",  #TODO: Can we have these on the end?
         "stockname\tcod.mat",
         "minage\t3",
         "maxage\t3",
-        "minlength\tlen30",
-        "maxlength\tlen60",
+        "minlength\t0",
+        "maxlength\t100",
+        "dl\t10",
+        "refweightfile\tModelfiles/cod.mat.refwgt",
         NULL), "Mature cod stockfile")
     ok(cmp_file(gd, "Modelfiles/cod.mat.refwgt",
         ver_string,
         "; -- data --",
-        "; length\tmean",
-        "len30\t223.333333333333",  #TODO: Rounding?
-        "len40\t330",
-        "len50\t380",
-        "len60\t320",
+        "; length\tweight",
+        "30\t223.333333333333",  #TODO: Rounding?
+        "40\t330",
+        "50\t380",
+        "60\t320",
         NULL), "Mature cod stock refweightfile")
+})
+
+ok_group("refweight files are always continuous and in length order", {
+    # Create a temporary gadget directory
+    gd <- gadget_directory(tempfile())
+
+    # Write out refweight for mature cod, purposefully shuffling
+    mat_data <- mfdb_sample_meanweight(mdb, c('age', 'length'), list(
+        age = NULL, # This means the age column will have "all", but aggfile will have min & max
+        length = mfdb_step_interval('len', 10, to = 100),
+        species = 'COD',
+        maturity_stage = '5',
+        null = NULL))
+    gadget_dir_write(gd, gadget_stockfile_refweight('cod.mat', shuffle_df(mat_data[[1]])))
+
+    # Got sorted
+    ok(cmp_file(gd, "Modelfiles/cod.mat.refwgt",
+        ver_string,
+        "; -- data --",
+        "; length\tweight",
+        "30\t223.333333333333",  #TODO: Rounding?
+        "40\t330",
+        "50\t380",
+        "60\t320",
+        NULL), "Mature cod stock refweightfile")
+})
+
+ok_group("Stockfile updates don't wreck existing files", {
+    # Create a temporary gadget directory
+    gd <- gadget_directory(tempfile())
+
+    #TODO:
 })

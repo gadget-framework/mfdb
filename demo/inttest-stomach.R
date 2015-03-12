@@ -15,8 +15,6 @@ cmp_table <- function(tbls, expected) {
     cmp(tbls[[1]][names(tbls[[1]])], expected)
 }
 
-shuffle_df <- function(df) df[sample(nrow(df)),]
-
 # Empty database & rebuild
 mfdb('', db_params = db_params, destroy_schema = TRUE)
 mdb <- mfdb('Test', db_params = db_params, save_temp_tables = TRUE)

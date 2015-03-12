@@ -4,18 +4,16 @@ gadget_stockfile_extremes <- function (stock_name, data) {
     for (col in c('age', 'length')) {
         if (!(col %in% colnames(data))) {
             stop("Data missing column ", col)
-        } else if (data[1, col] == 'all') {
-            # Get min/max from agg_summary
-            summary <- attr(data, col)[['all']]
-            out[[paste0("min", col)]] <- summary[[1]]
-            out[[paste0("max", col)]] <- summary[[2]]
-        } else {
-            out[[paste0("min", col)]] <- min(data[[col]])
-            out[[paste0("max", col)]] <- max(data[[col]])
         }
     }
+
     structure(
-        list(out),
+        list(list(
+            stockname = stock_name,
+            minage = min(vapply(attr(data, 'age'), min, 0)),
+            maxage = max(vapply(attr(data, 'age'), max, 0)),
+            minlength = min(vapply(attr(data, 'length'), min, 0)),
+            maxlength = max(vapply(attr(data, 'length'), max, 0)))),
         stock_name = paste0(stock_name, collapse = ""),
         class = c("gadget_stockfile_extremes", "gadget_stockfile"))
 }
@@ -26,10 +24,18 @@ gadget_stockfile_refweight <- function (stock_name, data) {
             stop("Data missing column ", col)
         }
     }
+
+    # Sort incoming data, then regroup
+    refwgt <- data[order(data$length), c('length', 'mean')]
+    refwgt <- data.frame(
+        length = vapply(attr(data, 'length')[refwgt$length], min, 0), # Grouping -> minimum value
+        weight = refwgt$mean,  # Assuming it's mean weight here
+        stringsAsFactors = TRUE)
+
     structure(
-        list(list(refweightfile = gadget_file(
-            paste0('Modelfiles/', stock_name, '.refwgt'),
-            data = data[,c('length', 'mean')]))),
+        list(list(
+            dl = min(vapply(attr(data, 'length'), diff, 0)),
+            refweightfile = gadget_file(paste0('Modelfiles/', stock_name, '.refwgt'), data = refwgt))),
         stock_name = paste0(stock_name, collapse = ""),
         class = c("gadget_stockfile_refweight", "gadget_stockfile"))
 }
@@ -52,8 +58,10 @@ gadget_dir_write.gadget_stockfile <- function(gd, obj) {
                 gadget_stockfile$components <- list(list())
             }
         }
-        combined <- c(obj[[i]], gadget_stockfile$components[[name]])
-        gadget_stockfile$components[[name]] <- combined[!duplicated(names(combined))]
+        # Combine 2 lists, using values from obj in preference to existing values
+        gadget_stockfile$components[[name]] <- c(obj[[i]], gadget_stockfile$components[[name]])[union(
+            names(gadget_stockfile$components[[name]]),
+            names(obj[[i]]))]
     }
 
     # Write it back

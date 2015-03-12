@@ -25,13 +25,16 @@ gadget_stockfile_refweight(stock_name, data)
 The columns required in the \code{data} varies depends on which function you
 are using.
 
-\code{gadget_stockfile_extremes} requires \code{age} and \code{length} columns.
-However, the data does not have to be aggregated by the \code{mfdb_*} function.
-Just an "all" column is fine, as the min/max values will also be fetched.
+\code{gadget_stockfile_extremes} requires \code{age} and \code{length} columns
+and populates \code{minlength}, \code{minage}, \code{maxlength}, \code{maxage}.
+The values are obtained by the grouping used, rather than the
+maximum values in the data. If you want the minimum and maximum from the data,
+query with \code{length = NULL, age = NULL}, so the table contains "all"
+and the grouping contains the actual minimum and maximum.
 
 \code{gadget_stockfile_refweight} requires a \code{length} column and a
-\code{mean} column representing mean weight for that length group.
-}
+\code{mean} column representing mean weight for that length group. It populates
+the \code{refweightfile} and \code{dl}.
 
 \value{
 The return value is a \code{gadget_stockfile} object that can be written
