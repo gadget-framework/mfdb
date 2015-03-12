@@ -1,5 +1,6 @@
     Unreleased
 
+    * Add gadget_stockfile_extremes and gadget_stockfile_refweight for manipulating stockfiles
     * Allow files in subdirectories to be read and then rewritten in the same place
     * Introduce "bare components" file type, use this to include temperature
 
