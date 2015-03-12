@@ -9,17 +9,17 @@ gadget_directory <- function (dir, mainfile = 'main') {
         dir = dir), class = c("gadget_directory"))
 }
 
-gadget_dir_read <- function(gd, file_name, missing_okay = TRUE) UseMethod("gadget_dir_read", gd)
-gadget_dir_read.gadget_directory <- function(gd, file_name, missing_okay = TRUE) {
+gadget_dir_read <- function(gd, file_name, missing_okay = TRUE, file_type = c()) UseMethod("gadget_dir_read", gd)
+gadget_dir_read.gadget_directory <- function(gd, file_name, missing_okay = TRUE, file_type = c()) {
     path <- file.path(gd$dir, file_name)
 
     if (missing_okay && !file.exists(path)) {
         # Return empty file to read later
-        return(gadget_file(file_name))
+        return(gadget_file(file_name, file_type = file_type))
     }
 
     # Read file, remove gadget directory from filename
-    gf <- read.gadget_file(path)
+    gf <- read.gadget_file(path, file_type = file_type)
     gf$filename <- file_name
     return(gf)
 }

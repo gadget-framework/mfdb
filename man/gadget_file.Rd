@@ -10,10 +10,10 @@
 }
 
 \usage{
-gadget_file(file_name, components = list(), data = NULL)
+gadget_file(file_name, components = list(), data = NULL, file_type = c())
 \method{print}{gadget_file}(x, ...)
 \method{as.character}{gadget_file}(x, ...)
-read.gadget_file(file_name, fileEncoding = "UTF-8")
+read.gadget_file(file_name, file_type = c(), fileEncoding = "UTF-8")
 }
 
 \arguments{
@@ -25,6 +25,11 @@ read.gadget_file(file_name, fileEncoding = "UTF-8")
     }
     \item{data}{
         A \code{data.frame} representing the tabular data at the end of a file.
+    }
+    \item{file_type}{
+        A character vector that alters how the file is parsed. Currently either
+        NULL or "bare_component", which implies we write "something" instead of
+        "[something]".
     }
     \item{x}{gadget_file object}
     \item{fileEncoding}{File's characterset. Defaults to UTF-8}
