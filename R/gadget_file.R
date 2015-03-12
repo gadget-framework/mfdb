@@ -70,7 +70,6 @@ gadget_dir_write.gadget_file <- function(gd, obj) {
         dirname(file.path(gd$dir, obj$filename)),
         recursive = TRUE,
         showWarnings = FALSE)
-    fh = file(file.path(gd$dir, obj$filename), "w")
 
     # For each component, inspect for any stored gadget_files and write these out first
     for (i in seq_len(length(obj$components))) {
@@ -80,6 +79,7 @@ gadget_dir_write.gadget_file <- function(gd, obj) {
         }
     }
 
+    fh = file(file.path(gd$dir, obj$filename), "w")
     tryCatch(
         capture.output(print(obj), file = fh),
         finally = close(fh))
@@ -92,6 +92,10 @@ read.gadget_file <- function(file_name, file_type = c(), fileEncoding = "UTF-8")
         if (length(m) > 1) m[2:length(m)] else c()
     }
 
+    # Open file
+    if (file.access(file_name, 4) == -1) {
+        stop("File ", file_name, " does not exist")
+    }
     file <- file(file_name, "rt", encoding = fileEncoding)
     on.exit(close(file))
 

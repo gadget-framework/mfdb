@@ -15,10 +15,13 @@ gadget_dir_read.gadget_directory <- function(gd, file_name, missing_okay = TRUE)
 
     if (missing_okay && !file.exists(path)) {
         # Return empty file to read later
-        gadget_file(file_name)
-    } else {
-        read.gadget_file(path)
+        return(gadget_file(file_name))
     }
+
+    # Read file, remove gadget directory from filename
+    gf <- read.gadget_file(path)
+    gf$filename <- file_name
+    return(gf)
 }
 
 # Generic to write gadget objects out
