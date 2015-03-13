@@ -193,7 +193,12 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
         field.types = structure(cols[names(data_in), 'data_type'], names = names(data_in)))
     mfdb_send(mdb, "SET CLIENT_ENCODING TO 'UTF8'")
 
-    tryCatch(fn(temp_tbl), finally = mfdb_send(mdb, "DROP TABLE ", temp_tbl))
+    res <- tryCatch(fn(temp_tbl), error = function (e) {
+        tryCatch(mfdb_send(mdb, "DROP TABLE ", temp_tbl), error = function (e) NULL)
+        stop(e)
+    })
+    mfdb_send(mdb, "DROP TABLE ", temp_tbl)
+    res
 }
 
 # Temporarily remove constraints from a table
@@ -276,10 +281,10 @@ mfdb_transaction <- function(mdb, transaction) {
 
     mdb$logger$info("Starting transaction...")
     dbSendQuery(mdb$db, "BEGIN TRANSACTION")
-    ret <- tryCatch(transaction, error = function (e) { e })
+    ret <- tryCatch(transaction, error = function (e) e)
     if ("error" %in% class(ret)) {
         mdb$logger$warn("Rolling back transaction...")
-        dbRollback(mdb$db)
+        tryCatch(dbRollback(mdb$db), error = function (e) NULL)
         stop(ret)
     }
     mdb$logger$info("Committing transaction...")
