@@ -115,6 +115,88 @@ year	month	areacell	species	maturity_stage	length	age	weight
         NULL), "Mature cod stock refweightfile")
 })
 
+ok_group("Stockfile example - initialconditions", {
+    # Add initialconditions to existing directory
+    mat_data <- mfdb_sample_meanweight(mdb, c('age', 'length'), list(
+        area = NULL,
+        age = NULL, # This means the age column will have "all", but aggfile will have min & max
+        length = mfdb_step_interval('len', 5, to = 50),
+        species = 'COD',
+        maturity_stage = '5',
+        null = NULL))
+    gadget_dir_write(gd, gadget_stockfile_initialconditions('cod.mat', mat_data[[1]]))
+
+    ok(cmp_file(gd, "Modelfiles/cod.mat",
+       ver_string,
+        "stockname\tcod.mat",
+        "minage\t3",
+        "maxage\t3",
+        "minlength\t0",
+        "maxlength\t100",
+        "dl\t10",
+        "refweightfile\tModelfiles/cod.mat.refwgt",
+        "initialconditions",
+        "minage\t3",
+        "maxage\t3",
+        "minlength\t0",
+        "maxlength\t50",
+        "dl\t5",
+        "numberfile\tModelfiles/cod.mat.init.number",
+        NULL), "Mature cod stockfile now has initialconditions")
+    ok(cmp_file(gd, "Modelfiles/cod.mat.init.number",
+        ver_string,
+        "; -- data --",
+        "; area\tage\tlength\tnumber\tweight",
+        "all\tall\t30\t3\t223.333333333333",
+        "all\tall\t40\t1\t330",
+        NULL), "Mature cod stockfile initialconditions")
+})
+
+ok_group("Stockfile example - recruitment", {
+    # Add recruitment to existing directory
+    mat_data <- mfdb_sample_meanweight(mdb, c('age', 'length'), list(
+        year = 2000:2003,
+        step = mfdb_timestep_quarterly,
+        area = mfdb_unaggregated(),
+        age = NULL, # This means the age column will have "all", but aggfile will have min & max
+        length = mfdb_step_interval('len', 5, from = 50, to = 100),
+        species = 'COD',
+        maturity_stage = '5',
+        null = NULL))
+    gadget_dir_write(gd, gadget_stockfile_recruitment('cod.mat', mat_data[[1]]))
+
+    ok(cmp_file(gd, "Modelfiles/cod.mat",
+       ver_string,
+        "stockname\tcod.mat",
+        "minage\t3",
+        "maxage\t3",
+        "minlength\t0",
+        "maxlength\t100",
+        "dl\t10",
+        "refweightfile\tModelfiles/cod.mat.refwgt",
+        "initialconditions",
+        "minage\t3",
+        "maxage\t3",
+        "minlength\t0",
+        "maxlength\t50",
+        "dl\t5",
+        "numberfile\tModelfiles/cod.mat.init.number",
+        "doesrenew", # TODO: This shouldn't be here, but approximately what we want
+        "doesrenew\t1",
+        "minlength\t50",
+        "maxlength\t100",
+        "dl\t5",
+        "numberfile\tModelfiles/cod.mat.rec.number",
+        NULL), "Mature cod stockfile")
+    ok(cmp_file(gd, "Modelfiles/cod.mat.rec.number",
+        ver_string,
+        "; -- data --",
+        "; year\tstep\tarea\tage\tlength\tnumber\tweight",
+        "2000\t1\t45G01\tall\t50\t2\t380",
+        "2000\t1\t45G01\tall\t60\t1\t320",
+        NULL), "Mature cod stockfile initialconditions")
+})
+
 ok_group("refweight files are always continuous and in length order", {
     # Create a temporary gadget directory
     gd <- gadget_directory(tempfile())

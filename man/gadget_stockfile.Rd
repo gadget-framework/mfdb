@@ -10,6 +10,8 @@
 \usage{
 gadget_stockfile_extremes(stock_name, data)
 gadget_stockfile_refweight(stock_name, data)
+gadget_stockfile_initialconditions(stock_name, data)
+gadget_stockfile_recriutment(stock_name, data)
 }
 
 \arguments{
@@ -36,7 +38,18 @@ and the grouping contains the actual minimum and maximum.
 \code{mean} column representing mean weight for that length group. It populates
 the \code{refweightfile} and \code{dl}.
 
-\value{
+\code{gadget_stockfile_initialconditions} requires \code{area}, \code{age},
+\code{length}, \code{number} and \code{mean} (weight) columns. Populates
+initialconditions \code{minlength}, \code{minage}, \code{maxlength}, \code{maxage},
+\code{dl} and the \code{numberfile}. As before, the min/max values are populated
+using the groupings you specify, not the min/max available data.
+
+\code{gadget_stockfile_recruitment} requires \code{year}, \code{step}, \code{area},
+\code{age}, \code{length}, \code{number} and \code{mean} (weight) columns. Populates
+\code{doesrenew}, \code{minlength}, \code{maxlength}, \code{dl}, \code{numberfile}.
+}
+
+value{
 The return value is a \code{gadget_stockfile} object that can be written
 to the filesystem with \code{gadget_dir_write}.
 }

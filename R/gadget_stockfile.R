@@ -40,6 +40,61 @@ gadget_stockfile_refweight <- function (stock_name, data) {
         class = c("gadget_stockfile_refweight", "gadget_stockfile"))
 }
 
+gadget_stockfile_initialconditions <- function(stock_name, data) {
+    for (col in c('area', 'age', 'length', 'number', 'mean')) {
+        if (!(col %in% colnames(data))) {
+            stop("Data missing column ", col)
+        }
+    }
+
+    numberfile <- data.frame(
+        area = data$area,
+        age = data$age,
+        length = vapply(attr(data, 'length')[data$length], min, 0), # Grouping -> minimum value
+        number = data$number,
+        weight = data$mean,  # Assuming it's mean weight here
+        stringsAsFactors = TRUE)
+
+    structure(
+        list(initialconditions = list(
+            minage = min(vapply(attr(data, 'age'), min, 0)),
+            maxage = max(vapply(attr(data, 'age'), max, 0)),
+            minlength = min(vapply(attr(data, 'length'), min, 0)),
+            maxlength = max(vapply(attr(data, 'length'), max, 0)),
+            dl = min(vapply(attr(data, 'length'), diff, 0)),
+            numberfile = gadget_file(paste0('Modelfiles/', stock_name, '.init.number'), data = numberfile))),
+        stock_name = paste0(stock_name, collapse = ""),
+        class = c("gadget_stockfile_refweight", "gadget_stockfile"))
+}
+
+gadget_stockfile_recruitment <- function(stock_name, data) {
+    for (col in c('year', 'step', 'area', 'age', 'length', 'number', 'mean')) {
+        if (!(col %in% colnames(data))) {
+            stop("Data missing column ", col)
+        }
+    }
+
+    numberfile <- data.frame(
+        year = data$year,
+        step = data$step,
+        area = data$area,
+        age = data$age,
+        length = vapply(attr(data, 'length')[data$length], min, 0), # Grouping -> minimum value
+        number = data$number,
+        weight = data$mean,  # Assuming it's mean weight here
+        stringsAsFactors = TRUE)
+
+    structure(
+        list("doesrenew" = list(
+            doesrenew = 1,
+            minlength = min(vapply(attr(data, 'length'), min, 0)),
+            maxlength = max(vapply(attr(data, 'length'), max, 0)),
+            dl = min(vapply(attr(data, 'length'), diff, 0)),
+            numberfile = gadget_file(paste0('Modelfiles/', stock_name, '.rec.number'), data = numberfile))),
+        stock_name = paste0(stock_name, collapse = ""),
+        class = c("gadget_stockfile_refweight", "gadget_stockfile"))
+}
+
 gadget_dir_write.gadget_stockfile <- function(gd, obj) {
     # Read in any existing stock file
     stock_filename <- file.path("Modelfiles", attr(obj, 'stock_name'))

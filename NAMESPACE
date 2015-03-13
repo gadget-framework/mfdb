@@ -68,4 +68,6 @@ S3method(gadget_dir_write, gadget_likelihood_component)
 # gadeget_stockfile.R
 export(gadget_stockfile_extremes)
 export(gadget_stockfile_refweight)
+export(gadget_stockfile_initialconditions)
+export(gadget_stockfile_recruitment)
 S3method(gadget_dir_write, gadget_stockfile)
