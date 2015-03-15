@@ -149,8 +149,9 @@ ok_group("mfdb_disable_constraints", {
     disable_constraints <- function(table_name, code_block) {
         mdb <- fake_mdb()
         mdb$ret_rows <- data.frame(
-            name = c("const1", "const2", "const3"),
-            definition = c("a", "b", "c"),
+            name = rep(c("const1", "const2", "const3"), length(table_name)),
+            table_name = rep(table_name, each = 3),
+            definition = rep(c("a", "b", "c"), length(table_name)),
             stringsAsFactors = FALSE)
         out <- capture.output(tryCatch({
             out <- mfdb:::mfdb_disable_constraints(mdb, table_name, code_block)
@@ -178,6 +179,21 @@ ok_group("mfdb_disable_constraints", {
         "ALTER TABLE public.tbl1 ADD CONSTRAINT const1 a",
         "ALTER TABLE public.tbl1 ADD CONSTRAINT const2 b",
         "ALTER TABLE public.tbl1 ADD CONSTRAINT const3 c",
+        "[1] \"Oh noes\"")), "Removed and replaced constraints when something went wrong")
+
+    ok(cmp(disable_constraints(c("tbl1", "tbl2"), stop("Oh noes")), c(
+        "ALTER TABLE public.tbl2 DROP CONSTRAINT const3",
+        "ALTER TABLE public.tbl2 DROP CONSTRAINT const2",
+        "ALTER TABLE public.tbl2 DROP CONSTRAINT const1",
+        "ALTER TABLE public.tbl1 DROP CONSTRAINT const3",
+        "ALTER TABLE public.tbl1 DROP CONSTRAINT const2",
+        "ALTER TABLE public.tbl1 DROP CONSTRAINT const1",
+        "ALTER TABLE public.tbl1 ADD CONSTRAINT const1 a",
+        "ALTER TABLE public.tbl1 ADD CONSTRAINT const2 b",
+        "ALTER TABLE public.tbl1 ADD CONSTRAINT const3 c",
+        "ALTER TABLE public.tbl2 ADD CONSTRAINT const1 a",
+        "ALTER TABLE public.tbl2 ADD CONSTRAINT const2 b",
+        "ALTER TABLE public.tbl2 ADD CONSTRAINT const3 c",
         "[1] \"Oh noes\"")), "Removed and replaced constraints when something went wrong")
 })
 

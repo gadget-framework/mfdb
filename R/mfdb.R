@@ -208,7 +208,7 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
     # Get a list of constraints and the order to recreate them
     namespace <- "public"
     constraints <- mfdb_fetch(mdb,
-        "SELECT conname AS name",
+        "SELECT relname AS table_name, conname AS name",
         ", pg_get_constraintdef(pg_constraint.oid) AS definition",
         " FROM pg_constraint",
         " INNER JOIN pg_class ON conrelid=pg_class.oid",
@@ -219,16 +219,20 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
         NULL)
 
     tryCatch({
-        mdb$logger$info(paste0("Removing constraints from ", table_name))
-        for (cname in rev(constraints$name)) mfdb_send(mdb,
-            "ALTER TABLE ", namespace, ".", table_name,
-            " DROP CONSTRAINT ", cname, "")
+        for(i in rev(1:nrow(constraints))) {
+            mdb$logger$info(paste0("Removing constraint ", constraints[i, "table_name"], ".", constraints[i, "name"]))
+            mfdb_send(mdb,
+                "ALTER TABLE ", namespace, ".", constraints[i, "table_name"],
+                " DROP CONSTRAINT ", constraints[i, "name"], "")
+        }
         code_block
     }, finally = {
-        mdb$logger$info(paste0("Reinstating constraints on ", table_name))
-        for(i in 1:nrow(constraints)) mfdb_send(mdb,
-            "ALTER TABLE ", namespace, ".", table_name,
-            " ADD CONSTRAINT ", constraints[i, "name"], " ", constraints[i, "definition"])
+        for(i in 1:nrow(constraints)) {
+            mdb$logger$info(paste0("Reinstating constraint ", constraints[i, "table_name"], ".", constraints[i, "name"]))
+            mfdb_send(mdb,
+                "ALTER TABLE ", namespace, ".", constraints[i, "table_name"],
+                " ADD CONSTRAINT ", constraints[i, "name"], " ", constraints[i, "definition"])
+        }
     })
 }
 
