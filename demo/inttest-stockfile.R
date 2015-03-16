@@ -181,7 +181,6 @@ ok_group("Stockfile example - recruitment", {
         "maxlength\t50",
         "dl\t5",
         "numberfile\tModelfiles/cod.mat.init.number",
-        "doesrenew", # TODO: This shouldn't be here, but approximately what we want
         "doesrenew\t1",
         "minlength\t50",
         "maxlength\t100",

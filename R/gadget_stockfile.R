@@ -102,7 +102,7 @@ gadget_dir_write.gadget_stockfile <- function(gd, obj) {
         gd,
         stock_filename,
         missing_okay = TRUE,
-        file_type = "bare_component")
+        file_type = c("bare_component", implicit_component = "^(growthandeatlengths|doesgrow|naturalmortality|iseaten|doeseat|doesmigrate|doesmature|doesmove|doesrenew|doesspawn|doesstray)$"))
 
     # Update component we refer to
     for (i in seq_len(length(obj))) {
