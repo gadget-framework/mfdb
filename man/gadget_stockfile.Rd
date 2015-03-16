@@ -1,6 +1,8 @@
 \name{gadget_stockfile}
 \alias{gadget_stockfile_extremes}
 \alias{gadget_stockfile_refweight}
+\alias{gadget_stockfile_initialconditions}
+\alias{gadget_stockfile_recruitment}
 
 \title{Gadget stock files}
 \description{
@@ -11,7 +13,7 @@
 gadget_stockfile_extremes(stock_name, data)
 gadget_stockfile_refweight(stock_name, data)
 gadget_stockfile_initialconditions(stock_name, data)
-gadget_stockfile_recriutment(stock_name, data)
+gadget_stockfile_recruitment(stock_name, data)
 }
 
 \arguments{
@@ -49,7 +51,7 @@ using the groupings you specify, not the min/max available data.
 \code{doesrenew}, \code{minlength}, \code{maxlength}, \code{dl}, \code{numberfile}.
 }
 
-value{
+\value{
 The return value is a \code{gadget_stockfile} object that can be written
 to the filesystem with \code{gadget_dir_write}.
 }
