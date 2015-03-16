@@ -190,6 +190,7 @@ schema_from_0 <- function(mdb) {
 
 mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage")
 mfdb_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type")
+mfdb_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', 'prey')
 
 # Populate tables with package-provided data
 mfdb_update_taxonomy <- function(mdb) {
