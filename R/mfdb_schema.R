@@ -19,25 +19,22 @@ mfdb_destroy_schema <- function(mdb) {
 # Check to see if we need to update schema do it,
 mfdb_update_schema <- function(mdb) {
     # Find out existing schema version
-    schema_version <- tryCatch(
-        mfdb_fetch(mdb, "SELECT version FROM mfdb_schema"),
-        error = function (e) NULL)
+    schema_version <- tryCatch({
+        res <- mfdb_fetch(mdb, "SELECT MAX(version) FROM mfdb_schema")
+        ifelse(nrow(res) == 0, 0, res[1, 1])
+    }, error = function (e) 0)
+    target_version <- package_major_version()
 
-    if (is.null(schema_version) || length(schema_version) == 0) {
-        # Nothing there yet, can create tables
-        mdb$logger$info("Creating schema from scratch")
-        schema_from_0(mdb)
-    } else if (length(schema_version) > 1) {
-        stop(paste("DB schema table has too many entries"))
-    } else if (schema_version[1][1] != package_major_version()) {
+    # Find appropriate function and run it
+    fn <- tryCatch(get(paste0("schema_from_", schema_version)), error = function (e) {
         stop(paste(
-            "DB Schema version", schema_version[1][1],
-            "does not match package version", package_major_version(),
-            "no upgrade step available. call mfdb(destroy_schema = TRUE) first.",
+            "DB Schema version", schema_version,
+            "does not match package version", target_version,
+            "& no upgrade step available.\n",
+            "Call mfdb(destroy_schema = TRUE) first.",
             "Warning: This *will destroy* any existing data"))
-    } else {
-        mdb$logger$debug("Schema up-to-date")
-    }
+    })
+    fn(mdb)
 }
 
 # Create MFDB schema from scratch, or print commands
@@ -51,6 +48,8 @@ schema_from_0 <- function(mdb) {
             NULL
         )
     }
+
+    mdb$logger$info("Creating schema from scratch")
 
     mfdb_create_table(mdb, "mfdb_schema", "Table to keep track of schema version", cols = c(
         "version", "INT NOT NULL", "Version of MFDB schema"))
@@ -186,6 +185,10 @@ schema_from_0 <- function(mdb) {
         NULL
     ), keys = c(
     ))
+}
+
+schema_from_2 <- function(mdb) {
+    mdb$logger$info("Schema up-to-date")
 }
 
 mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage")
