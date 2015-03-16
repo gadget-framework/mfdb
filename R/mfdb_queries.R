@@ -141,14 +141,14 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
     pred_col_defs <- c(
         data_source = 'c.data_source_id',
 
-        institute = 'c.institute',
-        gear = 'c.gear',
-        vessel = 'c.vessel',
-        sampling_type = 'c.sampling_type',
+        institute = 'c.institute_id',
+        gear = 'c.gear_id',
+        vessel = 'c.vessel_id',
+        sampling_type = 'c.sampling_type_id',
 
         year = 'c.year',
         step = 'c.month',
-        area = 'c.areacell',
+        area = 'c.areacell_id',
 
         predator_species = 'c.species_id',
         age = 'c.age',
