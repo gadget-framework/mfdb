@@ -161,6 +161,7 @@ schema_from_2 <- function(mdb) {
 
 mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage")
 mfdb_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type")
+mfdb_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', 'prey')
 
 mfdb_create_taxonomy_table <- function(mdb, table_name) {
     key_col <- paste0(table_name, "_id")
