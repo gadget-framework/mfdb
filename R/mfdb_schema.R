@@ -56,39 +56,7 @@ schema_from_0 <- function(mdb) {
     mfdb_insert(mdb, "mfdb_schema", list(version = package_major_version()))
 
     # Create all required taxonomy tables
-    for (t in mfdb_taxonomy) {
-        mfdb_create_table(mdb, t, "", cols = c(
-            paste0(t, "_id"), ifelse(t == "species", "BIGINT", "INT"), "Numeric ID for this entry",
-            "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
-            "description", "VARCHAR(1024)", "Long description",
-            NULL
-        ), keys = c(
-            paste0(c("PRIMARY KEY(", paste0(t, "_id"), ")"), collapse = ""),
-            "CHECK(name ~ '^[A-Za-z0-9_.\\-]+$')",
-            paste0("UNIQUE(name)"),
-            NULL
-        ))
-    }
-    for (t in mfdb_cs_taxonomy) {
-        mfdb_create_table(mdb, t, "", cols = c(
-            "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
-            paste0(t, "_id"), ifelse(t == "data_source", "SERIAL", "INT"), "Numeric ID for this entry",
-            "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
-            if (t == "areacell") c(
-                "size", "INT", "Size of areacell",
-                NULL
-            ) else c(
-                "description", "VARCHAR(1024)", "Long description",
-                NULL
-            ),
-            NULL
-        ), keys = c(
-            paste0(c("PRIMARY KEY(case_study_id, ", paste0(t, "_id"), ")"), collapse = ""),
-            "CHECK(name ~ '^[A-Za-z0-9_.\\-]+$')",
-            paste0("UNIQUE(case_study_id, name)"),
-            NULL
-        ))
-    }
+    for (t in c(mfdb_taxonomy, mfdb_cs_taxonomy)) mfdb_create_taxonomy_table(mdb, t)
 
     mfdb_create_table(mdb, "survey_index", "Indices used to modify surveys", cols = c(
         "survey_index_id", "SERIAL PRIMARY KEY", "",
@@ -193,6 +161,42 @@ schema_from_2 <- function(mdb) {
 
 mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage")
 mfdb_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type")
+
+mfdb_create_taxonomy_table <- function(mdb, table_name) {
+    key_col <- paste0(table_name, "_id")
+    if (table_name %in% mfdb_taxonomy) {
+        mfdb_create_table(mdb, table_name, "", cols = c(
+            key_col, ifelse(table_name == "species", "BIGINT", "INT"), "Numeric ID for this entry",
+            "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
+            "description", "VARCHAR(1024)", "Long description",
+            NULL
+        ), keys = c(
+            paste0(c("PRIMARY KEY(", key_col, ")"), collapse = ""),
+            "CHECK(name ~ '^[A-Za-z0-9_.\\-]+$')",
+            paste0("UNIQUE(name)"),
+            NULL
+        ))
+    } else if (table_name %in% mfdb_cs_taxonomy) {
+        mfdb_create_table(mdb, table_name, "", cols = c(
+            "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
+            key_col, ifelse(table_name == "data_source", "SERIAL", "INT"), "Numeric ID for this entry",
+            "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
+            if (table_name == "areacell") c(
+                "size", "INT", "Size of areacell",
+                NULL
+            ) else c(
+                "description", "VARCHAR(1024)", "Long description",
+                NULL
+            ),
+            NULL
+        ), keys = c(
+            paste0(c("PRIMARY KEY(case_study_id, ", key_col, ")"), collapse = ""),
+            "CHECK(name ~ '^[A-Za-z0-9_.\\-]+$')",
+            paste0("UNIQUE(case_study_id, name)"),
+            NULL
+        ))
+    }
+}
 
 # Populate tables with package-provided data
 mfdb_update_taxonomy <- function(mdb) {
