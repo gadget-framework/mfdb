@@ -313,18 +313,18 @@ gadget_catchinkilos_component <- function (
         name,
         data = NULL,
         data_function = 'sumofsquares',
-        aggregationlevel = 0,
         epsilon = 10,
         area = NULL,
         fleetnames = c(), stocknames = c()) {
     # Make sure we have the columns we need
-    compare_cols(names(data), c("year", "step", "area", "fleet", "biomass"))
-    if (aggregationlevel == 1) {
-        # Dump step column, since it should be all equal
-        if (nrow(data) > 0 && !isTRUE(all.equal(data[,"step"], rep(data[1, "step"], times = nrow(data))))) {
-            stop("if aggregationlevel is 1, all step values should be identical")
-        }
-        data <- data[,c("year", "area", "fleet", "biomass"), drop = FALSE]
+    compare_cols(names(data), c("year", "step", "area", NA, "total_weight"))
+
+    # If aggregated yearly, then switch to aggregationlevel 1 and drop step column
+    if (isTRUE(identical(attr(data, 'step'), mfdb_timestep_yearly))) {
+        aggregationlevel <- 1
+        data <- data[,names(data) != 'step', drop = FALSE]
+    } else {
+        aggregationlevel <- 0
     }
 
     list(

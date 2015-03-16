@@ -95,6 +95,66 @@ ok(cmp(agg_data[[1]], structure(
     vessel = list('1.COM' = '1.COM', '2.COM' = '2.COM'),
     generator = "mfdb_sample_totalweight")), "No count for these records")
 
+# Import this into a catchinkilos component
+gd <- gadget_directory(tempfile())
+gadget_dir_write(gd, gadget_likelihood_component('catchinkilos',
+    data = agg_data[[1]]))
+ok(cmp_file(gd, "likelihood",
+    ver_string,
+    "; ",
+    "[component]",
+    "name\tcatchinkilos",
+    "weight\t0",
+    "type\tcatchinkilos",
+    "datafile\tData/catchinkilos.catchinkilos.sumofsquares",
+    "function\tsumofsquares",
+    "aggregationlevel\t0",
+    "epsilon\t10",
+    "areaaggfile\tAggfiles/catchinkilos.catchinkilos.area.agg",
+    "fleetnames\t",
+    "stocknames\t",
+    NULL), "Wrote likelihood file")
+ok(cmp_file(gd, "Data/catchinkilos.catchinkilos.sumofsquares",
+    ver_string,
+    "; -- data --",
+    "; year\tstep\tarea\tvessel\ttotal_weight",
+    "2000\t1\tdivA\t1.COM\t7760",
+    "2000\t1\tdivA\t2.COM\t7820",
+    "2000\t2\tdivA\t1.COM\t8360",
+    "2000\t2\tdivA\t2.COM\t8420",
+    NULL), "Wrote component data file")
+
+# Can also group by year, in which case aggregationlevel == 1
+agg_data <- mfdb_sample_totalweight(mdb, c("vessel"), params = list(
+    year = 2000,
+    step = mfdb_timestep_yearly,
+    area = area_group,
+    vessel = vessel_group))
+gadget_dir_write(gd, gadget_likelihood_component('catchinkilos',
+    data = agg_data[[1]]))
+ok(cmp_file(gd, "likelihood",
+    ver_string,
+    "; ",
+    "[component]",
+    "name\tcatchinkilos",
+    "weight\t0",
+    "type\tcatchinkilos",
+    "datafile\tData/catchinkilos.catchinkilos.sumofsquares",
+    "function\tsumofsquares",
+    "aggregationlevel\t1",
+    "epsilon\t10",
+    "areaaggfile\tAggfiles/catchinkilos.catchinkilos.area.agg",
+    "fleetnames\t",
+    "stocknames\t",
+    NULL), "Wrote likelihood file")
+ok(cmp_file(gd, "Data/catchinkilos.catchinkilos.sumofsquares",
+    ver_string,
+    "; -- data --",
+    "; year\tarea\tvessel\ttotal_weight",
+    "2000\tdivA\t1.COM\t16120",
+    "2000\tdivA\t2.COM\t16240",
+    NULL), "Wrote yearly data, step was dropped")
+
 ok_group("Can import counts too, but doesn't affect result", {
     mfdb_import_survey(mdb,
         data_source = 'landings1',
