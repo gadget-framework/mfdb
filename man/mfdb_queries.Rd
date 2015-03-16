@@ -5,6 +5,7 @@
 \alias{mfdb_sample_count}
 \alias{mfdb_sample_meanlength_stddev}
 \alias{mfdb_sample_meanlength}
+\alias{mfdb_sample_totalweight}
 \alias{mfdb_sample_meanweight}
 \alias{mfdb_sample_meanweight_stddev}
 \alias{mfdb_stomach_presenceratio}
@@ -22,6 +23,7 @@ mfdb_survey_index_mean(mdb, cols, params)
 mfdb_sample_count(mdb, cols, params, abundance_index = NULL)
 mfdb_sample_meanlength(mdb, cols, params, abundance_index = NULL)
 mfdb_sample_meanlength_stddev(mdb, cols, params, abundance_index = NULL)
+mfdb_sample_totalweight(mdb, cols, params)
 mfdb_sample_meanweight(mdb, cols, params, abundance_index = NULL)
 mfdb_sample_meanweight_stddev(mdb, cols, params, abundance_index = NULL)
 mfdb_stomach_presenceratio(mdb, cols, params)
@@ -119,6 +121,9 @@ weighting the mean & standard deviation.
         }
         \item{mfdb_sample_meanlength_stddev}{
             As mfdb_sample_meanlength, but also returns std. deviation.
+        }
+        \item{mfdb_sample_totalweight}{
+            Returns year,step,area,(group cols),total (weight of group)
         }
         \item{mfdb_sample_meanweight}{
             Returns year,step,area,(group cols),number (of samples),mean (weight of group)

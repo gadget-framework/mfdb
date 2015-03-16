@@ -104,6 +104,19 @@ mfdb_sample_meanlength_stddev <- function (mdb, cols, params, abundance_index = 
     out
 }
 
+# Return year,step,area, ... , total (weight)
+mfdb_sample_totalweight <- function (mdb, cols, params) {
+    out <- mfdb_sample_grouping(mdb,
+        params = params,
+        core_table = "sample",
+        group_cols = c("year", "timestep", "area", cols),
+        calc_cols = c(
+            paste0("SUM(weight * count) AS total_weight"),
+            NULL),
+        generator = gsub(".*(mfdb_[a-z_]+).*", "\\1", sys.call()[[1]]))
+    out
+}
+
 # Return year,step,area,age,number (# of samples),mean (weight)
 mfdb_sample_meanweight <- function (mdb, cols, params, abundance_index = NULL) {
     abundance <- abundance_core_table(mdb, abundance_index)
