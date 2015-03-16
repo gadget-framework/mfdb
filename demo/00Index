@@ -8,4 +8,5 @@ inttest-bulkimportexport	Exercise functions for bulk import / export of case stu
 inttest-abundanceindex		Excerise using something else as an abundance index (e.g. for acoustic data)
 inttest-acousticindex		Excerise storing and retrieving an acoustic index
 inttest-taxonomyimport		Exercise importing of taxonomies
+inttest-stockfile		Excrcise stockfile generation
 inttest-stomach			Excerise predator / prey relationship stomach data

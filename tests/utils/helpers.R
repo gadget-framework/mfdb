@@ -113,3 +113,6 @@ table_string <- function (str) {
         header = TRUE,
         stringsAsFactors = FALSE)
 }
+
+# Shuffle the rows of a data.frame
+shuffle_df <- function(df) df[sample(nrow(df)),]

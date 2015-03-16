@@ -1,3 +1,10 @@
+    Unreleased
+
+    * Add gadget_stockfile_initialconditions and gadget_stockfile_recruitment
+    * Add gadget_stockfile_extremes and gadget_stockfile_refweight for manipulating stockfiles
+    * Allow files in subdirectories to be read and then rewritten in the same place
+    * Introduce "bare components" file type, use this to include temperature
+
 2015-03-10  Jamie Lentin  <lentinj@shuttlethread.com>
 
     Version 2.0-0

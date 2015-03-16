@@ -11,7 +11,7 @@
 \usage{
 gadget_directory(dir, mainfile = "main")
 gadget_dir_write(gd, obj)
-gadget_dir_read(gd, file_name, missing_okay = TRUE)
+gadget_dir_read(gd, file_name, missing_okay = TRUE, file_type = c())
 }
 
 \arguments{
@@ -33,6 +33,11 @@ gadget_dir_read(gd, file_name, missing_okay = TRUE)
     \item{missing_okay}{
         If true, return an empty file instead of complaining that the given
         file does not exist.
+    }
+    \item{file_type}{
+        A character vector that alters how the file is parsed. Currently either
+        NULL or "bare_component", which implies we write "something" instead of
+        "[something]".
     }
 }
 

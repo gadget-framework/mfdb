@@ -1,7 +1,8 @@
-gadget_file <- function (file_name, components = list(), data = NULL) {
+gadget_file <- function (file_name, components = list(), data = NULL, file_type = c()) {
     structure(list(
         filename = file_name,
         components = as.list(components),
+        file_type = c(file_type),
         data = data), class = "gadget_file")
 }
 
@@ -15,7 +16,15 @@ print.gadget_file <- function (x, ...) {
         # Print all preambles as comments
         cat(preamble_str(comp))
 
-        if (is.character(name) && nzchar(name)) cat(paste0('[', name,']\n'))
+        if (!is.character(name) || !nzchar(name)) {
+            # No name, do nothing
+        } else if ("implicit_component" %in% names(x$file_type) && regexpr(x$file_type[['implicit_component']], name) > -1) {
+            # Do nothing, the name comes from the key/value line
+        } else if ('bare_component' %in% x$file_type) {
+            cat(paste0(name,'\n'))
+        } else {
+            cat(paste0('[', name,']\n'))
+        }
 
         # properties are in key\tvalue1\tvalue2... form
         for (i in seq_len(length(comp))) {
@@ -63,6 +72,15 @@ gadget_dir_write.gadget_file <- function(gd, obj) {
         dirname(file.path(gd$dir, obj$filename)),
         recursive = TRUE,
         showWarnings = FALSE)
+
+    # For each component, inspect for any stored gadget_files and write these out first
+    for (i in seq_len(length(obj$components))) {
+        for (j in which("gadget_file" == lapply(obj$components[[i]], class))) {
+            gadget_dir_write(gd, obj$components[[i]][[j]])
+            obj$components[[i]][[j]] <- obj$components[[i]][[j]]$filename
+        }
+    }
+
     fh = file(file.path(gd$dir, obj$filename), "w")
     tryCatch(
         capture.output(print(obj), file = fh),
@@ -70,12 +88,16 @@ gadget_dir_write.gadget_file <- function(gd, obj) {
 }
 
 # Load gadget file into memory
-read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
+read.gadget_file <- function(file_name, file_type = c(), fileEncoding = "UTF-8") {
     extract <- function (pattern, line) {
         m <- regmatches(line, regexec(pattern, line))[[1]]
         if (length(m) > 1) m[2:length(m)] else c()
     }
 
+    # Open file
+    if (file.access(file_name, 4) == -1) {
+        stop("File ", file_name, " does not exist")
+    }
     file <- file(file_name, "rt", encoding = fileEncoding)
     on.exit(close(file))
 
@@ -134,7 +156,10 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
         }
 
         # Start of new component
-        x <- extract("^\\[(\\w+)\\]", line)
+        x <- extract(ifelse(
+            "bare_component" %in% file_type,
+            "^(\\w+)$",
+            "^\\[(\\w+)\\]"), line)
         if (length(x) > 0) {
             if(is.null(comp_name)) {
                 components[[1]] <- cur_comp
@@ -154,6 +179,19 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
         line_values <- if (length(match[[2]]) > 0) unlist(strsplit(sub("\\s+$", "", match[[2]]), "\\t+")) else c()
         line_comment <- match[[3]]
 
+        # This might be an implicit component, if so start a new component but carry on parsing
+        if ("implicit_component" %in% names(file_type) && regexpr(file_type[['implicit_component']], line_name) > -1) {
+            if(is.null(comp_name)) {
+                components[[1]] <- cur_comp
+            } else {
+                new_comp <- list()
+                new_comp[[comp_name]] <- cur_comp
+                components <- c(components, new_comp)
+            }
+            comp_name <- line_name
+            cur_comp <- list()
+        }
+
         if (length(line_name) > 0) {
             # Started writing items, so must have got to the end of the preamble
             if (length(cur_preamble) > 0) {
@@ -169,5 +207,9 @@ read.gadget_file <- function(file_name, fileEncoding = "UTF-8") {
             next
         }
     }
-    gadget_file(basename(file_name), components = components, data = data)
+    gadget_file(
+        basename(file_name),
+        components = components,
+        data = data,
+        file_type = file_type)
 }
