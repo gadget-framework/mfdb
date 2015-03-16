@@ -236,3 +236,52 @@ ok_group("Bare component labels", {
         "pigs\thenry\tfreddie",
         file_type = c('bare_component'))
 })
+
+ok_group("Implicit component labels", {
+    gf <- gadget_file_string(
+        ver_string,
+        "farmer\tgiles",
+        "cows\t2",
+        "fresian\tdaisy",
+        "highland\tbessie",
+        "pigs\t4",
+        "oldspot\tgeorge",
+        "gloucester\thenry\tfreddie",
+        file_type = c())
+    ok(cmp(gf$components, list(list(
+        farmer = "giles",
+        cows = 2,
+        fresian = "daisy",
+        highland = "bessie",
+        pigs = 4,
+        oldspot = "george",
+        gloucester = c("henry", "freddie")
+        ))), "By default, lines are just extra key/value fields")
+
+    gf <- gadget_file_string(
+        ver_string,
+        "farmer\tgiles",
+        "cows\t2",
+        "fresian\tdaisy",
+        "highland\tbessie",
+        "pigs\t4",
+        "oldspot\tgeorge",
+        "gloucester\thenry\tfreddie",
+        file_type = c(implicit_component = "^(cows|pigs)$"))
+    ok(cmp(gf$components, list(
+        list(farmer = "giles"),
+        cows = list(cows = 2, fresian = "daisy", highland = "bessie"),
+        pigs = list(pigs = 4, oldspot = "george", gloucester = c("henry", "freddie"))
+        )), "Turn on implicit components, and they get divided")
+
+    test_loopback(
+        ver_string,
+        "farmer\tgiles",
+        "cows\t2",
+        "fresian\tdaisy",
+        "highland\tbessie",
+        "pigs\t4",
+        "oldspot\tgeorge",
+        "gloucester\thenry\tfreddie",
+        file_type = c(implicit_component = "^(cows|pigs)$"))
+})

@@ -18,6 +18,8 @@ print.gadget_file <- function (x, ...) {
 
         if (!is.character(name) || !nzchar(name)) {
             # No name, do nothing
+        } else if ("implicit_component" %in% names(x$file_type) && regexpr(x$file_type[['implicit_component']], name) > -1) {
+            # Do nothing, the name comes from the key/value line
         } else if ('bare_component' %in% x$file_type) {
             cat(paste0(name,'\n'))
         } else {
@@ -176,6 +178,19 @@ read.gadget_file <- function(file_name, file_type = c(), fileEncoding = "UTF-8")
         line_name <- match[[1]]
         line_values <- if (length(match[[2]]) > 0) unlist(strsplit(sub("\\s+$", "", match[[2]]), "\\t+")) else c()
         line_comment <- match[[3]]
+
+        # This might be an implicit component, if so start a new component but carry on parsing
+        if ("implicit_component" %in% names(file_type) && regexpr(file_type[['implicit_component']], line_name) > -1) {
+            if(is.null(comp_name)) {
+                components[[1]] <- cur_comp
+            } else {
+                new_comp <- list()
+                new_comp[[comp_name]] <- cur_comp
+                components <- c(components, new_comp)
+            }
+            comp_name <- line_name
+            cur_comp <- list()
+        }
 
         if (length(line_name) > 0) {
             # Started writing items, so must have got to the end of the preamble
