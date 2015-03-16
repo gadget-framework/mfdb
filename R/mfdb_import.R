@@ -83,6 +83,22 @@ mfdb_import_area <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'areacel
 mfdb_import_sampling_type <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'sampling_type', data_in)
 
 mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
+    # Work out whether we're importing mean weights or total weights
+    if ("weight_total" %in% colnames(data_in) && "weight" %in% colnames(data_in)) {
+        stop("Cannot specify both weight and weight_total")
+    } else if ("weight_total" %in% colnames(data_in) && "count" %in% colnames(data_in)) {
+        # Convert total to a mean for storage
+        data_in$weight <- data_in$weight_total / data_in$count
+        weight_col <- "weight"
+        count_default <- c(1)
+    } else if ("weight_total" %in% colnames(data_in)) {
+        weight_col <- "weight_total"
+        count_default <- c(NA)
+    } else {
+        weight_col <- "weight"
+        count_default <- c(1)
+    }
+
     # Sanitise data
     survey_sample <- data.frame(
         case_study_id = c(mdb$case_study_id),
@@ -100,9 +116,9 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
         length = sanitise_col(mdb, data_in, 'length', default = c(NA)),
         length_var = sanitise_col(mdb, data_in, 'length_var', default = c(NA)),
         length_min = sanitise_col(mdb, data_in, 'length_min', default = c(NA)),
-        weight = sanitise_col(mdb, data_in, 'weight', default = c(NA)),
+        weight = sanitise_col(mdb, data_in, weight_col, default = c(NA)),
         weight_var = sanitise_col(mdb, data_in, 'weight_var', default = c(NA)),
-        count = sanitise_col(mdb, data_in, 'count', default = c(1)))
+        count = sanitise_col(mdb, data_in, 'count', default = count_default))
 
 
     # Likely to be pretty big, so pre-load data into a temporary table

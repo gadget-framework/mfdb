@@ -1,3 +1,7 @@
+    Unreleased
+
+    * Allow import of "weight_total", for total biomass
+
 2015-03-16  Jamie Lentin  <lentinj@shuttlethread.com>
 
     Version 3.0-0
