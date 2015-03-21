@@ -186,9 +186,10 @@ gadget_surveyindices_component <- function (
 
     if (sitype == 'lengths') {
         compare_cols(names(data), c("year", "step", "area", "length", "number"))
-        length <- c(...)['length']
+        length <- c(...)[grep('length',names(c(...)))]
         si_cols <- list(
-            lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name), if(is.null(length)) attr(data, "length") else length))
+            lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name),
+                if(is.null(length)) attr(data, "length") else length))
 
     } else if (sitype == 'ages') {
         compare_cols(names(data), c("year", "step", "area", "age", "number"))
@@ -200,7 +201,8 @@ gadget_surveyindices_component <- function (
         compare_cols(names(data), c("year", "step", "area", "length", "number"))
         length <- c(...)['length']
         si_cols <- list(
-            lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name), if(is.null(length)) attr(data, "length") else length),
+            lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name),
+                if(is.null(length)) attr(data, "length") else length),
             fleetnames = c(...)['fleetnames'])
 
     } else if (sitype == 'acoustic') {
@@ -218,12 +220,14 @@ gadget_surveyindices_component <- function (
     # Mix in other default columns
     return(c(
         list(
-            datafile = gadget_file(fname('Data', fname_prefix(sys.call(0), name), sitype), data=data),
+            datafile = gadget_file(fname('Data',
+                fname_prefix(sys.call(0), name), sitype), data=data),
             sitype = sitype,
             biomass = biomass,
-            areaaggfile = agg_file('area', fname_prefix(sys.call(0), name), if(is.null(area)) attr(data, "area") else area)),
+            areaaggfile = agg_file('area', fname_prefix(sys.call(0), name),
+                if(is.null(area)) attr(data, "area") else area)),
         si_cols,
-        list(stocknames = c(...)['stocknames']),
+        list(stocknames = c(...)[grep('stocknames',names(c(...)))]),
         na.omit(c(...)[c('fittype', 'slope', 'intercept')]),
         NULL))
 }
