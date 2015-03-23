@@ -1,5 +1,6 @@
     Unreleased
 
+    * Allow import/export to tarball as well as directory
     * Don't write files in one go when bulk exporting
     * Fix surveyindices likelihood component, should be able to output multiple stocknames
     * Add gadget_stockfile_initialconditions and gadget_stockfile_recruitment

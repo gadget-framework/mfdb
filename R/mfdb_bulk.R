@@ -1,9 +1,33 @@
 # Dump all useful data into directory
-mfdb_cs_dump <- function(mdb, directory) {
-    if(!utils::file_test("-d", directory)) tryCatch(dir.create(directory), warning = function(w) {
+mfdb_cs_dump <- function(mdb, out_location) {
+    # If asking for a .tar.gz, then output first into a temp directory, then tar it up
+    tar_extn <- regmatches(out_location, regexpr("\\.tgz|\\.tar(\\.gz|\\.bz2|\\.xz)?$", out_location))
+    if (isTRUE(nzchar(tar_extn))) {
+        temp_output <- tempfile("mfdb_cs_dump")
+        mfdb_cs_dump(mdb, temp_output)
+
+        old_dir <- getwd()
+        tryCatch({
+            cat("", file = out_location)  # normalizePath requires existant file
+            out_tar <- normalizePath(out_location)
+            setwd(temp_output)
+            
+            ret <- tar(out_tar, ".", compression = c(
+                ".tgz" = "gzip",
+                ".tar" = FALSE,
+                ".tar.gz" = "gzip",
+                ".tar.bzip2" = "bzip2",
+                ".tar.xz" = "xz",
+                NULL)[[tar_extn]], tar = "internal")
+            str(ret)
+        }, finally = setwd(old_dir))
+        return(invisible(NULL))
+    }
+
+    if(!utils::file_test("-d", out_location)) tryCatch(dir.create(out_location), warning = function(w) {
         stop(paste("Could not create output directory:", conditionMessage(w)))
     })
-    if(!utils::file_test("-d", directory)) stop(paste("Could not create output directory", directory))
+    if(!utils::file_test("-d", out_location)) stop(paste("Could not create output directory", out_location))
 
     for (table_name in c(mfdb_cs_taxonomy, mfdb_measurement_tables)) {
         mdb$logger$info(paste0("Dumping table ", table_name))
@@ -17,7 +41,7 @@ mfdb_cs_dump <- function(mdb, directory) {
             result = function (data_out, offset) {
                 write.table(
                     data_out,
-                    file = file.path(directory, table_name),
+                    file = file.path(out_location, table_name),
                     append = (offset > 0),
                     col.names = (offset == 0),
                     fileEncoding = "UTF-8")
@@ -26,11 +50,19 @@ mfdb_cs_dump <- function(mdb, directory) {
 }
 
 # Read data back out again
-mfdb_cs_restore <- function(mdb, directory) {
+mfdb_cs_restore <- function(mdb, in_location) {
+    # If in_location is a tarball, untar it then carry on
+    tar_extn <- regmatches(in_location, regexpr("\\.tgz|\\.tar(\\.gz|\\.bz2|\\.xz)?$", in_location))
+    if (isTRUE(nzchar(tar_extn))) {
+        temp_output <- tempfile("mfdb_cs_restore") 
+        untar(in_location, exdir = temp_output)
+        in_location <- temp_output
+    }
+    
     # Read in table, returning empty data frame if file is empty
     read_data <- function (table_name) {
         tryCatch(read.table(
-            file = file.path(directory, table_name),
+            file = file.path(in_location, table_name),
             header = TRUE,
             fileEncoding = "UTF-8"), error = function (e) {
                 if (grepl("first five rows are empty", e$message)) {

@@ -127,3 +127,19 @@ mfdb_import_survey(mdb,
         #          -----Q1----- -----Q2----- -----Q3----- -----Q4-----
         length = c(213,253,333, 313,133,343, 163,363,233, 333,133,323 ),
         count =  c(  2,  1,  2,   1,  2,  1,   1,  2,  1,   2,  1,  2 )))
+
+# Test we can output a tarball
+dump_tar <- paste0(tempfile(), ".tar.gz")
+mfdb_cs_dump(mdb, dump_tar)
+
+# Restore it
+mfdb_cs_restore(mdb, dump_tar)
+ok(cmp(
+    mfdb_sample_count(mdb, c(), params = list())[[1]][,'number'],
+    sum( 2,  1,  2,   1,  2,  1,   1,  2,  1,   2,  1,  2 ) * 102), "Sample rows all intact (after tar import)")
+ok(cmp(
+    mfdb_stomach_presenceratio(mdb, c(), params = list(prey_species = 'CAP'))[[1]][,'ratio'],
+    4 / 6), "Stomach rows all intact (after tar import)")
+ok(cmp(
+    mfdb_stomach_presenceratio(mdb, c(), params = list(prey_species = 'CLL'))[[1]][,'ratio'],
+    2 / 6), "Stomach rows all intact (after tar import)")
