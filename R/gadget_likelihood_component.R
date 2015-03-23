@@ -179,39 +179,59 @@ gadget_surveyindices_component <- function (
         biomass = 0,
         data = NULL,
         area = NULL,
-        ...) {
-    if (!('fittype' %in% names(c(...)))) {
+        fittype = NULL,
+        length = NULL,
+        age = NULL,
+        fleetnames = NULL,
+        surveynames = NULL,
+        stocknames = NULL,
+        slope = NULL,
+        intercept = NULL) {
+    if (is.null(fittype)) {
         stop("fittype missing. It is a required parameter")
     }
 
     if (sitype == 'lengths') {
         compare_cols(names(data), c("year", "step", "area", "length", "number"))
-        length <- c(...)[grep('length',names(c(...)))]
         si_cols <- list(
-            lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name),
+            lenaggfile  = agg_file(
+                'len',
+                fname_prefix(sys.call(0), name),
                 if(is.null(length)) attr(data, "length") else length))
 
     } else if (sitype == 'ages') {
         compare_cols(names(data), c("year", "step", "area", "age", "number"))
-        age <- c(...)['age']
         si_cols <- list(
-            ageaggfile  = agg_file('age', fname_prefix(sys.call(0), name), if(is.null(age)) attr(data, "age") else age))
+            ageaggfile  = agg_file(
+                'age',
+                fname_prefix(sys.call(0), name),
+                if(is.null(age)) attr(data, "age") else age))
 
     } else if (sitype == 'fleets') {
         compare_cols(names(data), c("year", "step", "area", "length", "number"))
-        length <- c(...)['length']
+        if (is.null(fleetnames)) {
+            stop("Expected vector of fleetnames for effort surveyindices")
+        }
         si_cols <- list(
-            lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name),
+            lenaggfile  = agg_file(
+                'len',
+                fname_prefix(sys.call(0), name),
                 if(is.null(length)) attr(data, "length") else length),
-            fleetnames = c(...)['fleetnames'])
+            fleetnames = fleetnames)
 
     } else if (sitype == 'acoustic') {
         compare_cols(names(data), c("year", "step", "area", NA, NA))
-        si_cols <- list(surveynames = c(...)['surveynames'])
+        if (is.null(surveynames)) {
+            stop("Expected vector of surveynames for acoustic surveyindices")
+        }
+        si_cols <- list(surveynames = surveynames)
 
     } else if (sitype == 'effort') {
         compare_cols(names(data), c("year", "step", "area", NA, NA))
-        si_cols <- list(fleetnames = c(...)['fleetnames'])
+        if (is.null(fleetnames)) {
+            stop("Expected vector of fleetnames for effort surveyindices")
+        }
+        si_cols <- list(fleetnames = fleetnames)
 
     } else {
         stop("Unknown sitype", sitype)
@@ -220,15 +240,15 @@ gadget_surveyindices_component <- function (
     # Mix in other default columns
     return(c(
         list(
-            datafile = gadget_file(fname('Data',
-                fname_prefix(sys.call(0), name), sitype), data=data),
+            datafile = gadget_file(fname('Data', fname_prefix(sys.call(0), name), sitype), data=data),
             sitype = sitype,
             biomass = biomass,
-            areaaggfile = agg_file('area', fname_prefix(sys.call(0), name),
-                if(is.null(area)) attr(data, "area") else area)),
+            areaaggfile = agg_file('area', fname_prefix(sys.call(0), name), if(is.null(area)) attr(data, "area") else area)),
         si_cols,
-        list(stocknames = c(...)[grep('stocknames',names(c(...)))]),
-        na.omit(c(...)[c('fittype', 'slope', 'intercept')]),
+        if (is.null(stocknames)) c() else list(stocknames = stocknames),
+        if (is.null(fittype)) c() else list(fittype = fittype),
+        if (is.null(slope)) c() else list(slope = slope),
+        if (is.null(intercept)) c() else list(intercept = intercept),
         NULL))
 }
 

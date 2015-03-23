@@ -325,36 +325,118 @@ ok_group("Aggregation files", {
 
 ###############################################################################
 ok_group("surveyindices", {
-    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'lengths', fittype = 'linearfit', data = structure(
-        data.frame(year = 1998, step = 1:2, area = 101, length = c(100,200), number = c(2,4)),
-        area = list(all = 101),
-        length = list(len100 = c(100,500))))
+    cmp_component <- function (comp, ...) {
+        gd <- gadget_directory(tempfile())
+        gadget_dir_write(gd, comp)
+        cmp_file(gd, "likelihood", ...)
+    }
+
+    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'lengths', fittype = 'linearfit',
+        data = structure(
+            data.frame(year = 1998, step = 1:2, area = 101, length = c(100,200), number = c(2,4)),
+            area = list(all = 101),
+            length = list(len100 = c(100,500))))
     ok(cmp(class(component)[[1]], 'gadget_surveyindices_component'), "Made lengths sitype")
+    ok(cmp_component(component,
+        ver_string,
+        "; ",
+        "[component]",
+        "name\tsi",
+        "weight\t0",
+        "type\tsurveyindices",
+        "datafile\tData/surveyindices.si.lengths",
+        "sitype\tlengths",
+        "biomass\t0",
+        "areaaggfile\tAggfiles/surveyindices.si.area.agg",
+        "lenaggfile\tAggfiles/surveyindices.si.len.agg",
+        "fittype\tlinearfit",
+        NULL), "Wrote component with lengths sitype")
 
-    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'ages', fittype = 'linearfit', data = structure(
-        data.frame(year = 1998, step = 1:2, area = 101, age = c(100,200), number = c(2,4)),
-        area = list(all = 101),
-        age = list(age100 = c(100,500))))
+    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'ages', fittype = 'linearfit',
+        data = structure(
+            data.frame(year = 1998, step = 1:2, area = 101, age = c(100,200), number = c(2,4)),
+            area = list(all = 101),
+            age = list(age100 = c(100,500))))
     ok(cmp(class(component)[[1]], 'gadget_surveyindices_component'), "Made ages sitype")
+    ok(cmp_component(component,
+        ver_string,
+        "; ",
+        "[component]",
+        "name\tsi",
+        "weight\t0",
+        "type\tsurveyindices",
+        "datafile\tData/surveyindices.si.ages",
+        "sitype\tages",
+        "biomass\t0",
+        "areaaggfile\tAggfiles/surveyindices.si.area.agg",
+        "ageaggfile\tAggfiles/surveyindices.si.age.agg",
+        "fittype\tlinearfit",
+        NULL), "Wrote component with ages sitype")
 
-    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'fleets', fittype = 'linearfit', data = structure(
-        data.frame(year = 1998, step = 1:2, area = 101, length = c(100,200), number = c(2,4)),
-        area = list(all = 101),
-        fleetnames = c("cuthbert", "dibble"),
-        length = list(len100 = c(100,500))))
+    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'fleets', fittype = 'linearfit',
+        data = structure(
+            data.frame(year = 1998, step = 1:2, area = 101, length = c(100,200), number = c(2,4)),
+            area = list(all = 101),
+            length = list(len100 = c(100,500))),
+        fleetnames = c("cuthbert", "dibble"))
     ok(cmp(class(component)[[1]], 'gadget_surveyindices_component'), "Made fleets sitype")
+    ok(cmp_component(component,
+        ver_string,
+        "; ",
+        "[component]",
+        "name\tsi",
+        "weight\t0",
+        "type\tsurveyindices",
+        "datafile\tData/surveyindices.si.fleets",
+        "sitype\tfleets",
+        "biomass\t0",
+        "areaaggfile\tAggfiles/surveyindices.si.area.agg",
+        "lenaggfile\tAggfiles/surveyindices.si.len.agg",
+        "fleetnames\tcuthbert\tdibble",
+        "fittype\tlinearfit",
+        NULL), "Wrote component with fleets sitype")
 
-    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'acoustic', fittype = 'linearfit', data = structure(
-        data.frame(year = 1998, step = 1:2, area = 101, survey = c(100,200), acoustic = c(2,4)),
-        area = list(all = 101),
-        surveynames = c("cuthbert", "dibble")))
+    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'acoustic', fittype = 'linearfit',
+        data = structure(
+            data.frame(year = 1998, step = 1:2, area = 101, survey = c(100,200), acoustic = c(2,4)),
+            area = list(all = 101)),
+        surveynames = c("cuthbert", "dibble"))
     ok(cmp(class(component)[[1]], 'gadget_surveyindices_component'), "Made acoustic sitype")
+    ok(cmp_component(component,
+        ver_string,
+        "; ",
+        "[component]",
+        "name\tsi",
+        "weight\t0",
+        "type\tsurveyindices",
+        "datafile\tData/surveyindices.si.acoustic",
+        "sitype\tacoustic",
+        "biomass\t0",
+        "areaaggfile\tAggfiles/surveyindices.si.area.agg",
+        "surveynames\tcuthbert\tdibble",
+        "fittype\tlinearfit",
+        NULL), "Wrote component with acoustic sitype")
 
-    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'effort', fittype = 'linearfit', data = structure(
-        data.frame(year = 1998, step = 1:2, area = 101, fleet = c(100,200), effort = c(2,4)),
-        area = list(all = 101),
-        surveynames = c("cuthbert", "dibble")))
+    component <- gadget_likelihood_component('surveyindices', name = 'si', sitype = 'effort', fittype = 'linearfit',
+        data = structure(
+            data.frame(year = 1998, step = 1:2, area = 101, fleet = c(100,200), effort = c(2,4)),
+            area = list(all = 101)),
+        fleetnames = c("cuthbert", "dibble"))
     ok(cmp(class(component)[[1]], 'gadget_surveyindices_component'), "Made effort sitype")
+    ok(cmp_component(component,
+        ver_string,
+        "; ",
+        "[component]",
+        "name\tsi",
+        "weight\t0",
+        "type\tsurveyindices",
+        "datafile\tData/surveyindices.si.effort",
+        "sitype\teffort",
+        "biomass\t0",
+        "areaaggfile\tAggfiles/surveyindices.si.area.agg",
+        "fleetnames\tcuthbert\tdibble",
+        "fittype\tlinearfit",
+        NULL), "Wrote component with effort sitype")
 
 })
 
