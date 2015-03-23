@@ -90,6 +90,10 @@ mfdb_send <- function(mdb, ..., result = "") {
     if (class(mdb$db) == 'dbNull') {
         cat(query)
         cat("\n")
+        if (is.function(result)) {
+            result(mdb$ret_rows, 0)
+            return(invisible(NULL))
+        }
         if (result == "rowcount") return(mdb$ret_rowcount)
         if (result == "rows") return(mdb$ret_rows)
         return(mdb$ret_recordset)
@@ -97,6 +101,15 @@ mfdb_send <- function(mdb, ..., result = "") {
 
     res <- dbSendQuery(mdb$db, query)
 
+    if (is.function(result)) {
+        offset <- 0
+        while (!DBI::dbHasCompleted(res)) {
+            result(DBI::dbFetch(res, n = 1000), offset)
+            offset <- offset + 1000
+        }
+        dbClearResult(res)
+        return(invisible(NULL))
+    }
     if (result == "rowcount") {
         out <- DBI::dbGetRowsAffected(res)
         dbClearResult(res)

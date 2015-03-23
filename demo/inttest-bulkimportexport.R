@@ -31,13 +31,13 @@ mfdb_import_survey_index(mdb, data_source = 'acoustic_index1', data.frame(
 mfdb_import_survey(mdb,
     data_source = 'cell3',
     data.frame(
-        year = c('1998'),
-        month = c(1:12),
+        year = rep(1900:1999, each = 12),  # NB: Buckets of data so we exercise batching
+        month = rep(c(1:12), 100),
         areacell = c('45G03'),
         species = c('COD'),
-        #          -----Q1----- -----Q2----- -----Q3----- -----Q4-----
-        length = c(213,253,333, 313,133,343, 163,363,233, 333,133,323 ),
-        count =  c(  2,  1,  2,   1,  2,  1,   1,  2,  1,   2,  1,  2 )))
+        #              -----Q1----- -----Q2----- -----Q3----- -----Q4-----
+        length = rep(c(213,253,333, 313,133,343, 163,363,233, 333,133,323 ), 100),
+        count =  rep(c(  2,  1,  2,   1,  2,  1,   1,  2,  1,   2,  1,  2 ), 100)))
 mfdb_import_stomach(mdb,
     data_source = "cod2000",
     predator_data = table_string("
@@ -68,7 +68,7 @@ E               CAP             1                       1.4     10      1
 
 ok(cmp(
     mfdb_sample_count(mdb, c(), params = list())[[1]][,'number'],
-    sum( 2,  1,  2,   1,  2,  1,   1,  2,  1,   2,  1,  2 )), "Sample rows all intact")
+    sum( 2,  1,  2,   1,  2,  1,   1,  2,  1,   2,  1,  2 ) * 100), "Sample rows all intact")
 
 ok(cmp(
     mfdb_stomach_presenceratio(mdb, c(), params = list(prey_species = 'CAP'))[[1]][,'ratio'],
@@ -86,7 +86,7 @@ mdb <- mfdb('Test', db_params = db_params, save_temp_tables = TRUE)
 mfdb_cs_restore(mdb, dump_dir)
 ok(cmp(
     mfdb_sample_count(mdb, c(), params = list())[[1]][,'number'],
-    sum( 2,  1,  2,   1,  2,  1,   1,  2,  1,   2,  1,  2 )), "Sample rows all intact (after first import)")
+    sum( 2,  1,  2,   1,  2,  1,   1,  2,  1,   2,  1,  2 ) * 100), "Sample rows all intact (after first import)")
 ok(cmp(
     mfdb_stomach_presenceratio(mdb, c(), params = list(prey_species = 'CAP'))[[1]][,'ratio'],
     4 / 6), "Stomach rows all intact (after first import)")
@@ -98,7 +98,7 @@ ok(cmp(
 mfdb_cs_restore(mdb, dump_dir)
 ok(cmp(
     mfdb_sample_count(mdb, c(), params = list())[[1]][,'number'],
-    sum( 2,  1,  2,   1,  2,  1,   1,  2,  1,   2,  1,  2 )), "Sample rows all intact (after second import)")
+    sum( 2,  1,  2,   1,  2,  1,   1,  2,  1,   2,  1,  2 ) * 100), "Sample rows all intact (after second import)")
 ok(cmp(
     mfdb_stomach_presenceratio(mdb, c(), params = list(prey_species = 'CAP'))[[1]][,'ratio'],
     4 / 6), "Stomach rows all intact (after second import)")

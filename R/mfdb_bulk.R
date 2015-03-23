@@ -7,18 +7,21 @@ mfdb_cs_dump <- function(mdb, directory) {
 
     for (table_name in c(mfdb_cs_taxonomy, mfdb_measurement_tables)) {
         mdb$logger$info(paste0("Dumping table ", table_name))
-        data_out <- mfdb_fetch(mdb,
+        mfdb_send(mdb,
             "SELECT * FROM ", table_name,
             ifelse(
                 table_name == "prey",
                 " WHERE predator_id IN (SELECT predator_id FROM predator WHERE case_study_id = ",
                 " WHERE (case_study_id = "),
-            sql_quote(mdb$case_study_id), ")")
-
-        write.table(
-            data_out,
-            file = file.path(directory, table_name),
-            fileEncoding = "UTF-8")
+            sql_quote(mdb$case_study_id), ")",
+            result = function (data_out, offset) {
+                write.table(
+                    data_out,
+                    file = file.path(directory, table_name),
+                    append = (offset > 0),
+                    col.names = (offset == 0),
+                    fileEncoding = "UTF-8")
+        })
     }
 }
 
@@ -96,6 +99,10 @@ mfdb_cs_restore <- function(mdb, directory) {
                 "SELECT pg_catalog.setval(",
                 "pg_get_serial_sequence(", sql_quote(table_name), ",", sql_quote(id_col),"),",
                 "MAX(", id_col, ")) FROM ", table_name)
+
+            # Get rid of data and free some memory
+            rm(data_in)
+            gc()
         }
     }))
 }
