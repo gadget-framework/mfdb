@@ -1,5 +1,6 @@
     Unreleased
 
+    * Support grouping of taxonomy items
     * Allow import/export to tarball as well as directory
     * Don't write files in one go when bulk exporting
     * Fix surveyindices likelihood component, should be able to output multiple stocknames

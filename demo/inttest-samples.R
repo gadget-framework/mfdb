@@ -405,6 +405,26 @@ ok_group("Filtering of samples", {
                 mean(c( 10, 50, 30, 10, 35, 46,  65, 62, 36, 35, 34, 22))),
             stringsAsFactors = FALSE)),
        "Can group by species (just COD)")
+    ok(cmp(
+        mfdb_sample_meanlength(mdb, c('species'), list(
+            species = mfdb_group(codhad = c('COD', 'HAD')),
+            year = 1998:2000))[["0.0.0.0"]][,c("year", "step", "area", "species", "number", "mean")],
+        data.frame(
+            year = c(1998),
+            step = c("all"),
+            area = c("all"),
+            species = c("codhad"),
+            number = c(24),
+            mean = mean(c(
+                    c( 10, 50, 30, 10, 35, 46,  65, 62, 36, 35, 34, 22),
+                    c( 35, 64, 23, 13, 99, 83,  54, 23, 65, 12, 22,  9),
+                    NULL)),
+            stringsAsFactors = FALSE)),
+       "Can group by species (COD & HAD combined)")
+    ok(cmp_error(
+        mfdb_sample_meanlength(mdb, c('species'), list(
+            species = mfdb_group(codhad = c('COD', 'HAD'), hand = c('HAND')),
+            year = 1998:2000)), "HAND"), "Notice and report items not in vocabulary")
 })
 
 ok_group("Invalid parameters", {

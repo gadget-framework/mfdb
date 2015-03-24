@@ -15,8 +15,8 @@ mfdb_group <- function (...) {
 
 pre_query.mfdb_group <- function(mdb, x, col) {
     group <- x
-    datatype <- "INT"
     lookup <- gsub('(.*\\.)|_id', '', col)
+    datatype <- ifelse(lookup == "species", "BIGINT", "INT")
 
     # If the table already exists, nothing to do
     if (mfdb_table_exists(mdb, attr(x, 'table_name'))) {
@@ -52,6 +52,27 @@ pre_query.mfdb_group <- function(mdb, x, col) {
                 divisions <- divisions[duplicated(divisions)]
             }
         }
+    } else if (lookup %in% mfdb_taxonomy || lookup %in% mfdb_cs_taxonomy) {
+        str(denormalized$value)
+        new_levels <- mfdb_fetch(mdb,
+            "SELECT name, ", lookup, "_id",
+            " FROM ", lookup,
+            if(lookup %in% mfdb_cs_taxonomy) c(" WHERE case_study_id = ", mdb$case_study_id),
+            NULL)
+        rownames(new_levels) <- new_levels$name
+        new_levels <- new_levels[denormalized$value, paste0(lookup, '_id')]
+        if (anyNA(new_levels)) {
+            mismatches <- denormalized$value[is.na(new_levels)]
+            stop("Input data has items that don't match ", lookup, " vocabulary: ",
+                paste(head(mismatches, n = 50), collapse = ","),
+                ifelse(length(mismatches) > 50, ', ...', ''),
+                NULL)
+        }
+
+        mfdb_insert(mdb, attr(x, 'table_name'), data.frame(
+            sample = denormalized$sample,
+            name = denormalized$name,
+            value = new_levels))
     } else {
         # Populate table based on denormalized group
         mfdb_insert(mdb, attr(x, 'table_name'), denormalized)
@@ -125,6 +146,7 @@ agg_summary.mfdb_bootstrap_group <- function(mdb, x, col, outputname, data) {
     if (length(data$bssample) < 1) stop("Need some data to know which group was used")
 
     # Pick out the list for this sample
+    # TODO: This can't work. Groups are numbered, but get in "0.0.0.2". "0.0.0.2" --> 2?
     as.list(x[[data$bssample[[1]]]])
 }
 
