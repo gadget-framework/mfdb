@@ -223,6 +223,16 @@ mfdb_create_indexes <- function(mdb) {
            })
    }
 
+   mfdb_create_aggregate(mdb, "WEIGHTED_MEAN",
+       input_type = c("numeric", "numeric"), # value, weight
+       state_type = "numeric[2]",
+       init_cond = "{0,0}",  # Total, count
+       accum_body = "$$ SELECT ARRAY [
+         $1[1] + $2 * $3,
+         $1[2] + $3
+       ] $$ LANGUAGE 'sql'",
+       final_body = "$$ SELECT $1[1] / $1[2] $$ LANGUAGE 'sql'",
+   )
    mdb$logger$info("Creating indexes")
 }
 

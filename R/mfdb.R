@@ -288,6 +288,46 @@ mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
     }
 }
 
+# Create accum & final functions, turn into aggregate function
+mfdb_create_aggregate <- function(mdb, func_name, accum_body, final_body,
+        init_cond = '{0,0}',
+        input_type = c("numeric", "numeric"),
+        state_type = "numeric[2]",
+        return_type = "numeric") {
+
+    mfdb_send(mdb,
+        "CREATE OR REPLACE FUNCTION ", func_name, "_accum(",
+        "p ", state_type,
+        ", ", paste0(
+            c("n", "n"),
+            seq_len(length(input_type)),
+            c(" ", " "),
+            input_type,
+            collapse = ", "),
+        ") RETURNS ", state_type, " AS ", accum_body, " IMMUTABLE;");
+
+    mfdb_send(mdb,
+        "CREATE OR REPLACE FUNCTION ", func_name, "_final(",
+        "p ", state_type,
+        ") RETURNS ", return_type, " AS ", final_body, " IMMUTABLE;");
+
+    # (re)create aggregate function
+    mfdb_send(mdb,
+        "DROP AGGREGATE IF EXISTS ", func_name,
+        "(", paste0(input_type, collapse = ","), ")",
+        NULL)
+    mfdb_send(mdb,
+        "CREATE AGGREGATE ", func_name,
+        "(", paste0(input_type, collapse = ","), ")",
+        " (SFUNC=", func_name, "_accum",
+        ", STYPE=", state_type,
+        ", FINALFUNC=", func_name, "_final",
+        ", INITCOND=", sql_quote(init_cond),
+        ");")
+
+    invisible(NULL)
+}
+
 # Execute code block within a DB transaction, roll back on error, commit otherwise
 mfdb_transaction <- function(mdb, transaction) {
     if (class(mdb$db) == 'dbNull') {
