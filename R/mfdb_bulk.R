@@ -11,7 +11,7 @@ mfdb_cs_dump <- function(mdb, out_location) {
             cat("", file = out_location)  # normalizePath requires existant file
             out_tar <- normalizePath(out_location)
             setwd(temp_output)
-            
+
             ret <- tar(out_tar, ".", compression = c(
                 ".tgz" = "gzip",
                 ".tar" = FALSE,
@@ -19,7 +19,6 @@ mfdb_cs_dump <- function(mdb, out_location) {
                 ".tar.bzip2" = "bzip2",
                 ".tar.xz" = "xz",
                 NULL)[[tar_extn]], tar = "internal")
-            str(ret)
         }, finally = setwd(old_dir))
         return(invisible(NULL))
     }

@@ -53,7 +53,6 @@ pre_query.mfdb_group <- function(mdb, x, col) {
             }
         }
     } else if (lookup %in% mfdb_taxonomy || lookup %in% mfdb_cs_taxonomy) {
-        str(denormalized$value)
         new_levels <- mfdb_fetch(mdb,
             "SELECT name, ", lookup, "_id",
             " FROM ", lookup,
