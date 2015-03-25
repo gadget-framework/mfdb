@@ -88,7 +88,6 @@ mfdb_sample_meanlength <- function (mdb, cols, params, scale_index = NULL) {
 
 # Return year,step,area,age,number (# of samples),mean (length), stddev (length)
 mfdb_sample_meanlength_stddev <- function (mdb, cols, params, scale_index = NULL) {
-    # SCHEMA: Need a weighted stddev function
     # TODO: Do we need to know the resolution of the input data to avoid oversampling?
     abundance <- abundance_core_table(mdb, scale_index)
     out <- mfdb_sample_grouping(mdb,
@@ -98,7 +97,7 @@ mfdb_sample_meanlength_stddev <- function (mdb, cols, params, scale_index = NULL
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
             paste0("WEIGHTED_MEAN(c.length::numeric, ", abundance[[2]], "::numeric) AS mean"),
-            "0 AS stddev",
+            paste0("WEIGHTED_STDDEV(c.length::numeric, ", abundance[[2]], "::numeric) AS stddev"), # TODO: Should take length_var into account
             NULL),
         generator = "mfdb_sample_meanlength_stddev")
     out
@@ -121,7 +120,6 @@ mfdb_sample_meanweight <- function (mdb, cols, params, scale_index = NULL) {
 
 # Return year,step,area,age,number (# of samples),mean (weight), stddev (weight)
 mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL) {
-    # SCHEMA: Don't have weight_stddev, aggregation function
     abundance <- abundance_core_table(mdb, scale_index)
     out <- mfdb_sample_grouping(mdb,
         params = params,
@@ -130,7 +128,7 @@ mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
             paste0("WEIGHTED_MEAN(c.weight::numeric, ", abundance[[2]], "::numeric) AS mean"),
-            "0 AS stddev",
+            paste0("WEIGHTED_STDDEV(c.weight::numeric, ", abundance[[2]], "::numeric) AS stddev"), # TODO: Should take weight_var into account
             NULL),
         generator = "mfdb_sample_meanweight_stddev")
     out

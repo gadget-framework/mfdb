@@ -82,7 +82,7 @@ ok_group("Unaggregated length / weight / age samples", {
                 age = c("all"),
                 number = c(5, 4),
                 mean = c(26.2, 31.75),
-                stddev = c(0), # TODO:
+                stddev = c(15.880806, 6.551081),
                 stringsAsFactors = FALSE),
             year = as.list(structure(1998:2000, names = 1998:2000)),
             step = mfdb_timestep_biannually,
@@ -133,7 +133,7 @@ ok_group("Unaggregated length / weight / age samples", {
                 age = c("all"),
                 number = c(1, 2),
                 mean = c(500, 485),
-                stddev = c(0), # TODO:
+                stddev = c(NA, 233.3452),
                 stringsAsFactors = FALSE),
             year = as.list(structure(1998:2000, names = 1998:2000)),
             step = mfdb_timestep_biannually,

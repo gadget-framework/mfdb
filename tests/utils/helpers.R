@@ -9,7 +9,7 @@ print.stringvec <- function(x, ...) {
 }
 
 cmp <- function(a, b) {
-    if(identical(all.equal(a,b), TRUE)) return(TRUE)
+    if(identical(all.equal(a,b, tolerance = 1e-6), TRUE)) return(TRUE)
 
     if (file.exists(Sys.which('git'))) {
         totmp <- function(x) {
