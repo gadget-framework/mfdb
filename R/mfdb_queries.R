@@ -36,8 +36,8 @@ mfdb_survey_index_mean <- function (mdb, cols, params) {
         generator = "mfdb_survey_index_mean")
 }
 
-abundance_core_table <- function (mdb, abundance_index) {
-    if (is.null(abundance_index)) {
+abundance_core_table <- function (mdb, scale_index) {
+    if (is.null(scale_index)) {
         return(c("sample", "c.count"))
     } else {
         return(c(paste0(
@@ -47,20 +47,20 @@ abundance_core_table <- function (mdb, abundance_index) {
                 "(SELECT index_type_id",
                 " FROM index_type",
                 " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-                " AND name = ", sql_quote(abundance_index),
+                " AND name = ", sql_quote(scale_index),
                 ")",
             " AND sam.case_study_id = si.case_study_id",
             " AND sam.areacell_id = si.areacell_id",
             " AND sam.year = si.year",
             " AND sam.month = si.month",
             " GROUP BY 1",
-            ")"), "c.abundance"))
+            ")"), "c.count * c.abundance"))
     }
 }
 
 # Return year, step, area, ... , number (of samples)
-mfdb_sample_count <- function (mdb, cols, params, abundance_index = NULL) {
-    abundance <- abundance_core_table(mdb, abundance_index)
+mfdb_sample_count <- function (mdb, cols, params, scale_index = NULL) {
+    abundance <- abundance_core_table(mdb, scale_index)
     mfdb_sample_grouping(mdb,
         params = params,
         core_table = abundance[[1]],
@@ -72,8 +72,8 @@ mfdb_sample_count <- function (mdb, cols, params, abundance_index = NULL) {
 }
 
 # Return year,step,area,age,number (# of samples),mean (length)
-mfdb_sample_meanlength <- function (mdb, cols, params, abundance_index = NULL) {
-    abundance <- abundance_core_table(mdb, abundance_index)
+mfdb_sample_meanlength <- function (mdb, cols, params, scale_index = NULL) {
+    abundance <- abundance_core_table(mdb, scale_index)
     out <- mfdb_sample_grouping(mdb,
         params = params,
         core_table = abundance[[1]],
@@ -87,10 +87,10 @@ mfdb_sample_meanlength <- function (mdb, cols, params, abundance_index = NULL) {
 }
 
 # Return year,step,area,age,number (# of samples),mean (length), stddev (length)
-mfdb_sample_meanlength_stddev <- function (mdb, cols, params, abundance_index = NULL) {
+mfdb_sample_meanlength_stddev <- function (mdb, cols, params, scale_index = NULL) {
     # SCHEMA: Need a weighted stddev function
     # TODO: Do we need to know the resolution of the input data to avoid oversampling?
-    abundance <- abundance_core_table(mdb, abundance_index)
+    abundance <- abundance_core_table(mdb, scale_index)
     out <- mfdb_sample_grouping(mdb,
         params = params,
         core_table = abundance[[1]],
@@ -105,8 +105,8 @@ mfdb_sample_meanlength_stddev <- function (mdb, cols, params, abundance_index = 
 }
 
 # Return year,step,area,age,number (# of samples),mean (weight)
-mfdb_sample_meanweight <- function (mdb, cols, params, abundance_index = NULL) {
-    abundance <- abundance_core_table(mdb, abundance_index)
+mfdb_sample_meanweight <- function (mdb, cols, params, scale_index = NULL) {
+    abundance <- abundance_core_table(mdb, scale_index)
     out <- mfdb_sample_grouping(mdb,
         params = params,
         core_table = abundance[[1]],
@@ -120,9 +120,9 @@ mfdb_sample_meanweight <- function (mdb, cols, params, abundance_index = NULL) {
 }
 
 # Return year,step,area,age,number (# of samples),mean (weight), stddev (weight)
-mfdb_sample_meanweight_stddev <- function (mdb, cols, params, abundance_index = NULL) {
+mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL) {
     # SCHEMA: Don't have weight_stddev, aggregation function
-    abundance <- abundance_core_table(mdb, abundance_index)
+    abundance <- abundance_core_table(mdb, scale_index)
     out <- mfdb_sample_grouping(mdb,
         params = params,
         core_table = abundance[[1]],

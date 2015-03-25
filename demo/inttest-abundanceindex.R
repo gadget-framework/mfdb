@@ -106,7 +106,7 @@ ok_group("Using a survey_index as measure of abundance", {
         #              -----Q1----- -----Q2----- -----Q3----- -----Q4-----
         value =      c(124,123,122, 121,120,119, 118,117,116, 115,114,113 )))
 
-    # Without setting an abundance_index, we use the count from the raw data for totals and means
+    # Without setting an scale_index, we use the count from the raw data for totals and means
     area_group <- mfdb_group(divA = c("divA"))
     length_group <- mfdb_interval("len", seq(0, 500, by = 100))
     ok(cmp(
@@ -157,7 +157,7 @@ ok_group("Using a survey_index as measure of abundance", {
             year = 1998,
             area = area_group,
             timestep = mfdb_timestep_quarterly,
-            length = length_group), abundance_index = 'acoustic')[[1]]),
+            length = length_group), scale_index = 'acoustic')[[1]]),
         data.frame(
                 year = c(1998),
                 step = as.character(c(1,1,1,2,2,2,3,3,3,4,4)),
@@ -169,26 +169,26 @@ ok_group("Using a survey_index as measure of abundance", {
                     "len100", "len200",
                     NULL),
                 number = c(
-                    12 + 24,  11,               10 + 23 + 22,
-                    9,        8 + 21 + 20 + 19, 7,
-                    6 + 16,   5 + 17,           4 + 18,
-                    1 + 13,   2 + 3 + 14 + 15,
+                    2*12 + 2*24,  1*11,                     2*10 + 1*23 + 2*22,
+                    1*9,          2*8 + 1*21 + 2*20 + 1*19, 1*7,
+                    1*6 + 1*16,   2*5 + 2*17,               1*4 + 1*18,
+                    2*1 + 2*13,   1*2 + 2*3 + 1*14 + 2*15,
                     NULL),
                 mean = c(
-                    weighted.mean(c(111, 112), c(12, 24)), # len100 results in Q1
-                    weighted.mean(c(251), c(9)), # len200 results in Q1
-                    weighted.mean(c(331, 352, 332), c(10, 23, 22)), # len300 results in Q1
+                    weighted.mean(c(111, 112), c(2*12, 2*24)), # len100 results in Q1
+                    weighted.mean(c(251), c(1*11)), # len200 results in Q1
+                    weighted.mean(c(331, 352, 332), c(2*10, 1*23, 2*22)), # len300 results in Q1
 
-                    weighted.mean(c(111), c(9)), # len100 results in Q2 . . .
-                    weighted.mean(c(231, 212, 232, 242), c(8, 21, 20, 19)),
-                    weighted.mean(c(341), c(7)),
+                    weighted.mean(c(111), c(1*9)), # len100 results in Q2 . . .
+                    weighted.mean(c(231, 212, 232, 242), c(2*8, 1*21, 2*20, 1*19)),
+                    weighted.mean(c(341), c(1*7)),
 
-                    weighted.mean(c(161, 132), c(6, 16)),
-                    weighted.mean(c(261, 262), c(5, 17)),
-                    weighted.mean(c(331, 362), c(4, 18)),
+                    weighted.mean(c(161, 132), c(1*6, 1*16)),
+                    weighted.mean(c(261, 262), c(2*5, 2*17)),
+                    weighted.mean(c(331, 362), c(1*4, 1*18)),
 
-                    weighted.mean(c(121, 122), c(1, 13)),
-                    weighted.mean(c(231, 231, 232, 232), c(2, 3, 14, 15)),
+                    weighted.mean(c(121, 122), c(2*1, 2*13)),
+                    weighted.mean(c(231, 231, 232, 232), c(1*2, 2*3, 1*14, 2*15)),
                     NULL),
                 stringsAsFactors = FALSE)), "Used acoustic index instead of count")
 
@@ -205,7 +205,7 @@ ok_group("Using a survey_index as measure of abundance", {
             year = 1998,
             area = area_group,
             timestep = mfdb_timestep_quarterly,
-            length = length_group), abundance_index = 'acoustic')[[1]]),
+            length = length_group), scale_index = 'acoustic')[[1]]),
         data.frame(
                 year = c(1998),
                 step = as.character(c(1,1,1,2,2,2,3,3,3,4,4)),
@@ -217,26 +217,26 @@ ok_group("Using a survey_index as measure of abundance", {
                     "len100", "len200",
                     NULL),
                 number = c(
-                    avg(12,52) + 24,  avg(11,51),               avg(10,50) + 23 + 22,
-                    avg(9,59),        avg(8,58) + 21 + 20 + 19, avg(7,57),
-                    avg(6,56) + 16,   avg(5,55) + 17,           avg(4,54) + 18,
-                    avg(1,51) + 13,   avg(2,52) + avg(3,53) + 14 + 15,
+                    2*avg(12,52) + 2*24,  1*avg(11,51),               2*avg(10,50) + 1*23 + 2*22,
+                    1*avg(9,59),          2*avg(8,58) + 1*21 + 2*20 + 1*19, 1*avg(7,57),
+                    1*avg(6,56) + 1*16,   2*avg(5,55) + 2*17,           1*avg(4,54) + 1*18,
+                    2*avg(1,51) + 2*13,   1*avg(2,52) + 2*avg(3,53) + 1*14 + 2*15,
                     NULL),
                 mean = c(
-                    weighted.mean(c(111, 112), c(avg(12,52), 24)),
-                    weighted.mean(c(251), c(avg(9,59))),
-                    weighted.mean(c(331, 352, 332), c(avg(10,50), 23, 22)),
+                    weighted.mean(c(111, 112), c(2*avg(12,52), 2*24)),
+                    weighted.mean(c(251), c(1*avg(11,51))),
+                    weighted.mean(c(331, 352, 332), c(2*avg(10,50), 1*23, 2*22)),
 
-                    weighted.mean(c(111), c(avg(9,59))),
-                    weighted.mean(c(231, 212, 232, 242), c(avg(8,58), 21, 20, 19)),
-                    weighted.mean(c(341), c(avg(7,57))),
+                    weighted.mean(c(111), c(1*avg(9,59))),
+                    weighted.mean(c(231, 212, 232, 242), c(2*avg(8,58), 1*21, 2*20, 1*19)),
+                    weighted.mean(c(341), c(1*avg(7,57))),
 
-                    weighted.mean(c(161, 132), c(avg(6,56), 16)),
-                    weighted.mean(c(261, 262), c(avg(5,55), 17)),
-                    weighted.mean(c(331, 362), c(avg(4,54), 18)),
+                    weighted.mean(c(161, 132), c(1*avg(6,56), 1*16)),
+                    weighted.mean(c(261, 262), c(2*avg(5,55), 2*17)),
+                    weighted.mean(c(331, 362), c(1*avg(4,54), 1*18)),
 
-                    weighted.mean(c(121, 122), c(avg(1,51), 13)),
-                    weighted.mean(c(231, 231, 232, 232), c(avg(2,52), avg(3,53), 14, 15)),
+                    weighted.mean(c(121, 122), c(2*avg(1,51), 2*13)),
+                    weighted.mean(c(231, 231, 232, 232), c(1*avg(2,52), 2*avg(3,53), 1*14, 2*15)),
                     NULL),
                 stringsAsFactors = FALSE)), "Took mean of multiple index values")
 })
@@ -255,7 +255,7 @@ ok_group("Missing values in a survey_index", {
             year = 1998,
             area = area_group,
             timestep = mfdb_timestep_quarterly,
-            length = length_group), abundance_index = 'acoustic')[[1]]),
+            length = length_group), scale_index = 'acoustic')[[1]]),
         data.frame(
                 year = c(1998),
                 step = as.character(c(1,1,1,2,2,2,3,3,3,4,4)),
@@ -267,26 +267,26 @@ ok_group("Missing values in a survey_index", {
                     "len100", "len200",
                     NULL),
                 number = c(
-                    avg(12,52) + 24,  avg(11,51),               avg(10,50) + 23 + 22,
-                    avg(9,59),        avg(8,58) + 21 + 20, avg(7,57),
-                    avg(6,56) + 16,   avg(5,55),           avg(4,54) + 18,
-                    avg(1,51),   avg(2,52) + avg(3,53),
+                    2*avg(12,52) + 2*24, 1*avg(11,51),               2*avg(10,50) + 1*23 + 2*22,
+                    1*avg(9,59),         2*avg(8,58) + 1*21 + 2*20,  1*avg(7,57),
+                    1*avg(6,56) + 1*16,  2*avg(5,55),                1*avg(4,54) + 1*18,
+                    2*avg(1,51),         1*avg(2,52) + 2*avg(3,53),
                     NULL),
                 mean = c(
-                    weighted.mean(c(111, 112), c(avg(12,52), 24)),
-                    weighted.mean(c(251), c(avg(9,59))),
-                    weighted.mean(c(331, 352, 332), c(avg(10,50), 23, 22)),
+                    weighted.mean(c(111, 112), c(2*avg(12,52), 2*24)),
+                    weighted.mean(c(251), c(1*avg(11,51))),
+                    weighted.mean(c(331, 352, 332), c(2*avg(10,50), 1*23, 2*22)),
 
-                    weighted.mean(c(111), c(avg(9,59))),
-                    weighted.mean(c(231, 212, 232), c(avg(8,58), 21, 20)),
-                    weighted.mean(c(341), c(avg(7,57))),
+                    weighted.mean(c(111), c(1*avg(9,59))),
+                    weighted.mean(c(231, 212, 232), c(2*avg(8,58), 1*21, 2*20)),
+                    weighted.mean(c(341), c(1*avg(7,57))),
 
-                    weighted.mean(c(161, 132), c(avg(6,56), 16)),
-                    weighted.mean(c(261), c(avg(5,55))),
-                    weighted.mean(c(331, 362), c(avg(4,54), 18)),
+                    weighted.mean(c(161, 132), c(1*avg(6,56), 1*16)),
+                    weighted.mean(c(261), c(2*avg(5,55))),
+                    weighted.mean(c(331, 362), c(1*avg(4,54), 1*18)),
 
-                    weighted.mean(c(121), c(avg(1,51))),
-                    weighted.mean(c(231, 231), c(avg(2,52), avg(3,53))),
+                    weighted.mean(c(121), c(2*avg(1,51))),
+                    weighted.mean(c(231, 231), c(1*avg(2,52), 2*avg(3,53))),
                     NULL),
                 stringsAsFactors = FALSE)), "Took mean of multiple index values")
 })
