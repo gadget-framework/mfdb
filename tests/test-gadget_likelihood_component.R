@@ -35,7 +35,7 @@ ok_group("Can use as.character on gadget_likelihood_components", {
 })
 
 ok_group("Can nest data.frame in a list", {
-    df <- data.frame(year = 1, step = 1, area = 1, fleet = 1, biomass = 1)
+    df <- data.frame(year = 1, step = 1, area = 1, fleet = 1, total_weight = 1)
 
     comp <- gadget_likelihood_component("catchinkilos", data = df)
     ok(cmp(comp$datafile$data, df), "Data included with regular data.frame")
@@ -64,7 +64,7 @@ for (type in all_components) {
             prey_length = list(a = c(1,4)))
     } else if (type == "catchinkilos") {
         default_opts <- list(type,
-            data = data.frame(year = 1, step = 1, area = 1, fleet = 1, biomass = 1))
+            data = data.frame(year = 1, step = 1, area = 1, fleet = 1, total_weight = 1))
     } else {
         default_opts <- list(type)
     }
@@ -445,20 +445,13 @@ ok_group("catchinkilos", {
     # aggregationlevel = 0
     comp <- gadget_likelihood_component(
         'catchinkilos',
-        data = data.frame(year = 1, step = 1:3, area = 1, fleet = 1, biomass = 11:13),
-        aggregationlevel = 0)
-    ok(cmp(names(comp$datafile$data), c("year", "step", "area", "fleet", "biomass")), "Has step column")
+        data = data.frame(year = 1, step = 1:3, area = 1, fleet = 1, total_weight = 11:13))
+    ok(cmp(names(comp$datafile$data), c("year", "step", "area", "fleet", "total_weight")), "Has step column")
 
     # aggregationlevel = 1
-    ok(cmp_error(
-        gadget_likelihood_component(
-            'catchinkilos',
-            data = data.frame(year = 1, step = 1:3, area = 1, fleet = 1, biomass = 11:13),
-            aggregationlevel = 1),
-        "step"), "Noticed that step values weren't identical")
     comp <- gadget_likelihood_component(
         'catchinkilos',
-        data = data.frame(year = 1, step = 5, area = 1, fleet = 1, biomass = 11:13),
-        aggregationlevel = 1)
-    ok(cmp(names(comp$datafile$data), c("year", "area", "fleet", "biomass")), "step column removed")
+        data = structure(data.frame(year = 1, step = 1, area = 1, fleet = 1, total_weight = 11:13),
+            step = mfdb_timestep_yearly))
+    ok(cmp(names(comp$datafile$data), c("year", "area", "fleet", "total_weight")), "step column removed")
 })
