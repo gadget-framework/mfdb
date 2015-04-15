@@ -105,7 +105,7 @@ schema_from_0 <- function(mdb) {
         "length_min", "INT", "Minimum theoretical value in this group",
         "weight", "REAL", "Weight of fish / mean weight of all fish",
         "weight_var", "REAL", "Weight variance of all fish (given aggregated data)",
-        "count", "INT NOT NULL DEFAULT 1", "Number of fish meeting this criteria"
+        "count", "REAL DEFAULT 1", "Number of fish meeting this criteria"
     ), keys = c(
         "CHECK(month BETWEEN 1 AND 12)",
         fk('data_source', 'areacell', 'sampling_type')
@@ -156,11 +156,23 @@ schema_from_0 <- function(mdb) {
 }
 
 schema_from_2 <- function(mdb) {
+    mdb$logger$info("Upgrading schema from version 2")
+    mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN count DROP NOT NULL")
+    mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN count TYPE REAL")
+
+    # Recreate fleet as a CS taxonomy
+    mfdb_send(mdb, "DROP TABLE fleet")
+    mfdb_create_taxonomy_table(mdb, "fleet")
+
+    mfdb_send(mdb, "UPDATE mfdb_schema SET version = ", sql_quote(package_major_version()))
+}
+
+schema_from_3 <- function(mdb) {
     mdb$logger$info("Schema up-to-date")
 }
 
-mfdb_taxonomy <- c("case_study", "institute", "fleet", "gear", "vessel", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage")
-mfdb_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type")
+mfdb_taxonomy <- c("case_study", "institute", "gear", "vessel", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage")
+mfdb_cs_taxonomy <- c("areacell", "fleet", "sampling_type", "data_source", "index_type")
 mfdb_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', 'prey')
 
 mfdb_create_taxonomy_table <- function(mdb, table_name) {

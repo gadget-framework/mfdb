@@ -1,3 +1,17 @@
+    Unreleased
+
+    * Make aggregationlevel in catchbykilos automatic
+    * Allow import of "weight_total", for total biomass
+
+2015-03-16  Jamie Lentin  <lentinj@shuttlethread.com>
+
+    Version 3.0-0
+
+    Schema changes:
+    * Allow non-integer counts to be stored, when they have been normalised by haul-length, e.g.
+    * Allow count to be NA, when storing biomass from landings
+    * Make fleet a CS taxonomy, so you can have custom fleets
+
 2015-04-15  Jamie Lentin  <lentinj@shuttlethread.com>
 
     Version 2.1-0

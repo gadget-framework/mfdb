@@ -1,7 +1,7 @@
 Package: mfdb
 Type: Package
 Title: MareFrame DB querying library
-Version: 2.1-0
+Version: 3.0-0
 Date: 2014-04-23
 Author: Jamie Lentin
 Maintainer: Jamie Lentin <jamie.lentin@shuttlethread.com>

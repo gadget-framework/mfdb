@@ -91,6 +91,30 @@ ok_group("Unaggregated length / weight / age samples", {
             generator = "mfdb_sample_meanlength_stddev"))),
        "Aggregated length data (with stddev)")
 
+    # mfdb_sample_totalweight aggregates weight, but still use length as a filter
+    length_group <- mfdb_interval("len", seq(50, 100, by = 5))
+    ok(cmp(
+        mfdb_sample_totalweight(mdb, c('age'), list(
+            year = 1998:2000,
+            area = area_group,
+            timestep = mfdb_timestep_biannually,
+            age = age_group,
+            length = length_group)),
+        list("0.0.0.0" = structure(
+            data.frame(
+                year = c(1998:1998),
+                step = c("1", "2"),
+                area = c("divA"),
+                age = c("all"),
+                total_weight = c(500, 970),
+                stringsAsFactors = FALSE),
+            year = as.list(structure(1998:2000, names = 1998:2000)),
+            step = mfdb_timestep_biannually,
+            area = area_group,
+            age = age_group,
+            generator = "mfdb_sample_totalweight"))),
+       "Aggregated weight and got total")
+
     # mfdb_sample_meanweight aggregates weight, but still use length as a filter
     length_group <- mfdb_interval("len", seq(50, 100, by = 5))
     ok(cmp(
