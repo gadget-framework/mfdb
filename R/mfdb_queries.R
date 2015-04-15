@@ -80,7 +80,7 @@ mfdb_sample_meanlength <- function (mdb, cols, params, scale_index = NULL) {
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(c.length::numeric, ", abundance[[2]], "::numeric) AS mean"),
+            paste0("WEIGHTED_MEAN(c.length::numeric, (", abundance[[2]], ")::numeric) AS mean"),
             NULL),
         generator = "mfdb_sample_meanlength")
     out
@@ -96,8 +96,8 @@ mfdb_sample_meanlength_stddev <- function (mdb, cols, params, scale_index = NULL
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(c.length::numeric, ", abundance[[2]], "::numeric) AS mean"),
-            paste0("WEIGHTED_STDDEV(c.length::numeric, ", abundance[[2]], "::numeric) AS stddev"), # TODO: Should take length_var into account
+            paste0("WEIGHTED_MEAN(c.length::numeric, (", abundance[[2]], ")::numeric) AS mean"),
+            paste0("WEIGHTED_STDDEV(c.length::numeric, (", abundance[[2]], ")::numeric) AS stddev"), # TODO: Should take length_var into account
             NULL),
         generator = "mfdb_sample_meanlength_stddev")
     out
@@ -125,7 +125,7 @@ mfdb_sample_meanweight <- function (mdb, cols, params, scale_index = NULL) {
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(c.weight::numeric, ", abundance[[2]], "::numeric) AS mean"),
+            paste0("WEIGHTED_MEAN(c.weight::numeric, (", abundance[[2]], ")::numeric) AS mean"),
             NULL),
         generator = "mfdb_sample_meanweight")
     out
@@ -140,8 +140,8 @@ mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(c.weight::numeric, ", abundance[[2]], "::numeric) AS mean"),
-            paste0("WEIGHTED_STDDEV(c.weight::numeric, ", abundance[[2]], "::numeric) AS stddev"), # TODO: Should take weight_var into account
+            paste0("WEIGHTED_MEAN(c.weight::numeric, (", abundance[[2]], ")::numeric) AS mean"),
+            paste0("WEIGHTED_STDDEV(c.weight::numeric, (", abundance[[2]], ")::numeric) AS stddev"), # TODO: Should take weight_var into account
             NULL),
         generator = "mfdb_sample_meanweight_stddev")
     out

@@ -1,5 +1,6 @@
     Unreleased
 
+    * Fix weighted mean function when scaling by an index
     * Make aggregationlevel in catchbykilos automatic
     * Allow import of "weight_total", for total biomass
 
