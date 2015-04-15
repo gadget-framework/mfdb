@@ -1,4 +1,6 @@
-    Unreleased
+2015-04-15  Jamie Lentin  <lentinj@shuttlethread.com>
+
+    Version 2.1-0
 
     * Implement weighted stddev aggregate function (ignoring _var columns for now)
     * Use survey indices to scale count, not replace it
