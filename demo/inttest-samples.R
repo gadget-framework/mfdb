@@ -453,6 +453,7 @@ ok_group("Filtering of samples", {
 })
 
 ok_group("Invalid parameters", {
+    ok(cmp_error(mfdb_sample_count(mdb, c(), "camel"), "params"), "Complained about non-list params")
     ok(cmp(
         mfdb_sample_count(mdb, c(), list(
             camelcamelcamel = "No thanks",

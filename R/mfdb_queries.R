@@ -236,6 +236,10 @@ mfdb_sample_grouping <- function (mdb,
         join_tables = c(),
         generator = "mfdb_sample_grouping") {
 
+    if (!is.list(params)) {
+        stop("params argument must be a list")
+    }
+
     # Bodge timestep -> step inconsistency
     group_cols <- gsub("^timestep$", "step", group_cols)
     if ('step' %in% group_cols && 'timestep' %in% names(params)) {
