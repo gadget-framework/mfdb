@@ -23,6 +23,7 @@ avg <- function (...) {
 }
 
 # Empty database
+if (exists("mdb")) mfdb_disconnect(mdb)
 mfdb('', db_params = db_params, destroy_schema = TRUE)
 
 # Rebuild database, taxonomy got populated

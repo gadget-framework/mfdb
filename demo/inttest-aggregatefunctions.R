@@ -8,6 +8,7 @@ source('mfdb/tests/utils/helpers.R')
 source('mfdb/tests/utils/inttest-helpers.R')
 
 # Empty database & rebuild
+if (exists("mdb")) mfdb_disconnect(mdb)
 mfdb('', db_params = db_params, destroy_schema = TRUE)
 mdb <- mfdb('Test', db_params = db_params, save_temp_tables = TRUE)
 mfdb:::mfdb_finish_import(mdb)  # We don't make any queries, so this doesn't get triggered
