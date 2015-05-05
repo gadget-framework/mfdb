@@ -18,7 +18,6 @@ mfdb_temperature <- function (mdb, params = list()) {
 # Return year, step, area, mean value
 mfdb_survey_index_mean <- function (mdb, cols, params) {
     if (!('index_type' %in% names(params))) {
-        str(params)
         stop("Need to supply 'index_type' in params. Querying all indicies makes little sense")
     }
     mfdb_sample_grouping(mdb,
