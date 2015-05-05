@@ -239,11 +239,11 @@ mfdb_create_indexes <- function(mdb) {
        input_type = c("numeric", "numeric"), # value, weight
        state_type = "numeric[2]",
        init_cond = "{0,0}",  # Total, count
-       accum_body = "$$ SELECT ARRAY [
+       accum_body = "$$ SELECT CASE WHEN $2 IS NULL THEN $1 ELSE ARRAY [
          $1[1] + $2 * $3,
          $1[2] + $3
-       ] $$ LANGUAGE 'sql'",
-       final_body = "$$ SELECT $1[1] / $1[2] $$ LANGUAGE 'sql'",
+       ] END $$ LANGUAGE 'sql'",
+       final_body = "$$ SELECT CASE WHEN $1[2] = 0 THEN NULL ELSE $1[1] / $1[2] END $$ LANGUAGE 'sql'",
    )
 
     # See (2) in http://www.derivations.org/stdev.pdf

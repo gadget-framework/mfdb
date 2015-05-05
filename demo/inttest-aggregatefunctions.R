@@ -10,13 +10,17 @@ source('mfdb/tests/utils/inttest-helpers.R')
 # Empty database & rebuild
 mfdb('', db_params = db_params, destroy_schema = TRUE)
 mdb <- mfdb('Test', db_params = db_params, save_temp_tables = TRUE)
+mfdb:::mfdb_finish_import(mdb)  # We don't make any queries, so this doesn't get triggered
+
+numeric_na <- c(NA,0)[[1]]
+na_to_null <- function (x) ifelse(is.na(x), "NULL", x)
 
 ok_group("weighted_mean", {
     db_weighted_mean <- function (vals, weights) {
         mfdb:::mfdb_fetch(mdb,
-            "SELECT WEIGHTED_MEAN(val,wgt) res",
+            "SELECT WEIGHTED_MEAN(val::integer,wgt) res",
             " FROM (VALUES ",
-            paste0("(", vals, ",", ifelse(is.na(weights), "NULL", weights), ")", collapse = ","),
+            paste0("(", na_to_null(vals), ",", na_to_null(weights), ")", collapse = ","),
             ") S(val,wgt);")[1,1]
     }
     ok(cmp(
@@ -28,6 +32,12 @@ ok_group("weighted_mean", {
     ok(cmp(
         db_weighted_mean(c(1, 2, 8), c(10, 20, NA)),
         weighted.mean(c(1, 2, 8), c(10, 20, NA))), "Null weight produces NA")
+    ok(cmp(
+        db_weighted_mean(c(1, 2, NA), c(10, 20, 400)),
+        weighted.mean(c(1, 2), c(10, 20))), "Null values not included in total")
+    ok(cmp(
+        db_weighted_mean(c(NA, NA, NA), c(10, 20, 400)),
+        numeric_na), "All-null values results in NA")
 })
 
 ok_group("weighted_stddev", {
