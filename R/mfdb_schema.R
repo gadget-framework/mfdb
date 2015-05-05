@@ -251,11 +251,11 @@ mfdb_create_indexes <- function(mdb) {
        input_type = c("numeric", "numeric"), # value, weight
        state_type = "numeric[3]", # total, sum, sqsum
        init_cond = "{0,0,0,0}",
-       accum_body = "$$ SELECT ARRAY [
+       accum_body = "$$ SELECT CASE WHEN $2 IS NULL THEN $1 ELSE ARRAY [
          $1[1] + $3,             -- total += weight
          $1[2] + $3 * $2,        -- sum += weight * value
          $1[3] + $3 * POW($2,2)  -- sqsum += weight * value**2
-       ] $$ LANGUAGE 'sql'",
+       ] END $$ LANGUAGE 'sql'",
        return_type = "double precision",
        final_body = "$$ SELECT CASE WHEN $1[1] < 2 THEN NULL ELSE |/ ( (1/($1[1] - 1)) * ($1[3] - POW($1[2], 2) / $1[1]) ) END $$ LANGUAGE 'sql'")
    mdb$logger$info("Creating indexes")
