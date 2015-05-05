@@ -13,7 +13,7 @@ source('mfdb/tests/utils/inttest-helpers.R')
 # Empty database & rebuild
 if (exists("mdb")) mfdb_disconnect(mdb)
 mfdb('', db_params = db_params, destroy_schema = TRUE)
-mdb <- mfdb('Test', db_params = db_params, save_temp_tables = TRUE)
+mdb <- mfdb('Test', db_params = db_params, save_temp_tables = FALSE)
 
 # Set up a bunch of tables
 mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(10,200,400)))
@@ -83,7 +83,7 @@ dump_dir <- tempfile()
 mfdb_cs_dump(mdb, dump_dir)
 mfdb_disconnect(mdb)
 mfdb('', db_params = db_params, destroy_schema = TRUE)
-mdb <- mfdb('Test', db_params = db_params, save_temp_tables = TRUE)
+mdb <- mfdb('Test', db_params = db_params, save_temp_tables = FALSE)
 mfdb_cs_restore(mdb, dump_dir)
 ok(cmp(
     mfdb_sample_count(mdb, c(), params = list())[[1]][,'number'],

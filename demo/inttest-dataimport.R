@@ -14,8 +14,8 @@ source('mfdb/tests/utils/inttest-helpers.R')
 # Empty database & connect
 if (exists("mdb")) mfdb_disconnect(mdb)
 mfdb('', db_params = db_params, destroy_schema = TRUE)
-mdb <- mfdb('Test', db_params = db_params, save_temp_tables = TRUE)
-mdb2 <- mfdb('Baltic', db_params = db_params, save_temp_tables = TRUE)
+mdb <- mfdb('Test', db_params = db_params, save_temp_tables = FALSE)
+mdb2 <- mfdb('Baltic', db_params = db_params, save_temp_tables = FALSE)
 
 ok_group("Areacell/divisions", {
     # Can't populate divisions yet, no areacells defined
