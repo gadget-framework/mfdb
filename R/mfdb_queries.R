@@ -322,6 +322,7 @@ mfdb_sample_grouping <- function (mdb,
         if (identical(names(sample), c('bssample'))) {
             # No data, just generating dummy groups
             subset <- data.frame()
+            sample_num <- rep(NA, length(group_cols))
         } else {
             # Select our final output columns
             subset <- sample[,c(
@@ -329,11 +330,18 @@ mfdb_sample_grouping <- function (mdb,
                 gsub(".*\\s+AS\\s+(\\w+)", "\\1", calc_cols),
                 NULL), drop = FALSE]
             rownames(subset) <- NULL
+            sample_num <- as.integer(strsplit(as.character(sample$bssample[[1]]), "\\.")[[1]])
         }
         do.call(structure, c(
             list(subset),
             structure(
-                lapply(group_cols, function(col) agg_summary(mdb, params[[col]], col_defs[[col]], col, sample)),
+                lapply(seq_len(length(group_cols)), function(i) agg_summary(
+                    mdb,
+                    params[[group_cols[[i]]]],
+                    col_defs[[group_cols[[i]]]],
+                    group_cols[[i]],
+                    sample,
+                    sample_num[[i]])),
                 names = group_cols),
             list(generator = generator)
         ))

@@ -15,11 +15,11 @@ ok_group("Aggregates with mfdb_unaggregated(omitNA = FALSE)", local({
     ok(cmp(where_clause(mdb, g, "col", "out"), c()), "Where clause")
 
     ok(cmp_error(
-        agg_summary(mdb, mfdb_unaggregated(), 'c.claire', 'claire', data.frame(year = c(1998,1998,1999,1999))),
+        agg_summary(mdb, mfdb_unaggregated(), 'c.claire', 'claire', data.frame(year = c(1998,1998,1999,1999)), 0),
         "claire"), "Can't convert unaggregated without data")
 
     ok(cmp(
-        agg_summary(mdb, mfdb_unaggregated(), 'c.year', 'year', data.frame(year = c(1998,1998,1999,1999))),
+        agg_summary(mdb, mfdb_unaggregated(), 'c.year', 'year', data.frame(year = c(1998,1998,1999,1999)), 0),
         list("1998" = 1998, "1999" = 1999)),
         "Can convert unaggregated using returned data")
 }, asNamespace('mfdb')))

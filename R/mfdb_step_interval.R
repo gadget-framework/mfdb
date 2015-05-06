@@ -26,7 +26,7 @@ where_clause.mfdb_step_interval <- function(mdb, x, col, outputname) {
 }
 
 # Return a list of the form "group" = c("min", "max"), as required by gadget_file
-agg_summary.mfdb_step_interval <- function(mdb, x, col, outputname, data) {
+agg_summary.mfdb_step_interval <- function(mdb, x, col, outputname, data, sample_num) {
     if (!is.null(x$to)) {
         to <- x$to
     } else {

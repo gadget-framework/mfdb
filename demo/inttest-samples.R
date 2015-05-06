@@ -206,7 +206,7 @@ ok_group("Unaggregated length / weight / age samples", {
             step = mfdb_timestep_biannually,
             area = area_group,
             age = age_group,
-            length = agg_summary(mdb, length_group, 'col', 'out', data.frame()),
+            length = agg_summary(mdb, length_group, 'col', 'out', data.frame(), 0),
             generator = "mfdb_sample_count"))),
        "Aggregated agelength data")
 })

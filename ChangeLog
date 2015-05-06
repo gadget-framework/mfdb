@@ -1,3 +1,4 @@
+    * Fix bootstrapping when multiple group columns are used
     * Notice if a query function is given a non-list params
     * Weighted stddev should ignore NULL rows
     * Weighted mean should ignore NULL rows

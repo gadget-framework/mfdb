@@ -10,7 +10,7 @@ where_clause.mfdb_unaggregated <- function(mdb, x, col, outputname) {
     if (x$omitNA) paste0(col, " IS NOT NULL") else c()
 }
 
-agg_summary.mfdb_unaggregated <- function(mdb, x, col, outputname, data) {
+agg_summary.mfdb_unaggregated <- function(mdb, x, col, outputname, data, sample_num) {
     if (is.null(data[[outputname]])) {
         stop("Column ", outputname, " missing from data")
     }

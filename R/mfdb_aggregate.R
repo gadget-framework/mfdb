@@ -20,7 +20,7 @@ where_clause <- function(mdb, x, col, outputname) {
     UseMethod("where_clause", x)
 }
 
-agg_summary <- function(mdb, x, col, outputname, data) {
+agg_summary <- function(mdb, x, col, outputname, data, sample_num) {
     if (!('mfdb_aggregate' %in% class(x)) && is.list(x)) return(x)
     UseMethod("agg_summary", x)
 }
@@ -29,7 +29,7 @@ agg_summary <- function(mdb, x, col, outputname, data) {
 pre_query.mfdb_aggregate <- function(mdb, x, col) NULL
 sample_clause.mfdb_aggregate <- function(mdb, x, col, outputname) "0"
 from_clause.mfdb_aggregate <- function(mdb, x, col, outputname) c()
-agg_summary.mfdb_aggregate <- function(mdb, x, col, outputname, data) as.list(x)
+agg_summary.mfdb_aggregate <- function(mdb, x, col, outputname, data, sample_num) as.list(x)
 
 # NULL implies everything grouped under an "all"
 pre_query.NULL <- pre_query.mfdb_aggregate
@@ -53,7 +53,7 @@ select_clause.NULL <- function(mdb, x, col, outputname) {
 }
 from_clause.NULL <- from_clause.mfdb_aggregate
 where_clause.NULL <- function(mdb, x, col, outputname) c()
-agg_summary.NULL <- function(mdb, x, col, outputname, data) {
+agg_summary.NULL <- function(mdb, x, col, outputname, data, sample_num) {
     lookup <- gsub('(.*\\.)|_id', '', col)
 
     if ((lookup %in% mfdb_taxonomy)) {
@@ -138,7 +138,7 @@ where_clause.numeric <- function(mdb, x, col, outputname) {
         if (NA %in% x) paste0(" OR ", col, " IS NULL"),
         ")"))
 }
-agg_summary.numeric <- function(mdb, x, col, outputname, data) {
+agg_summary.numeric <- function(mdb, x, col, outputname, data, sample_num) {
     as.list(structure(x[!is.na(x)], names = x[!is.na(x)]))
 }
 

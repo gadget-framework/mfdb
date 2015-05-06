@@ -93,11 +93,11 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
     ok(cmp(select_clause(mdb, g, "col", "out"), paste0(attr(g, 'table_name'), ".name AS out")), "Select clause")
     ok(cmp(from_clause(mdb, g, "col", "out"), attr(g, 'table_name')), "From clause")
     ok(cmp(where_clause(mdb, g, "col", "out"), paste0("col = ", attr(g, 'table_name'), ".value")), "Where clause")
-    ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = 1)), list(
+    ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = "1.1.1"), 1), list(
         camels = 44,
         aardvarks = 88
     )), "Aggregation summary (sample 1)")
-    ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = 2)), list(
+    ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = "2.2.2"), 2), list(
         camels = 44,
         aardvarks = 88
     )), "Aggregation summary (sample 2)")
@@ -113,11 +113,11 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
     ok(cmp(select_clause(mdb, g, "col", "out"), paste0(attr(g, 'table_name'), ".name AS out")), "Select clause")
     ok(cmp(from_clause(mdb, g, "col", "out"), attr(g, 'table_name')), "From clause")
     ok(cmp(where_clause(mdb, g, "col", "out"), paste0("col = ", attr(g, 'table_name'), ".value")), "Where clause")
-    ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = 1)), list(
+    ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = "1.1.1"), 1), list(
         g1 = c(55, 55),
         g2 = c(88, 88)
     )), "Aggregation summary (sample 1)")
-    ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = 2)), list(
+    ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = "2.0.0"), 2), list(
         g1 = c(44, 44),
         g2 = c(99, 88)
     )), "Aggregation summary (sample 2)")
@@ -138,11 +138,11 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (1,'g1',55),(1,'g1',55),(1,'g2',99),(1,'g2',99),(2,'g1',44),(2,'g1',44),(2,'g2',88),(2,'g2',99)"),
         paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
         NULL)), "Created temporary table")
-    ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = 1)), list(
+    ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = "0.1"), 1), list(
         g1 = c(55, 55),
         g2 = c(99, 99)
     )), "Aggregation summary (sample 1)")
-    ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = 2)), list(
+    ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = "0.2"), 2), list(
         g1 = c(44, 44),
         g2 = c(88, 99)
     )), "Aggregation summary (sample 2)")

@@ -141,12 +141,11 @@ sample_clause.mfdb_bootstrap_group <- function(mdb, x, col, outputname) {
     paste0(attr(x, 'table_name'), ".sample")
 }
 
-agg_summary.mfdb_bootstrap_group <- function(mdb, x, col, outputname, data) {
+agg_summary.mfdb_bootstrap_group <- function(mdb, x, col, outputname, data, sample_num) {
     if (length(data$bssample) < 1) stop("Need some data to know which group was used")
 
     # Pick out the list for this sample
-    # TODO: This can't work. Groups are numbered, but get in "0.0.0.2". "0.0.0.2" --> 2?
-    as.list(x[[data$bssample[[1]]]])
+    as.list(x[[sample_num]])
 }
 
 # Denormalise the nesting and convert into a list of strings

@@ -20,7 +20,7 @@ ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE speci
   mfdb::species[mfdb::species$name == 'TBX', c('name', 'description')]), "Entry for 9999999999 matches package")
 ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM species")[1,1], nrow(mfdb::species)), "Species has right number of entries")
 
-ok_group("Unaggregated length / weight / age samples", {
+ok_group("Bootstrap samples of area sizes and lengths", {
     # Set-up areas/divisions
     mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(10,200,400)))
     mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G03')))
@@ -112,6 +112,79 @@ ok_group("Unaggregated length / weight / age samples", {
         area = list(all = c("divB", "divB")),
         generator = "mfdb_area_size"
     )), "divB, divB")
+
+    # Can do the same with counts
+    length_group <- mfdb_step_interval('len', 50)
+    agg <- mfdb_sample_count(mdb, c('length'), params = list(
+        area = area_bootstrap_group,
+        length = length_group,
+        null = NULL))
+    ok(cmp(length(agg), 5), "Got 5 distinct groupings")
+    ok(cmp(agg[["0.0.1.0"]], structure(
+        data.frame(
+            year = 'all',
+            step = 'all',
+            area = 'all',
+            length = c('len100', 'len150', 'len200', 'len250', 'len300', 'len350'),
+            number = c(9, 3, 9, 3, 9, 3),
+            stringsAsFactors = FALSE),
+        year = list(all = c(1998, 1998)),
+        step = list(all = c(1, 12)),
+        area = list(all = c("divB", "divA")),
+        length = list(len0 = c(0, 50), len50 = c(50, 100), len100 = c(100, 150), len150 = c(150, 200), len200 = c(200, 250), len250 = c(250, 300), len300 = c(300, 350), len350 = c(350, 400)),
+        generator = "mfdb_sample_count")), "divB, divA")
+    ok(cmp(agg[["0.0.2.0"]], structure(
+        data.frame(
+            year = 'all',
+            step = 'all',
+            area = 'all',
+            length = c('len300', 'len350'),
+            number = c(18, 6),
+            stringsAsFactors = FALSE),
+        year = list(all = c(1998, 1998)),
+        step = list(all = c(1, 12)),
+        area = list(all = c("divB", "divB")),
+        length = list(len0 = c(0, 50), len50 = c(50, 100), len100 = c(100, 150), len150 = c(150, 200), len200 = c(200, 250), len250 = c(250, 300), len300 = c(300, 350), len350 = c(350, 400)),
+        generator = "mfdb_sample_count")), "divB, divB")
+    ok(cmp(agg[["0.0.3.0"]], structure(
+        data.frame(
+            year = 'all',
+            step = 'all',
+            area = 'all',
+            length = c('len100', 'len150', 'len200', 'len250'),
+            number = c(18, 6, 18, 6),
+            stringsAsFactors = FALSE),
+        year = list(all = c(1998, 1998)),
+        step = list(all = c(1, 12)),
+        area = list(all = c("divA", "divA")),
+        length = list(len0 = c(0, 50), len50 = c(50, 100), len100 = c(100, 150), len150 = c(150, 200), len200 = c(200, 250), len250 = c(250, 300)),
+        generator = "mfdb_sample_count")), "divA, divA")
+    ok(cmp(agg[["0.0.4.0"]], structure(
+        data.frame(
+            year = 'all',
+            step = 'all',
+            area = 'all',
+            length = c('len100', 'len150', 'len200', 'len250', 'len300', 'len350'),
+            number = c(9, 3, 9, 3, 9, 3),
+            stringsAsFactors = FALSE),
+        year = list(all = c(1998, 1998)),
+        step = list(all = c(1, 12)),
+        area = list(all = c("divA", "divB")),
+        length = list(len0 = c(0, 50), len50 = c(50, 100), len100 = c(100, 150), len150 = c(150, 200), len200 = c(200, 250), len250 = c(250, 300), len300 = c(300, 350), len350 = c(350, 400)),
+        generator = "mfdb_sample_count")), "divA, divB")
+    ok(cmp(agg[["0.0.5.0"]], structure(
+        data.frame(
+            year = 'all',
+            step = 'all',
+            area = 'all',
+            length = c('len300', 'len350'),
+            number = c(18, 6),
+            stringsAsFactors = FALSE),
+        year = list(all = c(1998, 1998)),
+        step = list(all = c(1, 12)),
+        area = list(all = c("divB", "divB")),
+        length = list(len0 = c(0, 50), len50 = c(50, 100), len100 = c(100, 150), len150 = c(150, 200), len200 = c(200, 250), len250 = c(250, 300), len300 = c(300, 350), len350 = c(350, 400)),
+        generator = "mfdb_sample_count")), "divB, divB")
 })
 
 ok_group("Bootstrapped empty results", {
