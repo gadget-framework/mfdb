@@ -30,12 +30,11 @@ agg_summary.mfdb_step_interval <- function(mdb, x, col, outputname, data) {
     if (!is.null(x$to)) {
         to <- x$to
     } else {
-        # Work out the smallest value on sequence bigger than the largest value returned
+        # Find the biggest grouping in the data, go one up
         if (is.null(data[[outputname]])) {
             stop("Column ", outputname, " missing from data")
         }
-        to <- max(data[[outputname]])
-        to <- to - to %% x$by + x$by
+        to <- max(as.integer(gsub(paste0("^", x$prefix), "", data[[outputname]]))) + x$by
     }
     out <- seq(from = x$from, to = to, by = x$by)
     names(out) <- paste0(x$prefix, out)

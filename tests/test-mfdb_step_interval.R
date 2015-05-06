@@ -23,9 +23,13 @@ ok_group("Can convert mfdb_step_intervals into lists", local({
         "claire"), "Can't convert open interval without data")
 
     ok(cmp(
-        agg_summary(mdb, mfdb_step_interval('l', 10), 'c.len', 'len', data.frame(len = c(1, 24, 32, 22))),
+        agg_summary(mdb, mfdb_step_interval('l', 10), 'c.len', 'len', data.frame(len = c('l0', 'l20', 'l30', 'l20'))),
         list(l0 = c(0, 10), l10 = c(10, 20), l20 = c(20, 30), l30 = c(30, 40))),
-        "Can convert open interval using returned data")
+        "Can convert open interval using returned data (max: 30)")
+    ok(cmp(
+        agg_summary(mdb, mfdb_step_interval('l', 10), 'c.len', 'len', data.frame(len = c('l0', 'l20', 'l30', 'l40'))),
+        list(l0 = c(0, 10), l10 = c(10, 20), l20 = c(20, 30), l30 = c(30, 40), l40 = c(40, 50))),
+        "Can convert open interval using returned data (max: 40)")
 }, asNamespace('mfdb')))
 
 ok_group("Aggregates with close_ended mfdb_step_interval", local({
