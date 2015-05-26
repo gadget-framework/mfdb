@@ -23,36 +23,22 @@ gadget_likelihood_component <- function (type, weight = 0, name = type, likeliho
         "gadget_likelihood_component"))
 }
 
-fname <- function (dir, ...) {
-    file.path(dir, paste0(c(...), collapse = ""))
-}
-
 gadget_dir_write.gadget_likelihood_component <- function(gd, obj) {
-    # Either replace component with matching name, or add to end
-    gadget_likelihoodfile_update <- function(gd, fname, component) {
-        likelihood <- gadget_dir_read(gd, fname)
+    fname <- if (is.null(attr(obj, 'likelihoodfile'))) 'likelihood' else attr(obj, 'likelihoodfile')
 
-        # Find component with matching name and type
-        for (i in 1:(length(likelihood$components) + 1)) {
-            if (i > length(likelihood$components)) break;
-            if (length(likelihood$components[[i]]) == 0) next;  # e.g. empty initial component
-            if (names(likelihood$components)[[i]] == "component"
-                & likelihood$components[[i]]$type == component$type
-                & likelihood$components[[i]]$name == component$name) break;
-        }
-        likelihood$components[[i]] <- component
-        names(likelihood$components)[[i]] <- "component"
-        if (is.null(attr(likelihood$components[[i]], "preamble"))) {
-            attr(likelihood$components[[i]], "preamble") <- ""
-        }
+    # Update mainfile
+    gadget_mainfile_update(gd, likelihoodfiles = fname)
 
-        gadget_dir_write(gd, likelihood)
+    # Update component in likelihood file
+    if (is.null(attr(obj, "preamble"))) {
+        attr(obj, "preamble") <- ""
     }
-
-    # Update mainfile and likelihood file
-    likelihoodfile <- if (is.null(attr(obj, 'likelihoodfile'))) 'likelihood' else attr(obj, 'likelihoodfile')
-    gadget_mainfile_update(gd, likelihoodfiles = likelihoodfile)
-    gadget_likelihoodfile_update(gd, likelihoodfile, obj)
+    likelihoodfile <- gadget_dir_read(gd, fname)
+    likelihoodfile <- component_replace(likelihoodfile, obj, function(comp) {
+        if (length(comp) == 0) return("")
+        return(paste(comp$type, comp$name, sep = ":", collapse = "."))
+    })
+    gadget_dir_write(gd, likelihoodfile)
 }
 
 ### Internal constructors for each component type
@@ -366,26 +352,6 @@ agg_file <- function (type, prefix, data) {
     return(gadget_file(
         fname('Aggfiles', prefix, type, '.agg'),
         components=list(comp)))
-}
-
-# Make sure the data frame colums match what is required
-compare_cols <- function (actual, expected) {
-    if (is.null(expected)) return(invisible(NULL))
-
-    # Fill NAs in expected with whatever we did get
-    expected[is.na(expected)] <- actual[is.na(expected)]
-
-    if (!isTRUE(all.equal(actual, expected))) {
-        stop(paste(c(
-            "Expected data to have columns '",
-            paste(expected, collapse=","),
-            "', not '",
-            paste(actual, collapse=","),
-            "'",
-            NULL
-            ), collapse = ""))
-    }
-    return(invisible(NULL))
 }
 
 # Prefix for filenames based on callee and likelihood name
