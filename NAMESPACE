@@ -66,6 +66,10 @@ S3method(as.character, gadget_file)
 S3method(gadget_dir_write, gadget_file)
 export(read.gadget_file)
 
+# gadget_fleetfile.R
+export(gadget_fleet_component)
+S3method(gadget_dir_write, gadget_fleet_component)
+
 # gadget_likelihood_component.R
 export(gadget_likelihood_component)
 S3method(gadget_dir_write, gadget_likelihood_component)

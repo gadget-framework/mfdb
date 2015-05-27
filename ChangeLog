@@ -1,3 +1,4 @@
+    * Add support for fleet files
     * Fix bootstrapping when multiple group columns are used
     * Notice if a query function is given a non-list params
     * Weighted stddev should ignore NULL rows
