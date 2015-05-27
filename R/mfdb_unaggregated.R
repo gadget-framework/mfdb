@@ -12,6 +12,10 @@ where_clause.mfdb_unaggregated <- function(mdb, x, col, outputname) {
 
 agg_summary.mfdb_unaggregated <- function(mdb, x, col, outputname, data, sample_num) {
     if (is.null(data[[outputname]])) {
+        if (nrow(data) == 0) {
+            # No rows, so nothing to return anyway
+            return(list())
+        }
         stop("Column ", outputname, " missing from data")
     }
     vals <- unique(data[[outputname]])
