@@ -3,7 +3,7 @@
 
 \title{MareFrame DB intervals}
 \description{
-    Represent a uniform or non-uniform interval.
+    Groups data into uniform intervals
 }
 
 \usage{
@@ -15,7 +15,7 @@ mfdb_step_interval(prefix, by, from = 0, to = NULL, open_ended = FALSE)
         (required) A character prefix to prepend to minimum to create list names
     }
     \item{by}{
-        (required) Increment of the sequence.
+        (required) Increment of the sequence. NB: Must be an integer
     }
     \item{from, to}{
         Start / end of the sequence. Defaults to 0 / infinity respectively.
@@ -28,4 +28,7 @@ mfdb_step_interval(prefix, by, from = 0, to = NULL, open_ended = FALSE)
 \examples{
 ## Make groups of len0 (0--5), len5 (5--10), ... len45(45--50)
 g1 <- mfdb_step_interval("len", 5, to = 50)
+
+## Make groups of len0 (0--5), len5 (5--10), ... len45(45--50), len50(50--inf)
+g2 <- mfdb_step_interval("len", 5, to = 50, open_ended = TRUE)
 }

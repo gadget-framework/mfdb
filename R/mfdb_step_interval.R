@@ -1,9 +1,15 @@
+is.wholenumber <-
+    function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
+
 # Create interval based on step value, rather than explicit boundaries
 mfdb_step_interval <- function (prefix, by, from = 0, to = NULL, open_ended = FALSE) {
-        return(structure(
-            list(prefix = prefix, by = by, from = from, to = to),
-            open_ended = open_ended,
-            class = c("mfdb_step_interval", "mfdb_aggregate")))
+    if(!is.wholenumber(by)) {
+        stop("Non-integer intervals not supported---by must be a whole number")
+    }
+    return(structure(
+        list(prefix = prefix, by = by, from = from, to = to),
+        open_ended = open_ended,
+        class = c("mfdb_step_interval", "mfdb_aggregate")))
 }
 
 # Use integer division to pick correct group

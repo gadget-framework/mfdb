@@ -9,6 +9,10 @@ ok_group("Can generate objects", {
     expect_equal(
         class(mfdb_step_interval("l", 5)),
         c("mfdb_step_interval", "mfdb_aggregate"))
+
+    ok(cmp_error(
+        mfdb_step_interval('l', 0.5),
+        "intervals"), "Steps must be integer")
 })
 
 ok_group("Can convert mfdb_step_intervals into lists", local({
