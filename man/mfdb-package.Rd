@@ -175,6 +175,25 @@ gadget_dir_write(gd,gadget_areafile(
 
 See \link{gadget_areafile} or \link{gadget_likelihood_component} for more
 information or \href{../demo}{the demo directory} for concrete examples.
+
+\subsection{Stock and fleet files}{
+Stocks and fleets aren't explicitly defined in the database. Instead, they are
+definied by querying on a column that differentiates them. For example, if
+your "immature cod" stock is definied as cod that is between maturity stages 1
+and 2, then if querying for a stockdistribution component, one could do:
+
+\preformatted{
+    mfdb_sample_count(mdb, c('maturity_stage', 'age', 'length'), list(
+        species = 'COD',
+        maturity_stage = c(imm = 1:2, mat = 3:5),
+        . . .
+    )
+}
+
+...and the maturity_stage column will be treated as the stock.
+
+}
+
 }
 
 \author{
