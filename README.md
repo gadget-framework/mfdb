@@ -121,6 +121,14 @@ Or without:-
 
 This should install and/or update dependencies, such as DBI and RPostgreSQL.
 
+Note that you may see the following error:
+
+    Error in get(Info[i, 1], envir = env) : 
+      lazy-load database '.../Rpackages/mfdb/R/mfdb.rdb' is corrupt
+
+This is R failing to re-load the package in an existing R session, however the
+package is installed. Restart your R session and everything should be fine.
+
 Using
 -----
 
