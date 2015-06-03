@@ -24,19 +24,38 @@ gadget_fleet_component <- function (type,
         extras <- list()
     }
 
-    compare_cols(names(data), c(
-        "year",
-        "step",
-        "area",
-        NA,  # fleetname
-        NA,  # amount for total/number fleet, else scaling factor
-        NULL))
-
-    # No aggfile, so remap area names into integers
+    # No aggfile, so make a map and use this internally
     area_map <- structure(
         seq_len(length(attr(data, 'area'))),
         names = names(attr(data, 'area')))
-    data$area <- area_map[data$area]
+
+    if (ncol(data) == 5) {
+        # Fleetfile is provided. Ideally we'd remove this
+        compare_cols(names(data), c(
+            "year",
+            "step",
+            "area",
+            NA,  # fleet name
+            NA,  # amount for total/number fleet, else scaling factor
+            NULL))
+
+        data$area <- area_map[data$area]
+    } else {
+        compare_cols(names(data), c(
+            "year",
+            "step",
+            "area",
+            NA,  # amount for total/number fleet, else scaling factor
+            NULL))
+
+        # Map areas to integers, add in constant fleetname column
+        data <- cbind(
+            data[c(1,2)],
+            data.frame(
+                area = area_map[data$area],
+                fleetname = c(name)),
+            data[c(4)])
+    }
 
     amountfile <- gadget_file(
         file.path('Data', paste(fleetfile, name, 'data', sep = ".")),

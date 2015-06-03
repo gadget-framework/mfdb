@@ -17,7 +17,6 @@ ok_group("Total Fleet (no extra fields)", {
             year = c(1998),
             step = c(1),
             area = c('divA', 'divC'),
-            fleet = c('bob'),
             count = c(5),
             stringsAsFactors = FALSE), area = area_group)))
     ok(cmp_file(gd, file.path('Modelfiles', 'fleet.fleet'),
@@ -33,9 +32,9 @@ ok_group("Total Fleet (no extra fields)", {
     ok(cmp_file(gd, file.path('Data', 'fleet.totalfleet.data'),
         ver_string,
         "; -- data --",
-        "; year\tstep\tarea\tfleet\tcount",
-        "1998\t1\t1\tbob\t5",
-        "1998\t1\t3\tbob\t5",
+        "; year\tstep\tarea\tfleetname\tcount",
+        "1998\t1\t1\ttotalfleet\t5",
+        "1998\t1\t3\ttotalfleet\t5",
         NULL), "Totalfleet defaults data pulls area from data")
     
     gd <- write_component(gadget_fleet_component(
@@ -48,7 +47,6 @@ ok_group("Total Fleet (no extra fields)", {
             year = c(1998:2000),
             step = c(1),
             area = c('divA'),
-            fleet = c('bob'),
             count = c(5),
             stringsAsFactors = FALSE), area = area_group)))
     ok(cmp_file(gd, file.path('Modelfiles', 'fleet.fleet'),
@@ -64,10 +62,10 @@ ok_group("Total Fleet (no extra fields)", {
     ok(cmp_file(gd, file.path('Data', 'fleet.barry.data'),
         ver_string,
         "; -- data --",
-        "; year\tstep\tarea\tfleet\tcount",
-        "1998\t1\t1\tbob\t5",
-        "1999\t1\t1\tbob\t5",
-        "2000\t1\t1\tbob\t5",
+        "; year\tstep\tarea\tfleetname\tcount",
+        "1998\t1\t1\tbarry\t5",
+        "1999\t1\t1\tbarry\t5",
+        "2000\t1\t1\tbarry\t5",
         NULL), "Can override livesonareas and multiplicative (amountfile)")
 })
 
@@ -87,7 +85,6 @@ ok_group("Types with extra parameters", {
             year = c(1998:2000),
             step = c(1),
             area = c('divA'),
-            fleet = c('bob'),
             count = c(5),
             stringsAsFactors = FALSE), area = area_group)))
     ok(cmp_file(gd, file.path('Modelfiles', 'fleet.fleet'),
@@ -113,7 +110,6 @@ ok_group("Types with extra parameters", {
             year = c(1998:2000),
             step = c(1),
             area = c('divA'),
-            fleet = c('bob'),
             count = c(5),
             stringsAsFactors = FALSE), area = area_group)))
     ok(cmp_file(gd, file.path('Modelfiles', 'fleet.fleet'),
@@ -142,7 +138,6 @@ ok_group("Types with extra parameters", {
             year = c(1998:2000),
             step = c(1),
             area = c('divA'),
-            fleet = c('bob'),
             count = c(5),
             stringsAsFactors = FALSE), area = area_group)))
     ok(cmp_file(gd, file.path('Modelfiles', 'fleet.fleet'),
@@ -171,7 +166,6 @@ ok_group("Multiple fleet files & mainfile", {
             year = c(1998),
             step = c(1),
             area = c(1),
-            fleet = c('bob'),
             count = c(5),
             stringsAsFactors = FALSE), area = area_group)))
     ok(cmp_file(gd, 'main',
@@ -195,7 +189,6 @@ ok_group("Multiple fleet files & mainfile", {
             year = c(1999),
             step = c(1),
             area = c(1),
-            fleet = c('bob'),
             count = c(5),
             stringsAsFactors = FALSE), area = area_group),
         fleetfile = 'otherfleet'))
@@ -240,7 +233,6 @@ ok_group("Multiple fleet files & mainfile", {
             year = c(1999),
             step = c(1),
             area = c(1),
-            fleet = c('bob'),
             count = c(5),
             stringsAsFactors = FALSE), area = area_group),
         fleetfile = 'otherfleet'))
@@ -290,7 +282,6 @@ ok_group("Error conditions", {
             year = c(1998),
             stoop = c(1),
             area = c(1),
-            fleet = c('bob'),
             count = c(5),
             stringsAsFactors = FALSE), area = area_group)),
         'stoop'), "Notice incompatible columns")

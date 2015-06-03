@@ -45,11 +45,10 @@ year    month   areacell        species vessel  length  age     weight
     gadget_dir_write(gd, gadget_fleet_component(
         'totalfleet',
         name = 'igfs',
-        data = mfdb_sample_count(mdb, c('vessel'), list(
+        data = mfdb_sample_count(mdb, c(), list(
             year = 2000,
             step = mfdb_timestep_yearly,
             area = mfdb_group(x = 'divA', y = 'divB'),
-            vessel = mfdb_unaggregated(),
             null = NULL))[[1]]))
     ok(cmp_file(gd, file.path('Modelfiles', 'fleet.fleet'),
         ver_string,
@@ -61,6 +60,30 @@ year    month   areacell        species vessel  length  age     weight
         "suitability\t",
         "amount\tData/fleet.igfs.data",
         NULL), "Livesonareas derived from data")
+    ok(cmp_file(gd, file.path('Data', 'fleet.igfs.data'),
+        ver_string,
+        "; -- data --",
+        "; year\tstep\tarea\tfleetname\tnumber",
+        "2000\t1\t1\tigfs\t8",
+        "2000\t1\t2\tigfs\t4",
+        NULL), "Areas in data have become numeric")
+})
+
+ok_group("Deprecated usages---don't do this", {
+    # Create a temporary gadget directory
+    gd <- gadget_directory(tempfile())
+
+    # Can override fleetname if required, but no way of
+    # creating corresponding multiple components
+    gadget_dir_write(gd, gadget_fleet_component(
+        'totalfleet',
+        name = 'igfs',
+        data = mfdb_sample_count(mdb, c('vessel'), list(
+            year = 2000,
+            step = mfdb_timestep_yearly,
+            area = mfdb_group(x = 'divA', y = 'divB'),
+            vessel = mfdb_unaggregated(),
+            null = NULL))[[1]]))
     ok(cmp_file(gd, file.path('Data', 'fleet.igfs.data'),
         ver_string,
         "; -- data --",

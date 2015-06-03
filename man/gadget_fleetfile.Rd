@@ -65,9 +65,8 @@ gadget_fleet_component(type,
     gadget_dir_write(gd, gadget_fleet_component(
         'totalfleet',
         name = 'igfs',
-        data = mfdb_sample_count(mdb, c('vessel'), list(
+        data = mfdb_sample_count(mdb, c(), list(
             year = 1998,
-            vessel = mfdb_unaggregated(),
             step = mfdb_timestep_yearly))[[1]]))
 
     gadget_dir_write(gd, gadget_fleet_component(
@@ -78,9 +77,8 @@ gadget_fleet_component(type,
         quotafunction = 'simple',
         biomasslevel = c(1000, 2000),
         quotalevel = c(0.1, 0.4, 0.9),
-        data = mfdb_sample_count(mdb, c('vessel'), list(
+        data = mfdb_sample_count(mdb, c(), list(
             year = 1998,
-            vessel = mfdb_unaggregated(),
             step = mfdb_timestep_yearly))[[1]]))
 
     gadget_dir_write(gd, gadget_fleet_component(
@@ -91,8 +89,7 @@ gadget_fleet_component(type,
         quotafunction = 'simple',
         biomasslevel = c(1000, 2000),
         quotalevel = c(0.1, 0.4, 0.9),
-        data = mfdb_sample_count(mdb, c('vessel'), list(
+        data = mfdb_sample_count(mdb, c(), list(
             year = 1998,
-            vessel = mfdb_unaggregated(),
             step = mfdb_timestep_yearly))[[1]]))
 }}
