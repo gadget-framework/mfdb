@@ -139,7 +139,7 @@ gadget_stockdistribution_component <- function (
         data = NULL, area = NULL, age = NULL, length = NULL,
         fleetnames = c(), stocknames = c()) {
     # Make sure we have the columns we need
-    compare_cols(names(data), c("year", "step", "area", NA, "length", "number"))
+    compare_cols(names(data), c("year", "step", "area", NA, "age", "length", "number"))
 
     # For stock distribution, anything in column 4 should be called stock
     if (length(names(data)) > 4) {
