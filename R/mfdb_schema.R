@@ -82,11 +82,25 @@ schema_from_0 <- function(mdb) {
         "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)"
     ))
 
+    mfdb_create_table(mdb, "tag_combo", "Combinations of tags used", cols = c(
+        "data_source_id", "INT", "",
+        "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
+
+        "tag_combo_id", "INT", "",
+        "tags", "VARCHAR(100)[]", "Array of tags", # NB: Not unique, then we'd have to do reference counting
+        NULL
+    ), keys = c(
+        "PRIMARY KEY(data_source_id, case_study_id, tag_combo_id)",
+        # TODO: GIN index on tags
+        fk('data_source')
+    ))
+
     mfdb_create_table(mdb, "sample", "Samples within a survey", cols = c(
         "sample_id", "SERIAL PRIMARY KEY", "",
         "data_source_id", "INT", "",
         "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
 
+        "tag_combo_id", "INT REFERENCES tag_combo(tag_combo_id)", "Array of tags that apply to this item",
         "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
         "vessel_id", "INT REFERENCES vessel(vessel_id)", "Vessel used",
@@ -171,6 +185,7 @@ schema_from_3 <- function(mdb) {
     mdb$logger$info("Schema up-to-date")
 }
 
+mfdb_tag_types <- c("country", "corporation")
 mfdb_taxonomy <- c("case_study", "institute", "gear", "vessel", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage")
 mfdb_cs_taxonomy <- c("areacell", "fleet", "sampling_type", "data_source", "index_type")
 mfdb_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', 'prey')

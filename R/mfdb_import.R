@@ -102,6 +102,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
     # Sanitise data
     survey_sample <- data.frame(
         case_study_id = c(mdb$case_study_id),
+        tag_combo_id = create_tag_combos(mdb, data_in),
         institute_id = sanitise_col(mdb, data_in, 'institute', lookup = 'institute', default = c(NA)),
         gear_id = sanitise_col(mdb, data_in, 'gear', lookup = 'gear', default = c(NA)),
         vessel_id = sanitise_col(mdb, data_in, 'vessel', lookup = 'vessel', default = c(NA)),
@@ -125,6 +126,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
     temp_tbl <- mfdb_bulk_copy(mdb, 'sample', survey_sample, function (temp_tbl) mfdb_disable_constraints(mdb, 'sample', mfdb_transaction(mdb, {
         # Remove data_source and re-insert
         data_source_id <- get_data_source_id(mdb, data_source)
+        # TODO: Remove old tag_combos
         mfdb_send(mdb, "DELETE FROM sample",
             " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
             " AND data_source_id = ", sql_quote(data_source_id),
@@ -136,6 +138,14 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
             " FROM ", temp_tbl,
             NULL)
     })))
+}
+
+create_tag_combos <- function (mdb, data_in) {
+    tag_cols <- intersect(mfdb_tag_columns, colnames(data_in))
+    unique_tag_combos <- unique(data_in[, tag_cols, drop = FALSE])
+
+    # Create vector of which tag combo each applies too
+    return list(tag_cols, data_tag_combos)
 }
 
 mfdb_import_survey_index <- function (mdb, data_in, data_source = 'default_index') {
