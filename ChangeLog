@@ -1,3 +1,4 @@
+    * Add CNR-IAMC to institute list
     * Remove need for specifying fleetname in data for gadget_fleet_component, it makes no sense
     * mfdb_step_interval must be integer, it's not going to work otherwise
     * Add support for fleet files
