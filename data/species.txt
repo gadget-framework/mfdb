@@ -25,6 +25,7 @@
 1611011500 "PLZ" "NA (Plumaria Spp)"
 2e+09 "EGG" "Eggs (Fish Eggs)"
 2000000199 "ROK" "Rocks (Assorted Rocks)"
+2280101701 "DPS" "Deep-water rose shrimp (Parapenaeus longirostris)"
 3000000199 "BEN" "Benthos (Epibenthic Mixture)"
 3.6e+09 "PFZ" "Sponges (Porifera)"
 3.601e+09 "CCZ" "Calcareous Sponges (Calcarea)"
