@@ -161,7 +161,7 @@ ok_group("Maturity stage samples", {
     gd <- gadget_directory(tempfile())
 
     # Treat the maturity stage as a stock, divide up into mature and immature
-    agg_data <- mfdb_sample_count(mdb, c('maturity_stage', 'length'), list(
+    agg_data <- mfdb_sample_count(mdb, c('maturity_stage', 'age', 'length'), list(
             year = 1998:2000,
             area = mfdb_group(divA = c("divA")),
             length = mfdb_step_interval('len', by = 10, to = 100),
@@ -195,16 +195,16 @@ ok_group("Maturity stage samples", {
     ok(cmp_file(gd, "Data/stockdistribution.stockdistribution.sumofsquares",
         ver_string,
         "; -- data --",
-        "; year\tstep\tarea\tstock\tlength\tnumber",
-        "1998\t1\tdivA\timm\tlen10\t200",
-        "1998\t1\tdivA\tmat\tlen30\t650",
-        "1998\t1\tdivA\tmat\tlen40\t460",
-        "1998\t1\tdivA\tmat\tlen50\t500",
-        "1998\t2\tdivA\timm\tlen30\t350",
-        "1998\t2\tdivA\timm\tlen60\t650",
-        "1998\t2\tdivA\tmat\tlen20\t220",
-        "1998\t2\tdivA\tmat\tlen30\t700",
-        "1998\t2\tdivA\tmat\tlen60\t320",
+        "; year\tstep\tarea\tstock\tage\tlength\tnumber",
+        "1998\t1\tdivA\timm\tall\tlen10\t200",
+        "1998\t1\tdivA\tmat\tall\tlen30\t650",
+        "1998\t1\tdivA\tmat\tall\tlen40\t460",
+        "1998\t1\tdivA\tmat\tall\tlen50\t500",
+        "1998\t2\tdivA\timm\tall\tlen30\t350",
+        "1998\t2\tdivA\timm\tall\tlen60\t650",
+        "1998\t2\tdivA\tmat\tall\tlen20\t220",
+        "1998\t2\tdivA\tmat\tall\tlen30\t700",
+        "1998\t2\tdivA\tmat\tall\tlen60\t320",
         NULL), "datafile updated")
     ok(cmp_file(gd, "Aggfiles/stockdistribution.stockdistribution.area.agg",
         ver_string,
