@@ -4,6 +4,70 @@
 library(DATRAS)
 library(mfdb)
 library(plyr)
+library(XML)
+
+# Fetch a stomach dataset (or read cached copy, if we already have it)
+get_stomach_dataset <- function(outdir = 'example-datras-data', year = '', country = '', predator = '') {
+    dir.create('example-datras-data', recursive = TRUE, showWarnings = FALSE)
+    out_file <- file.path(outdir, paste(
+        'stomach',
+        utils::URLencode(as.character(year)),
+        utils::URLencode(country),
+        utils::URLencode(predator),
+        'xml', sep = "."))
+
+    # Fetch file if it's not already there, then read it
+    if (!file.exists(out_file)) {
+        url <- paste0(
+            "http://ecosystemdata.ices.dk/stomachdata/StomachDataWebServices.asmx/getStomachDataset",
+            "?year=", utils::URLencode(as.character(year)),
+            "&country=", utils::URLencode(country),
+            "&predator=", utils::URLencode(predator),
+            "")
+        utils::download.file(url, out_file)
+    }
+    cat("Reading", out_file, "\n")
+    return (XML::xmlToDataFrame(out_file, homogeneous = TRUE, collectNames = FALSE, colClasses = c(
+        File_Name = "character",
+        Latitude = "numeric",
+        Longitude = "numeric",
+        Estimated_Lat_Lon = "character",
+        Date_Time = "character",
+        Year = "integer",
+        Quarter = "integer",
+        Month = "integer",
+        Day = "integer",
+        Time = "character",
+        Station_Haul = "character",
+        Sample_Number = "integer",
+        ICES_StomachID = "character",
+        Depth = "numeric",
+        Temperature = "numeric",
+        Country = "character",
+        Ship = "character",
+        ICES_Rectangle = "character",
+        Sampling_Method = "character",
+        Predator = "character",
+        Predator_NODC_Code = "character",
+        Predator_mean_Lengh = "numeric",
+        Predator_mean_Weight = "numeric",
+        Predator_mean_Age = "numeric",
+        Predator_Lower_Length_Bound = "numeric",
+        Predator_Upper_Length_Bound = "numeric",
+        CPUE = "numeric",
+        Number_Stomachs_With_Food = "numeric",
+        Number_Stomachs_Regurgitated = "numeric",
+        Number_Stomachs_With_Skeletal_Remains = "numeric",
+        Number_Stomachs_Empty = "numeric",
+        Number_Stomachs = "numeric",
+        Digestion_Stage = "character",
+        Prey_Species_Name = "character",
+        Prey_Weight = "numeric",
+        Prey_Lower_Length_Bound = "numeric",
+        Prey_Upper_Length_Bound = "numeric",
+        Prey_Number = "numeric",
+        ICES_Internal_ID = "numeric")))
+}
 
 # Download data and read in available data for cod
 if (!file.exists('example-datras-data/NS-IBTS_1995.zip')) {
@@ -122,3 +186,52 @@ gadget_dir_write(gd, gadget_likelihood_component("catchdistribution",
                                                  fleetnames = c("datras"),
                                                  stocknames = 'cod'))
 rm(aggdata)
+
+# Fetch cod stomach data for 1991 and import it
+stomachs <- get_stomach_dataset(year = 1991, predator = "Gadus Morhua")
+predators <- stomachs[!duplicated(stomachs$ICES_StomachID), ]
+
+# Add any missing squares to known areacells
+squares <- c(squares, levels(predators$ICES_Rectangle))
+squares <- squares[!duplicated(squares)]
+mfdb_import_area(mdb, data.frame(
+    name = squares,
+    size = c(5),
+    stringsAsFactors = FALSE))
+
+# Create divisions and import those
+sub.split <- llply(squares, function(x) x)
+names(sub.split) <- squares
+mfdb_import_division(mdb, sub.split)
+
+# Work out a map from prey species we can uniquely identify to short names, map rest to NA
+species_map <- mfdb_find_species(levels(stomachs$Prey_Species_Name))['name',]
+species_map <- vapply(species_map, function (names) if(length(names) == 1) names else as.character(NA), "")
+
+# Import this into DB
+mfdb_import_stomach(mdb,
+    data.frame(
+        stomach_name = predators$ICES_StomachID,
+        year = predators$Year,
+        month = predators$Month,
+        areacell = predators$ICES_Rectangle,
+        species = 'COD',
+        age = predators$Predator_mean_Age,
+        stomach_state = mfdb::stomach_state[,'name'][apply(predators[, c(
+            'Number_Stomachs_Empty',
+            'Number_Stomachs_With_Food',
+            'Number_Stomachs_Regurgitated',
+            'Number_Stomachs_With_Skeletal_Remains')], 1, which.max)],
+        length = predators$Predator_mean_Lengh,
+        weight = predators$Predator_mean_Weight,
+        stringsAsFactors = TRUE),
+    data.frame(
+        stomach_name = stomachs$ICES_StomachID,
+        species = revalue(stomachs$Prey_Species_Name, species_map),
+        digestion_stage = as.numeric(stomachs$Digestion_Stage),
+        length = stomachs$Prey_Number,  # NB: According to StomachData.pdf, this is Value[Lengh]
+        weight = stomachs$Prey_Weight,
+        stringsAsFactors = TRUE),
+    data_source = paste('datras_stomach', 1991, 'COD', sep = "_"))
+rm(stomachs)
+rm(predators)
