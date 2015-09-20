@@ -10,14 +10,6 @@ library(mfdb)
 source('mfdb/tests/utils/helpers.R')
 source('mfdb/tests/utils/inttest-helpers.R')
 
-unattr <- function (obj) {
-    attr(obj, "year") <- NULL
-    attr(obj, "step") <- NULL
-    attr(obj, "area") <- NULL
-    attr(obj, "length") <- NULL
-    attr(obj, "generator") <- NULL
-    obj
-}
 avg <- function (...) {
     mean(c(...))
 }
