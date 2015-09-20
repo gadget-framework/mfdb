@@ -41,6 +41,8 @@
 All functions will replace existing data in the case study with new data, unless you specify a \code{data_source},
 in which case then only existing data with the same \code{data_source} will be replaced.
 
+If you want to remove the data, import empty data.frames with the same \code{data_source}.
+
 \code{mfdb_import_survey} imports institution surveys and commercial sampling for your case study. The
 \code{data_in} should be a data.frame with the following columns:
 

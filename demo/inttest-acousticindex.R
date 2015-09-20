@@ -118,3 +118,27 @@ ok_group("Generating an acoustic index likelihood component", {
         "1998\t4\tdivA\tacoustic_index2\t14",
         NULL), "Wrote likelihood component")
 })
+
+ok_group("Can remove survey_index", {
+    mfdb_import_survey_index(mdb, data_source = 'acoustic_index1', data.frame())
+
+    # Query out mean for acoustic index by area
+    area_group <- mfdb_group(divA = c("divA"))
+    agg <- mfdb_survey_index_mean(mdb, cols = c('data_source'), list(
+            index_type = 'acoustic',
+            year = 1998,
+            area = area_group,
+            data_source = mfdb_unaggregated(),
+            timestep = mfdb_timestep_quarterly))
+    ok(cmp(agg[[1]][,names(agg[[1]])], data.frame(
+        year = as.integer(1998),
+        step = as.character(1:4),
+        area = "divA",
+        data_source = c('acoustic_index2'),
+        mean = c(
+            mean(c(24:22)),
+            mean(c(21:19)),
+            mean(c(18:16)),
+            mean(c(15:13))),
+        stringsAsFactors = FALSE)), "acoustic_index1 no longer there")
+})

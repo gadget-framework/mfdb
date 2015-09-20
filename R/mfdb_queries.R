@@ -208,6 +208,9 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
     # TODO: Bootstrapping is very likely broken
     if (length(with_prey) != length(without_prey)) stop("Don't support bootstrapping for stomachs")
 
+    # If there's nothing to merge, don't bother
+    if (nrow(without_prey[[1]]) == 0) return(without_prey)
+
     # Merge data frames together, return with ratio of present / total
     mapply(function (w, wo) {
         merged <- merge(w, wo)

@@ -124,5 +124,6 @@ unattr <- function (obj) {
     attr(obj, "area") <- NULL
     attr(obj, "length") <- NULL
     attr(obj, "generator") <- NULL
+    attr(obj, "predator_weight") <- NULL
     obj
 }

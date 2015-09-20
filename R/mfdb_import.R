@@ -101,7 +101,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
 
     # Sanitise data
     survey_sample <- data.frame(
-        case_study_id = c(mdb$case_study_id),
+        case_study_id = if (nrow(data_in) > 0) c(mdb$case_study_id) else c(),
         institute_id = sanitise_col(mdb, data_in, 'institute', lookup = 'institute', default = c(NA)),
         gear_id = sanitise_col(mdb, data_in, 'gear', lookup = 'gear', default = c(NA)),
         vessel_id = sanitise_col(mdb, data_in, 'vessel', lookup = 'vessel', default = c(NA)),
@@ -129,7 +129,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
             " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
             " AND data_source_id = ", sql_quote(data_source_id),
             NULL)
-        mfdb_send(mdb,
+        if (nrow(survey_sample) > 0) mfdb_send(mdb,
             "INSERT INTO sample",
             " (", paste(names(survey_sample), collapse=","), ", data_source_id)",
             " SELECT ", paste(names(survey_sample), collapse=","), ", ", sql_quote(data_source_id),
@@ -140,7 +140,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
 
 mfdb_import_survey_index <- function (mdb, data_in, data_source = 'default_index') {
     data_in <- data.frame(
-        case_study_id = c(mdb$case_study_id),
+        case_study_id = if (nrow(data_in) > 0) c(mdb$case_study_id) else c(),
         areacell_id = sanitise_col(mdb, data_in, 'areacell', lookup = 'areacell'),
         index_type_id = sanitise_col(mdb, data_in, 'index_type', lookup = 'index_type'),
         year = sanitise_col(mdb, data_in, 'year'),
@@ -154,7 +154,7 @@ mfdb_import_survey_index <- function (mdb, data_in, data_source = 'default_index
             " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
             " AND data_source_id = ", sql_quote(data_source_id),
             NULL)
-        mfdb_send(mdb,
+        if (nrow(data_in) > 0) mfdb_send(mdb,
             "INSERT INTO survey_index",
             " (", paste(names(data_in), collapse=","), ", data_source_id)",
             " SELECT ", paste(names(data_in), collapse=","), ", ", sql_quote(data_source_id),
@@ -190,7 +190,7 @@ mfdb_import_temperature <- function(mdb, data_in) {
 # Import 2 data frames, one for predators, one for prey
 mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "default_stomach") {
     predator_data <- data.frame(
-        case_study_id = c(mdb$case_study_id),
+        case_study_id = if (nrow(predator_data) > 0) c(mdb$case_study_id) else c(),
 
         institute_id = sanitise_col(mdb, predator_data, 'institute', lookup = 'institute', default = c(NA)),
         gear_id = sanitise_col(mdb, predator_data, 'gear', lookup = 'gear', default = c(NA)),
@@ -237,6 +237,9 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
             " AND data_source_id = ", sql_quote(data_source_id),
             NULL)
 
+        # If there's no data, leave at this point
+        if (nrow(predator_data) == 0 || nrow(prey_data) == 0) return()
+
         # Insert predator data, returning all IDs
         res <- mfdb_bulk_copy(mdb, 'predator', predator_data, function (temp_predator) {
             mfdb_fetch(mdb,
@@ -272,6 +275,11 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
 
 # Check column content, optionally resolving lookup
 sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL, test = NULL) {
+    if (nrow(data_in) == 0) {
+        # No data of any form, so return nothing
+        return (c())
+    }
+
     data_col_name <- grep(paste0('^', col_name, '$'), names(data_in), ignore.case=TRUE, value=TRUE)
     if (length(data_col_name) == 0) {
         if (!is.null(default)) return(default);
