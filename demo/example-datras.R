@@ -69,7 +69,7 @@ get_stomach_dataset <- function(outdir = 'example-datras-data', year = '', count
         ICES_Internal_ID = "numeric")))
 }
 
-# Download data and read in available data for cod
+# Download data if not already available
 if (!file.exists('example-datras-data/NS-IBTS_1995.zip')) {
     dir.create('example-datras-data', recursive = TRUE, showWarnings = FALSE)
     oldwd <- getwd()
@@ -77,6 +77,49 @@ if (!file.exists('example-datras-data/NS-IBTS_1995.zip')) {
     downloadExchange("NS-IBTS",1995:2005)
     setwd(oldwd)
 }
+
+# Create connection to MFDB database, as the Baltic case study
+mdb <- mfdb('Baltic')
+
+# Populated ICES gridcells we are interested in
+squares <- c(
+  "31F1", "31F2",
+  "32F1", "32F2", "32F3",
+  "33F1", "33F2", "33F3", "33F4",
+  "34F1", "34F2", "34F3", "34F4",
+  "35F0", "35F1", "35F2", "35F3", "35F4", "35F5",
+  "36F0", "36F1", "36F2", "36F3", "36F4", "36F5", "36F6", "36F7", "36F8",
+  "37E9", "37F0", "37F1", "37F2", "37F3", "37F4", "37F5", "37F6", "37F7", "37F8",
+  "38E8", "38E9", "38F0", "38F1", "38F2", "38F3", "38F4", "38F5", "38F6", "38F7", "38F8",
+  "39E8", "39E9", "39F0", "39F1", "39F2", "39F3", "39F4", "39F5", "39F6", "39F7", "39F8",
+  "40E8", "40E9", "40F0", "40F1", "40F2", "40F3", "40F4", "40F5", "40F6", "40F7", "40G2",
+  "41E7", "41E8", "41E9", "41F0", "41F1", "41F2", "41F3", "41F4", "41F5", "41F6", "41F7", "41G0", "41G1", "41G2",
+  "42E7", "42E8", "42E9", "42F0", "42F1", "42F2", "42F3", "42F4", "42F5", "42F6", "42F7", "42G0", "42G1", "42G2",
+  "43E8", "43E9", "43F0", "43F1", "43F2", "43F3", "43F4", "43F5", "43F6", "43F7", "43F8", "43F9", "43G0", "43G1", "43G2",
+  "44E6", "44E7", "44E8", "44E9", "44F0", "44F1", "44F2", "44F3", "44F4", "44F5", "44F6", "44F7", "44F8", "44F9", "44G0", "44G1",
+  "45E6", "45E7", "45E8", "45E9", "45F0", "45F1", "45F2", "45F3", "45F4", "45F9", "45G0", "45G1",
+  "46E6", "46E7", "46E8", "46E9", "46F0", "46F1", "46F2", "46F3", "46F4", "46G0", "46G1",
+  "47E7", "47E8", "47E9", "47F0", "47F1", "47F2", "47F3",
+  "48E6", "48E7", "48E8", "48E9", "48F0", "48F1", "48F2", "48F3", "48F4",
+  "49E7", "49E8", "49E9", "49F0", "49F1", "49F2", "49F3", "49F4",
+  "50E7", "50E8", "50E9", "50F0", "50F1", "50F2", "50F3", "51E8", "51E9", "51F0", "51F1", "51F2", "52E9", "52F0", "52F1",
+  NULL)
+mfdb_import_area(mdb, data.frame(
+    id = 1:length(squares),
+    name = squares,
+    size = c(5)))  # NB: Assume all squares are 5km^2
+
+# Make a single division for each area
+mfdb_import_division(mdb, structure(as.list(squares), names = squares))
+
+# Hard-code temperature data (TODO: Find proper source)
+mfdb_import_temperature(mdb, data.frame(
+    year = 1996:2005,
+    month = 1,
+    areacell = squares[1],
+    temperature = 7.4))
+
+# Read in data dump, split out cod data
 ignore <- capture.output({
     d <- readExchangeDir(path = 'example-datras-data')
 })
@@ -91,28 +134,6 @@ codL$Species <- 'COD'
 codA <- merge(cod[['CA']],cod[['HH']][c('haul.id','lat','lon')])
 codA$areacell <- as.character(codA$AreaCode)
 codA$Species <- 'COD'
-
-# Create connection to MFDB database, as the Baltic case study
-mdb <- mfdb('Baltic')
-
-# Assume all squares are 5km^2
-squares <- unique(c(codA$areacell,codL$areacell))
-mfdb_import_area(mdb, data.frame(
-    id = 1:length(squares),
-    name = squares,
-    size = c(5)))
-
-# Create divisions and import those
-sub.split <- llply(squares, function(x) x)                           
-names(sub.split) <- squares
-mfdb_import_division(mdb, sub.split)
-
-# Hard-code temperature data (TODO: Find proper source)
-mfdb_import_temperature(mdb, data.frame(
-    year = 1996:2005,
-    month = 1,
-    areacell = squares[1],
-    temperature = 7.4))
 
 # Set-up some sampling types
 mfdb_import_sampling_type(mdb, data.frame(
@@ -190,19 +211,6 @@ rm(aggdata)
 # Fetch cod stomach data for 1991 and import it
 stomachs <- get_stomach_dataset(year = 1991, predator = "Gadus Morhua")
 predators <- stomachs[!duplicated(stomachs$ICES_StomachID), ]
-
-# Add any missing squares to known areacells
-squares <- c(squares, levels(predators$ICES_Rectangle))
-squares <- squares[!duplicated(squares)]
-mfdb_import_area(mdb, data.frame(
-    name = squares,
-    size = c(5),
-    stringsAsFactors = FALSE))
-
-# Create divisions and import those
-sub.split <- llply(squares, function(x) x)
-names(sub.split) <- squares
-mfdb_import_division(mdb, sub.split)
 
 # Work out a map from prey species we can uniquely identify to short names, map rest to NA
 species_map <- mfdb_find_species(levels(stomachs$Prey_Species_Name))['name',]
