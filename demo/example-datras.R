@@ -225,6 +225,7 @@ mfdb_import_stomach(mdb,
         areacell = predators$ICES_Rectangle,
         species = 'COD',
         age = predators$Predator_mean_Age,
+        # Map stomach state ro whichever of the 4 DATRAS variables is highest
         stomach_state = mfdb::stomach_state[,'name'][apply(predators[, c(
             'Number_Stomachs_Empty',
             'Number_Stomachs_With_Food',
@@ -243,3 +244,16 @@ mfdb_import_stomach(mdb,
     data_source = paste('datras_stomach', 1991, 'COD', sep = "_"))
 rm(stomachs)
 rm(predators)
+
+# Find out the ratio of pand bor in stomachs
+res <- mfdb_stomach_presenceratio(mdb, c("predator_length", "prey_length"), list(
+        predator_length = mfdb_step_interval("cod", 10, to = 200),
+        prey_length = mfdb_step_interval("pra", 50, to = 100, open_ended = TRUE),
+        prey_species = 'PRA'))
+
+gadget_dir_write(gd, gadget_likelihood_component(
+    "stomachcontent",
+    prey_labels = c("praimm", "pramat"),
+    prey_digestion_coefficients = 3:1,
+    predator_names = c("cod"),
+    data = res[[1]]))
