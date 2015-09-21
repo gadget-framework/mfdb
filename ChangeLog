@@ -1,3 +1,5 @@
+    * Add mfdb_find_species helper to map from other species lists
+
 2015-09-21  Jamie Lentin  <lentinj@shuttlethread.com>
 
     Version 3.2-0

@@ -23,6 +23,9 @@ importFrom(logging, getLogger)
 export(mfdb)
 export(mfdb_disconnect)
 
+# mfdb_helpers.R
+export(mfdb_find_species)
+
 # mfdb_import.R
 export(mfdb_import_survey)
 export(mfdb_import_survey_index)
