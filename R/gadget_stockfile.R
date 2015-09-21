@@ -10,10 +10,10 @@ gadget_stockfile_extremes <- function (stock_name, data) {
     structure(
         list(list(
             stockname = stock_name,
-            minage = min(vapply(attr(data, 'age'), min, 0)),
-            maxage = max(vapply(attr(data, 'age'), max, 0)),
-            minlength = min(vapply(attr(data, 'length'), min, 0)),
-            maxlength = max(vapply(attr(data, 'length'), max, 0)))),
+            minage = min(unlist(agg_prop(attr(data, 'age'), "min"))),
+            maxage = max(unlist(agg_prop(attr(data, 'age'), "max"))),
+            minlength = min(unlist(agg_prop(attr(data, 'length'), "min"))),
+            maxlength = max(unlist(agg_prop(attr(data, 'length'), "max"))))),
         stock_name = paste0(stock_name, collapse = ""),
         class = c("gadget_stockfile_extremes", "gadget_stockfile"))
 }
@@ -28,13 +28,13 @@ gadget_stockfile_refweight <- function (stock_name, data) {
     # Sort incoming data, then regroup
     refwgt <- data[order(data$length), c('length', 'mean')]
     refwgt <- data.frame(
-        length = vapply(attr(data, 'length')[refwgt$length], min, 0), # Grouping -> minimum value
+        length = unlist(agg_prop(attr(data, 'length')[refwgt$length], "min")), # Grouping -> minimum value
         weight = refwgt$mean,  # Assuming it's mean weight here
         stringsAsFactors = TRUE)
 
     structure(
         list(list(
-            dl = min(vapply(attr(data, 'length'), diff, 0)),
+            dl = min(unlist(agg_prop(attr(data, 'length'), "diff"))),
             refweightfile = gadget_file(paste0('Modelfiles/', stock_name, '.refwgt'), data = refwgt))),
         stock_name = paste0(stock_name, collapse = ""),
         class = c("gadget_stockfile_refweight", "gadget_stockfile"))
@@ -50,18 +50,18 @@ gadget_stockfile_initialconditions <- function(stock_name, data) {
     numberfile <- data.frame(
         area = data$area,
         age = data$age,
-        length = vapply(attr(data, 'length')[data$length], min, 0), # Grouping -> minimum value
+        length = unlist(agg_prop(attr(data, 'length')[data$length], "min")), # Grouping -> minimum value
         number = data$number,
         weight = data$mean,  # Assuming it's mean weight here
         stringsAsFactors = TRUE)
 
     structure(
         list(initialconditions = list(
-            minage = min(vapply(attr(data, 'age'), min, 0)),
-            maxage = max(vapply(attr(data, 'age'), max, 0)),
-            minlength = min(vapply(attr(data, 'length'), min, 0)),
-            maxlength = max(vapply(attr(data, 'length'), max, 0)),
-            dl = min(vapply(attr(data, 'length'), diff, 0)),
+            minage = min(unlist(agg_prop(attr(data, 'age'), "min"))),
+            maxage = max(unlist(agg_prop(attr(data, 'age'), "max"))),
+            minlength = min(unlist(agg_prop(attr(data, 'length'), "min"))),
+            maxlength = max(unlist(agg_prop(attr(data, 'length'), "max"))),
+            dl = min(unlist(agg_prop(attr(data, 'length'), "diff"))),
             numberfile = gadget_file(paste0('Modelfiles/', stock_name, '.init.number'), data = numberfile))),
         stock_name = paste0(stock_name, collapse = ""),
         class = c("gadget_stockfile_refweight", "gadget_stockfile"))
@@ -79,7 +79,7 @@ gadget_stockfile_recruitment <- function(stock_name, data) {
         step = data$step,
         area = data$area,
         age = data$age,
-        length = vapply(attr(data, 'length')[data$length], min, 0), # Grouping -> minimum value
+        length = unlist(agg_prop(attr(data, 'length')[data$length], "min")), # Grouping -> minimum value
         number = data$number,
         weight = data$mean,  # Assuming it's mean weight here
         stringsAsFactors = TRUE)
@@ -87,9 +87,9 @@ gadget_stockfile_recruitment <- function(stock_name, data) {
     structure(
         list("doesrenew" = list(
             doesrenew = 1,
-            minlength = min(vapply(attr(data, 'length'), min, 0)),
-            maxlength = max(vapply(attr(data, 'length'), max, 0)),
-            dl = min(vapply(attr(data, 'length'), diff, 0)),
+            minlength = min(unlist(agg_prop(attr(data, 'length'), "min"))),
+            maxlength = max(unlist(agg_prop(attr(data, 'length'), "max"))),
+            dl = min(unlist(agg_prop(attr(data, 'length'), "diff"))),
             numberfile = gadget_file(paste0('Modelfiles/', stock_name, '.rec.number'), data = numberfile))),
         stock_name = paste0(stock_name, collapse = ""),
         class = c("gadget_stockfile_refweight", "gadget_stockfile"))
