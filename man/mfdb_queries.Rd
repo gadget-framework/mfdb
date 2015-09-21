@@ -2,6 +2,7 @@
 \alias{mfdb_area_size}
 \alias{mfdb_temperature}
 \alias{mfdb_survey_index_mean}
+\alias{mfdb_survey_index_total}
 \alias{mfdb_sample_count}
 \alias{mfdb_sample_meanlength_stddev}
 \alias{mfdb_sample_meanlength}
@@ -20,6 +21,7 @@
 mfdb_area_size(mdb, params)
 mfdb_temperature(mdb, params)
 mfdb_survey_index_mean(mdb, cols, params)
+mfdb_survey_index_total(mdb, cols, params)
 mfdb_sample_count(mdb, cols, params, scale_index = NULL)
 mfdb_sample_meanlength(mdb, cols, params, scale_index = NULL)
 mfdb_sample_meanlength_stddev(mdb, cols, params, scale_index = NULL)
@@ -111,6 +113,9 @@ aggregation / weighted averages.
         }
         \item{mfdb_survey_index_mean}{
             Returns year, step, area, (group cols), (mean) survey index
+        }
+        \item{mfdb_survey_index_total}{
+            Returns year, step, area, (group cols), (sum) survey index
         }
         \item{mfdb_sample_count}{
             Returns year,step,area,(group cols),number (of samples)

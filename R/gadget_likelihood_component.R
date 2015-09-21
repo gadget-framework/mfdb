@@ -262,12 +262,13 @@ gadget_stomachcontent_component <- function (
     # Generate prey file
     if(is.null(prey_length)) prey_length <- attr(data, "prey_length")
     if(is.null(prey_length)) stop("Data should group by prey_length to build prey aggregation file")
+    prey_minmax <- agg_prop(prey_length, "min/max")
     prey_components <- lapply(names(prey_length), function (name) {
         structure(
             list(
                 name = NULL,
                 lbls = (if (length(prey_labels) > 1) prey_labels[seq(2,length(prey_labels))]),
-                lengths = c(min(prey_length[[name]]), max(prey_length[[name]])),
+                lengths = prey_minmax[[name]],
                 digestioncoefficients = prey_digestion_coefficients),
             names = c(name, prey_labels[[1]], 'lengths', 'digestioncoefficients'),
             preamble = "")
@@ -335,6 +336,25 @@ gadget_catchinkilos_component <- function (
         stocknames = stocknames)
 }
 
+# Transform agg summary by either applying func_name, or fishing out pre-baked values
+agg_prop <- function (data, func_name) {
+    get_prop <- function (x, func_name) {
+        if (func_name == "diff") {
+            return(diff(get_prop(x, "min/max")))
+        }
+        if (func_name == "min/max") {
+            return(c(get_prop(x, "min"), get_prop(x, "max")))
+        }
+        if (!is.null(attr(x, func_name))) {
+            return(attr(x, func_name))
+        }
+        # No shortcut attribute, eval x properly
+        do.call(func_name, list(eval(x)))
+    }
+
+    lapply(as.list(data), function (d) get_prop(d, func_name))
+}
+
 agg_file <- function (type, prefix, data) {
     if (type == 'area') {
         # Areas should just be a => 1, b => 2, ...
@@ -343,10 +363,10 @@ agg_file <- function (type, prefix, data) {
             names = names(data))
     } else if (type == 'len') {
         # Lengths should be min/max
-        comp <- lapply(as.list(data), function (x) c(min(x), max(x)))
+        comp <- agg_prop(data, "min/max")
     } else {
         # Convert to list
-        comp <- as.list(data)
+        comp <- agg_prop(data, "c")
     }
 
     return(gadget_file(

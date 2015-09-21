@@ -116,3 +116,14 @@ table_string <- function (str) {
 
 # Shuffle the rows of a data.frame
 shuffle_df <- function(df) df[sample(nrow(df)),]
+
+# Remove our attributes from a dataframe
+unattr <- function (obj) {
+    attr(obj, "year") <- NULL
+    attr(obj, "step") <- NULL
+    attr(obj, "area") <- NULL
+    attr(obj, "length") <- NULL
+    attr(obj, "generator") <- NULL
+    attr(obj, "predator_weight") <- NULL
+    obj
+}

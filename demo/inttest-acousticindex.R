@@ -10,14 +10,6 @@ library(mfdb)
 source('mfdb/tests/utils/helpers.R')
 source('mfdb/tests/utils/inttest-helpers.R')
 
-unattr <- function (obj) {
-    attr(obj, "year") <- NULL
-    attr(obj, "step") <- NULL
-    attr(obj, "area") <- NULL
-    attr(obj, "length") <- NULL
-    attr(obj, "generator") <- NULL
-    obj
-}
 avg <- function (...) {
     mean(c(...))
 }
@@ -125,4 +117,49 @@ ok_group("Generating an acoustic index likelihood component", {
         "1998\t4\tdivA\tacoustic_index1\t2",
         "1998\t4\tdivA\tacoustic_index2\t14",
         NULL), "Wrote likelihood component")
+
+    # Can also query total
+    area_group <- mfdb_group(divA = c("divA"))
+    agg <- mfdb_survey_index_total(mdb, cols = c('data_source'), list(
+            index_type = 'acoustic',
+            year = 1998,
+            area = area_group,
+            data_source = mfdb_unaggregated(),
+            timestep = mfdb_timestep_quarterly))
+    ok(cmp(agg[[1]][,names(agg[[1]])], data.frame(
+        year = 1998,
+        step = rep(as.character(1:4), each = 2),
+        area = "divA",
+        data_source = rep(c('acoustic_index1', 'acoustic_index2'), times = 2),
+        total = c(
+            sum(c(12:10)), sum(c(24:22)),
+            sum(c( 9: 7)), sum(c(21:19)),
+            sum(c( 6: 4)), sum(c(18:16)),
+            sum(c( 3: 1)), sum(c(15:13))),
+        stringsAsFactors = FALSE)), "Got averaged readings")
+
+})
+
+ok_group("Can remove survey_index", {
+    mfdb_import_survey_index(mdb, data_source = 'acoustic_index1', data.frame())
+
+    # Query out mean for acoustic index by area
+    area_group <- mfdb_group(divA = c("divA"))
+    agg <- mfdb_survey_index_mean(mdb, cols = c('data_source'), list(
+            index_type = 'acoustic',
+            year = 1998,
+            area = area_group,
+            data_source = mfdb_unaggregated(),
+            timestep = mfdb_timestep_quarterly))
+    ok(cmp(agg[[1]][,names(agg[[1]])], data.frame(
+        year = as.integer(1998),
+        step = as.character(1:4),
+        area = "divA",
+        data_source = c('acoustic_index2'),
+        mean = c(
+            mean(c(24:22)),
+            mean(c(21:19)),
+            mean(c(18:16)),
+            mean(c(15:13))),
+        stringsAsFactors = FALSE)), "acoustic_index1 no longer there")
 })

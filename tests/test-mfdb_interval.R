@@ -21,10 +21,16 @@ ok_group("Can generate objects", {
 ok_group("Elements are named by prefixes", local({
     expect_equal(
         agg_summary(mdb, mfdb_interval("l", c(10,20,25,30)), 'col', 'out', data.frame(), 0),
-        list(l10 = c(10,20), l20 = c(20,25), l25 = c(25,30)))
+        list(
+            l10 = structure(call("seq", 10, 19), min = 10, max = 20),
+            l20 = structure(call("seq", 20, 24), min = 20, max = 25),
+            l25 = structure(call("seq", 25, 29), min = 25, max = 30)))
     expect_equal(
         agg_summary(mdb, mfdb_interval("l", c(5,15,25,30)), 'col', 'out', data.frame(), 0),
-        list(l5 = c(5,15), l15 = c(15,25), l25 = c(25,30)))
+        list(
+            l5  = structure(call("seq",  5, 14), min =  5, max = 15),
+            l15 = structure(call("seq", 15, 24), min = 15, max = 25),
+            l25 = structure(call("seq", 25, 29), min = 25, max = 30)))
 }, asNamespace('mfdb')))
 
 ok_group("Can generate SQL", local({

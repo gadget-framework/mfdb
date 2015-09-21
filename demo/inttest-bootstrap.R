@@ -128,10 +128,18 @@ ok_group("Bootstrap samples of area sizes and lengths", {
             length = c('len100', 'len150', 'len200', 'len250', 'len300', 'len350'),
             number = c(9, 3, 9, 3, 9, 3),
             stringsAsFactors = FALSE),
-        year = list(all = c(1998, 1998)),
-        step = list(all = c(1, 12)),
+        year = list(all = as.integer(c(1998, 1998))),
+        step = list(all = as.integer(c(1, 12))),
         area = list(all = c("divB", "divA")),
-        length = list(len0 = c(0, 50), len50 = c(50, 100), len100 = c(100, 150), len150 = c(150, 200), len200 = c(200, 250), len250 = c(250, 300), len300 = c(300, 350), len350 = c(350, 400)),
+        length = list(
+            len0   = structure(call("seq",   0,  49), min =   0, max =  50),
+            len50  = structure(call("seq",  50,  99), min =  50, max = 100),
+            len100 = structure(call("seq", 100, 149), min = 100, max = 150),
+            len150 = structure(call("seq", 150, 199), min = 150, max = 200),
+            len200 = structure(call("seq", 200, 249), min = 200, max = 250),
+            len250 = structure(call("seq", 250, 299), min = 250, max = 300),
+            len300 = structure(call("seq", 300, 349), min = 300, max = 350),
+            len350 = structure(call("seq", 350, 399), min = 350, max = 400)),
         generator = "mfdb_sample_count")), "divB, divA")
     ok(cmp(agg[["0.0.2.0"]], structure(
         data.frame(
@@ -141,10 +149,18 @@ ok_group("Bootstrap samples of area sizes and lengths", {
             length = c('len300', 'len350'),
             number = c(18, 6),
             stringsAsFactors = FALSE),
-        year = list(all = c(1998, 1998)),
-        step = list(all = c(1, 12)),
+        year = list(all = as.integer(c(1998, 1998))),
+        step = list(all = as.integer(c(1, 12))),
         area = list(all = c("divB", "divB")),
-        length = list(len0 = c(0, 50), len50 = c(50, 100), len100 = c(100, 150), len150 = c(150, 200), len200 = c(200, 250), len250 = c(250, 300), len300 = c(300, 350), len350 = c(350, 400)),
+        length = list(
+            len0   = structure(call("seq",   0,  49), min =   0, max =  50),
+            len50  = structure(call("seq",  50,  99), min =  50, max = 100),
+            len100 = structure(call("seq", 100, 149), min = 100, max = 150),
+            len150 = structure(call("seq", 150, 199), min = 150, max = 200),
+            len200 = structure(call("seq", 200, 249), min = 200, max = 250),
+            len250 = structure(call("seq", 250, 299), min = 250, max = 300),
+            len300 = structure(call("seq", 300, 349), min = 300, max = 350),
+            len350 = structure(call("seq", 350, 399), min = 350, max = 400)),
         generator = "mfdb_sample_count")), "divB, divB")
     ok(cmp(agg[["0.0.3.0"]], structure(
         data.frame(
@@ -154,10 +170,16 @@ ok_group("Bootstrap samples of area sizes and lengths", {
             length = c('len100', 'len150', 'len200', 'len250'),
             number = c(18, 6, 18, 6),
             stringsAsFactors = FALSE),
-        year = list(all = c(1998, 1998)),
-        step = list(all = c(1, 12)),
+        year = list(all = as.integer(c(1998, 1998))),
+        step = list(all = as.integer(c(1, 12))),
         area = list(all = c("divA", "divA")),
-        length = list(len0 = c(0, 50), len50 = c(50, 100), len100 = c(100, 150), len150 = c(150, 200), len200 = c(200, 250), len250 = c(250, 300)),
+        length = list(
+            len0   = structure(call("seq",   0,  49), min =   0, max =  50),
+            len50  = structure(call("seq",  50,  99), min =  50, max = 100),
+            len100 = structure(call("seq", 100, 149), min = 100, max = 150),
+            len150 = structure(call("seq", 150, 199), min = 150, max = 200),
+            len200 = structure(call("seq", 200, 249), min = 200, max = 250),
+            len250 = structure(call("seq", 250, 299), min = 250, max = 300)),
         generator = "mfdb_sample_count")), "divA, divA")
     ok(cmp(agg[["0.0.4.0"]], structure(
         data.frame(
@@ -167,10 +189,18 @@ ok_group("Bootstrap samples of area sizes and lengths", {
             length = c('len100', 'len150', 'len200', 'len250', 'len300', 'len350'),
             number = c(9, 3, 9, 3, 9, 3),
             stringsAsFactors = FALSE),
-        year = list(all = c(1998, 1998)),
-        step = list(all = c(1, 12)),
+        year = list(all = as.integer(c(1998, 1998))),
+        step = list(all = as.integer(c(1, 12))),
         area = list(all = c("divA", "divB")),
-        length = list(len0 = c(0, 50), len50 = c(50, 100), len100 = c(100, 150), len150 = c(150, 200), len200 = c(200, 250), len250 = c(250, 300), len300 = c(300, 350), len350 = c(350, 400)),
+        length = list(
+            len0   = structure(call("seq",   0,  49), min =   0, max =  50),
+            len50  = structure(call("seq",  50,  99), min =  50, max = 100),
+            len100 = structure(call("seq", 100, 149), min = 100, max = 150),
+            len150 = structure(call("seq", 150, 199), min = 150, max = 200),
+            len200 = structure(call("seq", 200, 249), min = 200, max = 250),
+            len250 = structure(call("seq", 250, 299), min = 250, max = 300),
+            len300 = structure(call("seq", 300, 349), min = 300, max = 350),
+            len350 = structure(call("seq", 350, 399), min = 350, max = 400)),
         generator = "mfdb_sample_count")), "divA, divB")
     ok(cmp(agg[["0.0.5.0"]], structure(
         data.frame(
@@ -180,10 +210,18 @@ ok_group("Bootstrap samples of area sizes and lengths", {
             length = c('len300', 'len350'),
             number = c(18, 6),
             stringsAsFactors = FALSE),
-        year = list(all = c(1998, 1998)),
-        step = list(all = c(1, 12)),
+        year = list(all = as.integer(c(1998, 1998))),
+        step = list(all = as.integer(c(1, 12))),
         area = list(all = c("divB", "divB")),
-        length = list(len0 = c(0, 50), len50 = c(50, 100), len100 = c(100, 150), len150 = c(150, 200), len200 = c(200, 250), len250 = c(250, 300), len300 = c(300, 350), len350 = c(350, 400)),
+        length = list(
+            len0   = structure(call("seq",   0,  49), min =   0, max =  50),
+            len50  = structure(call("seq",  50,  99), min =  50, max = 100),
+            len100 = structure(call("seq", 100, 149), min = 100, max = 150),
+            len150 = structure(call("seq", 150, 199), min = 150, max = 200),
+            len200 = structure(call("seq", 200, 249), min = 200, max = 250),
+            len250 = structure(call("seq", 250, 299), min = 250, max = 300),
+            len300 = structure(call("seq", 300, 349), min = 300, max = 350),
+            len350 = structure(call("seq", 350, 399), min = 350, max = 400)),
         generator = "mfdb_sample_count")), "divB, divB")
 })
 

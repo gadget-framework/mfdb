@@ -189,6 +189,11 @@ mfdb_update <- function(mdb, table_name, data_in, returning = "", extra = c(), w
 mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
     temp_tbl <- basename(tempfile(pattern = "temp_insert_", tmpdir = ""))
 
+    if (nrow(data_in) == 0) {
+        # No data, so don't make a temporary table
+        return(fn("VALUES (NULL)"))
+    }
+
     # Fetch table definition from DB, so we can recreate for temporary table
     cols <- mfdb_fetch(mdb, "SELECT column_name, data_type",
         " FROM information_schema.columns",

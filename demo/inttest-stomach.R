@@ -228,4 +228,15 @@ AA		CAP		1			1	10	5
                  1 / 3,
                  NULL),
              stringsAsFactors = FALSE)), "Old data was replaced")
+
+    # Remove data, shouldn't be able to find it again
+    mfdb_import_stomach(mdb,
+        data_source = "cod2000",
+        predator_data = data.frame(),
+        prey_data = data.frame())
+     ok(cmp(
+         unattr(mfdb_stomach_presenceratio(mdb, c("predator_weight"), list(
+             predator_weight = mfdb_interval("w", c(200,300,400,500)),
+             prey_species = 'CAP'))[['0.0.0.0']]),
+         data.frame()), "cod2000 data removed")
 })

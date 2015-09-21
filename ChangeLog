@@ -1,3 +1,10 @@
+2015-09-21  Jamie Lentin  <lentinj@shuttlethread.com>
+
+    Version 3.2-0
+
+    * Only the length aggfiles should be of the form (min, max)
+    * Add mfdb_survey_index_total
+    * Import functions should allow removal of data
     * Add institutes for Baltic
     * Add Deep-water rose shrimp to species list
     * Add CNR-IAMC to institute list

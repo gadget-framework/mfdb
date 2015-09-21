@@ -309,7 +309,7 @@ ok_group("Aggregation files", {
         "len20\t20\t30",
         "len30\t30\t40",
         "len40\t40\t50",
-        NULL), "mfdb_interval")
+        NULL), "mfdb_interval (with len, so min/max)")
 
     ok(cmp_agg('len', mfdb_step_interval("len", to = 30, by = 5),
         ver_string,
@@ -319,7 +319,32 @@ ok_group("Aggregation files", {
         "len15\t15\t20",
         "len20\t20\t25",
         "len25\t25\t30",
-        NULL), "mfdb_step_interval")
+        NULL), "mfdb_step_interval (with len, so min/max)")
+
+    ok(cmp_agg('age', mfdb_interval("age", seq(0, 20, by = 10)),
+        ver_string,
+        "age0\t0\t1\t2\t3\t4\t5\t6\t7\t8\t9",
+        "age10\t10\t11\t12\t13\t14\t15\t16\t17\t18\t19",
+        NULL), "mfdb_interval (with age, so discrete numbers)")
+
+    ok(cmp_agg('age', mfdb_step_interval("age", to = 30, by = 5),
+        ver_string,
+        "age0\t0\t1\t2\t3\t4",
+        "age5\t5\t6\t7\t8\t9",
+        "age10\t10\t11\t12\t13\t14",
+        "age15\t15\t16\t17\t18\t19",
+        "age20\t20\t21\t22\t23\t24",
+        "age25\t25\t26\t27\t28\t29",
+        NULL), "mfdb_step_interval (with age, so discrete numbers)")
+
+    ok(cmp_agg('age', mfdb_step_interval("age", to = 5, by = 1),
+        ver_string,
+        "age0\t0",
+        "age1\t1",
+        "age2\t2",
+        "age3\t3",
+        "age4\t4",
+        NULL), "mfdb_step_interval (with age, so discrete numbers)")
 
 })
 

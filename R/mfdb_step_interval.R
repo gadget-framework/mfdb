@@ -42,7 +42,16 @@ agg_summary.mfdb_step_interval <- function(mdb, x, col, outputname, data, sample
         }
         to <- max(as.integer(gsub(paste0("^", x$prefix), "", data[[outputname]]))) + x$by
     }
+
+    # Vector of groupings
     out <- seq(from = x$from, to = to, by = x$by)
     names(out) <- paste0(x$prefix, out)
-    mapply(c, out[1:length(out) - 1], out[2:length(out)], SIMPLIFY = FALSE)
+
+    # Expand this to have min/max values
+    return(mapply(function (curVal, nextVal) {
+        structure(
+            call("seq", curVal, nextVal - 1),
+            min = curVal,
+            max = nextVal)
+    }, out[1:length(out) - 1], out[2:length(out)], SIMPLIFY = FALSE))
 }
