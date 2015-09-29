@@ -21,7 +21,8 @@ atlantis_read_areas <- function (adir, bgm_file = Sys.glob(file.path(adir, "*.bg
     bgm_lines <- readLines(bgm_file)
     area_data <- merge(
         get_box_attribute(bgm_lines, "label", "name"),
-        get_box_attribute(bgm_lines, "area", "size"))
+        get_box_attribute(bgm_lines, "area", "size"),
+        sort = FALSE)
     area_data$id <- seq_len(nrow(area_data))
     return(area_data)
 }
