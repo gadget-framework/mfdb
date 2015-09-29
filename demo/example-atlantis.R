@@ -26,29 +26,27 @@ atlantis_read_areas <- function (adir, bgm_file = Sys.glob(file.path(adir, "*.bg
     return(area_data)
 }
 
-xmlGetAttributes <- function (xml_doc, group_name, attributes) {
+xmlGetAttributes <- function (xml_doc, group_name, group_attributes) {
     xmlAllAttrs <- Vectorize(XML::xmlAttrs)
     attr_xpath <- paste0(
         "./Attribute[contains('|",
-        paste(attributes, collapse = "|"),
+        paste(group_attributes, collapse = "|"),
         "|', concat('|', @AttributeName, '|'))]")
     
     group_nodes <- XML::getNodeSet(xml_doc, paste0("//*[@AttributeGroupName='", group_name, "']"))
     as.data.frame(t(vapply(group_nodes, function (n) {
         # Pull out all attributes we are interested in from the group
         rv <- xmlAllAttrs(XML::getNodeSet(n, attr_xpath))
-        structure(rv[2,], names = rv[1,])
-    }, rep("", length(attributes)))))
+        structure(rv["AttributeValue",], names = rv["AttributeName",])
+    }, rep("", length(group_attributes)))))
 }
 
 atlantis_functional_groups <- function (adir, fg_file, bio_file) {
-    xmlAllAttrs <- Vectorize(XML::xmlAttrs)
-    fg_keys <- c('GroupCode', 'Name', 'LongName', 'IsPredator', 'IsTurnedOn', 'NumCohorts', 'NumStages', 'NumAgeClassSize')
-
     fg_doc <- XML::xmlParse(file.path(adir, fg_file))
-    fg_data <- xmlGetAttributes(fg_doc, 'FunctionalGroup', fg_keys)
+    fg_data <- xmlGetAttributes(fg_doc, 'FunctionalGroup', c('GroupCode', 'Name', 'LongName', 'IsPredator', 'IsTurnedOn', 'NumCohorts', 'NumStages', 'NumAgeClassSize'))
 
     # Pull out useful flags from biology file and combine
+    xmlAllAttrs <- Vectorize(XML::xmlAttrs)
     bio_doc <- XML::xmlParse(file.path(adir, bio_file))
     bio_nodes <- XML::getNodeSet(bio_doc, "//Attribute[@AttributeName='FLAG_AGE_MAT']/GroupValue")
     flag_age_mat <- as.data.frame(t(xmlAllAttrs(bio_nodes)))
@@ -59,12 +57,9 @@ atlantis_functional_groups <- function (adir, fg_file, bio_file) {
 }
 
 atlantis_run_options <- function (adir, opt_file) {
-    xmlAllAttrs <- Vectorize(XML::xmlAttrs)
-    opt_keys <- c('dt')
+    opt_data <- xmlGetAttributes(opt_doc, "ScenarioOptions", c("dt"))
 
-    opt_doc <- XML::xmlParse(file.path(adir, opt_file))
-    opt_nodes <- XML::getNodeSet(fg_doc, "//*[@AttributeGroupName='ScenarioOptions']")
-    
+    return(opt_data)
 }
 
 atlantis_fg_count <- function (adir, nc_file = Sys.glob(file.path(adir, "output*.nc")), area_data, fg_group) {
@@ -88,11 +83,14 @@ atlantis_fg_count <- function (adir, nc_file = Sys.glob(file.path(adir, "output*
 lv_dir <- 'atlantis-L_Vic-OutputFolderTest2/'
 lv_area_data <- atlantis_read_areas(lv_dir)
 lv_functional_groups <- atlantis_functional_groups(lv_dir, 'LVGroups.xml', 'LV_biol.xml')
+lv_run_options <- atlantis_run_options(lv_dir, 'LV_run.xml')
 lv_fg_count <- atlantis_fg_count(lv_dir, 'outputLV.nc', area_data,
     lv_functional_groups[c(lv_functional_groups$Name == 'Birds'),])
 
 ice_dir <- 'atlantis-Iceland-NoFishing20150909-1'
+ice_options <- atlantis_run_options(ice_dir, 'RunNoFish.xml')
 ice_area_data <- atlantis_read_areas(ice_dir)
 ice_functional_groups <- atlantis_functional_groups(ice_dir, 'GroupsIceland.xml', 'BiologyNoFish.xml')
+ice_run_options <- atlantis_run_options(ice_dir, 'RunNoFish.xml')
 ice_fg_count <- atlantis_fg_count(ice_dir, 'OutputNoFish.nc', area_data,
     ice_functional_groups[c(ice_functional_groups$Name == 'Cod'),])
