@@ -57,6 +57,7 @@ atlantis_functional_groups <- function (adir, fg_file, bio_file) {
 }
 
 atlantis_run_options <- function (adir, opt_file) {
+    opt_doc <- XML::xmlParse(file.path(adir, opt_file))
     opt_data <- xmlGetAttributes(opt_doc, "ScenarioOptions", c("dt"))
 
     return(opt_data)
@@ -69,22 +70,23 @@ atlantis_fg_count <- function (adir, nc_file = Sys.glob(file.path(adir, "output*
     nc_variables <- paste0(fg_group$Name, seq_len(as.character(fg_group$NumCohorts)), '_Nums')
     count <- array(
         Vectorize(ncdf4::ncvar_get, vectorize.args = 'varid')(nc_out, nc_variables),
-        dim = c(4,17,54,10),
+        dim = c(
+            length(nc_out$dim$z$vals),
+            length(nc_out$dim$b$vals),
+            length(nc_out$dim$t$vals),
+            as.character(fg_group$NumCohorts)),
         dimnames = list(
-            paste0("layer", 1:4), # Depth layers
+            nc_out$dim$z$vals, # Depth layers
             area_data$name, # Area boxes
-            1:54,  # Times
-            seq_len(as.character(fg_group$NumCohorts)))) # Age Groups
-   
-    # 3-dimensional of bird (age-group 5) count, same as vars$Birds5_Nums / disagg$Birds5_Nums
-    # count[input$layer,area?,input$time]
+            nc_out$dim$t$vals,  # Times
+            seq_len(as.character(fg_group$NumCohorts)))) # Age Classes
 }
 
 lv_dir <- 'atlantis-L_Vic-OutputFolderTest2/'
 lv_area_data <- atlantis_read_areas(lv_dir)
 lv_functional_groups <- atlantis_functional_groups(lv_dir, 'LVGroups.xml', 'LV_biol.xml')
 lv_run_options <- atlantis_run_options(lv_dir, 'LV_run.xml')
-lv_fg_count <- atlantis_fg_count(lv_dir, 'outputLV.nc', area_data,
+lv_fg_count <- atlantis_fg_count(lv_dir, 'outputLV.nc', lv_area_data,
     lv_functional_groups[c(lv_functional_groups$Name == 'Birds'),])
 
 ice_dir <- 'atlantis-Iceland-NoFishing20150909-1'
@@ -92,5 +94,5 @@ ice_options <- atlantis_run_options(ice_dir, 'RunNoFish.xml')
 ice_area_data <- atlantis_read_areas(ice_dir)
 ice_functional_groups <- atlantis_functional_groups(ice_dir, 'GroupsIceland.xml', 'BiologyNoFish.xml')
 ice_run_options <- atlantis_run_options(ice_dir, 'RunNoFish.xml')
-ice_fg_count <- atlantis_fg_count(ice_dir, 'OutputNoFish.nc', area_data,
+ice_fg_count <- atlantis_fg_count(ice_dir, 'OutputNoFish.nc', ice_area_data,
     ice_functional_groups[c(ice_functional_groups$Name == 'Cod'),])
