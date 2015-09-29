@@ -66,9 +66,9 @@ atlantis_run_options <- function (adir, opt_file) {
 atlantis_fg_count <- function (adir, nc_file = Sys.glob(file.path(adir, "output*.nc")), area_data, fg_group) {
     nc_out <- ncdf4::nc_open(file.path(adir, nc_file))
 
-    # Fetch 1_Nums..x_Nums for functional group, put in a 4 dimensional array
+    # Fetch 1_Nums..x_Nums for functional group, put in a 4 dimensional array,
     nc_variables <- paste0(fg_group$Name, seq_len(as.character(fg_group$NumCohorts)), '_Nums')
-    count <- array(
+    rv <- array(
         Vectorize(ncdf4::ncvar_get, vectorize.args = 'varid')(nc_out, nc_variables),
         dim = c(
             length(nc_out$dim$z$vals),
@@ -76,10 +76,13 @@ atlantis_fg_count <- function (adir, nc_file = Sys.glob(file.path(adir, "output*
             length(nc_out$dim$t$vals),
             as.character(fg_group$NumCohorts)),
         dimnames = list(
-            nc_out$dim$z$vals, # Depth layers
-            area_data$name, # Area boxes
-            nc_out$dim$t$vals,  # Times
-            seq_len(as.character(fg_group$NumCohorts)))) # Age Classes
+            depth = nc_out$dim$z$vals,
+            area = area_data$name,
+            time = nc_out$dim$t$vals,
+            ageClass = seq_len(as.character(fg_group$NumCohorts))))
+
+    # Flatten into data frame
+    as.data.frame.table(rv, responseName = 'count')
 }
 
 lv_dir <- 'atlantis-L_Vic-OutputFolderTest2/'
