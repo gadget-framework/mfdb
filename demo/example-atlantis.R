@@ -55,14 +55,6 @@ atlantis_functional_groups <- function (adir, fg_file, bio_file) {
     names(flag_age_mat) <- c('GroupCode', 'FLAG_AGE_MAT')
     fg_data <- merge(fg_data, flag_age_mat, all.x = TRUE)
 
-    bio_nodes <- XML::getNodeSet(bio_doc, "//Attribute[@AttributeName='SpawningProportion']/GroupValue")
-    spawning_proportion <- as.data.frame(t(xmlAllAttrs(bio_nodes)))
-    spawning_proportion <- data.frame(
-        GroupCode = spawning_proportion$GroupName,
-        SpawningProportion = I(lapply(strsplit(as.character(spawning_proportion$AttributeValue), " "), as.numeric)),
-        stringsAsFactors = FALSE)
-    fg_data <- merge(fg_data, spawning_proportion, all.x = TRUE)
-
     return(fg_data)
 }
 
