@@ -89,13 +89,19 @@ atlantis_fg_count <- function (adir,
     # Flatten into data frame, convert columns back to integer
     rv <- as.data.frame.table(rv, responseName = 'count')
     age_class_size <- as.numeric(as.character(fg_group$NumAgeClassSize))
+    year_secs <- 60 * 60 * 24 * 365  # NB: Atlantis treats years as 365 days, no execeptions
+    month_secs <- year_secs / 12 # TODO: If month == 30 days is used, this will slip
     data.frame(
         depth = as.numeric(levels(rv$depth))[rv$depth],
         area = rv$area,
         time = rv$time,
-        year = (as.numeric(levels(rv$time)) / (60 * 60 * 24 * 365) + start_year)[rv$time],
-        month = (as.numeric(levels(rv$time)) %% (60 * 60 * 24 * 365 / 12) + 1)[rv$time],  # TODO: If month == 30 days is used, this isn't going to work
+        # Add start_year to years
+        year = (as.numeric(levels(rv$time)) / year_secs + start_year)[rv$time],
+        # Months are remainder from year_secs divided by month_secs
+        month = (((as.numeric(levels(rv$time)) %% year_secs) %/% month_secs) + 1)[rv$time],
+        # Age is mid-point of sequence of age_class_size values
         age = seq(age_class_size / 2, to = age_class_size * 10, by = age_class_size)[rv$ageClass],
+        # Maturity stage is mature iff ageClass greater than FLAG_AGE_MAT
         maturity_stage = ifelse(as.numeric(levels(rv$ageClass)) > as.numeric(as.character(fg_group$FLAG_AGE_MAT)),5,1)[rv$ageClass],
         count = rv$count,
         stringsAsFactors = TRUE)
