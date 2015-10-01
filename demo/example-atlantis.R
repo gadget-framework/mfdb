@@ -64,7 +64,11 @@ atlantis_run_options <- function (adir, opt_file) {
     return(opt_data)
 }
 
-atlantis_fg_count <- function (adir, nc_file = Sys.glob(file.path(adir, "output*.nc")), area_data, fg_group) {
+atlantis_fg_count <- function (adir,
+        nc_file = Sys.glob(file.path(adir, "output*.nc")),
+        area_data,
+        fg_group,
+        start_year = 1948) {
     nc_out <- ncdf4::nc_open(file.path(adir, nc_file))
 
     # Fetch 1_Nums..x_Nums for functional group, put in a 4 dimensional array,
@@ -82,8 +86,19 @@ atlantis_fg_count <- function (adir, nc_file = Sys.glob(file.path(adir, "output*
             time = nc_out$dim$t$vals,
             ageClass = seq_len(as.character(fg_group$NumCohorts))))
 
-    # Flatten into data frame
-    as.data.frame.table(rv, responseName = 'count')
+    # Flatten into data frame, convert columns back to integer
+    rv <- as.data.frame.table(rv, responseName = 'count')
+    age_class_size <- as.numeric(as.character(fg_group$NumAgeClassSize))
+    data.frame(
+        depth = as.numeric(levels(rv$depth))[rv$depth],
+        area = rv$area,
+        time = rv$time,
+        year = (as.numeric(levels(rv$time)) / (60 * 60 * 24 * 365) + start_year)[rv$time],
+        month = (as.numeric(levels(rv$time)) %% (60 * 60 * 24 * 365 / 12) + 1)[rv$time],  # TODO: If month == 30 days is used, this isn't going to work
+        age = seq(age_class_size / 2, to = age_class_size * 10, by = age_class_size)[rv$ageClass],
+        maturity_stage = ifelse(as.numeric(levels(rv$ageClass)) > as.numeric(as.character(fg_group$FLAG_AGE_MAT)),5,1)[rv$ageClass],
+        count = rv$count,
+        stringsAsFactors = TRUE)
 }
 
 lv_dir <- 'atlantis-L_Vic-OutputFolderTest2/'
