@@ -76,39 +76,45 @@ atlantis_fg_count <- function (adir,
         start_year = 1948) {
     nc_out <- ncdf4::nc_open(file.path(adir, nc_file))
 
-    # Fetch 1_Nums..x_Nums for functional group, put in a 4 dimensional array,
-    nc_variables <- paste0(fg_group$Name, seq_len(as.character(fg_group$NumCohorts)), '_Nums')
-    rv <- array(
-        Vectorize(ncdf4::ncvar_get, vectorize.args = 'varid')(nc_out, nc_variables),
-        dim = c(
-            length(nc_out$dim$z$vals),
-            length(nc_out$dim$b$vals),
-            length(nc_out$dim$t$vals),
-            as.character(fg_group$NumCohorts)),
-        dimnames = list(
-            depth = nc_out$dim$z$vals,
-            area = area_data$name,
-            time = nc_out$dim$t$vals,
-            ageClass = seq_len(as.character(fg_group$NumCohorts))))
+    # Get all vars for functional group 1_(var_name)..x_(var_name), put in one big array
+    ncvar_get_all <- Vectorize(ncdf4::ncvar_get, vectorize.args = 'varid')
+    get_all_fg_variables <- function(var_name) {
+        nc_variables <- paste0(fg_group$Name, seq_len(as.character(fg_group$NumCohorts)), '_', var_name)
+        ncvar_get_all(nc_out, nc_variables)
+    }
 
-    # Flatten into data frame, convert columns back to integer
-    rv <- as.data.frame.table(rv, responseName = 'count')
+    # Read in all StructN and Nums data for the functional group
+    fg_Nums <- get_all_fg_variables('Nums')
+    fg_StructN <- get_all_fg_variables('StructN')
+
+    # Populate initial data frame that contains the combinatorial explosions of the axes
     age_class_size <- as.numeric(as.character(fg_group$NumAgeClassSize))
+    dims <- expand.grid(
+        depth = nc_out$dim$z$vals,
+        area = as.character(area_data$name),
+        time = nc_out$dim$t$vals,
+        # Age is mid-point of sequence of age_class_size values
+        age = seq(age_class_size / 2, by = age_class_size, length.out = as.numeric(as.character(fg_group$NumCohorts))),
+        stringsAsFactors = TRUE)
+
+    # Add extra values to make this MFDB-compliant
     year_secs <- 60 * 60 * 24 * 365  # NB: Atlantis treats years as 365 days, no execeptions
     month_secs <- year_secs / 12 # TODO: If month == 30 days is used, this will slip
+    weight_grams <- 3.65 * as.numeric(fg_StructN) * 5.7 * 20 / 1000  # TODO: Ish?
     data.frame(
-        depth = as.numeric(levels(rv$depth))[rv$depth],
-        area = rv$area,
-        time = rv$time,
+        depth = dims$depth,
+        area = dims$area,
+        time = factor(dims$time),
         # Add start_year to years
-        year = (as.numeric(levels(rv$time)) / year_secs + start_year)[rv$time],
+        year = as.numeric(dims$time) / year_secs + start_year,
         # Months are remainder from year_secs divided by month_secs
-        month = (((as.numeric(levels(rv$time)) %% year_secs) %/% month_secs) + 1)[rv$time],
-        # Age is mid-point of sequence of age_class_size values
-        age = seq(age_class_size / 2, to = age_class_size * 10, by = age_class_size)[rv$ageClass],
+        month = (as.numeric(dims$time) %% year_secs) %/% month_secs + 1,
+        age = dims$age,
         # Maturity stage is mature iff ageClass greater than FLAG_AGE_MAT
-        maturity_stage = ifelse(as.numeric(levels(rv$ageClass)) > fg_group$FLAG_AGE_MAT, 5, 1)[rv$ageClass],
-        count = rv$count,
+        maturity_stage = ifelse(dims$age > fg_group$FLAG_AGE_MAT * age_class_size, 5, 1),
+        weight = weight_grams,  # TODO: Units?
+        length = (weight_grams / fg_group$FLAG_LI_A) ^ (1 / fg_group$FLAG_LI_B),
+        count = as.numeric(fg_Nums),
         stringsAsFactors = TRUE)
 }
 
