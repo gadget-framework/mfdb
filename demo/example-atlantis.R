@@ -105,6 +105,7 @@ atlantis_fg_count <- function (adir,
         depth = dims$depth,
         area = dims$area,
         time = factor(dims$time),
+        species = fg_group$LongName,
         # Add start_year to years
         year = as.numeric(dims$time) / year_secs + start_year,
         # Months are remainder from year_secs divided by month_secs
