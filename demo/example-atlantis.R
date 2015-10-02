@@ -49,10 +49,15 @@ atlantis_functional_groups <- function (adir, fg_file, bio_file) {
     # Pull out useful flags from biology file and combine
     xmlAllAttrs <- Vectorize(XML::xmlAttrs)
     bio_doc <- XML::xmlParse(file.path(adir, bio_file))
-    bio_nodes <- XML::getNodeSet(bio_doc, "//Attribute[@AttributeName='FLAG_AGE_MAT']/GroupValue")
-    flag_age_mat <- as.data.frame(t(xmlAllAttrs(bio_nodes)))
-    names(flag_age_mat) <- c('GroupCode', 'FLAG_AGE_MAT')
-    fg_data <- merge(fg_data, flag_age_mat, all.x = TRUE)
+    for (flag in c('FLAG_AGE_MAT', 'FLAG_LI_A', 'FLAG_LI_B')) {
+        bio_flags <- xmlAllAttrs(XML::getNodeSet(bio_doc, paste0("//Attribute[@AttributeName='", flag, "']/GroupValue")))
+        flag_table <- data.frame(
+            GroupCode = bio_flags["GroupName",],
+            Value = as.numeric(bio_flags["AttributeValue",]),
+            stringsAsFactors = TRUE)
+        names(flag_table)[[2]] <- flag
+        fg_data <- merge(fg_data, flag_table, all.x = TRUE, sort = FALSE)
+    }
 
     return(fg_data)
 }
@@ -102,7 +107,7 @@ atlantis_fg_count <- function (adir,
         # Age is mid-point of sequence of age_class_size values
         age = seq(age_class_size / 2, to = age_class_size * 10, by = age_class_size)[rv$ageClass],
         # Maturity stage is mature iff ageClass greater than FLAG_AGE_MAT
-        maturity_stage = ifelse(as.numeric(levels(rv$ageClass)) > as.numeric(as.character(fg_group$FLAG_AGE_MAT)),5,1)[rv$ageClass],
+        maturity_stage = ifelse(as.numeric(levels(rv$ageClass)) > fg_group$FLAG_AGE_MAT, 5, 1)[rv$ageClass],
         count = rv$count,
         stringsAsFactors = TRUE)
 }
