@@ -62,6 +62,12 @@ atlantis_functional_groups <- function (adir, fg_file, bio_file) {
     return(fg_data)
 }
 
+atlantis_fisheries <- function (adir, fisheries_file) {
+    fisheries_doc <- XML::xmlParse(file.path(adir, fisheries_file))
+    fisheries_data <- xmlGetAttributes(fisheries_doc, 'Fishery', c('Code', 'Index', 'Name', 'IsRec', 'NumSubFleets'))
+    fisheries_data
+}
+
 atlantis_run_options <- function (adir, opt_file) {
     opt_doc <- XML::xmlParse(file.path(adir, opt_file))
     opt_data <- xmlGetAttributes(opt_doc, "ScenarioOptions", c("dt"))
@@ -105,15 +111,15 @@ atlantis_fg_count <- function (adir,
     nc_out <- ncdf4::nc_open(file.path(adir, nc_file))
 
     # Get all vars for functional group 1_(var_name)..x_(var_name), put in one big array
-    ncvar_get_all <- Vectorize(ncdf4::ncvar_get, vectorize.args = 'varid')
-    get_all_fg_variables <- function(var_name) {
-        nc_variables <- paste0(fg_group$Name, seq_len(as.character(fg_group$NumCohorts)), '_', var_name)
+    get_all_variables <- function(...) {
+        ncvar_get_all <- Vectorize(ncdf4::ncvar_get, vectorize.args = 'varid', SIMPLIFY = "array")
+        nc_variables <- apply(expand.grid(..., stringsAsFactors = FALSE), 1, function (x) paste(x, collapse="_"))
         ncvar_get_all(nc_out, nc_variables)
     }
 
     # Read in all StructN and Nums data for the functional group
-    fg_Nums <- get_all_fg_variables('Nums')
-    fg_StructN <- get_all_fg_variables('StructN')
+    fg_Nums <- get_all_variables(paste0(fg_group$Name, seq_len(as.character(fg_group$NumCohorts))), 'Nums')
+    fg_StructN <- get_all_variables(paste0(fg_group$Name, seq_len(as.character(fg_group$NumCohorts))), 'StructN')
 
     # Populate initial data frame that contains the combinatorial explosions of the axes
     age_class_size <- as.numeric(as.character(fg_group$NumAgeClassSize))
@@ -147,6 +153,40 @@ atlantis_fg_count <- function (adir,
         stringsAsFactors = TRUE)
 }
 
+atlantis_fisheries_catch <- function(adir,
+        catch_file,
+        area_data,
+        fishery,
+        species,
+        start_year = 1948) {
+    nc_out <- ncdf4::nc_open(file.path(adir, catch_file))
+
+    # Get all vars for functional group 1_(var_name)..x_(var_name), put in one big array
+    get_all_variables <- function(...) {
+        ncvar_get_all <- Vectorize(ncdf4::ncvar_get, vectorize.args = 'varid', SIMPLIFY = "array")
+        nc_variables <- apply(expand.grid(..., stringsAsFactors = FALSE), 1, function (x) paste(x, collapse="_"))
+        ncvar_get_all(nc_out, nc_variables)
+    }
+
+    catch_tonnes <- get_all_variables(species, 'Catch', paste0('FC', fishery$Index))
+
+    # Populate initial data frame that contains the combinatorial explosions of the axes
+    dims <- expand.grid(
+        area = as.character(area_data$name),
+        time = nc_out$dim$t$vals,
+        species = species,
+        stringsAsFactors = TRUE)
+
+    # Combine with catch data
+    data.frame(
+        area = dims$area,
+        time = dims$time,
+        fishery = fishery$Code,
+        species = dims$species,
+        weight_total = as.numeric(catch_tonnes),
+        stringsAsFactors = TRUE)
+}
+
 lv_dir <- 'atlantis-L_Vic-OutputFolderTest2/'
 lv_area_data <- atlantis_read_areas(lv_dir)
 lv_temp <- atlantis_tracer(lv_dir, 'outputLV.nc', lv_area_data, 'Temp')
@@ -154,6 +194,11 @@ lv_functional_groups <- atlantis_functional_groups(lv_dir, 'LVGroups.xml', 'LV_b
 lv_run_options <- atlantis_run_options(lv_dir, 'LV_run.xml')
 lv_fg_count <- atlantis_fg_count(lv_dir, 'outputLV.nc', lv_area_data,
     lv_functional_groups[c(lv_functional_groups$Name == 'Birds'),])
+lv_fisheries <- atlantis_fisheries(lv_dir, 'LVFisheries_New.xml')
+lv_catch <- atlantis_fisheries_catch(lv_dir, 'outputLVCATCH.nc',
+    lv_area_data,
+    lv_fisheries[lv_fisheries$Code == 'llHooks',],
+    c('LN', 'CG'))
 
 ice_dir <- 'atlantis-Iceland-NoFishing20150909-1'
 ice_options <- atlantis_run_options(ice_dir, 'RunNoFish.xml')
