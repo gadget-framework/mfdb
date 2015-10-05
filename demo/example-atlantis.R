@@ -69,6 +69,34 @@ atlantis_run_options <- function (adir, opt_file) {
     return(opt_data)
 }
 
+atlantis_tracer <- function (adir,
+        nc_file = Sys.glob(file.path(adir, "output*.nc")),
+        area_data,
+        tracer_name = 'Temp',
+        start_year = 1948) {
+    nc_out <- ncdf4::nc_open(file.path(adir, nc_file))
+
+    tracer <- ncdf4::ncvar_get(nc_out, tracer_name)
+    dims <- expand.grid(
+        depth = nc_out$dim$z$vals,
+        area = as.character(area_data$name),
+        time = nc_out$dim$t$vals,
+        stringsAsFactors = TRUE)
+
+    year_secs <- 60 * 60 * 24 * 365  # NB: Atlantis treats years as 365 days, no execeptions
+    month_secs <- year_secs / 12 # TODO: If month == 30 days is used, this will slip
+    data.frame(
+        depth = dims$depth,
+        area = dims$area,
+        time = factor(dims$time),
+        # Add start_year to years
+        year = as.numeric(dims$time) / year_secs + start_year,
+        # Months are remainder from year_secs divided by month_secs
+        month = (as.numeric(dims$time) %% year_secs) %/% month_secs + 1,
+        value = as.numeric(tracer),
+        stringsAsFactors = TRUE)
+}
+
 atlantis_fg_count <- function (adir,
         nc_file = Sys.glob(file.path(adir, "output*.nc")),
         area_data,
@@ -133,3 +161,4 @@ ice_functional_groups <- atlantis_functional_groups(ice_dir, 'GroupsIceland.xml'
 ice_run_options <- atlantis_run_options(ice_dir, 'RunNoFish.xml')
 ice_fg_count <- atlantis_fg_count(ice_dir, 'OutputNoFish.nc', ice_area_data,
     ice_functional_groups[c(ice_functional_groups$Name == 'Cod'),])
+ice_temp <- atlantis_tracer(ice_dir, 'OutputNoFish.nc', ice_area_data, 'Temp')
