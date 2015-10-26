@@ -8,6 +8,7 @@ all_components <- c(
         "catchdistribution",
         "catchstatistics",
         "stockdistribution",
+        "surveydistribution",
         "stomachcontent",
         "migrationpenalty",
         "catchinkilos",
@@ -58,6 +59,9 @@ for (type in all_components) {
     } else if (type == "stockdistribution") {
         default_opts <- list(type,
             data = data.frame(year = 1, step = 1, area = 1, aardvark = 1, age = 1, length = 1, number = 1))
+    } else if (type == "surveydistribution") {
+        default_opts <- list(type,
+            data = data.frame(year = 1, step = 1, area = 1, age = 1, length = 1, number = 1))
     } else if (type == "stomachcontent") {
         default_opts <- list(type,
             data = data.frame(year = 1, step = 1, area = 1, predator = 1, prey = 1, ratio = 1),

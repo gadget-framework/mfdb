@@ -240,8 +240,35 @@ gadget_surveyindices_component <- function (
 
 gadget_surveydistribution_component <- function (
         name,
-        data = NULL) {
-    stop("Not implemented")
+        data = NULL,
+        area = NULL,
+        length = NULL,
+        age = NULL,
+        stocknames = c(),
+        fittype = 'linearfit',
+        slope = NULL,
+        intercept = NULL,
+        epsilon = 10,
+        likelihoodtype = 'multinomial') {
+
+    compare_cols(names(data), c("year", "step", "area", "age", "length", "number"))
+
+    # Combine standard columns with fit type parameters
+    return(c(
+        list(
+            datafile = gadget_file(fname('Data', fname_prefix(sys.call(0), name)), data=data),
+            areaaggfile = agg_file('area', fname_prefix(sys.call(0), name), if(is.null(area)) attr(data, "area") else area),
+            lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name), if(is.null(length)) attr(data, "length") else length),
+            ageaggfile  = agg_file('age', fname_prefix(sys.call(0), name), if(is.null(age)) attr(data, "age") else age),
+            stocknames = stocknames,
+            fittype = fittype,
+            parameters = ""),
+        if (is.null(slope)) c() else list(slope = slope),
+        if (is.null(intercept)) c() else list(intercept = intercept),
+        list(
+            epsilon = epsilon,
+            likelihoodtype = likelihoodtype),
+        NULL))
 }
 
 # http://www.hafro.is/gadget/userguide/userguide.html#x1-1300008.8
