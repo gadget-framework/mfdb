@@ -1,3 +1,4 @@
+    * Implement surveydistribution likelihood component
     * Better gadget_* error messages when column names don't match (or there's no data at all)
     * Example for fecthing DATRAS Stomach data
     * Add mfdb_find_species helper to map from other species lists
