@@ -247,6 +247,12 @@ ok_group("Function either provided explicitly or based on generator", {
 
     ok(cmp_error(
         gadget_likelihood_component("catchstatistics", data = structure(
+            data.frame(),
+            generator = "mfdb_sample_meanlength_stddev")),
+        "data given to gadget_catchstatistics_component is empty"), "Noticed missing data")
+
+    ok(cmp_error(
+        gadget_likelihood_component("catchstatistics", data = structure(
             data.frame(year = 1990, step = 1, area = 1, age = 1, number = 1, mean = 1),
             generator = "mfdb_sample_meanlength_stddev")),
         "stddev"), "Noticed missing column")

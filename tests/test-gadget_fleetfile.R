@@ -284,5 +284,10 @@ ok_group("Error conditions", {
             area = c(1),
             count = c(5),
             stringsAsFactors = FALSE), area = area_group)),
-        'stoop'), "Notice incompatible columns")
+        'gadget_fleet_component expects.*stoop'), "Notice incompatible columns")
+
+    ok(cmp_error(
+        gadget_fleet_component('totalfleet', livesonareas = c(1), data = structure(data.frame(
+            stringsAsFactors = FALSE), area = area_group)),
+        'gadget_fleet_component is empty'), "Notice complete lack of data, say where from")
 })

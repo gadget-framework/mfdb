@@ -19,18 +19,23 @@ component_replace <- function(gfile, newcomponent, namefn, component_name = "com
 compare_cols <- function (actual, expected) {
     if (is.null(expected)) return(invisible(NULL))
 
+    if (length(actual) == 0) {
+        stop("data given to ",
+            as.character(sys.call(-1)[[1]]),
+            " is empty")
+    }
+
     # Fill NAs in expected with whatever we did get
     expected[is.na(expected)] <- actual[is.na(expected)]
 
     if (!isTRUE(all.equal(actual, expected))) {
-        stop(paste(c(
-            "Expected data to have columns '",
+        stop(
+            as.character(sys.call(-1)[[1]]),
+            " expects data to have columns '",
             paste(expected, collapse=","),
             "', not '",
             paste(actual, collapse=","),
-            "'",
-            NULL
-            ), collapse = ""))
+            "'")
     }
     return(invisible(NULL))
 }
