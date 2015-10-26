@@ -7,7 +7,8 @@
 }
 
 \usage{
-gadget_likelihood_component(type, weight = 0, name = type, likelihoodfile = 'likelihood', ...)
+gadget_likelihood_component(type, weight = 0, name = type,
+    likelihoodfile = 'likelihood', ...)
 }
 
 \arguments{

@@ -34,7 +34,10 @@ mfdb_find_species(c("gad mor", "tube worms"))
 # Work out a map from all Prey_Species_Name values to MFDB species codes
 species_map <- mfdb_find_species(levels(stomachs$Prey_Species_Name))['name',]
 # Only include data where there is one possible solution
-species_map <- vapply(species_map, function (names) if(length(names) == 1) names else as.character(NA), "")
+species_map <- vapply(
+    species_map,
+    function (names) if(length(names) == 1) names else as.character(NA),
+    "")
 
 # Can then remap the species column with:
 plyr::revalue(stomachs$Prey_Species_Name, species_map)
