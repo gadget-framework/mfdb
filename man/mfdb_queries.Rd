@@ -81,7 +81,7 @@ data that is returned.
 \describe{
     \item{institute}{A vector of institute names, see mfdb::institute for possible values}
     \item{gear}{A vector of gear names, see mfdb::gear for possible values}
-    \item{vessel}{A vector of vessel names, see mfdb::vessel for possible values}
+    \item{vessel_type}{A vector of vessel types, see mfdb::vessel_type for possible values}
     \item{sampling_type}{A vector of sampling_type names, see mfdb::sampling_type for possible values}
     \item{species}{A vector of species names, see mfdb::species for possible values}
     \item{sex}{A vector of sex names, see mfdb::sex for possible values}

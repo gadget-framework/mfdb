@@ -49,7 +49,8 @@ If you want to remove the data, import empty data.frames with the same \code{dat
 \describe{
     \item{institute}{Optional. An institute name, see mfdb::institute for possible values}
     \item{gear}{Optional. Gear name, see mfdb::gear for possible values}
-    \item{vessel}{Optional. Vessel name, see mfdb::vessel for possible values}
+    \item{vessel_type}{Optional. Vessel type, see mfdb::vessel_type for possible values}
+    \item{vessel_name}{Optional. Vessel name, populate with TODO}
     \item{sampling_type}{Optional. A sampling_type, see mfdb::sampling_type for possible values}
     \item{year}{Required. Year each sample was taken, e.g. \code{c(2000,2001)}}
     \item{month}{Required. Month (1--12) each sample was taken, e.g. \code{c(1,12)}}

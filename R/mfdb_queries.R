@@ -173,7 +173,8 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
 
         institute = 'c.institute_id',
         gear = 'c.gear_id',
-        vessel = 'c.vessel_id',
+        vessel_type = 'c.vessel_type_id',
+        vessel_name = 'c.vessel_name_id',
         sampling_type = 'c.sampling_type_id',
 
         year = 'c.year',
@@ -250,7 +251,8 @@ mfdb_sample_grouping <- function (mdb,
             data_source = "c.data_source_id",
             year = "c.year", step = "c.month", area = "c.areacell_id", age = "c.age",
             maturity_stage = "c.maturity_stage_id", length = "c.length",
-            institute = "c.institute_id", gear = "c.gear_id", vessel = "c.vessel_id",
+            institute = "c.institute_id", gear = "c.gear_id", vessel_type = "c.vessel_type_id",
+            vessel_name = "c.vessel_name_id",
             sampling_type = "c.sampling_type_id", species ="c.species_id", sex = "c.sex_id"),
         calc_cols = c(),
         core_table = "sample",
@@ -266,6 +268,11 @@ mfdb_sample_grouping <- function (mdb,
     group_cols <- gsub("^timestep$", "step", group_cols)
     if ('step' %in% group_cols && 'timestep' %in% names(params)) {
         params$step <- params$timestep
+    }
+
+    # Fix up old vessel name
+    if ('vessel' %in% names(params)) {
+        col_defs$vessel <- col_defs$vessel_type
     }
 
     # Call relevant clause function for all group_cols

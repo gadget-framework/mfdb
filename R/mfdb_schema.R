@@ -42,16 +42,6 @@ mfdb_update_schema <- function(mdb) {
 
 # Create MFDB schema from scratch, or print commands
 schema_from_0 <- function(mdb) {
-    fk <- function (...) {
-        tbls <- c(...)[c(...) %in% mfdb_taxonomy]
-        cs_tbls <- c(...)[c(...) %in% mfdb_cs_taxonomy]
-        c(
-            if (length(cs_tbls) > 0) paste0("FOREIGN KEY(case_study_id, ", cs_tbls, "_id) REFERENCES ", cs_tbls, "(case_study_id, ", cs_tbls, "_id)"),
-            if (length(tbls) > 0) paste0("FOREIGN KEY(", tbls, "_id) REFERENCES ", tbls, "(", tbls, "_id)"),
-            NULL
-        )
-    }
-
     mdb$logger$info("Creating schema from scratch")
 
     mfdb_create_table(mdb, "mfdb_schema", "Table to keep track of schema version", cols = c(
@@ -92,7 +82,8 @@ schema_from_0 <- function(mdb) {
 
         "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
-        "vessel_id", "INT REFERENCES vessel(vessel_id)", "Vessel used",
+        "vessel_type_id", "INT", "Vessel type used",
+        "vessel_name_id", "INT", "Vessel name",
         "sampling_type_id", "INT", "Sampling type",
 
         "year", "INT NOT NULL", "Year sample was undertaken",
@@ -111,7 +102,7 @@ schema_from_0 <- function(mdb) {
         "count", "REAL DEFAULT 1", "Number of fish meeting this criteria"
     ), keys = c(
         "CHECK(month BETWEEN 1 AND 12)",
-        fk('data_source', 'areacell', 'sampling_type')
+        fk('data_source', 'areacell', 'sampling_type', 'vessel_type', 'vessel_name')
     ))
 
     mfdb_create_table(mdb, "predator", "Predators in predator/prey sample", cols = c(
@@ -121,7 +112,8 @@ schema_from_0 <- function(mdb) {
 
         "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
-        "vessel_id", "INT REFERENCES vessel(vessel_id)", "Vessel used",
+        "vessel_type_id", "INT", "Vessel type used",
+        "vessel_name_id", "INT", "Vessel name",
         "sampling_type_id", "INT", "Sampling type",
 
         "year", "INT NOT NULL", "Year sample was undertaken",
@@ -140,7 +132,7 @@ schema_from_0 <- function(mdb) {
         NULL
     ), keys = c(
         "CHECK(month BETWEEN 1 AND 12)",
-        fk('data_source', 'areacell', 'sampling_type')
+        fk('data_source', 'areacell', 'sampling_type', 'vessel_type', 'vessel_name')
     ))
 
     mfdb_create_table(mdb, "prey", "Prey in predator/prey sample", cols = c(
@@ -174,6 +166,16 @@ schema_from_3 <- function(mdb) {
     mdb$logger$info("Upgrading schema from version 3")
     mfdb_send(mdb, "ALTER TABLE prey ALTER COLUMN count DROP NOT NULL")
 
+    mfdb_send(mdb, "ALTER TABLE vessel RENAME TO vessel_type")
+    mfdb_send(mdb, "ALTER TABLE vessel_type RENAME COLUMN vessel_id TO vessel_type_id")
+    mfdb_create_taxonomy_table(mdb, "vessel_name")
+    mfdb_send(mdb, "ALTER TABLE sample RENAME COLUMN vessel_id TO vessel_type_id")
+    mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN vessel_name_id INT")
+    mfdb_send(mdb, "ALTER TABLE sample ADD ", fk('vessel_name'))
+    mfdb_send(mdb, "ALTER TABLE predator RENAME COLUMN vessel_id TO vessel_type_id")
+    mfdb_send(mdb, "ALTER TABLE predator ADD COLUMN vessel_name_id INT")
+    mfdb_send(mdb, "ALTER TABLE predator ADD ", fk('vessel_name'))
+
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 4")
 }
 
@@ -181,8 +183,8 @@ schema_from_4 <- function(mdb) {
     mdb$logger$info("Schema up-to-date")
 }
 
-mfdb_taxonomy <- c("case_study", "institute", "gear", "vessel", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage")
-mfdb_cs_taxonomy <- c("areacell", "fleet", "sampling_type", "data_source", "index_type")
+mfdb_taxonomy <- c("case_study", "institute", "gear", "vessel_type", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage")
+mfdb_cs_taxonomy <- c("areacell", "fleet", "sampling_type", "data_source", "index_type", "vessel_name")
 mfdb_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', 'prey')
 
 mfdb_create_taxonomy_table <- function(mdb, table_name) {
@@ -269,6 +271,17 @@ mfdb_create_indexes <- function(mdb) {
        return_type = "double precision",
        final_body = "$$ SELECT CASE WHEN $1[1] < 2 THEN NULL ELSE |/ ( (1/($1[1] - 1)) * ($1[3] - POW($1[2], 2) / $1[1]) ) END $$ LANGUAGE 'sql'")
    mdb$logger$info("Creating indexes")
+}
+
+# Create a foreign key restriction for a table
+fk <- function (...) {
+    tbls <- c(...)[c(...) %in% mfdb_taxonomy]
+    cs_tbls <- c(...)[c(...) %in% mfdb_cs_taxonomy]
+    c(
+        if (length(cs_tbls) > 0) paste0("FOREIGN KEY(case_study_id, ", cs_tbls, "_id) REFERENCES ", cs_tbls, "(case_study_id, ", cs_tbls, "_id)"),
+        if (length(tbls) > 0) paste0("FOREIGN KEY(", tbls, "_id) REFERENCES ", tbls, "(", tbls, "_id)"),
+        NULL
+    )
 }
 
 # Return the major version of the package

@@ -99,12 +99,20 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
         count_default <- c(1)
     }
 
+    # Fall back to old vessel name
+    if ("vessel" %in% colnames(data_in) && !("vessel_type" %in% colnames(data_in))) {
+        vessel_col <- 'vessel'
+    } else {
+        vessel_col <- 'vessel_type'
+    }
+
     # Sanitise data
     survey_sample <- data.frame(
         case_study_id = if (nrow(data_in) > 0) c(mdb$case_study_id) else c(),
         institute_id = sanitise_col(mdb, data_in, 'institute', lookup = 'institute', default = c(NA)),
         gear_id = sanitise_col(mdb, data_in, 'gear', lookup = 'gear', default = c(NA)),
-        vessel_id = sanitise_col(mdb, data_in, 'vessel', lookup = 'vessel', default = c(NA)),
+        vessel_type_id = sanitise_col(mdb, data_in, vessel_col, lookup = 'vessel_type', default = c(NA)),
+        vessel_name_id = sanitise_col(mdb, data_in, 'vessel_name', lookup = 'vessel_name', default = c(NA)),
         sampling_type_id = sanitise_col(mdb, data_in, 'sampling_type', lookup = 'sampling_type', default = c(NA)),
         year = sanitise_col(mdb, data_in, 'year'),
         month = sanitise_col(mdb, data_in, 'month', test = function (x) x %in% 1:12),
@@ -189,12 +197,20 @@ mfdb_import_temperature <- function(mdb, data_in) {
 
 # Import 2 data frames, one for predators, one for prey
 mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "default_stomach") {
+    # Fall back to old vessel name
+    if ("vessel" %in% colnames(predator_data) && !("vessel_type" %in% colnames(predator_data))) {
+        vessel_col <- 'vessel'
+    } else {
+        vessel_col <- 'vessel_type'
+    }
+
     predator_data <- data.frame(
         case_study_id = if (nrow(predator_data) > 0) c(mdb$case_study_id) else c(),
 
         institute_id = sanitise_col(mdb, predator_data, 'institute', lookup = 'institute', default = c(NA)),
         gear_id = sanitise_col(mdb, predator_data, 'gear', lookup = 'gear', default = c(NA)),
-        vessel_id = sanitise_col(mdb, predator_data, 'vessel', lookup = 'vessel', default = c(NA)),
+        vessel_type_id = sanitise_col(mdb, predator_data, vessel_col, lookup = 'vessel_type', default = c(NA)),
+        vessel_name_id = sanitise_col(mdb, predator_data, 'vessel_name', lookup = 'vessel_name', default = c(NA)),
         sampling_type_id = sanitise_col(mdb, predator_data, 'sampling_type', lookup = 'sampling_type', default = c(NA)),
 
         year = sanitise_col(mdb, predator_data, 'year'),
