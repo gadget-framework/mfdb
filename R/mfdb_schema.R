@@ -168,6 +168,10 @@ schema_from_2 <- function(mdb) {
 }
 
 schema_from_3 <- function(mdb) {
+    mdb$logger$info("Upgrading schema from version 3")
+}
+
+schema_from_4 <- function(mdb) {
     mdb$logger$info("Schema up-to-date")
 }
 
