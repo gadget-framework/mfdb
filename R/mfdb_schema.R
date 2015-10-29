@@ -149,7 +149,7 @@ schema_from_0 <- function(mdb) {
 
         "length", "REAL", "Length of prey / mean length of all prey",
         "weight", "REAL", "Weight of prey / mean weight of all prey",
-        "count", "INT NOT NULL DEFAULT 1", "Number of prey meeting this criteria",
+        "count", "INT DEFAULT 1", "Number of prey meeting this criteria",
         NULL
     ), keys = c(
     ))
@@ -169,6 +169,7 @@ schema_from_2 <- function(mdb) {
 
 schema_from_3 <- function(mdb) {
     mdb$logger$info("Upgrading schema from version 3")
+    mfdb_send(mdb, "ALTER TABLE prey ALTER COLUMN count DROP NOT NULL")
 }
 
 schema_from_4 <- function(mdb) {

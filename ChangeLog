@@ -1,6 +1,7 @@
     Version 4.0-0
 
     Schema changes:
+    * Prey numbers doesn't accept NA #18
 
 2015-10-29  Jamie Lentin  <lentinj@shuttlethread.com>
 
