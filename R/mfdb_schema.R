@@ -18,23 +18,26 @@ mfdb_destroy_schema <- function(mdb) {
 
 # Check to see if we need to update schema do it,
 mfdb_update_schema <- function(mdb) {
-    # Find out existing schema version
-    schema_version <- tryCatch({
-        res <- mfdb_fetch(mdb, "SELECT MAX(version) FROM mfdb_schema")
-        ifelse(nrow(res) == 0, 0, res[1, 1])
-    }, error = function (e) 0)
-    target_version <- package_major_version()
+    schema_version <- -1
+    target_version <- -2
+    while (schema_version != target_version) {
+        # Find out existing schema version, if it's what we want return
+        schema_version <- tryCatch({
+            res <- mfdb_fetch(mdb, "SELECT MAX(version) FROM mfdb_schema")
+            ifelse(nrow(res) == 0, 0, res[1, 1])
+        }, error = function (e) 0)
+        target_version <- package_major_version()
 
-    # Find appropriate function and run it
-    fn <- tryCatch(get(paste0("schema_from_", schema_version)), error = function (e) {
-        stop(paste(
-            "DB Schema version", schema_version,
-            "does not match package version", target_version,
-            "& no upgrade step available.\n",
-            "Call mfdb(destroy_schema = TRUE) first.",
-            "Warning: This *will destroy* any existing data"))
-    })
-    fn(mdb)
+        fn <- tryCatch(get(paste0("schema_from_", schema_version)), error = function (e) {
+            stop(paste(
+                "DB Schema version", schema_version,
+                "does not match package version", target_version,
+                "& no upgrade step available.\n",
+                "Call mfdb(destroy_schema = TRUE) first.",
+                "Warning: This *will destroy* any existing data"))
+            })
+        fn(mdb)
+    }
 }
 
 # Create MFDB schema from scratch, or print commands
@@ -164,12 +167,14 @@ schema_from_2 <- function(mdb) {
     mfdb_send(mdb, "DROP TABLE fleet")
     mfdb_create_taxonomy_table(mdb, "fleet")
 
-    mfdb_send(mdb, "UPDATE mfdb_schema SET version = ", sql_quote(package_major_version()))
+    mfdb_send(mdb, "UPDATE mfdb_schema SET version = 3")
 }
 
 schema_from_3 <- function(mdb) {
     mdb$logger$info("Upgrading schema from version 3")
     mfdb_send(mdb, "ALTER TABLE prey ALTER COLUMN count DROP NOT NULL")
+
+    mfdb_send(mdb, "UPDATE mfdb_schema SET version = 4")
 }
 
 schema_from_4 <- function(mdb) {
