@@ -1,3 +1,7 @@
+2015-10-29  Jamie Lentin  <lentinj@shuttlethread.com>
+
+    Version 3.3-0
+
     * Implement surveydistribution likelihood component
     * Better gadget_* error messages when column names don't match (or there's no data at all)
     * Example for fecthing DATRAS Stomach data
