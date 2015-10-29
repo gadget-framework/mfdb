@@ -25,6 +25,12 @@ mfdb_import_sampling_type(mdb, data.frame(
     description = c("Research", "Landings"),
     stringsAsFactors = FALSE))
 
+# Import some boat names
+mfdb_import_cs_taxonomy(mdb, 'vessel_name', data.frame(
+    name = c("boat1", "boat2"),
+    description = c("Boat one", "Boat two"),
+    stringsAsFactors = FALSE))
+
 # Import some landings data
 mfdb_import_survey(mdb,
     data_source = 'landings1',
@@ -35,6 +41,7 @@ mfdb_import_survey(mdb,
         species = c('COD'),
         sampling_type = 'LND',
         vessel_type = '1.COM',
+        vessel_name = 'boat1',
         weight_total = c(1110,1510,1310,1110,1310,1410, 1610,1610,1310,1310,1310,1210),
         stringsAsFactors = TRUE))
 mfdb_import_survey(mdb,
@@ -46,6 +53,7 @@ mfdb_import_survey(mdb,
         species = c('COD'),
         sampling_type = 'LND',
         vessel_type = '2.COM',
+        vessel_name = 'boat2',
         weight_total = c(1120,1520,1320,1120,1320,1420, 1620,1620,1320,1320,1320,1220),
         stringsAsFactors = TRUE))
 area_group <- mfdb_group('divA' = c('divA'))
@@ -155,6 +163,30 @@ ok(cmp_file(gd, "Data/catchinkilos.catchinkilos.sumofsquares",
     "2000\tdivA\t1.COM\t16120",
     "2000\tdivA\t2.COM\t16240",
     NULL), "Wrote yearly data, step was dropped")
+
+ok_group("Can group by vessel name as well", {
+    agg_data <- mfdb_sample_totalweight(mdb, c("vessel_name"), params = list(
+        year = 2000,
+        step = mfdb_timestep_biannually,
+        area = area_group,
+        vessel_name = c('boat1')))
+    ok(cmp(agg_data[[1]], structure(
+        data.frame(
+            year = as.integer(2000),
+            step = c("1", "2"),
+            area = c('divA'),
+            vessel_name = c('boat1', 'boat1'),
+            total_weight = c(
+                1110 + 1510 + 1310 + 1110 + 1310 + 1410,
+                1610 + 1610 + 1310 + 1310 + 1310 + 1210,
+                NULL),
+            stringsAsFactors = FALSE),
+        year = list("2000" = 2000),
+        step = mfdb_timestep_biannually,
+        area = area_group,
+        vessel_name = list('boat1' = 'boat1'),
+        generator = "mfdb_sample_totalweight")), "Can query by vessel_name")
+})
 
 ok_group("Can import counts too, but doesn't affect result", {
     mfdb_import_survey(mdb,
