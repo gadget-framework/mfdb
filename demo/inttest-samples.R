@@ -225,7 +225,7 @@ ok_group("Filtering of samples", {
         data.frame(
             institute = 'MRI',
             gear = 'GIL',
-            vessel = '1.RSH',
+            vessel_type = '1.RSH',
             sampling_type = 'SEA',
             year = c('1998'),
             month = c(1:12),
@@ -240,7 +240,7 @@ ok_group("Filtering of samples", {
         data.frame(
             institute = 'ICES',
             gear = 'DSE',
-            vessel = '2.RSH',
+            vessel_type = '2.RSH',
             sampling_type = 'SEA',
             year = c('1998'),
             month = c(1:12),
@@ -302,7 +302,7 @@ ok_group("Filtering of samples", {
             stringsAsFactors = FALSE)),
        "SEA in both, got everything")
 
-    # Filtering by gear,institute, vessel or sampling_type will break down to one or other
+    # Filtering by gear,institute, vessel_type or sampling_type will break down to one or other
     ok(cmp(
         mfdb_sample_meanlength(mdb, c(), list(
             gear = 'GIL',
@@ -321,7 +321,7 @@ ok_group("Filtering of samples", {
        "GIL means survey1")
     ok(cmp(
         mfdb_sample_meanlength(mdb, c(), list(
-            vessel = '1.RSH',
+            vessel_type = '1.RSH',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
@@ -353,7 +353,7 @@ ok_group("Filtering of samples", {
        "ICES means survey2")
     ok(cmp(
         mfdb_sample_meanlength(mdb, c(), list(
-            vessel = '2.RSH',
+            vessel_type = '2.RSH',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
@@ -372,7 +372,7 @@ ok_group("Filtering of samples", {
     ok(cmp(
         nrow(mfdb_sample_meanlength(mdb, c(), list(
             gear = 'GIL',
-            vessel = '2.RSH',
+            vessel_type = '2.RSH',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
@@ -385,7 +385,7 @@ ok_group("Filtering of samples", {
     mfdb_import_sampling_type(mdb, data.frame(name = c("SEA", "MOO"), description = c("Sea", "Seacow")))
     ok(cmp(
         mfdb_sample_meanlength(mdb, c(), list(
-            vessel = '2.RSH',
+            vessel_type = '2.RSH',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
@@ -457,7 +457,7 @@ ok_group("Invalid parameters", {
     ok(cmp(
         mfdb_sample_count(mdb, c(), list(
             camelcamelcamel = "No thanks",
-            vessel = '2.RSH',
+            vessel_type = '2.RSH',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
@@ -472,7 +472,7 @@ ok_group("Invalid parameters", {
     ok(cmp_error(
         mfdb_sample_count(mdb, c("camelcamelcamel"), list(
             camelcamelcamel = "No thanks",
-            vessel = '2.RSH',
+            vessel_type = '2.RSH',
             area = mfdb_group(divA = c("divA")),
             timestep = mfdb_timestep_biannually,
             age = mfdb_group(all = 1:1000),
