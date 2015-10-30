@@ -51,5 +51,5 @@ ok_group("Old vessel_type name", {
                 mean(c(10,50,30,10,35,46)),
                 mean(c(65,62,36,35,34,22))),
             stringsAsFactors = FALSE)),
-       "Can still use ")
+       "Can still use vessel")
 })

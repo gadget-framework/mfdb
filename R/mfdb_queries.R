@@ -270,9 +270,10 @@ mfdb_sample_grouping <- function (mdb,
         params$step <- params$timestep
     }
 
-    # Fix up old vessel name
+    # vessel got renamed to vessel_type
+    group_cols <- gsub("^vessel$", "vessel_type", group_cols)
     if ('vessel' %in% names(params)) {
-        col_defs$vessel <- col_defs$vessel_type
+        params$vessel_type <- params$vessel
     }
 
     # Call relevant clause function for all group_cols

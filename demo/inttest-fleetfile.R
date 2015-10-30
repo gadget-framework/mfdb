@@ -26,7 +26,7 @@ ok_group("Fleetfile example", {
     # Import a survey for the data we are interested in
     mfdb_import_survey(mdb, data_source = "cod2000",
         table_string("
-year    month   areacell        species vessel  length  age     weight
+year    month   areacell        species vessel_type  length  age     weight
 2000    1       45G01           COD     1.RSH           21      2       210
 2000    1       45G02           COD     2.COM           34      3       220
 2000    1       45G03           COD     2.COM           34      3       230
@@ -87,7 +87,7 @@ ok_group("Deprecated usages---don't do this", {
     ok(cmp_file(gd, file.path('Data', 'fleet.igfs.data'),
         ver_string,
         "; -- data --",
-        "; year\tstep\tarea\tvessel\tnumber",
+        "; year\tstep\tarea\tvessel_type\tnumber",
         "2000\t1\t1\t1.RSH\t3",
         "2000\t1\t1\t2.COM\t5",
         "2000\t1\t2\t1.RSH\t2",
