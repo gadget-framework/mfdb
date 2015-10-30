@@ -66,6 +66,12 @@ If you want to remove the data, import empty data.frames with the same \code{dat
     \item{count}{Optional, default \code{c(1)}. Number of samples this row represents (i.e. if the data is aggregated)}
 }
 
+The following columns are understood, but deprecated:
+
+\describe{
+    \item{vessel}{Renamed to vessel_type}
+}
+
 \code{mfdb_import_survey_index} adds indicies that can be used as abundance information, for example.
 Before using \code{mfdb_import_survey_index}, make sure that the \code{index_type} you intend to use
 exists by using \link{mfdb_import_cs_taxonomy}. The \code{data_in} should be a data.frame with the
@@ -140,6 +146,12 @@ The \code{predator_data} should be a data.frame with the following columns:
 
     \item{length}{Optional, default \code{c(NA)}. Length of sample}
     \item{weight}{Optional, default \code{c(NA)}. Weight of sample}
+}
+
+The following columns are understood, but deprecated:
+
+\describe{
+    \item{vessel}{Renamed to vessel_type}
 }
 
 The \code{prey_data} should be a data.frame with the following columns:
