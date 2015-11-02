@@ -13,6 +13,7 @@ ok_group("sql_quote", {
 
     ok(sql_quote("3", always_bracket = TRUE) == "('3')")
     ok(sql_quote(c(1,2), always_bracket = TRUE) == "(1,2)")
+    ok(sql_quote(c(1,2), brackets = "[]") == "[1,2]")
    
     ok(sql_quote(c(1, 2, 3)) == "(1,2,3)")
     ok(sql_quote(c("a", "bee's", "c")) == "('a','bee''s','c')")
