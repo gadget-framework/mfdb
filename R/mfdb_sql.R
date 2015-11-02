@@ -1,5 +1,5 @@
 # Return v as a '-quoted SQL string
-sql_quote <- function(v, always_bracket = FALSE, always_quote = FALSE) {
+sql_quote <- function(v, always_bracket = FALSE, always_quote = FALSE, brackets = "()") {
     if (length(v) == 0) {
         stop("Cannot sql_quote empty vector")
     }
@@ -12,7 +12,10 @@ sql_quote <- function(v, always_bracket = FALSE, always_quote = FALSE) {
             paste0("'", gsub("'", "''", v) ,"'")
         }
     } else {
-        paste0("(", paste0(sql_vquote(v, always_quote = always_quote), collapse = ","), ")")
+        paste0(
+            substr(brackets, 1, 1),
+            paste0(sql_vquote(v, always_quote = always_quote), collapse = ","),
+            substr(brackets, 2, 2))
     }
 }
 sql_vquote <- Vectorize(sql_quote)
