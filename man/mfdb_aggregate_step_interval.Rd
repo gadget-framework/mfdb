@@ -1,4 +1,4 @@
-\name{mfdb_step_interval}
+\name{mfdb_aggregate_step_interval}
 \alias{mfdb_step_interval}
 
 \title{MareFrame DB intervals}
