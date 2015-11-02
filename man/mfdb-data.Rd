@@ -39,11 +39,13 @@ vessel_type
     \item{id}{A numeric ID to be used internally}
     \item{name}{
       An alphanumeric ID to be used when importing and reporting data.
-      Can contain multiple sections separated by dots to represent a tree,
-      for example: "FARMYARD.COWS.DAISY".
     }
     \item{description}{
       Some text describing the option.
+    }
+    \item{t_group}{
+      Groups together several items to query all in one go. e.g. for
+      institutes you can query 'NOR' to get all institutes in Norway.
     }
   }
 

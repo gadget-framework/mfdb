@@ -122,6 +122,7 @@ unattr <- function (obj) {
     attr(obj, "year") <- NULL
     attr(obj, "step") <- NULL
     attr(obj, "area") <- NULL
+    attr(obj, "institute") <- NULL
     attr(obj, "length") <- NULL
     attr(obj, "generator") <- NULL
     attr(obj, "predator_weight") <- NULL

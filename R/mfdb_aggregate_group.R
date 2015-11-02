@@ -53,25 +53,38 @@ pre_query.mfdb_group <- function(mdb, x, col) {
             }
         }
     } else if (lookup %in% mfdb_taxonomy || lookup %in% mfdb_cs_taxonomy) {
-        new_levels <- mfdb_fetch(mdb,
-            "SELECT name, ", lookup, "_id",
-            " FROM ", lookup,
-            if(lookup %in% mfdb_cs_taxonomy) c(" WHERE case_study_id = ", mdb$case_study_id),
-            NULL)
-        rownames(new_levels) <- new_levels$name
-        new_levels <- new_levels[denormalized$value, paste0(lookup, '_id')]
-        if (anyNA(new_levels)) {
-            mismatches <- denormalized$value[is.na(new_levels)]
+        mismatches <- mfdb_fetch(mdb,
+            "SELECT d.name",
+            " FROM UNNEST(ARRAY", sql_quote(unique(unlist(x)), always_bracket = TRUE, brackets = "[]"), ") AS d",
+            " LEFT OUTER JOIN ", lookup, " x ON d.name = x.name",
+            " WHERE x.name IS NULL")
+        if (nrow(mismatches) > 0) {
             stop("Input data has items that don't match ", lookup, " vocabulary: ",
-                paste(head(mismatches, n = 50), collapse = ","),
-                ifelse(length(mismatches) > 50, ', ...', ''),
+                paste(head(mismatches[,1], n = 50), collapse = ","),
+                ifelse(nrow(mismatches) > 50, ', ...', ''),
                 NULL)
         }
 
-        mfdb_insert(mdb, attr(x, 'table_name'), data.frame(
-            sample = denormalized$sample,
-            name = denormalized$name,
-            value = new_levels))
+        # Decompose divisions into areacells first
+        for (set in split(denormalized, list(denormalized$sample, denormalized$name))) {
+            # Can't insert 2 copies of a division at the same time, so insert
+            # unique subsets until there's none left
+            values <- set[,'value']
+            while(length(values) > 0) {
+                mfdb_send(mdb,
+                    "INSERT INTO ", attr(x, 'table_name'),
+                    " SELECT ", sql_quote(set[1, 'sample']), " AS sample",
+                    ", ", sql_quote(set[1, 'name']), " AS name",
+                    ", ", lookup, "_id AS value",
+                    " FROM ", lookup,
+                    " WHERE (",
+                        "name IN ", sql_quote(unique(values), always_bracket = TRUE, always_quote = TRUE),
+                        " OR t_group IN ", sql_quote(unique(values), always_bracket = TRUE, always_quote = TRUE),
+                    ")",
+                    if (lookup %in% mfdb_cs_taxonomy) c(" AND case_study_id = ", sql_quote(mdb$case_study_id)) else c(""))
+                values <- values[duplicated(values)]
+            }
+        }
     } else {
         # Populate table based on denormalized group
         mfdb_insert(mdb, attr(x, 'table_name'), denormalized)

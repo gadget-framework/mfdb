@@ -113,6 +113,8 @@ where_clause.numeric <- function(mdb, x, col, outputname) {
             "(", col, " IN ",
             "(SELECT ", lookup, "_id FROM ", lookup, " WHERE name IN ",
             sql_quote(x[!is.na(x)], always_bracket = TRUE),
+            " OR t_group IN ",
+            sql_quote(x[!is.na(x)], always_bracket = TRUE),
             ")",
             if (NA %in% x) paste0(" OR ", col, " IS NULL"),
             ")"))
@@ -124,9 +126,11 @@ where_clause.numeric <- function(mdb, x, col, outputname) {
             "(", col, " IN ",
             "(SELECT ", lookup, "_id FROM ", lookup,
             " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-            " AND name IN ",
+            " AND (name IN ",
             sql_quote(x[!is.na(x)], always_bracket = TRUE),
-            ")",
+            " OR t_group IN ",
+            sql_quote(x[!is.na(x)], always_bracket = TRUE),
+            "))",
             if (NA %in% x) paste0(" OR ", col, " IS NULL"),
             ")"))
     }

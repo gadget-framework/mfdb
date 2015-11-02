@@ -1,5 +1,6 @@
     Version 4.0-0
     * Replace gear and vessel taxonomies
+    * Allow querying by t_group (i.e. country) as well as institute
 
     Schema changes:
     * Add t_group to all taxonomies, for one level of nesting
