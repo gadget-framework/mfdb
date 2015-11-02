@@ -1,4 +1,4 @@
-\name{mfdb_unaggregated}
+\name{mfdb_aggregate_unaggregated}
 \alias{mfdb_unaggregated}
 
 \title{MareFrame DB unaggregated data}

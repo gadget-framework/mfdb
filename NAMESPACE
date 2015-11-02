@@ -2,7 +2,7 @@
 export(mfdb_cs_dump)
 export(mfdb_cs_restore)
 
-# mfdb_group.R
+# mfdb_aggregate_group.R
 export(mfdb_group)
 export(mfdb_timestep_yearly)
 export(mfdb_timestep_biannually)
@@ -10,10 +10,10 @@ export(mfdb_timestep_quarterly)
 export(mfdb_group_numbered)
 export(mfdb_bootstrap_group)
 
-# mfdb_interval.R
+# mfdb_aggregate_interval.R
 export(mfdb_interval)
 
-# mfdb_step_interval.R
+# mfdb_aggregate_step_interval.R
 export(mfdb_step_interval)
 
 # mfdb.R
@@ -50,7 +50,7 @@ export(mfdb_sample_meanweight)
 export(mfdb_sample_meanweight_stddev)
 export(mfdb_stomach_presenceratio)
 
-# mfdb_unaggregated.R
+# mfdb_aggregate_unaggregated.R
 export(mfdb_unaggregated)
 
 # gadget_areafile.R

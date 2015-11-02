@@ -1,4 +1,4 @@
-\name{mfdb_group}
+\name{mfdb_aggregate_group}
 \alias{mfdb_group}
 \alias{mfdb_timestep_yearly}
 \alias{mfdb_timestep_biannually}
