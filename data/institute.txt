@@ -1,25 +1,59 @@
-"id" "name" "description" "location"
-1 "MRI" "Marine Research Institute" "Reykjavik, Iceland"
-2 "IMR" "Intitute of Marine Research" "Bergen, Norway"
-3 "DIFRES" "Danish Institute for Fisheries Research" "Charlottenlund, Denmark"
-4 "SCUI" "University of Iceland, Science Institute" "Reykjavik, Iceland"
-5 "UiB" "University of Bergen" "Bergen, Norway"
-6 "FRS" "Fisheries Research Services" "Aberdeen, Great Britain"
-7 "CEFAS" "Centre for Environment, Fisheries and Aquaculture Science" "Lowestoft, Great Britain"
-8 "IFREMER" "Institut Francais de Recherche pour l'Exploitation de la Mer" "Nantes, France"
-9 "RIVO" "Netherlands Institute for Fisheries Research" "Ijmuiden, Netherlands"
-10 "ICES" "International Council for the Exploration of the Sea" "Copenhagen, Denmark"
-11 "AZTI" "AZTI Foundation" "Sukarrieta Spain"
-12 "CSIC" "Consejo Superior de Investigaciones Cientificas" "Spain"
-13 "IEO" "Instituto Espanol de Oceanografia" "La Coruna, Spain"
-14 "NIMRD"" National Institute for Marine Research and Development" "Constanta, Romania"
-15 "CNR-IAMC" "Consiglio Nazionale delle Ricerche - Istituto per l’Ambiente Marino Costiero" "Mazara del Vallo, Italy"
-16 "SLU" "Swedish University of Agricultural Sciences, Department of Aquatic Resources" "Sweden"
-17 "VTI" "Johann Heinrich von Thünen-Institute, Federal Research Institute for Rural Areas, Forestry and Fisheries, Institute of Baltic Sea Fisheries" "Germany"
-18 "DTU" "DTU Aqua – National Institute of Aquatic Resources, Technical University of Denmark" "Denmark"
-19 "ANIRO" "AtlantNIRO" "Russia"
-20 "NMFRI" "National Marine Fisheries Research Institute" "Poland"
-21 "BIOR" "Institute for Food Safety, Animal Health and Environment (BIOR)" "Latvia"
-22 "FGFRI" "Finnish Game and Fisheries Research Institute" "Finland"
-23 "IMRE" "Estonian Marine Institute, University of Tartu" "Estonia"
-24 "LSFRC" "Division of fishery research and science Fishery service under Ministry of Agriculture" "Lithuania"
+"id"	"name"	"group"	"description"
+10352	"ISL"	"ISL"	"Iceland"
+1	"MRI"	"ISL"	"Marine Research Institute, Reykjavik"
+4	"SCUI"	"ISL"	"University of Iceland, Science Institute, Reykjavik"
+
+10578	"NOR"	"NOR"	"Norway"
+2	"IMR"	"NOR"	"Intitute of Marine Research, Bergen"
+5	"UiB"	"NOR"	"University of Bergen, Bergen"
+
+10826	"GBR"	"GBR"	"Great Britain"
+6	"FRS"	"GBR"	"Fisheries Research Services, Aberdeen"
+7	"CEFAS"	"GBR"	"Centre for Environment, Fisheries and Aquaculture Science, Lowestoft"
+
+10250	"FRA"		"FRA"	"France"
+8	"IFREMER"	"FRA"	"Institut Francais de Recherche pour l'Exploitation de la Mer, Nantes"
+
+10528	"NLD"	"NLD"	"Netherlands"
+9	"RIVO"	"NLD"	"Netherlands Institute for Fisheries Research, Ijmuiden"
+
+10208	"DNK"		"DNK"	"Denmark"
+3	"DIFRES"	"DNK"	"Danish Institute for Fisheries Research, Charlottenlund"
+
+10	"ICES"	"DNK"	"International Council for the Exploration of the Sea, Copenhagen"
+18	"DTU"	"DNK"	"DTU Aqua – National Institute of Aquatic Resources, Technical University of Denmark"
+
+10724	"ESP"	"ESP"	"Spain"
+11	"AZTI"	"ESP"	"AZTI Foundation, Sukarrieta"
+12	"CSIC"	"ESP"	"Consejo Superior de Investigaciones Cientificas"
+13	"IEO"	"ESP"	"Instituto Espanol de Oceanografia, La Coruna"
+
+10642	"ROU"	"ROU"	"Romania"
+14	"NIMRD"	"ROU"	"National Institute for Marine Research and Development, Constanta"
+
+10380	"ITA"		"ITA"	"Italy"
+15	"CNR-IAMC"	"ITA"	"Consiglio Nazionale delle Ricerche - Istituto per l’Ambiente Marino Costiero, Mazara del Vallo"
+
+10752	"SWE"	"SWE"	"Sweden"
+16	"SLU"	"SWE"	"Swedish University of Agricultural Sciences, Department of Aquatic Resources"
+
+10276	"DEU"	"DEU"	"Germany"
+17	"VTI"	"DEU"	"Johann Heinrich von Thünen-Institute, Federal Research Institute for Rural Areas, Forestry and Fisheries, Institute of Baltic Sea Fisheries"
+
+10643	"RUS"	"RUS"	"Russian Federation"
+19	"ANIRO"	"RUS"	"AtlantNIRO"
+
+10616	"POL"	"POL"	"Poland"
+20	"NMFRI"	"POL"	"National Marine Fisheries Research Institute"
+
+10428	"LVA"	"LVA"	"Latvia"
+21	"BIOR"	"LVA"	"Institute for Food Safety, Animal Health and Environment (BIOR)"
+
+10246	"FIN"	"FIN"	"Finland"
+22	"FGFRI"	"FIN"	"Finnish Game and Fisheries Research Institute"
+
+10233	"EST"	"EST"	"Estonia"
+23	"IMRE"	"EST"	"Estonian Marine Institute, University of Tartu"
+
+10440	"LTU"	"LTU"	"Lithuania"
+24	"LSFRC"	"LTU"	"Division of fishery research and science Fishery service under Ministry of Agriculture"

@@ -1,4 +1,5 @@
     Version 4.0-0
+    * Replace gear and vessel taxonomies
 
     Schema changes:
     * Turn vessel into vessel_type, add_vessel_name #2
