@@ -31,8 +31,8 @@ ok_group("mfdb_import_taxonomy", {
         name = c('RES', 'FEZ', 'DES'),
         description = c('Research', 'Tommy Cooper', 'Encryption'),
         stringsAsFactors = TRUE))), c(
-        "SELECT gear_id, name, description FROM gear ORDER BY 1",
-        "INSERT INTO gear (gear_id,name,description) VALUES (1,'RES','Research'),(2,'FEZ','Tommy Cooper'),(3,'DES','Encryption')",
+        "SELECT gear_id, name, t_group, description FROM gear ORDER BY 1",
+        "INSERT INTO gear (gear_id,name,t_group,description) VALUES (1,'RES',NULL,'Research'),(2,'FEZ',NULL,'Tommy Cooper'),(3,'DES',NULL,'Encryption')",
         "Return Value:",
         " NULL",
         NULL)), "Insert 3 rows into empty table")
@@ -40,6 +40,7 @@ ok_group("mfdb_import_taxonomy", {
     mdb$ret_rows <- data.frame(
         gear_id = 1:3,
         name = c('RES', 'FEZ', 'DES'),
+        t_group = NA,
         description = c('Research', 'Tommy Cooper', 'Encryption'),
         stringsAsFactors = FALSE)
     ok(cmp(cap(mfdb:::mfdb_import_taxonomy(mdb, 'gear', data.frame(
@@ -47,7 +48,7 @@ ok_group("mfdb_import_taxonomy", {
         name = c('RES', 'FEZ', 'DES'),
         description = c('Research', 'Tommy Cooper', 'Encryption'),
         stringsAsFactors = TRUE))), c(
-        "SELECT gear_id, name, description FROM gear ORDER BY 1",
+        "SELECT gear_id, name, t_group, description FROM gear ORDER BY 1",
         "Return Value:",
         " NULL",
         NULL)), "Identical, nothing happens")
@@ -55,6 +56,7 @@ ok_group("mfdb_import_taxonomy", {
     mdb$ret_rows <- data.frame(
         gear_id = 11:13,
         name = c('RES', 'FEZ', 'DES'),
+        t_group = NA,
         description = c('Research', 'Tommy Cooper', 'Encryption'),
         stringsAsFactors = FALSE)
     ok(cmp(cap(mfdb:::mfdb_import_taxonomy(mdb, 'gear', data.frame(
@@ -62,7 +64,7 @@ ok_group("mfdb_import_taxonomy", {
         name = c('RES', 'FEZ', 'DES'),
         description = c('Research', 'Tommy Cooper', 'Encryption'),
         stringsAsFactors = TRUE))), c(
-        "SELECT gear_id, name, description FROM gear ORDER BY 1",
+        "SELECT gear_id, name, t_group, description FROM gear ORDER BY 1",
         "Return Value:",
         " NULL",
         NULL)), "Differing IDs don't phase us")
@@ -70,6 +72,7 @@ ok_group("mfdb_import_taxonomy", {
     mdb$ret_rows <- data.frame(
         gear_id = 1:2,
         name = c('RES', 'FEZ'),
+        t_group = NA,
         description = c('Research', 'Hat'),
         stringsAsFactors = FALSE)
     ok(cmp(cap(mfdb:::mfdb_import_taxonomy(mdb, 'gear', data.frame(
@@ -77,9 +80,9 @@ ok_group("mfdb_import_taxonomy", {
         name = c('RES', 'FEZ', 'DES'),
         description = c('Research', 'Tommy Cooper', 'Encryption'),
         stringsAsFactors = TRUE))), c(
-        "SELECT gear_id, name, description FROM gear ORDER BY 1",
-        "INSERT INTO gear (gear_id,name,description) VALUES (3,'DES','Encryption')",
-        "UPDATE gear SET name='FEZ',description='Tommy Cooper' WHERE gear_id = 2",
+        "SELECT gear_id, name, t_group, description FROM gear ORDER BY 1",
+        "INSERT INTO gear (gear_id,name,t_group,description) VALUES (3,'DES',NULL,'Encryption')",
+        "UPDATE gear SET name='FEZ',t_group=NULL,description='Tommy Cooper' WHERE gear_id = 2",
         "Return Value:",
         " NULL",
         NULL)), "Update 1 row, insert a new row")
@@ -87,6 +90,7 @@ ok_group("mfdb_import_taxonomy", {
     mdb$ret_rows <- data.frame(
         gear_id = 1:2,
         name = c('RES', 'FEZ'),
+        t_group = NA,
         description = c('Research', 'Hat'),
         stringsAsFactors = FALSE)
     ok(cmp(cap(mfdb:::mfdb_import_taxonomy(mdb, 'gear', data.frame(
@@ -94,9 +98,27 @@ ok_group("mfdb_import_taxonomy", {
         name = c('RES', 'FEZ', 'DES'),
         description = c('Research', 'Tommy Cooper', 'Encryption'),
         stringsAsFactors = TRUE))), c(
-        "SELECT gear_id, name, description FROM gear ORDER BY 1",
-        "INSERT INTO gear (gear_id,name,description) VALUES (6,'DES','Encryption')",
-        "UPDATE gear SET name='FEZ',description='Tommy Cooper' WHERE gear_id = 2",
+        "SELECT gear_id, name, t_group, description FROM gear ORDER BY 1",
+        "INSERT INTO gear (gear_id,name,t_group,description) VALUES (6,'DES',NULL,'Encryption')",
+        "UPDATE gear SET name='FEZ',t_group=NULL,description='Tommy Cooper' WHERE gear_id = 2",
+        "Return Value:",
+        " NULL",
+        NULL)), "Differing IDs only affect adding new rows")
+
+    mdb$ret_rows <- data.frame(
+        gear_id = 1:2,
+        name = c('RES', 'FEZ'),
+        t_group = c('RES', 'RES'),
+        description = c('Research', 'Hat'),
+        stringsAsFactors = FALSE)
+    ok(cmp(cap(mfdb:::mfdb_import_taxonomy(mdb, 'gear', data.frame(
+        id = 4:6,
+        name = c('RES', 'FEZ', 'DES'),
+        t_group = c('RES', 'RES', 'RES'),
+        description = c('Research', 'Hat', 'Encryption'),
+        stringsAsFactors = TRUE))), c(
+        "SELECT gear_id, name, t_group, description FROM gear ORDER BY 1",
+        "INSERT INTO gear (gear_id,name,t_group,description) VALUES (6,'DES','RES','Encryption')",
         "Return Value:",
         " NULL",
         NULL)), "Differing IDs only affect adding new rows")

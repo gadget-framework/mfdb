@@ -1,4 +1,4 @@
-"id"	"name"	"group"	"description"
+"id"	"name"	"t_group"	"description"
 10352	"ISL"	"ISL"	"Iceland"
 1	"MRI"	"ISL"	"Marine Research Institute, Reykjavik"
 4	"SCUI"	"ISL"	"University of Iceland, Science Institute, Reykjavik"

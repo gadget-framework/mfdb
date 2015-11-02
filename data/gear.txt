@@ -1,4 +1,4 @@
-"id"	"name"	"description"					"group"
+"id"	"name"	"description"					"t_group"
 100100	0100	"Surrounding nets"				0100
 100110	PS	"With purse lines (purse seines)"		0100
 100111	PS1	"- one boat operated purse seines"		0100
@@ -80,7 +80,7 @@
 101120	HMD	"Mechanized dredges"				1100
 101190	HMX	"Harvesting machines (not specified)"		1100
 
-102500	RG	"Recreational fishing gear"			2500
+102500	RG	"Recreational fishing gear"			"RG"
 
 101   "LLN" "long line"	NA
 

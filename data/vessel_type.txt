@@ -1,4 +1,4 @@
-"id" "name"  "group" "description"
+"id" "name"  "t_group" "description"
 101  "1"     "1" "<12m"
 1011 "1.RSH" "1" "<12m research"
 1012 "1.COM" "1" "<12m commercial"
