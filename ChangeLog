@@ -1,4 +1,5 @@
     Version 4.0-0
+    * Allow querying by t_group (i.e. country) as well as institute
 
     Schema changes:
     * Add t_group to all taxonomies, for one level of nesting

@@ -2,6 +2,7 @@ example-datras			Example script generating model files from DATRAS data
 example-iceland			Example script generating model files from Iceland data
 inttest-aggregatefunctions	Exercise postgresql aggregate functions
 inttest-gadgetdirectory		Demonstrate importing data and writing to GADGET directory
+inttest-countryquery		Demonstrate querying for an entire country as well as individual institutes
 inttest-dataimport		Exercise data loading
 inttest-dbupgrade		Test that we can upgrade from an old database to a new one
 inttest-fleetfile		Excrcise fleetfile generation

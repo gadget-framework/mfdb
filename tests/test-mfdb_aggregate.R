@@ -105,7 +105,7 @@ ok_group("Aggregates with global taxonomies", local({
     ok(cmp(from_clause(mdb, "c", "tbl.gear_id", "out"), c()), "From clause")
 
     ok(cmp(where_clause(mdb, c("GEA"), 'tbl.gear_id'),
-        "(tbl.gear_id IN (SELECT gear_id FROM gear WHERE name IN ('GEA')))"))
+        "(tbl.gear_id IN (SELECT gear_id FROM gear WHERE name IN ('GEA') OR t_group IN ('GEA')))"))
 
     ok(cmp(agg_summary(mdb, c("GEA"), "tbl.gear_id", "gear", list(data.frame()), 0), list("GEA" = "GEA")), "Agg summary")
 }, asNamespace('mfdb')))
@@ -122,7 +122,7 @@ ok_group("Aggregates with CS-specific taxonomies", local({
     ok(cmp(from_clause(mdb, "c", "tbl.sampling_type_id", "out"), c()), "From clause")
 
     ok(cmp(where_clause(mdb, c("SEA"), 'tbl.sampling_type_id'),
-        "(tbl.sampling_type_id IN (SELECT sampling_type_id FROM sampling_type WHERE case_study_id = 5 AND name IN ('SEA')))"))
+        "(tbl.sampling_type_id IN (SELECT sampling_type_id FROM sampling_type WHERE case_study_id = 5 AND (name IN ('SEA') OR t_group IN ('SEA'))))"))
 
     ok(cmp(agg_summary(mdb, c("SEA"), "tbl.sampling_type_id", "sampling_type", list(data.frame()), 0), list("SEA" = "SEA")), "Agg summary")
 }, asNamespace('mfdb')))

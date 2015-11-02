@@ -79,7 +79,7 @@ In addition, \code{params} can contain other arguments to purely restrict the
 data that is returned.
 
 \describe{
-    \item{institute}{A vector of institute names, see mfdb::institute for possible values}
+    \item{institute}{A vector of institute names / countries, see mfdb::institute for possible values}
     \item{gear}{A vector of gear names, see mfdb::gear for possible values}
     \item{vessel}{A vector of vessel names, see mfdb::vessel for possible values}
     \item{sampling_type}{A vector of sampling_type names, see mfdb::sampling_type for possible values}
