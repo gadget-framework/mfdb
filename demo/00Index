@@ -3,6 +3,7 @@ example-iceland			Example script generating model files from Iceland data
 inttest-aggregatefunctions	Exercise postgresql aggregate functions
 inttest-gadgetdirectory		Demonstrate importing data and writing to GADGET directory
 inttest-dataimport		Exercise data loading
+inttest-dbupgrade		Try and upgrade an original DB schema
 inttest-deprecated		Make sure we haven't broken old interfaces
 inttest-fleetfile		Excrcise fleetfile generation
 inttest-samples			Exercise sampling of data
