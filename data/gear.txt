@@ -1,77 +1,169 @@
-"id"  "name" "description"
-101   "LLN" "long line"
-102   "GIL" "gillnets"
-1021  "GIL.GI1" "gillnet, mesh 1''"
-1022  "GIL.GI2" "gillnet, mesh 2''"
-1023  "GIL.GI3" "gillnet, mesh 3''"
-1024  "GIL.GI4" "gillnet, mesh 4''"
-1025  "GIL.GI5" "gillnet, mesh 5''"
-1026  "GIL.GI6" "gillnet, mesh 6''"
-1027  "GIL.GI7" "gillnet, mesh 7''"
-1028  "GIL.GI8" "gillnet, mesh 8''"
-1029  "GIL.GI9" "gillnet, mesh 9''"
-10210 "GIL.GI10" "gillnet, mesh 10''"
-10211 "GIL.GI11" "gillnet, mesh 11''"
-10212 "GIL.GI12" "gillnet, mesh 12''"
-103   "HLN" "hand line"
-105   "DSE" "danish seine"
-106   "BMT" "bottom trawl"
-107   "PGT" "pelagic trawl"
-109   "NPT" "nephrops trawl"
-110   "PSE" "purse seine"
-114   "SHT" "shrimp trawl"
-115   "DRD" "dredge"
-117   "TRP" "trap"
-120   "VAR" "various gears"
-201   "DP" "demersal passive gear"
-2011  "DP.DGN" "demersal gill nets"
-202   "PP" "pelagic passive gear"
-2021  "PP.GND" "drift gillnets"
-2022  "PP.PGN" "pelagic gill nets"
-203   "UP" "undetermined passive gear"
-2031  "UP.GEN" "gillnets and entangling nets (not specified)"
-2032  "UP.SAHL" "small and hand lines"
-204   "DA" "demersal active gear"
-2041  "DA.BT" "beam trawl"
-2042  "DA.DRB" "boat dredge"
-2043  "DA.OTB1" "bottom otter trawl (side or stern not specified)"
-2044  "DA.OTB2" "bottom otter trawl (stern)"
-2045  "DA.QST" "queen scallop trawl"
-2046  "DA.DPT" "demersal pair trawl, demersal twin/mult trawl"
-2047  "DA.DT" "demersal trawl"
-2048  "DA.PTB" "bottom pair trawl - NB: operated by 2 vessels"
-2049  "DA.SPR" "pair seine, demersal pair seine - NB: operated by 2 vessels"
-20410 "DA.SSC" "scottish seine, demersal seine"
-20411 "DA.TBN" "nephrops trawl, nephrop trawl (single rig)"
-20412 "DA.TBNT" "nephrops trawl (twin/multiple rigged), twin/mult rig neph trawl"
-20413 "DA.OTT" "twin trawls, otter twin multi trawls"
-20414 "DA.LT" "light trawl (under 90ft)"
-205   "PA" "pelagic active gear"
-2051  "PA.OT" "otter trawl (not specified)"
-2052  "PA.OTM" "midwater otter trawl (side or stern not specified)"
-2053  "PA.OTM1" "midwater otter trawl (side)"
-2054  "PA.OTM2" "midwater otter trawl (stern)"
-2055  "PA.PS1" "pusre seine operated by one vessel"
-2056  "PA.PS2" "purse seine operated by two vessels"
-2057  "PA.PS" "purse seine"
-2058  "PA.ST" "shrimp trawl"
-2059  "PA.SBPT" "single boat pelagic trawl"
-20510 "PA.IT" "industrial trawl"
-20511 "PA.PTP" "pair trawl pelagic"
-20512 "PA.PTM" "midwater pair trawl - NB: operated by 2 vessels"
-20513 "PA.TM" "mid trawls (not specified)"
-206   "UA" "undetermined active gear"
-2061  "UA.PT" "pair trawl (not specified) - NB: operated by 2 vessels"
-2071  "OD" "other demersal nets"
-301   "MBL" "mobile"
-302   "PAS" "passive"
-303   "POB" "polyvalent bot"
-304   "POM" "polyvalent mobile"
-305   "PAP" "polyvalent passive"
-306   "BTW" "bottom trawl"
-307   "DFN" "dfn"
-308   "DRG" "dredge"
-309   "DTDS" "dtds"
-310   "HKS" "hooks"
-311   "PTS" "pts"
-312   "POT" "pot"
+"id"	"name"	"description"					"t_group"
+100100	0100	"Surrounding nets"				0100
+100110	PS	"With purse lines (purse seines)"		0100
+100111	PS1	"- one boat operated purse seines"		0100
+100112	PS2	"- two boats operated purse seines"		0100
+100120	LA	"Without purse lines (lampara)"			0100
+
+100200	0200	"Siene nets"					0200
+100210	SB	"Beach seines"					0200
+100220	SV	"Boat or vessel seines"				0200
+100221	SDN	"- Danish seines"				0200
+100222	SSC	"- Scottish seines"				0200
+100223	SPR	"- pair seines"					0200
+100290	SX	"Seine nets (not specified)"			0200
+
+100310	0300	"Bottom trawls"					0300
+100311	TBB	"- beam trawls"					0300
+100312	OTB	"- otter trawls"				0300
+100313	PTB	"- pair trawls"					0300
+100314	TBN	"- nephrops trawls"				0300
+100315	TBS	"- shrimp trawls"				0300
+100319	TB	"- bottom trawls (not specified)"		0300
+100320	0320	"Midwater trawls"				0300
+100321	OTM	"- otter trawls"				0300
+100322	PTM	"- pair trawls"					0300
+100323	TMS	"- shrimp trawls"				0300
+100329	TM	"- midwater trawls (not specified)"		0300
+100330	OTT	"Otter twin trawls"				0300
+100349	OT	"Otter trawls (not specified)"			0300
+100359	PT	"Pair trawls (not specified)"			0300
+100390	TX	"Other trawls (not specified)"			0300
+
+100400	0400	"Dredges"					0400
+100410	DRB	"Boat dredges"					0400
+100420	DRH	"Hand dredges"					0400
+
+100500	0500	"Lift netts"					0500
+100510	LNP	"Portable lift nets"				0500
+100520	LNB	"Boat-operated lift nets"			0500
+100530	LNS	"Shore-operated stationary lift nets"		0500
+100590	LN	"Lift nets (not specified)"			0500
+
+100600	0600	"Falling gear"					0600
+100610	FCN	"Cast nets"					0600
+100690	FG	"Falling gear (not specified)"			0600
+
+100700	0700	"Gillnets and entangling nets"			0700
+100710	GNS	"Set gillnets (anchored)"			0700
+100720	GND	"Driftnets"					0700
+100730	GNC	"Encircling gillnets"				0700
+100740	GNF	"Fixed gillnets (on stakes)"			0700
+100750	GTR	"Trammel nets"					0700
+100760	GTN	"Combined gillnets-trammel nets"		0700
+100790	GEN	"Gillnets and entangling nets (not specified)"	0700
+100791	GN	"Gillnets (not specified)"			0700
+
+100800	0800	"Traps"						0800
+100810	FPN	"Stationary uncovered pound nets"		0800
+100820	FPO	"Pots"						0800
+100830	FYK	"Fyke nets"					0800
+100840	FSN	"Stow nets"					0800
+100850	FWR	"Barriers, fences, weirs, etc."			0800
+100860	FAR	"Aerial traps"					0800
+100890	FIX	"Traps (not specified)"				0800
+
+100900	0900	"Hooks and lines"				0900
+100910	LHP	"Handlines and pole-lines (hand-operated)"	0900
+100920	LHM	"Handlines and pole-lines (mechanized)"		0900
+100930	LLS	"Set longlines"					0900
+100940	LLD	"Drifting longlines"				0900
+100950	LL	"Longlines (not specified)"			0900
+100960	LTL	"Trolling lines"				0900
+100990	LX	"Hooks and lines (not specified)"		0900
+
+101000	1000	"Grappling and wounding"			1000
+101010	HAR	"Harpoons"					1000
+
+101100	1100	"Harvesting Machines"				1100
+101110	HMP	"Pumps"						1100
+101120	HMD	"Mechanized dredges"				1100
+101190	HMX	"Harvesting machines (not specified)"		1100
+
+102500	RG	"Recreational fishing gear"			"RG"
+
+101   "LLN" "long line"	NA
+
+102   "GIL" "gillnets"	NA
+1021  "GIL.GI1" "gillnet, mesh 1''"	NA
+1022  "GIL.GI2" "gillnet, mesh 2''"	NA
+1023  "GIL.GI3" "gillnet, mesh 3''"	NA
+1024  "GIL.GI4" "gillnet, mesh 4''"	NA
+1025  "GIL.GI5" "gillnet, mesh 5''"	NA
+1026  "GIL.GI6" "gillnet, mesh 6''"	NA
+1027  "GIL.GI7" "gillnet, mesh 7''"	NA
+1028  "GIL.GI8" "gillnet, mesh 8''"	NA
+1029  "GIL.GI9" "gillnet, mesh 9''"	NA
+10210 "GIL.GI10" "gillnet, mesh 10''"	NA
+10211 "GIL.GI11" "gillnet, mesh 11''"	NA
+10212 "GIL.GI12" "gillnet, mesh 12''"	NA
+
+103   "HLN" "hand line"	NA
+105   "DSE" "danish seine"	NA
+106   "BMT" "bottom trawl"	NA
+107   "PGT" "pelagic trawl"	NA
+109   "NPT" "nephrops trawl"	NA
+110   "PSE" "purse seine"	NA
+114   "SHT" "shrimp trawl"	NA
+115   "DRD" "dredge"	NA
+117   "TRP" "trap"	NA
+120   "VAR" "various gears"	NA
+
+201   "DP" "demersal passive gear"	NA
+2011  "DP.DGN" "demersal gill nets"	NA
+
+202   "PP" "pelagic passive gear"	NA
+2021  "PP.GND" "qdrift gillnets"	NA
+2022  "PP.PGN" "pelagic gill nets"	NA
+
+203   "UP" "undetermined passive gear"	NA
+2031  "UP.GEN" "gillnets and entangling nets (not specified)"	NA
+2032  "UP.SAHL" "small and hand lines"	NA
+
+204   "DA" "demersal active gear"	NA
+2041  "DA.BT" "beam trawl"	NA
+2042  "DA.DRB" "boat dredge"	NA
+2043  "DA.OTB1" "bottom otter trawl (side or stern not specified)"	NA
+2044  "DA.OTB2" "bottom otter trawl (stern)"	NA
+2045  "DA.QST" "queen scallop trawl"	NA
+2046  "DA.DPT" "demersal pair trawl, demersal twin/mult trawl"	NA
+2047  "DA.DT" "demersal trawl"	NA
+2048  "DA.PTB" "bottom pair trawl - NB: operated by 2 vessels"	NA
+2049  "DA.SPR" "pair seine, demersal pair seine - NB: operated by 2 vessels"	NA
+20410 "DA.SSC" "scottish seine, demersal seine"	NA
+20411 "DA.TBN" "nephrops trawl, nephrop trawl (single rig)"	NA
+20412 "DA.TBNT" "nephrops trawl (twin/multiple rigged), twin/mult rig neph trawl"	NA
+20413 "DA.OTT" "twin trawls, otter twin multi trawls"	NA
+20414 "DA.LT" "light trawl (under 90ft)"	NA
+
+205   "PA" "pelagic active gear"	NA
+2051  "PA.OT" "otter trawl (not specified)"	NA
+2052  "PA.OTM" "midwater otter trawl (side or stern not specified)"	NA
+2053  "PA.OTM1" "midwater otter trawl (side)"	NA
+2054  "PA.OTM2" "midwater otter trawl (stern)"	NA
+2055  "PA.PS1" "pusre seine operated by one vessel"	NA
+2056  "PA.PS2" "purse seine operated by two vessels"	NA
+2057  "PA.PS" "purse seine"	NA
+2058  "PA.ST" "shrimp trawl"	NA
+2059  "PA.SBPT" "single boat pelagic trawl"	NA
+20510 "PA.IT" "industrial trawl"	NA
+20511 "PA.PTP" "pair trawl pelagic"	NA
+20512 "PA.PTM" "midwater pair trawl - NB: operated by 2 vessels"	NA
+20513 "PA.TM" "mid trawls (not specified)"	NA
+
+206   "UA" "undetermined active gear"	NA
+2061  "UA.PT" "pair trawl (not specified) - NB: operated by 2 vessels"	NA
+
+2071  "OD" "other demersal nets"	NA
+301   "MBL" "mobile"	NA
+302   "PAS" "passive"	NA
+303   "POB" "polyvalent bot"	NA
+304   "POM" "polyvalent mobile"	NA
+305   "PAP" "polyvalent passive"	NA
+306   "BTW" "bottom trawl"	NA
+307   "DFN" "dfn"	NA
+308   "DRG" "dredge"	NA
+309   "DTDS" "dtds"	NA
+310   "HKS" "hooks"	NA
+311   "PTS" "pts"	NA
+312   "POT" "pot"	NA

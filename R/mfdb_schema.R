@@ -174,6 +174,24 @@ schema_from_3 <- function(mdb) {
     mdb$logger$info("Upgrading schema from version 3")
     mfdb_send(mdb, "ALTER TABLE prey ALTER COLUMN count DROP NOT NULL")
 
+    for (t in c(mfdb_taxonomy, mfdb_cs_taxonomy)) {
+        col_exists <- mfdb_fetch(mdb, "SELECT COUNT(*)",
+            " FROM information_schema.columns",
+            " WHERE table_schema = 'public'",
+            " AND table_name = ", sql_quote(t),
+            " AND column_name = 't_group'",
+            NULL)
+        if (col_exists > 0) {
+            # Do nothing, already there
+        } else if (t %in% mfdb_cs_taxonomy) {
+            mfdb_send(mdb, "ALTER TABLE ", t, " ADD COLUMN t_group VARCHAR(1024) NULL")
+            mfdb_send(mdb, "ALTER TABLE ", t, " ADD FOREIGN KEY (case_study_id, t_group) REFERENCES ", t, "(case_study_id, name)")
+        } else {
+            mfdb_send(mdb, "ALTER TABLE ", t, " ADD COLUMN t_group VARCHAR(1024) NULL")
+            mfdb_send(mdb, "ALTER TABLE ", t, " ADD FOREIGN KEY (t_group) REFERENCES ", t, "(name)")
+        }
+    }
+
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 4")
 }
 
@@ -191,12 +209,14 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
         mfdb_create_table(mdb, table_name, "", cols = c(
             key_col, ifelse(table_name == "species", "BIGINT", "INT"), "Numeric ID for this entry",
             "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
+            "t_group", paste0("VARCHAR(1024) NULL"), "Value grouping (short name)",
             "description", "VARCHAR(1024)", "Long description",
             NULL
         ), keys = c(
             paste0(c("PRIMARY KEY(", key_col, ")"), collapse = ""),
             "CHECK(name ~ '^[A-Za-z0-9_.\\-]+$')",
             paste0("UNIQUE(name)"),
+            paste0("FOREIGN KEY (t_group) REFERENCES ", table_name, "(name)"),
             NULL
         ))
     } else if (table_name %in% mfdb_cs_taxonomy) {
@@ -204,6 +224,7 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
             "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
             key_col, ifelse(table_name == "data_source", "SERIAL", "INT"), "Numeric ID for this entry",
             "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
+            "t_group", paste0("VARCHAR(1024) NULL"), "Value grouping (short name)",
             if (table_name == "areacell") c(
                 "size", "INT", "Size of areacell",
                 NULL
@@ -216,6 +237,7 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
             paste0(c("PRIMARY KEY(case_study_id, ", key_col, ")"), collapse = ""),
             "CHECK(name ~ '^[A-Za-z0-9_.\\-]+$')",
             paste0("UNIQUE(case_study_id, name)"),
+            paste0("FOREIGN KEY (case_study_id, t_group) REFERENCES ", table_name, "(case_study_id, name)"),
             NULL
         ))
     }

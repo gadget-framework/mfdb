@@ -13,6 +13,11 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
         return()
     }
 
+    if (!('t_group' %in% names(data_in))) {
+        data_in$t_group <- c(NA)
+    }
+    extra_cols <- c('t_group', extra_cols)
+
     # Order incoming data by id
     id_col <- paste0(table_name, '_id')
     data_in <- data_in[c('id', 'name', extra_cols)]
