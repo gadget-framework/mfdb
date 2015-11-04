@@ -27,6 +27,13 @@ ok_group("Unaggregated length / weight / age samples", {
     mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
     mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G01')))
 
+    # Set up the vessels we use in this example
+    mfdb_import_cs_taxonomy(mdb, 'vessel', data.frame(
+        name = c('1.RSH', '2.RSH'),
+        vessel_type = c('1.RSH', '2.RSH'),
+        stringsAsFactors = FALSE
+    ))
+
     # Import a survey
     mfdb_import_survey(mdb,
         data_source = 'survey1',

@@ -10,7 +10,7 @@
 \alias{sex}
 \alias{species}
 \alias{stomach_state}
-\alias{vessel}
+\alias{vessel_type}
 
 \title{MareFrame DB Datasets}
 \description{
@@ -26,7 +26,7 @@ market_category
 maturity_stage
 sex
 species
-vessel
+vessel_type
 }
 
 \details{
@@ -55,7 +55,7 @@ vessel
     \item{case_study}{
       Possible case studies, use when connecting with \link{mfdb}()
     }
-    \item{gear, institute, vessel}{
+    \item{gear, institute, vessel_type}{
       Used to describe the dataset being imported with \link{mfdb_import_survey}()
     }
     \item{sex, maturity_stage, species}{

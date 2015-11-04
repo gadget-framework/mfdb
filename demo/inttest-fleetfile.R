@@ -23,6 +23,13 @@ ok_group("Fleetfile example", {
     # Create a temporary gadget directory
     gd <- gadget_directory(tempfile())
 
+    # Set up the vessels we use in this example
+    mfdb_import_cs_taxonomy(mdb, 'vessel', data.frame(
+        name = c('1.RSH', '2.COM'),
+        vessel_type = c('1.RSH', '2.COM'),
+        stringsAsFactors = FALSE
+    ))
+
     # Import a survey for the data we are interested in
     mfdb_import_survey(mdb, data_source = "cod2000",
         table_string("

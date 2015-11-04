@@ -75,13 +75,35 @@ mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
             "Unknown taxonomy name '", taxonomy_name,
             "' should be one of ", paste(mfdb_cs_taxonomy, collapse = ", "))
     }
+
+    if (taxonomy_name == 'areacell') {
+        extra_cols <- c('size')
+    } else if (taxonomy_name == 'vessel') {
+        extra_cols <- c('vessel_type_id', 'full_name', 'length')
+    } else if (taxonomy_name == 'tow') {
+        extra_cols <- c('latitude', 'longitude', 'depth')
+    } else {
+        extra_cols <- c('description')
+    }
+
     mfdb_import_taxonomy(mdb, taxonomy_name,
         data.frame(
             id = sanitise_col(mdb, data_in, 'id', default = seq_len(length(data_in$name))),
             name = sanitise_col(mdb, data_in, 'name'),
+
+            size = sanitise_col(mdb, data_in, 'size', default = c(NA)),
+
+            vessel_type_id = sanitise_col(mdb, data_in, 'vessel_type', lookup = 'vessel_type', default = c(NA)),
+            full_name = sanitise_col(mdb, data_in, 'full_name', default = c(NA)),
+            length = sanitise_col(mdb, data_in, 'length', default = c(NA)),
+
+            latitude = sanitise_col(mdb, data_in, 'latitude', default = c(NA)),
+            longitude = sanitise_col(mdb, data_in, 'longitude', default = c(NA)),
+            depth = sanitise_col(mdb, data_in, 'depth', default = c(NA)),
+
             description = sanitise_col(mdb, data_in, 'description', default = c("")),
-            size = sanitise_col(mdb, data_in, 'size', default = c(NA))),
-        extra_cols = if (taxonomy_name == 'areacell') c('size') else c('description'))
+            stringsAsFactors = FALSE),
+        extra_cols = extra_cols)
     invisible(NULL)
 }
 mfdb_import_area <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'areacell', data_in)

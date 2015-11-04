@@ -49,7 +49,7 @@ If you want to remove the data, import empty data.frames with the same \code{dat
 \describe{
     \item{institute}{Optional. An institute name, see mfdb::institute for possible values}
     \item{gear}{Optional. Gear name, see mfdb::gear for possible values}
-    \item{vessel}{Optional. Vessel name, see mfdb::vessel for possible values}
+    \item{vessel}{Optional. Vessel defined previously with \code{mfdb_import_cs_taxonomy(mdb, 'vessel', ...)}}
     \item{sampling_type}{Optional. A sampling_type, see mfdb::sampling_type for possible values}
     \item{year}{Required. Year each sample was taken, e.g. \code{c(2000,2001)}}
     \item{month}{Required. Month (1--12) each sample was taken, e.g. \code{c(1,12)}}
@@ -108,9 +108,25 @@ sampling types into the \code{sampling_type} taxonomy table.
 The \code{data_in} should be a data.frame with the following columns:
 
 \describe{
-    \item{id}{A numeric ID for this name}
+    \item{id}{Optional. A numeric ID for this name, defaults to 1..n}
     \item{name}{Required. A vector of short names to use in data, e.g. "SEA"}
     \item{description}{Optional. A vector of descriptive names, e.g. "sea sampling"}
+}
+
+If you are importing vessel, you can also specify:
+
+\describe{
+    \item{full_name}{Optional. The full name of this vessel}
+    \item{length}{Optional. The length of the vessel in meters}
+}
+
+If you are importing a tow, you can also specify:
+
+\describe{
+    \item{latitude}{Optional.}
+    \item{longitude}{Optional.}
+    \item{depth}{Optional. Depth in meters}
+    \item{length}{Optional. Length in meters}
 }
 
 \code{mfdb_import_stomach} imports data on predators and prey. The predator and prey
@@ -123,7 +139,7 @@ The \code{predator_data} should be a data.frame with the following columns:
 
     \item{institute}{Optional. An institute name, see mfdb::institute for possible values}
     \item{gear}{Optional. Gear name, see mfdb::gear for possible values}
-    \item{vessel}{Optional. Vessel name, see mfdb::vessel for possible values}
+    \item{vessel}{Optional. Vessel defined previously with \code{mfdb_import_cs_taxonomy(mdb, 'vessel', ...)}}
     \item{sampling_type}{Optional. A sampling_type, see mfdb::sampling_type for possible values}
 
     \item{year}{Required. Year each sample was taken, e.g. \code{c(2000,2001)}}
