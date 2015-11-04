@@ -15,3 +15,4 @@ inttest-landings		Excerise landings import
 inttest-taxonomyimport		Exercise importing of taxonomies
 inttest-stockfile		Excrcise stockfile generation
 inttest-stomach			Excerise predator / prey relationship stomach data
+inttest-vessel			Excerise storing / grouping by vessel information
