@@ -264,6 +264,8 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
                 "vessel_type_id", "INT", "Vessel type used",
                 "full_name", "TEXT", "Full name of vessel",
                 "length", "REAL", "Vessel length (m)",
+                "power", "REAL", "Vessel engine power (KW)",
+                "tonnage", "REAL", "Vessel gross tonnage",
                 NULL
             ) else if (table_name == "tow") c(
                 "latitude", "REAL", "Latutide of sample",

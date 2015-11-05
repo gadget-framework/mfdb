@@ -29,6 +29,8 @@ ok_group("Vessel metadata example", {
         full_name = c('Alfred', 'Bertie', 'Claire', 'Daisy'),
         vessel_type = c('1.RSH', '1.COM', '1.COM', '1.FRZ'),
         length = c(15, 18, 20, 24),
+        power = c(50, 100, 150, 900),
+        tonnage = c(900, 800, 700, 600),
         stringsAsFactors = FALSE
     ))
 
@@ -87,11 +89,13 @@ year    month   areacell        species vessel  length  age     weight
         NULL),
         stringsAsFactors = FALSE)), "Grouped by vessel_name, area")
 
-    # Show each vessel separately, with full name
-    agg_data <- mfdb_sample_meanlength(mdb, c('vessel', 'vessel_full_name'), list(
+    # Show each vessel separately, with full name, power, tonnage
+    agg_data <- mfdb_sample_meanlength(mdb, c('vessel', 'vessel_full_name', 'vessel_power', 'vessel_tonnage'), list(
         step = mfdb_timestep_yearly,
         vessel = mfdb_unaggregated(),
         vessel_full_name = mfdb_unaggregated(),
+        vessel_power = mfdb_unaggregated(),
+        vessel_tonnage = mfdb_unaggregated(),
         null = NULL))
     ok(cmp(unattr(agg_data[[1]]), data.frame(
         year = c('all'),
@@ -99,6 +103,8 @@ year    month   areacell        species vessel  length  age     weight
         area = c('all'),
         vessel = c('A', 'B', 'C', 'D'),
         vessel_full_name = c('Alfred', 'Bertie', 'Claire', 'Daisy'),
+        vessel_power = c(50, 100, 150, 900),
+        vessel_tonnage = c(900, 800, 700, 600),
         number = c(3, 3, 3, 3),
         mean = c(
             mean(c(21, 34, 34)),

@@ -118,6 +118,8 @@ If you are importing vessel, you can also specify:
 \describe{
     \item{full_name}{Optional. The full name of this vessel}
     \item{length}{Optional. The length of the vessel in meters}
+    \item{power}{Optional. The vessel's engine power in KW}
+    \item{tonnage}{Optional. The vessel's gross tonnage}
 }
 
 If you are importing a tow, you can also specify:

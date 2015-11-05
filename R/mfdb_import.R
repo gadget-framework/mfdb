@@ -79,7 +79,7 @@ mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
     if (taxonomy_name == 'areacell') {
         extra_cols <- c('size')
     } else if (taxonomy_name == 'vessel') {
-        extra_cols <- c('vessel_type_id', 'full_name', 'length')
+        extra_cols <- c('vessel_type_id', 'full_name', 'length', 'power', 'tonnage')
     } else if (taxonomy_name == 'tow') {
         extra_cols <- c('latitude', 'longitude', 'depth', 'length')
     } else {
@@ -96,6 +96,8 @@ mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
             vessel_type_id = sanitise_col(mdb, data_in, 'vessel_type', lookup = 'vessel_type', default = c(NA)),
             full_name = sanitise_col(mdb, data_in, 'full_name', default = c(NA)),
             length = sanitise_col(mdb, data_in, 'length', default = c(NA)),
+            power = sanitise_col(mdb, data_in, 'power', default = c(NA)),
+            tonnage = sanitise_col(mdb, data_in, 'tonnage', default = c(NA)),
 
             latitude = sanitise_col(mdb, data_in, 'latitude', default = c(NA)),
             longitude = sanitise_col(mdb, data_in, 'longitude', default = c(NA)),
