@@ -81,7 +81,7 @@ mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
     } else if (taxonomy_name == 'vessel') {
         extra_cols <- c('vessel_type_id', 'full_name', 'length')
     } else if (taxonomy_name == 'tow') {
-        extra_cols <- c('latitude', 'longitude', 'depth')
+        extra_cols <- c('latitude', 'longitude', 'depth', 'length')
     } else {
         extra_cols <- c('description')
     }
@@ -132,6 +132,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
         institute_id = sanitise_col(mdb, data_in, 'institute', lookup = 'institute', default = c(NA)),
         gear_id = sanitise_col(mdb, data_in, 'gear', lookup = 'gear', default = c(NA)),
         vessel_id = sanitise_col(mdb, data_in, 'vessel', lookup = 'vessel', default = c(NA)),
+        tow_id = sanitise_col(mdb, data_in, 'tow', lookup = 'tow', default = c(NA)),
         sampling_type_id = sanitise_col(mdb, data_in, 'sampling_type', lookup = 'sampling_type', default = c(NA)),
         year = sanitise_col(mdb, data_in, 'year'),
         month = sanitise_col(mdb, data_in, 'month', test = function (x) x %in% 1:12),
@@ -222,6 +223,7 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
         institute_id = sanitise_col(mdb, predator_data, 'institute', lookup = 'institute', default = c(NA)),
         gear_id = sanitise_col(mdb, predator_data, 'gear', lookup = 'gear', default = c(NA)),
         vessel_id = sanitise_col(mdb, predator_data, 'vessel', lookup = 'vessel', default = c(NA)),
+        tow_id = sanitise_col(mdb, predator_data, 'tow', lookup = 'tow', default = c(NA)),
         sampling_type_id = sanitise_col(mdb, predator_data, 'sampling_type', lookup = 'sampling_type', default = c(NA)),
 
         year = sanitise_col(mdb, predator_data, 'year'),

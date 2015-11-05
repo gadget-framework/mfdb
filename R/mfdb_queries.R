@@ -253,7 +253,7 @@ mfdb_sample_grouping <- function (mdb,
             institute = "c.institute_id", gear = "c.gear_id", vessel = "c.vessel_id",
             sampling_type = "c.sampling_type_id", species ="c.species_id", sex = "c.sex_id",
             vessel_type = "v.vessel_type_id", vessel_full_name = "v.full_name", vessel_length = "v.length",
-            tow_latitude = "t.latitude", tow_longitude = "t.longitude", tow_depth = "t.depth",
+            tow = "c.tow_id", tow_latitude = "t.latitude", tow_longitude = "t.longitude", tow_depth = "t.depth", tow_length = "t.length",
         NULL),
         calc_cols = c(),
         core_table = "sample",
@@ -295,7 +295,7 @@ mfdb_sample_grouping <- function (mdb,
         join_tables = c("JOIN vessel v ON c.case_study_id = v.case_study_id AND c.vessel_id = v.vessel_id", join_tables)
     }
     if (length(grep("^t\\.", col_defs[names(params)])) > 0) {
-        join_tables = c("JOIN tow t ON c.case_study_id = v.case_study_id AND c.tow_id = t.tow_id", join_tables)
+        join_tables = c("JOIN tow t ON c.case_study_id = t.case_study_id AND c.tow_id = t.tow_id", join_tables)
     }
 
     # Pick out any extra params we can make use of, ignore rest

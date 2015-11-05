@@ -269,6 +269,7 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
                 "latitude", "REAL", "Latutide of sample",
                 "longitude", "REAL", "Longitude of sample",
                 "depth", "REAL", "Tow depth (m)",
+                "length", "REAL", "Tow length (m)",
                 NULL
             ) else c(
                 "description", "VARCHAR(1024)", "Long description",
