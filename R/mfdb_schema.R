@@ -183,7 +183,7 @@ schema_from_3 <- function(mdb) {
         }
         col_exists <- mfdb_fetch(mdb, "SELECT COUNT(*)",
             " FROM information_schema.columns",
-            " WHERE table_schema = 'public'",
+            " WHERE table_schema = ", sql_quote(mdb$schema),
             " AND table_name = ", sql_quote(t),
             " AND column_name = 't_group'",
             NULL)

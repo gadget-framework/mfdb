@@ -30,6 +30,7 @@ mfdb <- function(case_study_name,
     # Create temporary mdb object and ensure we have a valid schema
     mdb <- structure(list(
             logger = logger,
+            schema = 'public',
             db = db_connection), class = "mfdb_temp")
     if (destroy_schema) {
         mfdb_destroy_schema(mdb)
@@ -52,11 +53,14 @@ mfdb <- function(case_study_name,
     }
 
     # Create full mdb object
+    mfdb_send(mdb, "CREATE TEMPORARY TABLE tmp_schema (moo INT)")
     mdb <- structure(list(
             logger = logger,
             save_temp_tables = save_temp_tables,
             case_study_id = case_study_id,
             state = new.env(),
+            schema = mdb$schema,
+            temp_schema = mfdb_fetch(mdb, "SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema()")[1,1],
             db = db_connection), class = "mfdb")
 
     mfdb_update_cs_taxonomy(mdb)
@@ -71,7 +75,8 @@ mfdb_finish_import <- function(mdb) {
         tables <- mfdb_fetch(mdb,
             "SELECT table_name",
             " FROM information_schema.tables",
-            " WHERE table_schema = 'public' OR table_schema LIKE 'pg_temp%'")[, c(1)]
+            " WHERE table_schema IN ", sql_quote(c(mdb$schema, mdb$temp_schema), always_bracket = TRUE),
+            "")[, c(1)]
         for (t in tables) mfdb_send(mdb, "ANALYZE ", t)
         assign('index_created', TRUE, pos = mdb$state)
     }
@@ -197,7 +202,7 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
     # Fetch table definition from DB, so we can recreate for temporary table
     cols <- mfdb_fetch(mdb, "SELECT column_name, data_type",
         " FROM information_schema.columns",
-        " WHERE table_schema = 'public'",
+        " WHERE table_schema = ", sql_quote(mdb$schema),
         " AND table_name = ", sql_quote(target_table),
         NULL
     )
@@ -224,14 +229,13 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
     # Based on http://blog.hagander.net/archives/131-Automatically-dropping-and-creating-constraints.html
 
     # Get a list of constraints and the order to recreate them
-    namespace <- "public"
     constraints <- mfdb_fetch(mdb,
         "SELECT relname AS table_name, conname AS name",
         ", pg_get_constraintdef(pg_constraint.oid) AS definition",
         " FROM pg_constraint",
         " INNER JOIN pg_class ON conrelid=pg_class.oid",
         " INNER JOIN pg_namespace ON pg_namespace.oid=pg_class.relnamespace",
-        " WHERE nspname IN ", sql_quote(namespace, always_bracket = TRUE),
+        " WHERE nspname IN ", sql_quote(mdb$schema, always_bracket = TRUE),
         " AND relname IN ", sql_quote(table_name, always_bracket = TRUE),
         " ORDER BY CASE WHEN contype='f' THEN 0 ELSE 1 END DESC,contype DESC,nspname DESC,relname DESC,conname DESC",
         NULL)
@@ -240,7 +244,7 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
         for(i in rev(1:nrow(constraints))) {
             mdb$logger$info(paste0("Removing constraint ", constraints[i, "table_name"], ".", constraints[i, "name"]))
             mfdb_send(mdb,
-                "ALTER TABLE ", namespace, ".", constraints[i, "table_name"],
+                "ALTER TABLE ", mdb$schema, ".", constraints[i, "table_name"],
                 " DROP CONSTRAINT ", constraints[i, "name"], "")
         }
         code_block
@@ -248,7 +252,7 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
         for(i in 1:nrow(constraints)) {
             mdb$logger$info(paste0("Reinstating constraint ", constraints[i, "table_name"], ".", constraints[i, "name"]))
             mfdb_send(mdb,
-                "ALTER TABLE ", namespace, ".", constraints[i, "table_name"],
+                "ALTER TABLE ", mdb$schema, ".", constraints[i, "table_name"],
                 " ADD CONSTRAINT ", constraints[i, "name"], " ", constraints[i, "definition"])
         }
     })
@@ -259,7 +263,7 @@ mfdb_table_exists <- function(mdb, table_name) {
     mfdb_fetch(mdb,
         "SELECT COUNT(*)",
         " FROM information_schema.tables",
-        " WHERE table_schema NOT IN ('information_schema', 'pg_catalog')",
+        " WHERE table_schema IN ", sql_quote(c(mdb$schema, mdb$temp_schema), always_bracket = TRUE),
         " AND table_name IN ", sql_quote(table_name, always_bracket = TRUE))[, c(1)] > 0
 }
 

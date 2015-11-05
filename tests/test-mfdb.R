@@ -163,37 +163,37 @@ ok_group("mfdb_disable_constraints", {
     }
 
     ok(cmp(disable_constraints("tbl1", cat("executing code block\n")), c(
-        "ALTER TABLE public.tbl1 DROP CONSTRAINT const3",
-        "ALTER TABLE public.tbl1 DROP CONSTRAINT const2",
-        "ALTER TABLE public.tbl1 DROP CONSTRAINT const1",
+        "ALTER TABLE fake_schema.tbl1 DROP CONSTRAINT const3",
+        "ALTER TABLE fake_schema.tbl1 DROP CONSTRAINT const2",
+        "ALTER TABLE fake_schema.tbl1 DROP CONSTRAINT const1",
         "executing code block",
-        "ALTER TABLE public.tbl1 ADD CONSTRAINT const1 a",
-        "ALTER TABLE public.tbl1 ADD CONSTRAINT const2 b",
-        "ALTER TABLE public.tbl1 ADD CONSTRAINT const3 c",
+        "ALTER TABLE fake_schema.tbl1 ADD CONSTRAINT const1 a",
+        "ALTER TABLE fake_schema.tbl1 ADD CONSTRAINT const2 b",
+        "ALTER TABLE fake_schema.tbl1 ADD CONSTRAINT const3 c",
         "Returned: ")), "Removed and replaced constraints when successful")
 
     ok(cmp(disable_constraints("tbl1", stop("Oh noes")), c(
-        "ALTER TABLE public.tbl1 DROP CONSTRAINT const3",
-        "ALTER TABLE public.tbl1 DROP CONSTRAINT const2",
-        "ALTER TABLE public.tbl1 DROP CONSTRAINT const1",
-        "ALTER TABLE public.tbl1 ADD CONSTRAINT const1 a",
-        "ALTER TABLE public.tbl1 ADD CONSTRAINT const2 b",
-        "ALTER TABLE public.tbl1 ADD CONSTRAINT const3 c",
+        "ALTER TABLE fake_schema.tbl1 DROP CONSTRAINT const3",
+        "ALTER TABLE fake_schema.tbl1 DROP CONSTRAINT const2",
+        "ALTER TABLE fake_schema.tbl1 DROP CONSTRAINT const1",
+        "ALTER TABLE fake_schema.tbl1 ADD CONSTRAINT const1 a",
+        "ALTER TABLE fake_schema.tbl1 ADD CONSTRAINT const2 b",
+        "ALTER TABLE fake_schema.tbl1 ADD CONSTRAINT const3 c",
         "[1] \"Oh noes\"")), "Removed and replaced constraints when something went wrong")
 
     ok(cmp(disable_constraints(c("tbl1", "tbl2"), stop("Oh noes")), c(
-        "ALTER TABLE public.tbl2 DROP CONSTRAINT const3",
-        "ALTER TABLE public.tbl2 DROP CONSTRAINT const2",
-        "ALTER TABLE public.tbl2 DROP CONSTRAINT const1",
-        "ALTER TABLE public.tbl1 DROP CONSTRAINT const3",
-        "ALTER TABLE public.tbl1 DROP CONSTRAINT const2",
-        "ALTER TABLE public.tbl1 DROP CONSTRAINT const1",
-        "ALTER TABLE public.tbl1 ADD CONSTRAINT const1 a",
-        "ALTER TABLE public.tbl1 ADD CONSTRAINT const2 b",
-        "ALTER TABLE public.tbl1 ADD CONSTRAINT const3 c",
-        "ALTER TABLE public.tbl2 ADD CONSTRAINT const1 a",
-        "ALTER TABLE public.tbl2 ADD CONSTRAINT const2 b",
-        "ALTER TABLE public.tbl2 ADD CONSTRAINT const3 c",
+        "ALTER TABLE fake_schema.tbl2 DROP CONSTRAINT const3",
+        "ALTER TABLE fake_schema.tbl2 DROP CONSTRAINT const2",
+        "ALTER TABLE fake_schema.tbl2 DROP CONSTRAINT const1",
+        "ALTER TABLE fake_schema.tbl1 DROP CONSTRAINT const3",
+        "ALTER TABLE fake_schema.tbl1 DROP CONSTRAINT const2",
+        "ALTER TABLE fake_schema.tbl1 DROP CONSTRAINT const1",
+        "ALTER TABLE fake_schema.tbl1 ADD CONSTRAINT const1 a",
+        "ALTER TABLE fake_schema.tbl1 ADD CONSTRAINT const2 b",
+        "ALTER TABLE fake_schema.tbl1 ADD CONSTRAINT const3 c",
+        "ALTER TABLE fake_schema.tbl2 ADD CONSTRAINT const1 a",
+        "ALTER TABLE fake_schema.tbl2 ADD CONSTRAINT const2 b",
+        "ALTER TABLE fake_schema.tbl2 ADD CONSTRAINT const3 c",
         "[1] \"Oh noes\"")), "Removed and replaced constraints when something went wrong")
 })
 
@@ -209,17 +209,17 @@ ok_group("mfdb_table_exists", {
     }
 
     ok(cmp(table_exists("carol", ret = data.frame(count = 1)), c(
-        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema NOT IN ('information_schema', 'pg_catalog') AND table_name IN ('carol')",
+        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema IN ('fake_schema','fake_temp_schema') AND table_name IN ('carol')",
         "Returned: TRUE ",
         NULL)), "SQL looks good")
 
     ok(cmp(table_exists("carol", ret = data.frame(count = 0)), c(
-        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema NOT IN ('information_schema', 'pg_catalog') AND table_name IN ('carol')",
+        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema IN ('fake_schema','fake_temp_schema') AND table_name IN ('carol')",
         "Returned: FALSE ",
         NULL)), "Can alter return value")
 
     ok(cmp(table_exists(c("frank", "carol"), ret = data.frame(count = c(0, 1))), c(
-        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema NOT IN ('information_schema', 'pg_catalog') AND table_name IN ('frank','carol')",
+        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema IN ('fake_schema','fake_temp_schema') AND table_name IN ('frank','carol')",
         "Returned: FALSE TRUE ",
         NULL)), "Vectorises")
 })

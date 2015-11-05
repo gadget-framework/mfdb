@@ -91,6 +91,8 @@ fake_mdb <- function(save_temp_tables = FALSE, case_study_id = 0) {
             logger = logger,
             save_temp_tables = save_temp_tables,
             case_study_id = case_study_id,
+            schema = 'fake_schema',
+            temp_schema = 'fake_temp_schema',
             state = new.env(),
             db = structure(list(), class="dbNull"),
         class = "mfdb")))
