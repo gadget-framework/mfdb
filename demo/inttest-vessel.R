@@ -1,4 +1,4 @@
-# TODO:
+# Excerise storing / grouping by vessel information
 #
 # ok and ok_group are there so we can run this code and verify it is correct,
 # and not needed every-day use.
@@ -19,7 +19,7 @@ mdb <- mfdb('Test', db_params = db_params, save_temp_tables = FALSE)
 mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(10,200,400)))
 mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G03')))
 
-ok_group("Fleetfile example", {
+ok_group("Vessel metadata example", {
     # Create a temporary gadget directory
     gd <- gadget_directory(tempfile())
 
