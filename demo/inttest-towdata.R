@@ -90,5 +90,24 @@ year    month   areacell        species tow  length  age     weight
         tow_length = c(10, 10, 20, 20),
         number = c(1, 1, 1, 1),
         mean = c(34, 54, 24, 14),
+        stringsAsFactors = FALSE)), "Shows all detail of tows")
+
+    # Tow length can also be used to scale samples
+    agg_data <- mfdb_sample_meanlength(mdb, c('tow'), list(
+        step = mfdb_timestep_yearly,
+        tow = mfdb_unaggregated(),
+        null = NULL), scale_index = 'tow_length')
+    ok(cmp(unattr(agg_data[[1]]), data.frame(
+        year = c('all'),
+        step = c('1'),
+        area = c('all'),
+        tow = c('A', 'B', 'C', 'D'),
+        number = c(3 / 10, 3 / 10, 3 / 20, 3 / 20),
+        mean = c(
+            (21 * (1/10) + 34 * (1/10) + 34 * (1/10)) / (3/10),
+            (62 * (1/10) + 53 * (1/10) + 54 * (1/10)) / (3/10),
+            (28 * (1/20) + 34 * (1/20) + 24 * (1/20)) / (3/20),
+            (12 * (1/20) + 44 * (1/20) + 14 * (1/20)) / (3/20),
+        NULL),
         stringsAsFactors = FALSE)), "Grouped by tow_depth")
 })

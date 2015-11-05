@@ -58,6 +58,10 @@ mfdb_survey_index_total <- function (mdb, cols, params) {
 abundance_core_table <- function (mdb, scale_index) {
     if (is.null(scale_index)) {
         return(c("sample", "c.count"))
+    } else if (scale_index == 'tow_length') {
+        return(c(
+            "(SELECT sam.*, t.length tow_length FROM sample sam, tow t WHERE sam.tow_id = t.tow_id)",
+            "c.count / c.tow_length"))
     } else {
         return(c(paste0(
             "(SELECT sam.*, AVG(si.value) abundance",

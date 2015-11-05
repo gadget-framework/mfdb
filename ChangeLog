@@ -1,4 +1,5 @@
     Version 4.0-0
+    * Scale results by tow_length as well as any survey indices
     * Allow querying by t_group (i.e. country) as well as institute
 
     Schema changes:

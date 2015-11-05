@@ -35,7 +35,7 @@ mfdb_stomach_presenceratio(mdb, cols, params)
     \item{mdb}{An object created by \code{mfdb}()}
     \item{cols}{Any additonal columns to group by, see details.}
     \item{params}{A list of parameters, see details.}
-    \item{scale_index}{Optional. survey_index used to scale results before aggregation}
+    \item{scale_index}{Optional. survey_index used to scale results before aggregation, either "tow_length" or from \link{mfdb_import_survey_index}}
 }
 
 \details{
@@ -98,7 +98,8 @@ mfdb_sample_meanlength(mdb, c('age'), c(list(), defaults))
 \code{scale_index} allows you to scale samples before aggregation. If 
 it contains the name of a survey index (see \link{mfdb_import_survey_index}),
 then any counts will be scaled by the value for that areacell before and used in
-aggregation / weighted averages.
+aggregation / weighted averages. As a special case, you can use "tow_length" to
+to scale counts by the tow length.
 }
 
 \value{
