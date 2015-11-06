@@ -1,3 +1,5 @@
+importFrom(utils, str, capture.output, packageVersion)
+
 # mfdb_bulk.R
 export(mfdb_cs_dump)
 export(mfdb_cs_restore)
