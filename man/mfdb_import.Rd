@@ -6,6 +6,8 @@
 \alias{mfdb_import_temperature}
 \alias{mfdb_import_sampling_type}
 \alias{mfdb_import_cs_taxonomy}
+\alias{mfdb_import_tow_taxonomy}
+\alias{mfdb_import_vessel_taxonomy}
 \alias{mfdb_import_stomach}
 
 \title{MareFrame Import functions}
@@ -21,6 +23,8 @@
     mfdb_import_temperature(mdb, data_in)
     mfdb_import_sampling_type(mdb, data_in)
     mfdb_import_cs_taxonomy(mdb, taxonomy_name, data_in)
+    mfdb_import_tow_taxonomy(mdb,  data_in)
+    mfdb_import_vessel_taxonomy(mdb,  data_in)
     mfdb_import_stomach(mdb, predator_data, prey_data, data_source = "default_stomach")
 }
 \arguments{
@@ -49,7 +53,8 @@ If you want to remove the data, import empty data.frames with the same \code{dat
 \describe{
     \item{institute}{Optional. An institute name, see mfdb::institute for possible values}
     \item{gear}{Optional. Gear name, see mfdb::gear for possible values}
-    \item{vessel}{Optional. Vessel defined previously with \code{mfdb_import_cs_taxonomy(mdb, 'vessel', ...)}}
+    \item{vessel}{Optional. Vessel defined previously with \code{mfdb_import_vessel_taxonomy(...)}}
+    \item{tow}{Optional. Tow defined previously with \code{mfdb_import_tow_taxonomy(...)}}
     \item{sampling_type}{Optional. A sampling_type, see mfdb::sampling_type for possible values}
     \item{year}{Required. Year each sample was taken, e.g. \code{c(2000,2001)}}
     \item{month}{Required. Month (1--12) each sample was taken, e.g. \code{c(1,12)}}
@@ -111,9 +116,12 @@ The \code{data_in} should be a data.frame with the following columns:
     \item{id}{Optional. A numeric ID for this name, defaults to 1..n}
     \item{name}{Required. A vector of short names to use in data, e.g. "SEA"}
     \item{description}{Optional. A vector of descriptive names, e.g. "sea sampling"}
+    \item{t_group}{Optional. A vector of the that groups}
 }
 
-If you are importing vessel, you can also specify:
+\code{mfdb_import_vessel_taxonomy} imports names of vessels into the
+taxonomy table, so they can be used when importing samples. As well as the above, you can
+also specify:
 
 \describe{
     \item{full_name}{Optional. The full name of this vessel}
@@ -122,7 +130,9 @@ If you are importing vessel, you can also specify:
     \item{tonnage}{Optional. The vessel's gross tonnage}
 }
 
-If you are importing a tow, you can also specify:
+\code{mfdb_import_vessel_taxonomy} imports names of vessels into the
+taxonomy table, so they can be used when importing samples. As well as the
+above, you can also specify:
 
 \describe{
     \item{latitude}{Optional.}
@@ -141,7 +151,8 @@ The \code{predator_data} should be a data.frame with the following columns:
 
     \item{institute}{Optional. An institute name, see mfdb::institute for possible values}
     \item{gear}{Optional. Gear name, see mfdb::gear for possible values}
-    \item{vessel}{Optional. Vessel defined previously with \code{mfdb_import_cs_taxonomy(mdb, 'vessel', ...)}}
+    \item{vessel}{Optional. Vessel defined previously with \code{mfdb_import_vessel_taxonomy(mdb, ...)}}
+    \item{tow}{Optional. Tow defined previously with \code{mfdb_import_tow_taxonomy(...)}}
     \item{sampling_type}{Optional. A sampling_type, see mfdb::sampling_type for possible values}
 
     \item{year}{Required. Year each sample was taken, e.g. \code{c(2000,2001)}}

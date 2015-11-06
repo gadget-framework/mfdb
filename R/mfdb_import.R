@@ -110,6 +110,8 @@ mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
 }
 mfdb_import_area <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'areacell', data_in)
 mfdb_import_sampling_type <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'sampling_type', data_in)
+mfdb_import_tow_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'tow', data_in)
+mfdb_import_vessel_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'vessel', data_in)
 
 mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
     # Work out whether we're importing mean weights or total weights

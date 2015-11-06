@@ -26,7 +26,7 @@ mfdb_import_sampling_type(mdb, data.frame(
     stringsAsFactors = FALSE))
 
 # Set up the vessels we use in this example
-mfdb_import_cs_taxonomy(mdb, 'vessel', data.frame(
+mfdb_import_vessel_taxonomy(mdb, data.frame(
     name = c('1.COM', '2.COM'),
     vessel_type = c('1.COM', '2.COM'),
     stringsAsFactors = FALSE

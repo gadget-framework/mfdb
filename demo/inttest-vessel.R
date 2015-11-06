@@ -24,7 +24,7 @@ ok_group("Vessel metadata example", {
     gd <- gadget_directory(tempfile())
 
     # Set up the vessels we use in this example
-    mfdb_import_cs_taxonomy(mdb, 'vessel', data.frame(
+    mfdb_import_vessel_taxonomy(mdb, data.frame(
         name = c('A', 'B', 'C', 'D'),
         full_name = c('Alfred', 'Bertie', 'Claire', 'Daisy'),
         vessel_type = c('1.RSH', '1.COM', '1.COM', '1.FRZ'),

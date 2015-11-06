@@ -34,6 +34,8 @@ export(mfdb_import_division)
 export(mfdb_import_temperature)
 export(mfdb_import_sampling_type)
 export(mfdb_import_cs_taxonomy)
+export(mfdb_import_tow_taxonomy)
+export(mfdb_import_vessel_taxonomy)
 export(mfdb_import_stomach)
 
 # mfdb_queries.R

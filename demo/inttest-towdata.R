@@ -24,7 +24,7 @@ ok_group("Tow metadata example", {
     gd <- gadget_directory(tempfile())
 
     # Set up the tows we use in this example
-    mfdb_import_cs_taxonomy(mdb, 'tow', data.frame(
+    mfdb_import_tow_taxonomy(mdb, data.frame(
         name = c('A', 'B', 'C', 'D'),
         latitude = c(64.10000, 63.40000, 64.90000, 66.20000),
         longitude = c(-23.15000, -20.18000, -13.55000, -18.55000),
