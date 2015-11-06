@@ -3,6 +3,7 @@
     * Allow querying by t_group (i.e. country) as well as institute
 
     Schema changes:
+    * Remove fleet taxonomy, can group vessels instead
     * Split vessel taxonomy up into vessel and vessel_type
     * Add tow taxonomy, with extra columns for tow details
     * Add t_group to all taxonomies, for one level of nesting

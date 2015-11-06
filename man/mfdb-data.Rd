@@ -2,7 +2,6 @@
 \alias{mfdb-data}
 \alias{case_study}
 \alias{digestion_stage}
-\alias{fleet}
 \alias{gear}
 \alias{institute}
 \alias{market_category}
@@ -19,7 +18,6 @@
 
 \usage{
 case_study
-fleet
 gear
 institute
 market_category

@@ -6,7 +6,7 @@ mfdb_show_schema <- function() {
 
 # Destroy everything in current schema
 mfdb_destroy_schema <- function(mdb) {
-    for(t in c('prey', 'predator', 'sample', 'survey', 'division', 'survey_index', mfdb_cs_taxonomy, mfdb_taxonomy, 'mfdb_schema')) {
+    for(t in c('prey', 'predator', 'sample', 'survey', 'division', 'survey_index', 'fleet', mfdb_cs_taxonomy, mfdb_taxonomy, 'mfdb_schema')) {
         mdb$logger$info(paste("Removing table", t))
         tryCatch(mfdb_send(mdb, "DROP TABLE ", t, " CASCADE"), error = function(e) {
             if(grepl("does not exist", e$message)) return();
@@ -167,8 +167,10 @@ schema_from_2 <- function(mdb) {
     mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN count TYPE REAL")
 
     # Recreate fleet as a CS taxonomy
-    mfdb_send(mdb, "DROP TABLE fleet")
-    mfdb_create_taxonomy_table(mdb, "fleet")
+    if (mfdb_table_exists(mdb, 'fleet')) {
+        mfdb_send(mdb, "DROP TABLE fleet")
+        mfdb_create_taxonomy_table(mdb, "fleet")
+    }
 
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 3")
 }
@@ -224,6 +226,11 @@ schema_from_3 <- function(mdb) {
         mfdb_send(mdb, "ALTER TABLE ", t, " DROP COLUMN vessel_type_id")
     }
 
+    # It's not actually being used
+    if (mfdb_table_exists(mdb, 'fleet')) {
+        mfdb_send(mdb, "DROP TABLE fleet")
+    }
+
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 4")
 }
 
@@ -232,7 +239,7 @@ schema_from_4 <- function(mdb) {
 }
 
 mfdb_taxonomy <- c("case_study", "institute", "gear", "vessel_type", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage")
-mfdb_cs_taxonomy <- c("areacell", "fleet", "sampling_type", "data_source", "index_type", "tow", "vessel")
+mfdb_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type", "tow", "vessel")
 mfdb_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', 'prey')
 
 mfdb_create_taxonomy_table <- function(mdb, table_name) {
