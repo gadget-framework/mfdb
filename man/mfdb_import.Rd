@@ -1,13 +1,7 @@
 \name{mfdb_import}
+\alias{mfdb_import_temperature}
 \alias{mfdb_import_survey}
 \alias{mfdb_import_survey_index}
-\alias{mfdb_import_area}
-\alias{mfdb_import_division}
-\alias{mfdb_import_temperature}
-\alias{mfdb_import_sampling_type}
-\alias{mfdb_import_cs_taxonomy}
-\alias{mfdb_import_tow_taxonomy}
-\alias{mfdb_import_vessel_taxonomy}
 \alias{mfdb_import_stomach}
 
 \title{MareFrame Import functions}
@@ -16,23 +10,14 @@
 }
 
 \usage{
+    mfdb_import_temperature(mdb, data_in)
     mfdb_import_survey(mdb, data_in, data_source = 'default_sample')
     mfdb_import_survey_index(mdb, data_in, data_source = 'default_index')
-    mfdb_import_area(mdb, data_in)
-    mfdb_import_division(mdb, data_in)
-    mfdb_import_temperature(mdb, data_in)
-    mfdb_import_sampling_type(mdb, data_in)
-    mfdb_import_cs_taxonomy(mdb, taxonomy_name, data_in)
-    mfdb_import_tow_taxonomy(mdb,  data_in)
-    mfdb_import_vessel_taxonomy(mdb,  data_in)
     mfdb_import_stomach(mdb, predator_data, prey_data, data_source = "default_stomach")
 }
 \arguments{
     \item{mdb}{
         Database connection created by \code{mfdb()}.
-    }
-    \item{taxonomy_name}{
-        The name of the taxonomy to import, one of \code{areacell}, \code{sampling_type}
     }
     \item{data_in, predator_data, prey_data}{
         A \code{data.frame} of survey data to import, see details.
@@ -46,6 +31,17 @@ All functions will replace existing data in the case study with new data, unless
 in which case then only existing data with the same \code{data_source} will be replaced.
 
 If you want to remove the data, import empty data.frames with the same \code{data_source}.
+
+\code{mfdb_import_temperature} imports temperature time-series data for
+areacells. The \code{data_in} should be a data.frame with the following columns:
+
+\describe{
+    \item{id}{A numeric ID for this areacell (will be combined with the case study number internally)}
+    \item{year}{Required. Year each sample was taken, e.g. \code{c(2000,2001)}}
+    \item{month}{Required. Month (1--12) each sample was taken, e.g. \code{c(1,12)}}
+    \item{areacell}{Required. Areacell sample was taken within}
+    \item{temperature}{The temperature at given location/time}
+}
 
 \code{mfdb_import_survey} imports institution surveys and commercial sampling for your case study. The
 \code{data_in} should be a data.frame with the following columns:
@@ -81,64 +77,6 @@ following columns:
     \item{month}{Required. Month (1--12) each sample was taken, e.g. \code{c(1,12)}}
     \item{areacell}{Required. Areacell sample was taken within}
     \item{value}{Value of the index at this point in space/time}
-}
-
-\code{mfdb_import_area} imports areacell information for your case study. The
-\code{data_in} should be a data.frame with the following columns:
-
-\describe{
-    \item{id}{A numeric ID for this areacell (will be combined with the case study number internally)}
-    \item{name}{The name of the areacell, e.g. '45G01'}
-    \item{size}{The size of the areacell}
-}
-
-\code{mfdb_import_division} imports groupings of areacells into divisions. The
-\code{data_in} should be a list of areacell vectors, with division names.
-For example, \code{list(divA = c('45G01', '45G02', '45G03'))}
-
-\code{mfdb_import_temperature} imports temperature time-series data for
-areacells. The \code{data_in} should be a data.frame with the following columns:
-
-\describe{
-    \item{id}{A numeric ID for this areacell (will be combined with the case study number internally)}
-    \item{year}{Required. Year each sample was taken, e.g. \code{c(2000,2001)}}
-    \item{month}{Required. Month (1--12) each sample was taken, e.g. \code{c(1,12)}}
-    \item{areacell}{Required. Areacell sample was taken within}
-    \item{temperature}{The temperature at given location/time}
-}
-
-\code{mfdb_import_cs_taxonomy} imports names into a taxonomy table, 
-\code{mfdb_import_sampling_type} is a special case that imports names of
-sampling types into the \code{sampling_type} taxonomy table.
-The \code{data_in} should be a data.frame with the following columns:
-
-\describe{
-    \item{id}{Optional. A numeric ID for this name, defaults to 1..n}
-    \item{name}{Required. A vector of short names to use in data, e.g. "SEA"}
-    \item{description}{Optional. A vector of descriptive names, e.g. "sea sampling"}
-    \item{t_group}{Optional. A vector of the that groups}
-}
-
-\code{mfdb_import_vessel_taxonomy} imports names of vessels into the
-taxonomy table, so they can be used when importing samples. As well as the above, you can
-also specify:
-
-\describe{
-    \item{full_name}{Optional. The full name of this vessel}
-    \item{length}{Optional. The length of the vessel in meters}
-    \item{power}{Optional. The vessel's engine power in KW}
-    \item{tonnage}{Optional. The vessel's gross tonnage}
-}
-
-\code{mfdb_import_vessel_taxonomy} imports names of vessels into the
-taxonomy table, so they can be used when importing samples. As well as the
-above, you can also specify:
-
-\describe{
-    \item{latitude}{Optional.}
-    \item{longitude}{Optional.}
-    \item{depth}{Optional. Depth in meters}
-    \item{length}{Optional. Length in meters}
 }
 
 \code{mfdb_import_stomach} imports data on predators and prey. The predator and prey
