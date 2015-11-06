@@ -1,3 +1,5 @@
+2015-11-06  Jamie Lentin  <lentinj@shuttlethread.com>
+
     Version 4.0-0
     * Scale results by tow_length as well as any survey indices
     * Allow querying by t_group (i.e. country) as well as institute
