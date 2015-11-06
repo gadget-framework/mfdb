@@ -1,10 +1,10 @@
-\name{mfdb_import}
+\name{mfdb_import_data}
 \alias{mfdb_import_temperature}
 \alias{mfdb_import_survey}
 \alias{mfdb_import_survey_index}
 \alias{mfdb_import_stomach}
 
-\title{MareFrame Import functions}
+\title{MareFrame Data Import functions}
 \description{
     Functions to import data into MareFrame DB
 }
