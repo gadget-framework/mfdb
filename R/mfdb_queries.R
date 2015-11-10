@@ -226,7 +226,6 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
             NULL),
         params = params,
         generator = "mfdb_stomach_presenceratio")
-    # TODO: We are regenerating temporary tables twice. This is wasteful.
 
     if (length(with_prey) == 0) return(list())
     # TODO: Bootstrapping is very likely broken
