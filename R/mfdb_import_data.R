@@ -183,7 +183,7 @@ sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL,
     data_col_name <- grep(paste0('^', col_name, '$'), names(data_in), ignore.case=TRUE, value=TRUE)
     if (length(data_col_name) == 0) {
         if (!is.null(default)) return(default);
-        stop("Input data is missing ", col_name)
+        stop("Input data is missing '", col_name, "'. Columns available: ", paste(names(data_in), collapse = ","))
     }
     col <- data_in[,data_col_name[[1]]]
 

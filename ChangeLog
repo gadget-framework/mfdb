@@ -1,3 +1,5 @@
+    * State which columns are available when cannot find column
+
 2015-11-06  Jamie Lentin  <lentinj@shuttlethread.com>
 
     Version 4.0-0
