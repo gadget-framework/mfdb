@@ -63,6 +63,7 @@ areacells. The \code{data_in} should be a data.frame with the following columns:
     \item{length_min}{Optional, default \code{c(NA)}. Minimum theoretical length, if data is already aggregated}
     \item{weight}{Optional, default \code{c(NA)}. Weight of sample / mean weight of all samples}
     \item{weight_var}{Optional, default \code{c(NA)}. Sample variance, if data is already aggregated}
+    \item{weight_total}{Optional, default \code{c(NA)}. Total weight of all samples, can be used with count = NA to represent an unknown number of samples}
     \item{count}{Optional, default \code{c(1)}. Number of samples this row represents (i.e. if the data is aggregated)}
 }
 
