@@ -2,12 +2,11 @@
 mfdb_area_size <- function (mdb, params) {
     if (is.null(params$area)) stop("Must specify 'area' in params")
     mfdb_sample_grouping(mdb,
-        params = params,
         group_cols = c("area"),
         calc_cols = c("SUM(c.size) AS size"),
         core_table = "areacell",
         col_defs = list(area = "c.areacell_id"),
-        generator = "mfdb_area_size")
+        params = params)
 }
 
 # Return year, step, area, temperature (mean)
@@ -21,7 +20,6 @@ mfdb_survey_index_mean <- function (mdb, cols, params) {
         stop("Need to supply 'index_type' in params. Querying all indicies makes little sense")
     }
     mfdb_sample_grouping(mdb,
-        params = params,
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c("AVG(c.value) AS mean"),
         col_defs = list(
@@ -32,7 +30,7 @@ mfdb_survey_index_mean <- function (mdb, cols, params) {
             year = "c.year",
             step = "c.month"),
         core_table = "survey_index",
-        generator = "mfdb_survey_index_mean")
+        params = params)
 }
 
 # Return year, step, area, total value
@@ -41,7 +39,6 @@ mfdb_survey_index_total <- function (mdb, cols, params) {
         stop("Need to supply 'index_type' in params. Querying all indicies makes little sense")
     }
     mfdb_sample_grouping(mdb,
-        params = params,
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c("SUM(c.value) AS total"),
         col_defs = list(
@@ -52,7 +49,7 @@ mfdb_survey_index_total <- function (mdb, cols, params) {
             year = "c.year",
             step = "c.month"),
         core_table = "survey_index",
-        generator = "mfdb_survey_index_total")
+        params = params)
 }
 
 abundance_core_table <- function (mdb, scale_index) {
@@ -85,27 +82,25 @@ abundance_core_table <- function (mdb, scale_index) {
 mfdb_sample_count <- function (mdb, cols, params, scale_index = NULL) {
     abundance <- abundance_core_table(mdb, scale_index)
     mfdb_sample_grouping(mdb,
-        params = params,
         core_table = abundance[[1]],
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
             NULL),
-        generator = "mfdb_sample_count")
+        params = params)
 }
 
 # Return year,step,area,age,number (# of samples),mean (length)
 mfdb_sample_meanlength <- function (mdb, cols, params, scale_index = NULL) {
     abundance <- abundance_core_table(mdb, scale_index)
     out <- mfdb_sample_grouping(mdb,
-        params = params,
         core_table = abundance[[1]],
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
             paste0("WEIGHTED_MEAN(c.length::numeric, (", abundance[[2]], ")::numeric) AS mean"),
             NULL),
-        generator = "mfdb_sample_meanlength")
+        params = params)
     out
 }
 
@@ -114,7 +109,6 @@ mfdb_sample_meanlength_stddev <- function (mdb, cols, params, scale_index = NULL
     # TODO: Do we need to know the resolution of the input data to avoid oversampling?
     abundance <- abundance_core_table(mdb, scale_index)
     out <- mfdb_sample_grouping(mdb,
-        params = params,
         core_table = abundance[[1]],
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
@@ -122,20 +116,19 @@ mfdb_sample_meanlength_stddev <- function (mdb, cols, params, scale_index = NULL
             paste0("WEIGHTED_MEAN(c.length::numeric, (", abundance[[2]], ")::numeric) AS mean"),
             paste0("WEIGHTED_STDDEV(c.length::numeric, (", abundance[[2]], ")::numeric) AS stddev"), # TODO: Should take length_var into account
             NULL),
-        generator = "mfdb_sample_meanlength_stddev")
+        params = params)
     out
 }
 
 # Return year,step,area, ... , total (weight)
 mfdb_sample_totalweight <- function (mdb, cols, params) {
     out <- mfdb_sample_grouping(mdb,
-        params = params,
         core_table = "sample",
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(CASE WHEN count IS NULL THEN weight ELSE weight * count END) AS total_weight"),
             NULL),
-        generator = gsub(".*(mfdb_[a-z_]+).*", "\\1", sys.call()[[1]]))
+        params = params)
     out
 }
 
@@ -143,14 +136,13 @@ mfdb_sample_totalweight <- function (mdb, cols, params) {
 mfdb_sample_meanweight <- function (mdb, cols, params, scale_index = NULL) {
     abundance <- abundance_core_table(mdb, scale_index)
     out <- mfdb_sample_grouping(mdb,
-        params = params,
         core_table = abundance[[1]],
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
             paste0("WEIGHTED_MEAN(c.weight::numeric, (", abundance[[2]], ")::numeric) AS mean"),
             NULL),
-        generator = "mfdb_sample_meanweight")
+        params = params)
     out
 }
 
@@ -158,7 +150,6 @@ mfdb_sample_meanweight <- function (mdb, cols, params, scale_index = NULL) {
 mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL) {
     abundance <- abundance_core_table(mdb, scale_index)
     out <- mfdb_sample_grouping(mdb,
-        params = params,
         core_table = abundance[[1]],
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
@@ -166,7 +157,7 @@ mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL
             paste0("WEIGHTED_MEAN(c.weight::numeric, (", abundance[[2]], ")::numeric) AS mean"),
             paste0("WEIGHTED_STDDEV(c.weight::numeric, (", abundance[[2]], ")::numeric) AS stddev"), # TODO: Should take weight_var into account
             NULL),
-        generator = "mfdb_sample_meanweight_stddev")
+        params = params)
     out
 }
 
@@ -210,8 +201,7 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
         calc_cols = c(
             "COUNT(DISTINCT c.predator_id) AS stomachs_total",
             NULL),
-        params = params,
-        generator = "mfdb_stomach_presenceratio")
+        params = params)
 
     # Group with prey restrictions
     with_prey <- mfdb_sample_grouping(mdb,
@@ -224,8 +214,7 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
         calc_cols = c(
             "COUNT(DISTINCT c.predator_id) AS stomachs_present",
             NULL),
-        params = params,
-        generator = "mfdb_stomach_presenceratio")
+        params = params)
 
     if (length(with_prey) == 0) return(list())
     # TODO: Bootstrapping is very likely broken
@@ -263,7 +252,7 @@ mfdb_sample_grouping <- function (mdb,
         core_table = "sample",
         # join_tables: JOIN statements to attach to the main table
         join_tables = c(),
-        generator = "mfdb_sample_grouping") {
+        generator = as.character(sys.call(-1)[[1]])) {
 
     if (!is.list(params)) {
         stop("params argument must be a list")
