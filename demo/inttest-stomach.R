@@ -41,17 +41,17 @@ G		2000	1	45G01		COD	34	430
         ")),
         prey_data = shuffle_df(table_string("
 stomach_name	species	digestion_stage	length	weight	count
-A		CAP		1			1	10	5
-A		CAP		1			4	40	1
-B		CAP		1			1	10	5
-B		CAP		4			1	10	5
-B		CAP		5			1	10	8
-B		CAP		5			1	10	5
-C		CLL		2			3.5	9.5	3
+A		CAP		1	1	10	5
+A		CAP		1	4	40	1
+B		CAP		1	1	10	5
+B		CAP		4	1	10	5
+B		CAP		5	1	10	8
+B		CAP		5	1	10	5
+C		CLL		2	3.5	9.5	3
 
-D		CAP		1			1.4	10	1
-D		CLL		5			4	40	1
-E		CAP		1			1.4	10	1
+D		CAP		1	1.4	10	1
+D		CLL		5	4	40	1
+E		CAP		1	1.4	10	1
         ")))
 
      # Find out the ratio of capelin in stomachs
