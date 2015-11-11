@@ -89,6 +89,56 @@ E		CAP		1	1.4	10	1
                  2 / 2,
                  NULL),
              stringsAsFactors = FALSE)), "Aggregated & got ratio")
+
+    # Find out the length distribution of all prey
+    ok(cmp_table(
+         mfdb_stomach_preycount(mdb, c("digestion_stage", "prey_length"), list(
+             digestion_stage = mfdb_group(undigested = 1, digested = 2:5),
+             prey_length = mfdb_step_interval("pl", to = 20, by = 1))),
+         data.frame(
+             year = 'all', step = 'all', area = 'all',
+             digestion_stage = c('digested', 'digested', 'digested', 'undigested', 'undigested'),
+             prey_length = c('pl1', 'pl3', 'pl4', 'pl1', 'pl4'),
+             number = c(
+                 5 + 8 + 5,
+                 3,
+                 1,
+                 5 + 5 + 1 + 1,
+                 1,
+             NULL),
+             stringsAsFactors = FALSE)), "Length distribution of all prey")
+
+    # Find out the mean length of all prey
+    ok(cmp_table(
+         mfdb_stomach_preymeanlength(mdb, c("digestion_stage"), list(
+             digestion_stage = mfdb_group(undigested = 1, digested = 2:5))),
+         data.frame(
+             year = 'all', step = 'all', area = 'all',
+             digestion_stage = c('digested', 'undigested'),
+             number = c(sum(5, 8, 5, 3, 1), sum(5, 1, 5, 1, 1)),
+             mean_length = c(
+                 weighted.mean(c(1, 1, 1, 3.5, 4),
+                               c(5, 8, 5, 3,   1)),
+                 weighted.mean(c(1, 4, 1, 1.4, 1.4),
+                               c(5, 1, 5, 1,   1)),
+             NULL),
+             stringsAsFactors = FALSE)), "Mean length of all prey")
+
+    # Find out the mean weight of all prey
+    ok(cmp_table(
+         mfdb_stomach_preymeanweight(mdb, c("digestion_stage"), list(
+             digestion_stage = mfdb_group(undigested = 1, digested = 2:5))),
+         data.frame(
+             year = 'all', step = 'all', area = 'all',
+             digestion_stage = c('digested', 'undigested'),
+             number = c(sum(5, 8, 5, 3, 1), sum(5, 1, 5, 1, 1)),
+             mean_weight = c(
+                 weighted.mean(c(10, 10, 10, 9.5, 40),
+                               c( 5,  8,  5,   3,  1)),
+                 weighted.mean(c(10, 40, 10, 10, 10),
+                               c( 5,  1,  5,  1,  1)),
+             NULL),
+             stringsAsFactors = FALSE)), "Mean weight of all prey")
 })
 
 ok_group("Stomach content likelihood compoment", {

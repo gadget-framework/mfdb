@@ -161,38 +161,79 @@ mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL
     out
 }
 
-# Return ratio of selected prey in stomach to all prey by count
+# Common definitions for stomach columns
+pred_col_defs <- c(
+    data_source = 'c.data_source_id',
+
+    institute = 'c.institute_id',
+    gear = 'c.gear_id',
+    vessel = 'c.vessel_id',
+    sampling_type = 'c.sampling_type_id',
+
+    year = 'c.year',
+    step = 'c.month',
+    area = 'c.areacell_id',
+
+    predator_species = 'c.species_id',
+    age = 'c.age',
+    sex = 'c.sex_id',
+    maturity_stage = 'c.maturity_stage_id',
+    stomach_state = 'c.stomach_state_id',
+    predator_length = 'c.length',
+    predator_weight = 'c.weight',
+    NULL)
+prey_col_defs <- c(
+    prey_species = 'prey.species_id',
+    digestion_stage = 'prey.digestion_stage_id',
+    prey_length = 'prey.length',
+    prey_weight = 'prey.weight',
+    prey_count = 'prey.count',
+    prey_ratio = 'prey.ratio',
+    NULL)
+
+# Returns year, step, area, (cols), number (of prey found in stomach)
+mfdb_stomach_preycount <- function (mdb, cols, params) {
+    mfdb_sample_grouping(mdb,
+        core_table = "predator",
+        join_tables = "INNER JOIN prey ON c.predator_id = prey.predator_id",
+        col_defs = as.list(c(pred_col_defs, prey_col_defs)),
+        group_cols = c("year", "timestep", "area", cols),
+        calc_cols = c(
+            paste0("SUM(prey.count) AS number"),
+            NULL),
+        params = params)
+}
+
+# Returns year, step, area, (cols), number, mean_length (of prey found in stomach)
+mfdb_stomach_preymeanlength <- function (mdb, cols, params) {
+    mfdb_sample_grouping(mdb,
+        core_table = "predator",
+        join_tables = "INNER JOIN prey ON c.predator_id = prey.predator_id",
+        col_defs = as.list(c(pred_col_defs, prey_col_defs)),
+        group_cols = c("year", "timestep", "area", cols),
+        calc_cols = c(
+            paste0("SUM(prey.count) AS number"),
+            paste0("WEIGHTED_MEAN(prey.length::numeric, prey.count::numeric) AS mean_length"),
+            NULL),
+        params = params)
+}
+
+# Returns year, step, area, (cols), number, mean_weight (of prey found in stomach)
+mfdb_stomach_preymeanweight <- function (mdb, cols, params) {
+    mfdb_sample_grouping(mdb,
+        core_table = "predator",
+        join_tables = "INNER JOIN prey ON c.predator_id = prey.predator_id",
+        col_defs = as.list(c(pred_col_defs, prey_col_defs)),
+        group_cols = c("year", "timestep", "area", cols),
+        calc_cols = c(
+            paste0("SUM(prey.count) AS number"),
+            paste0("WEIGHTED_MEAN(prey.weight::numeric, prey.count::numeric) AS mean_weight"),
+            NULL),
+        params = params)
+}
+
+# Returns year, step, area, (cols), ratio (of selected prey in stomach to all prey by count)
 mfdb_stomach_presenceratio <- function (mdb, cols, params) {
-    pred_col_defs <- c(
-        data_source = 'c.data_source_id',
-
-        institute = 'c.institute_id',
-        gear = 'c.gear_id',
-        vessel = 'c.vessel_id',
-        sampling_type = 'c.sampling_type_id',
-
-        year = 'c.year',
-        step = 'c.month',
-        area = 'c.areacell_id',
-
-        predator_species = 'c.species_id',
-        age = 'c.age',
-        sex = 'c.sex_id',
-        maturity_stage = 'c.maturity_stage_id',
-        stomach_state = 'c.stomach_state_id',
-        predator_length = 'c.length',
-        predator_weight = 'c.weight',
-        NULL)
-
-    prey_col_defs <- c(
-        prey_species = 'prey.species_id',
-        digestion_stage = 'prey.digestion_stage_id',
-        prey_length = 'prey.length',
-        prey_weight = 'prey.weight',
-        prey_count = 'prey.count',
-        prey_ratio = 'prey.ratio',
-        NULL)
-
     # Group without prey options first
     without_prey <- mfdb_sample_grouping(mdb,
         core_table = "predator",

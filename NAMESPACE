@@ -54,6 +54,9 @@ export(mfdb_sample_meanlength)
 export(mfdb_sample_totalweight)
 export(mfdb_sample_meanweight)
 export(mfdb_sample_meanweight_stddev)
+export(mfdb_stomach_preycount)
+export(mfdb_stomach_preymeanlength)
+export(mfdb_stomach_preymeanweight)
 export(mfdb_stomach_presenceratio)
 
 # mfdb_aggregate_unaggregated.R

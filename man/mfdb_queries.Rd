@@ -9,6 +9,9 @@
 \alias{mfdb_sample_totalweight}
 \alias{mfdb_sample_meanweight}
 \alias{mfdb_sample_meanweight_stddev}
+\alias{mfdb_stomach_preycount}
+\alias{mfdb_stomach_preymeanlength}
+\alias{mfdb_stomach_preymeanweight}
 \alias{mfdb_stomach_presenceratio}
 
 \title{MareFrame DB queries}
@@ -28,6 +31,9 @@ mfdb_sample_meanlength_stddev(mdb, cols, params, scale_index = NULL)
 mfdb_sample_totalweight(mdb, cols, params)
 mfdb_sample_meanweight(mdb, cols, params, scale_index = NULL)
 mfdb_sample_meanweight_stddev(mdb, cols, params, scale_index = NULL)
+mfdb_stomach_preycount(mdb, cols, params)
+mfdb_stomach_preymeanlength(mdb, cols, params)
+mfdb_stomach_preymeanweight(mdb, cols, params)
 mfdb_stomach_presenceratio(mdb, cols, params)
 }
 
@@ -135,6 +141,18 @@ to scale counts by the tow length.
         }
         \item{mfdb_sample_meanweight_stddev}{
             As mfdb_sample_meanweight, but also returns std. deviation.
+        }
+        \item{mfdb_stomach_preycount}{
+            Returns year, step, area, (cols), number (of prey found in stomach)
+        }
+        \item{mfdb_stomach_preymeanlength}{
+            Returns year, step, area, (cols), number, mean_length (of prey found in stomach)
+        }
+        \item{mfdb_stomach_preymeanweight}{
+            Returns year, step, area, (cols), number, mean_weight (of prey found in stomach)
+        }
+        \item{mfdb_stomach_presenceratio}{
+            Returns year, step, area, (cols), ratio (of selected prey in stomach to all prey by count)
         }
     }
 }
