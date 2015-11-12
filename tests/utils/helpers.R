@@ -1,9 +1,3 @@
-expect_string <- function(actual, ...) {
-    expect_equal(
-        as.character(actual),
-        paste0(c(...), "\n", collapse = ""))
-}
-
 print.stringvec <- function(x, ...) {
     cat(x, sep = "\n")
 }
@@ -50,10 +44,6 @@ expect_equal <- function(actual, expected) {
 
 expect_error <- function(exp, expected_regexp) {
     ok(cmp_error(exp, expected_regexp), paste0("Error contained '", expected_regexp, "'"))
-}
-
-expect_true <- function(exp) {
-    ok(exp, "Is true")
 }
 
 cmp_file <- function (gd, filename, ...) {

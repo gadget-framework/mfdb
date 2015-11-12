@@ -8,9 +8,9 @@ ok_group("Will create a directory when creating gadget_directories", {
         "/dont-run-as-root")
 
     dir <- tempfile()
-    expect_true(!file.exists(dir))
+    ok(!file.exists(dir))
     gd <- gadget_directory(dir)
-    expect_true(file.exists(dir) && file_test("-d", dir))
+    ok(file.exists(dir) && file_test("-d", dir))
 })
 
 ok_group("Can write files", {
