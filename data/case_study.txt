@@ -7,3 +7,6 @@
 5    "Ibera"   "South-Western Waters - Iberian Waters (CSIC)"
 6    "Medit"   "Mediterranean Waters - Strait of Sicily (CNR)"
 7    "Black"   "Black Sea (INCDM)"
+100  "Atlantis-Iceland"  "Iceland (Atlantis model)"
+101  "Atlantis-LVic"  "Lake Victoria (Atlantis model)"
+102  "Atlantis-Medit"  "Strait of Sicily (Atlantis model)"
