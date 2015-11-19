@@ -142,6 +142,11 @@ model files. The ``inttest-*`` scripts demonstrate other aspects, and also
 function as tests to ensure that the library works correctly (thus the ``ok()``
 function calls).
 
+Models using MFDB
+-----------------
+
+* https://github.com/bthe/gadget-models
+
 Acknowledgements
 ----------------
 
