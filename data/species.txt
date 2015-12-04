@@ -501,6 +501,7 @@
 6162020315 "IAN" "NA (Idotea Neglecta)"
 6162020317 "IAG" "NA (Idotea Granulosa)"
 6162020318 "IAP" "NA (Idotea Pelagica)"
+6162030201 "SAE" "NA (Saduria Entomon)"
 6163060000 "JAZ" "NA (Janiridae)"
 6163060200 "JEX" "NA (Jaera Spp)"
 6166010000 "LGZ" "NA (Ligiidae)"
