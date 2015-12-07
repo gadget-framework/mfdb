@@ -66,7 +66,8 @@ for (type in all_components) {
         default_opts <- list(type,
             data = data.frame(year = 1, step = 1, area = 1, predator_length = 'pred100', prey_length = 'prey10', ratio = 1),
             predator_length = list('pred100' = 'pred100'),
-            prey_length = list('prey10' = 'prey10'))
+            prey_length = list('prey10' = 'prey10'),
+            prey_labels = list('prey10' = 'Prey 10'))
     } else if (type == "catchinkilos") {
         default_opts <- list(type,
             data = data.frame(year = 1, step = 1, area = 1, fleet = 1, total_weight = 1))
@@ -474,6 +475,93 @@ ok_group("surveyindices", {
         "fittype\tlinearfit",
         NULL), "Wrote component with effort sitype")
 
+})
+
+###############################################################################
+ok_group("stomachcontent - matching of prey to labels", {
+    # Create a temporary directory, starts off empty
+    dir <- tempfile()
+    gd <- gadget_directory(dir)
+    expect_equal(list.files(dir), character(0))
+
+    sample_data <- data.frame(year = 1, step = 1, area = 1:3, predator_length = 'pred100',
+        prey_length = c('cod', 'anacoda', 'cod.imm'),
+        ratio = 1)
+
+    # Default to get assigned eveywhere
+    gadget_dir_write(gd, gadget_likelihood_component(
+        'stomachcontent',
+        data = sample_data,
+        prey_length = list(cod = 10:20, anacoda = 1:5, "cod.imm" = 1:10),
+        prey_labels = 'Prey 10'))
+    ok(cmp_file(gd, gadget_dir_read(gd, "likelihood")$components[[2]]$preyaggfile,
+        ver_string,
+        "; ",
+        "cod\t",
+        "Prey 10\t",
+        "lengths\t10\t20",
+        "digestioncoefficients\t",
+        "; ",
+        "anacoda\t",
+        "Prey 10\t",
+        "lengths\t1\t5",
+        "digestioncoefficients\t",
+        "; ",
+        "cod.imm\t",
+        "Prey 10\t",
+        "lengths\t1\t10",
+        "digestioncoefficients\t",
+        NULL))
+
+    # The first match in the list wins, we match from the start
+    gadget_dir_write(gd, gadget_likelihood_component(
+        'stomachcontent',
+        data = sample_data,
+        prey_length = list(cod = 10:20, anacoda = 1:5, "cod.imm" = 1:10),
+        prey_labels = list("cod" = "all.cod", "cod.imm" = "immature.cod", "other"),
+        prey_digestion_coefficients = list("cod.imm" = c(1,1,1), "cod" = c(3,3,3), c(9,9,9))))
+    ok(cmp_file(gd, gadget_dir_read(gd, "likelihood")$components[[2]]$preyaggfile,
+        ver_string,
+        "; ",
+        "cod\t",
+        "all.cod\t",
+        "lengths\t10\t20",
+        "digestioncoefficients\t3\t3\t3",
+        "; ",
+        "anacoda\t",
+        "other\t",
+        "lengths\t1\t5",
+        "digestioncoefficients\t9\t9\t9",
+        "; ",
+        "cod.imm\t",
+        "all.cod\t",
+        "lengths\t1\t10",
+        "digestioncoefficients\t1\t1\t1",
+        NULL))
+    gadget_dir_write(gd, gadget_likelihood_component(
+        'stomachcontent',
+        data = sample_data,
+        prey_length = list(cod = 10:20, anacoda = 1:5, "cod.imm" = 1:10),
+        prey_labels = list("cod.imm" = "immature.cod", "cod" = "all.cod", "other"),
+        prey_digestion_coefficients = list("cod" = c(3,3,3), "cod.imm" = c(1,1,1), c(9,9,9))))
+    ok(cmp_file(gd, gadget_dir_read(gd, "likelihood")$components[[2]]$preyaggfile,
+        ver_string,
+        "; ",
+        "cod\t",
+        "all.cod\t",
+        "lengths\t10\t20",
+        "digestioncoefficients\t3\t3\t3",
+        "; ",
+        "anacoda\t",
+        "other\t",
+        "lengths\t1\t5",
+        "digestioncoefficients\t9\t9\t9",
+        "; ",
+        "cod.imm\t",
+        "immature.cod\t",
+        "lengths\t1\t10",
+        "digestioncoefficients\t3\t3\t3",
+        NULL))
 })
 
 ###############################################################################

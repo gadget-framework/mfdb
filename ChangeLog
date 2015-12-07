@@ -1,3 +1,4 @@
+    * Allow prey names & coefficients to be specified per-prey
     * Predator length agg file should be based on the "predator_length" column
     * Add Saduria Entomon to species list
     * Add case study IDs for Atlantis models

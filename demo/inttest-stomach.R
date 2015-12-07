@@ -152,7 +152,12 @@ ok_group("Stomach content likelihood compoment", {
      gadget_dir_write(gd, gadget_likelihood_component(
          "stomachcontent",
          name = "cod-stomachs",
-         prey_labels = c("codimm", "codmat", "codother"),
+         prey_labels = list(
+             "cod50" = "codmat",
+             "cod" = c("codimm", "codother"),
+             "cap3" = "capmat",
+             "cap" = c("cap", "capimm"),
+             "other"),
          prey_digestion_coefficients = 3:1,
          predator_names = c("cuthbert", "dibble"),
          data = res[[1]]))
@@ -177,17 +182,17 @@ ok_group("Stomach content likelihood compoment", {
         ver_string,
         "; ",
         "cap1\t",
-        "codimm\tcodmat\tcodother",
+        "cap\tcapimm",
         "lengths\t1\t1.3",
         "digestioncoefficients\t3\t2\t1",
         "; ",
         "cap1.3\t",
-        "codimm\tcodmat\tcodother",
+        "cap\tcapimm",
         "lengths\t1.3\t3",
         "digestioncoefficients\t3\t2\t1",
         "; ",
         "cap3\t",
-        "codimm\tcodmat\tcodother",
+        "capmat\t",
         "lengths\t3\t5",
         "digestioncoefficients\t3\t2\t1",
         NULL), "prey aggregation file")
@@ -197,33 +202,6 @@ ok_group("Stomach content likelihood compoment", {
         "cod30\t30\t40",
         "cod40\t40\t50",
         NULL), "Predator length aggregation file")
-
-     # Still works whe there's only 1 prey label
-     gadget_dir_write(gd, gadget_likelihood_component(
-         "stomachcontent",
-         name = "cod-stomachs",
-         prey_labels = c("cod"),
-         prey_digestion_coefficients = 3:1,
-         predator_names = c("cuthbert", "dibble"),
-         data = res[[1]]))
-    ok(cmp_file(gd, "Aggfiles/stomachcontent.cod-stomachs.prey.agg",
-        ver_string,
-        "; ",
-        "cap1\t",
-        "cod\t",
-        "lengths\t1\t1.3",
-        "digestioncoefficients\t3\t2\t1",
-        "; ",
-        "cap1.3\t",
-        "cod\t",
-        "lengths\t1.3\t3",
-        "digestioncoefficients\t3\t2\t1",
-        "; ",
-        "cap3\t",
-        "cod\t",
-        "lengths\t3\t5",
-        "digestioncoefficients\t3\t2\t1",
-        NULL), "prey aggregation file (only one label)")
 })
 
 ok_group("Predator/Prey mismatch", {

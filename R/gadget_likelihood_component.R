@@ -279,25 +279,46 @@ gadget_stomachcontent_component <- function (
         area = NULL,
         predator_length = NULL,
         prey_length = NULL,
-        prey_labels = c(""),
-        prey_digestion_coefficients = c(1,0,0),
+        prey_labels = list(),
+        prey_digestion_coefficients = list(),
         predator_names = c(),
         data = NULL) {
     # Make sure we have the columns we need
-    compare_cols(names(data), c("year", "step", "area", "predator_length", NA, "ratio"))
+    compare_cols(names(data), c("year", "step", "area", "predator_length", "prey_length", "ratio"))
 
-    # Generate prey file
+    # Check prey_length is available
     if(is.null(prey_length)) prey_length <- attr(data, "prey_length")
-    if(is.null(prey_length)) stop("Data should group by prey_length to build prey aggregation file")
     prey_minmax <- agg_prop(prey_length, "min/max")
+
+    find_prey_metadata <- function(metadata, n) {
+        # Backwards-compatibility for non-list args
+        if(!is.list(metadata)) return(metadata)
+
+        # Nothing in list
+        if(length(metadata) == 0) return(c())
+
+        # Nothing in list has names, so assume we want the first one.
+        if(is.null(names(metadata))) return(metadata[[1]])
+
+        # Treat each item name as a regexp, see if it matches
+        for (i in seq_len(length(metadata))) {
+            regexp <- names(metadata)[[i]]
+            if (!nzchar(regexp) || grepl(paste0('^', regexp), n)) return(metadata[[i]])
+        }
+        return(c())
+    }
+
     prey_components <- lapply(names(prey_length), function (name) {
+        lbl <- find_prey_metadata(prey_labels, name)
+        if (length(lbl) < 1) stop("No prey labels found for ", name)
+
         structure(
             list(
                 name = NULL,
-                lbls = (if (length(prey_labels) > 1) prey_labels[seq(2,length(prey_labels))]),
+                lbls = (if (length(lbl) > 1) lbl[seq(2,length(lbl))]),
                 lengths = prey_minmax[[name]],
-                digestioncoefficients = prey_digestion_coefficients),
-            names = c(name, prey_labels[[1]], 'lengths', 'digestioncoefficients'),
+                digestioncoefficients = find_prey_metadata(prey_digestion_coefficients, name)),
+            names = c(name, lbl[[1]], 'lengths', 'digestioncoefficients'),
             preamble = "")
     })
 
