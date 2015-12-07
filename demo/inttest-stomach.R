@@ -191,6 +191,12 @@ ok_group("Stomach content likelihood compoment", {
         "lengths\t3\t5",
         "digestioncoefficients\t3\t2\t1",
         NULL), "prey aggregation file")
+    ok(cmp_file(gd, "Aggfiles/stomachcontent.cod-stomachs.len.agg",
+        ver_string,
+        "cod20\t20\t30",
+        "cod30\t30\t40",
+        "cod40\t40\t50",
+        NULL), "Predator length aggregation file")
 
      # Still works whe there's only 1 prey label
      gadget_dir_write(gd, gadget_likelihood_component(

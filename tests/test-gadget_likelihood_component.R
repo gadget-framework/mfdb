@@ -64,8 +64,9 @@ for (type in all_components) {
             data = data.frame(year = 1, step = 1, area = 1, age = 1, length = 1, number = 1))
     } else if (type == "stomachcontent") {
         default_opts <- list(type,
-            data = data.frame(year = 1, step = 1, area = 1, predator = 1, prey = 1, ratio = 1),
-            prey_length = list(a = c(1,4)))
+            data = data.frame(year = 1, step = 1, area = 1, predator_length = 'pred100', prey_length = 'prey10', ratio = 1),
+            predator_length = list('pred100' = 'pred100'),
+            prey_length = list('prey10' = 'prey10'))
     } else if (type == "catchinkilos") {
         default_opts <- list(type,
             data = data.frame(year = 1, step = 1, area = 1, fleet = 1, total_weight = 1))

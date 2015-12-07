@@ -277,14 +277,14 @@ gadget_stomachcontent_component <- function (
         data_function = 'scsimple',
         epsilon = 10,
         area = NULL,
-        length = NULL,
+        predator_length = NULL,
         prey_length = NULL,
         prey_labels = c(""),
         prey_digestion_coefficients = c(1,0,0),
         predator_names = c(),
         data = NULL) {
     # Make sure we have the columns we need
-    compare_cols(names(data), c("year", "step", "area", NA, NA, "ratio"))
+    compare_cols(names(data), c("year", "step", "area", "predator_length", NA, "ratio"))
 
     # Generate prey file
     if(is.null(prey_length)) prey_length <- attr(data, "prey_length")
@@ -308,7 +308,7 @@ gadget_stomachcontent_component <- function (
         areaaggfile = agg_file('area', fname_prefix(sys.call(0), name), if(is.null(area)) attr(data, "area") else area),
         predatornames = predator_names,
         predatorlengths = NULL,
-        lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name), if(is.null(length)) attr(data, "length") else length),
+        lenaggfile  = agg_file('len', fname_prefix(sys.call(0), name), if(is.null(predator_length)) attr(data, "predator_length") else predator_length),
         preyaggfile = gadget_file(fname('Aggfiles', fname_prefix(sys.call(0), name), 'prey.agg'),components=prey_components))
 }
 

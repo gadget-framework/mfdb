@@ -1,3 +1,4 @@
+    * Predator length agg file should be based on the "predator_length" column
     * Add Saduria Entomon to species list
     * Add case study IDs for Atlantis models
     * State which columns are available when cannot find column
