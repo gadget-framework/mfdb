@@ -1,5 +1,5 @@
 # Combine multiple result tables, preserving grouping
-mfdb_combine_results <- function (...) {
+mfdb_concatenate_results <- function (...) {
     combined <- rbind(...)
     for (column in names(combined)) {
         x <- lapply(list(...), function (df) attr(df, column))  # Extract attribute list for each df

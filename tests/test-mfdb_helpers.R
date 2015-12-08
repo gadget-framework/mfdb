@@ -2,7 +2,7 @@ library(mfdb)
 library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
-ok_group("mfdb_combine_results", {
+ok_group("mfdb_concatenate_results", {
     year_group <- mfdb_group("1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001")
     area_group <- mfdb_group(divA = c("divA"), divB = c("divB"))
     age_group <- mfdb_group(all = 1:1000)
@@ -23,7 +23,7 @@ ok_group("mfdb_combine_results", {
     }, asNamespace('mfdb'))
 
     # Combine 2 data frames
-    combined <- mfdb_combine_results(
+    combined <- mfdb_concatenate_results(
         fake_results(fake_mdb(),
             data.frame(year = c(1998:1999), step = c("1", "2"), area = c("divA"), number = c(5, 4), stringsAsFactors = FALSE),
             year = year_group,

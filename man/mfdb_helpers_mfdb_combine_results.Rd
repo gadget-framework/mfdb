@@ -1,5 +1,5 @@
-\name{mfdb_helpers_mfdb_combine_results}
-\alias{mfdb_combine_results}
+\name{mfdb_helpers_mfdb_concatenate_results}
+\alias{mfdb_concatenate_results}
 
 \title{MareFrame Query Utilities}
 
@@ -8,7 +8,7 @@
 }
 
 \usage{
-mfdb_combine_results(...)
+mfdb_concatenate_results(...)
 }
 
 \arguments{

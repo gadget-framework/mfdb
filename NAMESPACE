@@ -26,7 +26,7 @@ export(mfdb)
 export(mfdb_disconnect)
 
 # mfdb_helpers.R
-export(mfdb_combine_results)
+export(mfdb_concatenate_results)
 export(mfdb_find_species)
 
 # mfdb_import_data.R

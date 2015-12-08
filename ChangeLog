@@ -1,4 +1,4 @@
-    * Add mfdb_combine_results to help when you want to concatenate 2 result sets
+    * Add mfdb_concatenate_results to help when you want to concatenate 2 result sets
     * Allow prey names & coefficients to be specified per-prey
     * Predator length agg file should be based on the "predator_length" column
     * Add Saduria Entomon to species list
