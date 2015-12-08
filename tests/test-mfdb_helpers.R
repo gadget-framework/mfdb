@@ -2,6 +2,52 @@ library(mfdb)
 library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
+ok_group("mfdb_combine_results", {
+    year_group <- mfdb_group("1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001")
+    area_group <- mfdb_group(divA = c("divA"), divB = c("divB"))
+    age_group <- mfdb_group(all = 1:1000)
+    length_group <- mfdb_interval("len", seq(0, 50, by = 5))
+
+    noattr <- function(obj) {
+        # NB: We're removing class, table_name attributes here, since the concatenation removes them anyway.
+        # Technically this is a bug in agg_summary, but it will cause problems in a lot of other tests.
+        attributes(obj) <- list(names = names(obj))
+        return(obj)
+    }
+    fake_results <- local(function (mdb, d, year, step, area) {
+        structure(
+            d,
+            year = noattr(agg_summary(mdb, year, 'year', 'year', d, 1)),
+            step = noattr(agg_summary(mdb, step, 'step', 'step', d, 1)),
+            area = noattr(agg_summary(mdb, area, 'area', 'area', d, 1)))
+    }, asNamespace('mfdb'))
+
+    # Combine 2 data frames
+    combined <- mfdb_combine_results(
+        fake_results(fake_mdb(),
+            data.frame(year = c(1998:1999), step = c("1", "2"), area = c("divA"), number = c(5, 4), stringsAsFactors = FALSE),
+            year = year_group,
+            step = mfdb_timestep_biannually,
+            area = area_group),
+        fake_results(fake_mdb(),
+            data.frame(year = c(2000:2001), step = c("2", "1"), area = c("divA", "divB"), number = c(8, 9), stringsAsFactors = FALSE),
+            year = year_group,
+            step = mfdb_timestep_biannually,
+            area = area_group))
+    ok(cmp(
+        combined,
+        fake_results(fake_mdb(),
+            data.frame(
+                year = c(1998:1999, 2000:2001),
+                step = c("1", "2", "2", "1"),
+                area = c("divA", "divA", "divA", "divB"),
+                number = c(5, 4, 8, 9),
+                stringsAsFactors = FALSE),
+            year = year_group,
+            step = mfdb_timestep_biannually,
+            area = area_group)), "Combined data sets")
+})
+
 ok_group("mfdb_find_species", {
     # Can fetch multiple matches in one go
     species <- mfdb_find_species(c("gad. mor", "gadus Mor"))
