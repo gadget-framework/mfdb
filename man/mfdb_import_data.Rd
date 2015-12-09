@@ -116,7 +116,8 @@ The \code{prey_data} should be a data.frame with the following columns:
 
     \item{length}{Optional, default \code{c(NA)}. Length of sample / mean length of all samples}
     \item{weight}{Optional, default \code{c(NA)}. Weight of sample / mean weight of all samples}
-    \item{count}{Optional, default \code{c(1)}. Number of samples this row represents (i.e. if the data is aggregated)}
+    \item{weight_total}{Optional, default \code{c(NA)}. Total weight of all samples}
+    \item{count}{Optional, default \code{c(NA)}. Number of samples this row represents (i.e. if the data is aggregated), count = NA represents an unknown number of samples}
 }
 
 }

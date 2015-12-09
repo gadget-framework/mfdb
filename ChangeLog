@@ -1,3 +1,5 @@
+    * When importing stomachs, make the default prey count unknown
+    * When importing stomachs, use same weight_total option for prey as regular samples
     * Add mfdb_concatenate_results to help when you want to concatenate 2 result sets
     * Allow prey names & coefficients to be specified per-prey
     * Predator length agg file should be based on the "predator_length" column

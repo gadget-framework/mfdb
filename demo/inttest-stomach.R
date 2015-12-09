@@ -204,6 +204,53 @@ ok_group("Stomach content likelihood compoment", {
         NULL), "Predator length aggregation file")
 })
 
+ok_group("Stomach data with only weights", {
+    # Import a stomach survey, only have total weights
+    mfdb_import_stomach(mdb,
+        data_source = "cod2000",
+        predator_data = shuffle_df(table_string("
+stomach_name	year	month	areacell	species	length	weight
+A		2000	1	45G01		COD	21	210
+B		2000	1	45G01		COD	34	220
+C		2000	1	45G01		COD	34	230
+
+D		2000	1	45G01		COD	62	320
+E		2000	1	45G01		COD	33	330
+
+G		2000	1	45G01		COD	34	430
+        ")),
+        prey_data = shuffle_df(table_string("
+stomach_name	species	digestion_stage	weight_total
+A		CAP		1	10
+A		CAP		1	40
+B		CAP		1	10
+B		CAP		4	10
+B		CAP		5	10
+B		CAP		5	10
+C		CLL		2	9.5
+
+D		CAP		1	10
+D		CLL		5	40
+E		CAP		1	10
+        ")))
+
+     # Find out the ratio of capelin in stomachs
+     ok(cmp_table(
+         mfdb_stomach_presenceratio(mdb, c("predator_weight"), list(
+             predator_weight = mfdb_interval("w", c(200,300,400,500)),
+             prey_species = 'CAP')),
+         data.frame(
+             year = 'all', step = 'all', area = 'all',
+             predator_weight = c('w200', 'w300'),
+             ratio = c(
+                 # CAP in A, B out of A, B, C
+                 2 / 3,
+                 # CAP in D, E out of D, E
+                 2 / 2,
+                 NULL),
+             stringsAsFactors = FALSE)), "Aggregated & got ratio, by weight")
+})
+
 ok_group("Predator/Prey mismatch", {
     ok(cmp_error(mfdb_import_stomach(mdb,
         data_source = "cod2000",

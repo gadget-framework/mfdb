@@ -88,6 +88,19 @@ mfdb_import_survey_index <- function (mdb, data_in, data_source = 'default_index
 
 # Import 2 data frames, one for predators, one for prey
 mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "default_stomach") {
+    # Work out whether we're importing mean weights or total weights
+    if ("weight_total" %in% colnames(prey_data) && "weight" %in% colnames(prey_data)) {
+        stop("Cannot specify both weight and weight_total")
+    } else if ("weight_total" %in% colnames(prey_data) && "count" %in% colnames(prey_data)) {
+        # Convert total to a mean for storage
+        prey_data$weight <- prey_data$weight_total / prey_data$count
+        prey_weight_col <- "weight"
+    } else if ("weight_total" %in% colnames(prey_data)) {
+        prey_weight_col <- "weight_total"
+    } else {
+        prey_weight_col <- "weight"
+    }
+
     predator_data <- data.frame(
         case_study_id = if (nrow(predator_data) > 0) c(mdb$case_study_id) else c(),
 
@@ -117,8 +130,8 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
         digestion_stage_id = sanitise_col(mdb, prey_data, 'digestion_stage', lookup = 'digestion_stage', default = c(NA)),
 
         length = sanitise_col(mdb, prey_data, 'length', default = c(NA)),
-        weight = sanitise_col(mdb, prey_data, 'weight', default = c(NA)),
-        count = sanitise_col(mdb, prey_data, 'count', default = c(1)),
+        weight = sanitise_col(mdb, prey_data, prey_weight_col, default = c(NA)),
+        count = sanitise_col(mdb, prey_data, 'count', default = c(NA)),
         stringsAsFactors = TRUE)
 
     # NB: Postgresql has transactional DDL, so this is fine.
