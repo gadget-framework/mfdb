@@ -53,14 +53,12 @@ mfdb <- function(case_study_name,
     }
 
     # Create full mdb object
-    mfdb_send(mdb, "CREATE TEMPORARY TABLE tmp_schema (moo INT)")
     mdb <- structure(list(
             logger = logger,
             save_temp_tables = save_temp_tables,
             case_study_id = case_study_id,
             state = new.env(),
             schema = mdb$schema,
-            temp_schema = mfdb_fetch(mdb, "SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema()")[1,1],
             db = db_connection), class = "mfdb")
 
     mfdb_update_cs_taxonomy(mdb)
@@ -75,7 +73,8 @@ mfdb_finish_import <- function(mdb) {
         tables <- mfdb_fetch(mdb,
             "SELECT table_name",
             " FROM information_schema.tables",
-            " WHERE table_schema IN ", sql_quote(c(mdb$schema, mdb$temp_schema), always_bracket = TRUE),
+            " WHERE (table_schema IN ", sql_quote(mdb$schema, always_bracket = TRUE),
+            " OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema()))",
             "")[, c(1)]
         for (t in tables) mfdb_send(mdb, "ANALYZE ", t)
         assign('index_created', TRUE, pos = mdb$state)
@@ -263,7 +262,8 @@ mfdb_table_exists <- function(mdb, table_name) {
     mfdb_fetch(mdb,
         "SELECT COUNT(*)",
         " FROM information_schema.tables",
-        " WHERE table_schema IN ", sql_quote(c(mdb$schema, mdb$temp_schema), always_bracket = TRUE),
+        " WHERE (table_schema IN ", sql_quote(mdb$schema, always_bracket = TRUE),
+        " OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema()))",
         " AND table_name IN ", sql_quote(table_name, always_bracket = TRUE))[, c(1)] > 0
 }
 
