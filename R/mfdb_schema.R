@@ -6,6 +6,7 @@ mfdb_show_schema <- function() {
 
 # Destroy everything in current schema
 mfdb_destroy_schema <- function(mdb) {
+    # TODO: Can we just DROP SCHEMA CASCADE now?
     for(t in c('prey', 'predator', 'sample', 'survey', 'division', 'survey_index', 'fleet', mfdb_cs_taxonomy, mfdb_taxonomy, 'mfdb_schema')) {
         mdb$logger$info(paste("Removing table", t))
         tryCatch(mfdb_send(mdb, "DROP TABLE ", t, " CASCADE"), error = function(e) {
@@ -33,7 +34,7 @@ mfdb_update_schema <- function(mdb) {
                 "DB Schema version", schema_version,
                 "does not match package version", target_version,
                 "& no upgrade step available.\n",
-                "Call mfdb(destroy_schema = TRUE) first.",
+                "Call mfdb('", mdb$schema, "', destroy_schema = TRUE) first.",
                 "Warning: This *will destroy* any existing data"))
             })
         fn(mdb)

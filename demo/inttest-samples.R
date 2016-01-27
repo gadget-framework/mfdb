@@ -12,7 +12,7 @@ source('mfdb/tests/utils/inttest-helpers.R')
 
 # Empty database
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('', db_params = db_params, destroy_schema = TRUE)
+mfdb('Test', db_params = db_params, destroy_schema = TRUE)
 
 #TODO: Connecting to empty database without ability to populate fails
 

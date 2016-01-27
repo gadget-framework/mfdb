@@ -13,7 +13,7 @@ source('mfdb/tests/utils/inttest-helpers.R')
 
 # Empty database, so we start from scratch
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('', db_params = db_params, destroy_schema = TRUE)
+mfdb('Test', db_params = db_params, destroy_schema = TRUE)
 
 # Open a connection to the DB for the Iceland case study, and open an output
 # directory to save files in

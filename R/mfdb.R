@@ -27,41 +27,59 @@ mfdb <- function(case_study_name,
         stop("Could not find a local mf database")
     }
 
-    # Create temporary mdb object and ensure we have a valid schema
+    # Create mdb object
+    if (!nzchar(case_study_name) && !destroy_schema) {
+        stop("Must supply a case_study_name to use in the DB")
+        # TODO: List available case studies:
+        # TODO: Empty string destoys all schemata?
+    }
+
     mdb <- structure(list(
             logger = logger,
-            schema = 'public',
+            save_temp_tables = save_temp_tables,
+            case_study_id = -1,
+            state = new.env(),
+            schema = if (nzchar(case_study_name)) gsub('\\W', '_', tolower(case_study_name)) else "public",
             db = db_connection), class = "mfdb_temp")
+
+    # Ensure schema exists and set connection to use it by default
+    new_schema <- FALSE
+    schema_count <- mfdb_fetch(mdb,
+        "SELECT COUNT(*)",
+        " FROM pg_catalog.pg_namespace",
+        " WHERE nspname IN ", sql_quote(mdb$schema, always_bracket = TRUE))[, c(1)]
+    if (schema_count == 0) {
+        mfdb_send(mdb, "CREATE SCHEMA ", mdb$schema)
+        new_schema <- TRUE
+    }
+    mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
+
     if (destroy_schema) {
         mfdb_destroy_schema(mdb)
         mdb$logger$info("Schema removed, connect again to repopulate DB.")
         dbDisconnect(mdb$db)
         return(invisible(NULL))
     }
+
+    # Update schema and taxonomies
     mfdb_update_schema(mdb)
     mfdb_update_taxonomy(mdb)
-
-    # Look up case study ID
-    res <- mfdb_fetch(mdb,
-        "SELECT case_study_id",
-        " FROM case_study",
-        " WHERE name = ", sql_quote(case_study_name))
-    if (length(res) == 1) {
-        case_study_id <- res[1,1]
-    } else {
-        stop("Unknown case study ", case_study_name)
-    }
-
-    # Create full mdb object
-    mdb <- structure(list(
-            logger = logger,
-            save_temp_tables = save_temp_tables,
-            case_study_id = case_study_id,
-            state = new.env(),
-            schema = mdb$schema,
-            db = db_connection), class = "mfdb")
-
     mfdb_update_cs_taxonomy(mdb)
+
+    # If schema didn't exist before, see if there's data to be had in the old public tables
+    if (isTRUE(new_schema)) {
+        res <- tryCatch(
+            mfdb_fetch(mdb,
+                "SELECT case_study_id",
+                " FROM public.case_study",
+                " WHERE name = ", sql_quote(case_study_name)),
+            error = function(e) c())
+        if (length(res) == 1) {
+            # A case study exists by this ID
+            old_case_study_id <- res[1,1]
+            # TODO: Copy data from old tables
+        }
+    }
 
     invisible(mdb)
 }
