@@ -38,3 +38,14 @@ mdb <- mfdb('Test', db_params = db_params, save_temp_tables = FALSE)
 ok(cmp(
     mfdb:::mfdb_fetch(mdb, "SELECT MAX(version) FROM mfdb_schema")[1,1],
     as.integer(gsub("\\..*", "", packageVersion("mfdb")))), "Database now at latest release")
+
+# Check schema name edge cases
+ok(cmp_error(
+    mfdb('public', db_params = db_params, save_temp_tables = FALSE),
+    "public"), "Can't connect to the public schema")
+ok(cmp_error(
+    mfdb('', db_params = db_params, save_temp_tables = FALSE, destroy_schema = TRUE),
+    "case_study_name[^X]*\\* test"), "Not allowed to give an empty case_study name when destroying, given list of schemas")
+ok(cmp_error(
+    mfdb('', db_params = db_params, save_temp_tables = FALSE),
+    "case_study_name[^X]*\\* test"), "Not allowed to give an empty case_study name, test schema still there")

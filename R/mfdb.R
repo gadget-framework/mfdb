@@ -1,5 +1,5 @@
 # Init mfdb object and open connection to database
-mfdb <- function(case_study_name,
+mfdb <- function(case_study_name = "",
                  db_params = list(),
                  destroy_schema = FALSE,
                  save_temp_tables = FALSE) {
@@ -27,31 +27,27 @@ mfdb <- function(case_study_name,
         stop("Could not find a local mf database")
     }
 
-    # Create mdb object
-    if (!nzchar(case_study_name) && !destroy_schema) {
-        stop("Must supply a case_study_name to use in the DB")
-        # TODO: List available case studies:
-        # TODO: Empty string destoys all schemata?
-    }
-
+    # Create mdb object, set connection to use selected schema
     mdb <- structure(list(
             logger = logger,
             save_temp_tables = save_temp_tables,
             state = new.env(),
             schema = if (nzchar(case_study_name)) gsub('\\W', '_', tolower(case_study_name)) else "public",
             db = db_connection), class = "mfdb_temp")
-
-    # Ensure schema exists and set connection to use it by default
-    new_schema <- FALSE
+    mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
     schema_count <- mfdb_fetch(mdb,
         "SELECT COUNT(*)",
         " FROM pg_catalog.pg_namespace",
         " WHERE nspname IN ", sql_quote(mdb$schema, always_bracket = TRUE))[, c(1)]
-    if (schema_count == 0) {
-        mfdb_send(mdb, "CREATE SCHEMA ", mdb$schema)
-        new_schema <- TRUE
+
+    if (!nzchar(case_study_name)) {
+        names <- mfdb_fetch(mdb,
+            "SELECT table_schema",
+            " FROM information_schema.tables",
+            " WHERE table_schema != 'public' AND table_name = 'mfdb_schema'")
+        names <- if (ncol(names) > 0) names[,1] else c()
+        stop("You must supply a schema name for case_study_name to use in the database. Available names:-\n", paste0("* ", names, collapse = "\n"))
     }
-    mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
 
     if (destroy_schema) {
         mfdb_destroy_schema(mdb)
@@ -60,13 +56,21 @@ mfdb <- function(case_study_name,
         return(invisible(NULL))
     }
 
+    if (case_study_name == 'public') {
+        stop("Can't connect to the public schema, since the database tables will be different. ",
+            "Instead, use the case study name and copy the data out of public")
+    }
+
     # Update schema and taxonomies
+    if (schema_count == 0) {
+        mfdb_send(mdb, "CREATE SCHEMA ", mdb$schema)
+    }
     mfdb_update_schema(mdb)
     mfdb_update_taxonomy(mdb)
     mfdb_update_cs_taxonomy(mdb)
 
     # If schema didn't exist before, see if there's data to be had in the old public tables
-    if (isTRUE(new_schema)) {
+    if (schema_count == 0) {
         res <- tryCatch(
             mfdb_fetch(mdb,
                 "SELECT case_study_id",
