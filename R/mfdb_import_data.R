@@ -24,7 +24,6 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
 
     # Sanitise data
     survey_sample <- data.frame(
-        case_study_id = if (nrow(data_in) > 0) c(mdb$case_study_id) else c(),
         institute_id = sanitise_col(mdb, data_in, 'institute', lookup = 'institute', default = c(NA)),
         gear_id = sanitise_col(mdb, data_in, 'gear', lookup = 'gear', default = c(NA)),
         vessel_id = sanitise_col(mdb, data_in, 'vessel', lookup = 'vessel', default = c(NA)),
@@ -50,8 +49,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
         # Remove data_source and re-insert
         data_source_id <- get_data_source_id(mdb, data_source)
         mfdb_send(mdb, "DELETE FROM sample",
-            " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-            " AND data_source_id = ", sql_quote(data_source_id),
+            " WHERE data_source_id = ", sql_quote(data_source_id),
             NULL)
         if (nrow(survey_sample) > 0) mfdb_send(mdb,
             "INSERT INTO sample",
@@ -64,7 +62,6 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
 
 mfdb_import_survey_index <- function (mdb, data_in, data_source = 'default_index') {
     data_in <- data.frame(
-        case_study_id = if (nrow(data_in) > 0) c(mdb$case_study_id) else c(),
         areacell_id = sanitise_col(mdb, data_in, 'areacell', lookup = 'areacell'),
         index_type_id = sanitise_col(mdb, data_in, 'index_type', lookup = 'index_type'),
         year = sanitise_col(mdb, data_in, 'year'),
@@ -75,8 +72,7 @@ mfdb_import_survey_index <- function (mdb, data_in, data_source = 'default_index
         # Remove data_source and re-insert
         data_source_id <- get_data_source_id(mdb, data_source)
         mfdb_send(mdb, "DELETE FROM survey_index",
-            " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-            " AND data_source_id = ", sql_quote(data_source_id),
+            " WHERE data_source_id = ", sql_quote(data_source_id),
             NULL)
         if (nrow(data_in) > 0) mfdb_send(mdb,
             "INSERT INTO survey_index",
@@ -102,8 +98,6 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
     }
 
     predator_data <- data.frame(
-        case_study_id = if (nrow(predator_data) > 0) c(mdb$case_study_id) else c(),
-
         institute_id = sanitise_col(mdb, predator_data, 'institute', lookup = 'institute', default = c(NA)),
         gear_id = sanitise_col(mdb, predator_data, 'gear', lookup = 'gear', default = c(NA)),
         vessel_id = sanitise_col(mdb, predator_data, 'vessel', lookup = 'vessel', default = c(NA)),
@@ -141,13 +135,11 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
         # Delete everything with matching data_source
         mfdb_send(mdb, "DELETE FROM prey WHERE predator_id IN",
             "(SELECT predator_id FROM predator",
-            " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-            " AND data_source_id = ", sql_quote(data_source_id),
+            " WHERE data_source_id = ", sql_quote(data_source_id),
             ")",
             NULL)
         mfdb_send(mdb, "DELETE FROM predator",
-            " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-            " AND data_source_id = ", sql_quote(data_source_id),
+            " WHERE data_source_id = ", sql_quote(data_source_id),
             NULL)
 
         # If there's no data, leave at this point
@@ -224,7 +216,7 @@ sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL,
         new_levels <- mfdb_fetch(mdb,
             "SELECT name, ", lookup, "_id FROM ", lookup, " AS id",
             " WHERE name IN ", sql_quote(levels(col), always_bracket = TRUE),
-            if(lookup %in% mfdb_cs_taxonomy) c(" AND case_study_id = ", mdb$case_study_id))
+            "")
         if(nrow(new_levels) == 0) {
             stop("None of the input data matches ", lookup, " vocabulary")
         }
@@ -251,8 +243,7 @@ get_data_source_id <- function(mdb, data_source) {
         stop("data_source should not be a vector with more than 1 element")
     }
     res <- mfdb_fetch(mdb, "SELECT data_source_id FROM data_source",
-        " WHERE case_study_id IN ", sql_quote(mdb$case_study_id, always_bracket = TRUE),
-        " AND name = ", sql_quote(data_source),
+        " WHERE name = ", sql_quote(data_source),
         NULL)
     if (nrow(res) > 0) {
         return(res[1,1])
@@ -260,7 +251,6 @@ get_data_source_id <- function(mdb, data_source) {
 
     # Doesn't exist yet, create
     res <- mfdb_insert(mdb, 'data_source', c(
-        case_study_id = mdb$case_study_id,
         name = data_source,
         NULL), returning = "data_source_id")
     return(res$data_source_id)

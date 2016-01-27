@@ -24,15 +24,15 @@ ok_group("Areacell/divisions", {
     # So define some, so it should work
     mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
     mfdb_import_division(mdb, list(divA = c('45G01', '45G02', '45G03')))
-    ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM division WHERE case_study_id = ", mdb$case_study_id)[1,1], 3), "Inserted 3 rows into division")
+    ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM division")[1,1], 3), "Inserted 3 rows into division")
 
     # Can't populate with invalid areacells, divC was rolled back so still 3 rows
     ok(cmp_error(mfdb_import_division(mdb, list(divB = c('45G01', '45G02', '45G08'), divC = c('45G01'))), 'areacell vocabulary.*45G08'), "Invalid areacell values")
-    ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM division WHERE case_study_id = ", mdb$case_study_id)[1,1], 3), "Inserted 3 rows into division")
+    ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM division")[1,1], 3), "Inserted 3 rows into division")
 
     # Worked this time
     mfdb_import_division(mdb, list(divB = c('45G01', '45G02'), divC = c('45G01')))
-    ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM division WHERE case_study_id = ", mdb$case_study_id)[1,1], 6), "Inserted 6 rows into division")
+    ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM division")[1,1], 6), "Inserted 6 rows into division")
 
     # Do similar to mdb2, to show case study data is isolated
     mfdb_import_area(mdb2, data.frame(id = c(1,2,3), name = c('45G03', '45G04', '45G05'), size = c(10, 11, 12)))

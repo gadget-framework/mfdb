@@ -37,7 +37,6 @@ mfdb <- function(case_study_name,
     mdb <- structure(list(
             logger = logger,
             save_temp_tables = save_temp_tables,
-            case_study_id = -1,
             state = new.env(),
             schema = if (nzchar(case_study_name)) gsub('\\W', '_', tolower(case_study_name)) else "public",
             db = db_connection), class = "mfdb_temp")

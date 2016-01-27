@@ -47,8 +47,7 @@ pre_query.mfdb_group <- function(mdb, x, col) {
                     ", ", sql_quote(set[1, 'name']), " AS name",
                     ", areacell_id AS value",
                     " FROM division",
-                    " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-                    " AND division IN ", sql_quote(unique(divisions), always_bracket = TRUE, always_quote = TRUE))
+                    " WHERE division IN ", sql_quote(unique(divisions), always_bracket = TRUE, always_quote = TRUE))
                 divisions <- divisions[duplicated(divisions)]
             }
         }
@@ -80,8 +79,7 @@ pre_query.mfdb_group <- function(mdb, x, col) {
                     " WHERE (",
                         "name IN ", sql_quote(unique(values), always_bracket = TRUE, always_quote = TRUE),
                         " OR t_group IN ", sql_quote(unique(values), always_bracket = TRUE, always_quote = TRUE),
-                    ")",
-                    if (lookup %in% mfdb_cs_taxonomy) c(" AND case_study_id = ", sql_quote(mdb$case_study_id)) else c(""))
+                    ")")
                 values <- values[duplicated(values)]
             }
         }

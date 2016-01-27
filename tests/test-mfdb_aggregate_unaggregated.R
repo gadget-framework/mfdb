@@ -52,5 +52,5 @@ ok_group("Aggregates with mfdb_unaggregated() CS taxonomies", local({
 
     ok(cmp(
         select_clause(mdb, g, 'tbl.sampling_type_id', 'out'),
-        "(SELECT name FROM sampling_type WHERE case_study_id = 0 AND sampling_type_id = tbl.sampling_type_id) AS out"), "Select clause")
+        "(SELECT name FROM sampling_type WHERE sampling_type_id = tbl.sampling_type_id) AS out"), "Select clause")
 }, asNamespace('mfdb')))

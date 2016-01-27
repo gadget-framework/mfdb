@@ -66,10 +66,8 @@ abundance_core_table <- function (mdb, scale_index) {
             " WHERE si.index_type_id = ",
                 "(SELECT index_type_id",
                 " FROM index_type",
-                " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-                " AND name = ", sql_quote(scale_index),
+                " WHERE name = ", sql_quote(scale_index),
                 ")",
-            " AND sam.case_study_id = si.case_study_id",
             " AND sam.areacell_id = si.areacell_id",
             " AND sam.year = si.year",
             " AND sam.month = si.month",
@@ -326,10 +324,10 @@ mfdb_sample_grouping <- function (mdb,
 
     # If we need tow or vessel, join these tables
     if (length(grep("^v\\.", col_defs[names(params)])) > 0) {
-        join_tables = c("JOIN vessel v ON c.case_study_id = v.case_study_id AND c.vessel_id = v.vessel_id", join_tables)
+        join_tables = c("JOIN vessel v ON c.vessel_id = v.vessel_id", join_tables)
     }
     if (length(grep("^t\\.", col_defs[names(params)])) > 0) {
-        join_tables = c("JOIN tow t ON c.case_study_id = t.case_study_id AND c.tow_id = t.tow_id", join_tables)
+        join_tables = c("JOIN tow t ON c.tow_id = t.tow_id", join_tables)
     }
 
     # Pick out any extra params we can make use of, ignore rest
@@ -353,7 +351,7 @@ mfdb_sample_grouping <- function (mdb,
             clauses(union(group_cols, filter_cols), from_clause),
             NULL), collapse = ","),
         " WHERE ", paste(c(
-            paste("c.case_study_id =", sql_quote(mdb$case_study_id)),
+            "TRUE",
             clauses(union(group_cols, filter_cols), where_clause),
             NULL), collapse = " AND "),
         " GROUP BY ", paste(c(

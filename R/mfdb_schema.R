@@ -43,10 +43,8 @@ mfdb_update_schema <- function(mdb) {
 
 # Generate foreign key definition for each table given
 fk <- function (...) {
-    tbls <- c(...)[c(...) %in% mfdb_taxonomy]
-    cs_tbls <- c(...)[c(...) %in% mfdb_cs_taxonomy]
+    tbls <- c(...)[c(...) %in% c(mfdb_taxonomy, mfdb_cs_taxonomy)]
     c(
-        if (length(cs_tbls) > 0) paste0("FOREIGN KEY(case_study_id, ", cs_tbls, "_id) REFERENCES ", cs_tbls, "(case_study_id, ", cs_tbls, "_id)"),
         if (length(tbls) > 0) paste0("FOREIGN KEY(", tbls, "_id) REFERENCES ", tbls, "(", tbls, "_id)"),
         NULL
     )
@@ -66,7 +64,6 @@ schema_from_0 <- function(mdb) {
     mfdb_create_table(mdb, "survey_index", "Indices used to modify surveys", cols = c(
         "survey_index_id", "SERIAL PRIMARY KEY", "",
         "data_source_id", "INT", "",
-        "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
         "index_type_id", "INT", "",
 
         "areacell_id", "INT", "Areacell data relates to",
@@ -79,18 +76,16 @@ schema_from_0 <- function(mdb) {
 
     mfdb_create_table(mdb, "division", "Grouping of area cells into divisions", cols = c(
         "division_id", "SERIAL PRIMARY KEY", "",
-        "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
 
         "division", "VARCHAR(10) NOT NULL", "",
         "areacell_id", "INT", "Contained areacell"
     ), keys = c(
-        "FOREIGN KEY(case_study_id, areacell_id) REFERENCES areacell(case_study_id, areacell_id)"
+        "FOREIGN KEY(areacell_id) REFERENCES areacell(areacell_id)"
     ))
 
     mfdb_create_table(mdb, "sample", "Samples within a survey", cols = c(
         "sample_id", "SERIAL PRIMARY KEY", "",
         "data_source_id", "INT", "",
-        "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
 
         "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
@@ -120,7 +115,6 @@ schema_from_0 <- function(mdb) {
     mfdb_create_table(mdb, "predator", "Predators in predator/prey sample", cols = c(
         "predator_id", "SERIAL PRIMARY KEY", "",
         "data_source_id", "INT NOT NULL", "",
-        "case_study_id", "INT NOT NULL REFERENCES case_study(case_study_id)", "Case study data is relevant to",
 
         "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
@@ -192,9 +186,6 @@ schema_from_3 <- function(mdb) {
             NULL)
         if (col_exists > 0) {
             # Do nothing, already there
-        } else if (t %in% setdiff(mfdb_cs_taxonomy, 'vessel')) {
-            mfdb_send(mdb, "ALTER TABLE ", t, " ADD COLUMN t_group VARCHAR(1024) NULL")
-            mfdb_send(mdb, "ALTER TABLE ", t, " ADD FOREIGN KEY (case_study_id, t_group) REFERENCES ", t, "(case_study_id, name)")
         } else {
             mfdb_send(mdb, "ALTER TABLE ", t, " ADD COLUMN t_group VARCHAR(1024) NULL")
             mfdb_send(mdb, "ALTER TABLE ", t, " ADD FOREIGN KEY (t_group) REFERENCES ", t, "(name)")
@@ -207,8 +198,7 @@ schema_from_3 <- function(mdb) {
     mfdb_create_taxonomy_table(mdb, "vessel")
     # Create vessel for each vessel type so we can map data
     mfdb_insert(mdb, 'vessel', mfdb_fetch(mdb,
-        "SELECT DISTINCT s.case_study_id",
-        ", s.vessel_id AS vessel_id",
+        "SELECT DISTINCT s.vessel_id AS vessel_id",
         ", v.name AS name",
         ", s.vessel_id AS vessel_type_id",
         " FROM sample s",
@@ -261,7 +251,6 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
         ))
     } else if (table_name %in% mfdb_cs_taxonomy) {
         mfdb_create_table(mdb, table_name, "", cols = c(
-            "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
             key_col, ifelse(table_name == "data_source", "SERIAL", "INT"), "Numeric ID for this entry",
             "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
             "t_group", paste0("VARCHAR(1024) NULL"), "Value grouping (short name)",
@@ -287,10 +276,10 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
             ),
             NULL
         ), keys = c(
-            paste0(c("PRIMARY KEY(case_study_id, ", key_col, ")"), collapse = ""),
+            paste0(c("PRIMARY KEY(", key_col, ")"), collapse = ""),
             "CHECK(name ~ '^[A-Za-z0-9_.\\-]+$')",
-            paste0("UNIQUE(case_study_id, name)"),
-            paste0("FOREIGN KEY (case_study_id, t_group) REFERENCES ", table_name, "(case_study_id, name)"),
+            paste0("UNIQUE(name)"),
+            paste0("FOREIGN KEY (t_group) REFERENCES ", table_name, "(name)"),
             NULL
         ))
     }
