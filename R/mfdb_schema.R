@@ -17,16 +17,16 @@ mfdb_destroy_schema <- function(mdb) {
 }
 
 # Check to see if we need to update schema do it,
-mfdb_update_schema <- function(mdb) {
-    schema_version <- -1
-    target_version <- -2
+mfdb_update_schema <- function(
+        mdb,
+        schema_version = -1,
+        target_version = package_major_version()) {
     while (schema_version != target_version) {
         # Find out existing schema version, if it's what we want return
         schema_version <- tryCatch({
             res <- mfdb_fetch(mdb, "SELECT MAX(version) FROM mfdb_schema")
             ifelse(nrow(res) == 0, 0, res[1, 1])
         }, error = function (e) 0)
-        target_version <- package_major_version()
 
         fn <- tryCatch(get(paste0("schema_from_", schema_version)), error = function (e) {
             stop(paste(

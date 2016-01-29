@@ -80,6 +80,12 @@ mfdb <- function(case_study_name = "",
         if (length(res) == 1) {
             # A case study exists by this ID
             old_case_study_id <- res[1,1]
+
+            # Upgrade the old database to a known state
+            mfdb_send(mdb, "SET search_path TO public, pg_temp")
+            mfdb_update_schema(mdb, 4)
+            mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
+
             # TODO: Copy data from old tables
         }
     }
