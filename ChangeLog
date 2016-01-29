@@ -1,3 +1,10 @@
+    Version 5.0-0
+
+    Schema changes:
+    * Break up case_study's into schemata, ditch case_study_id
+
+(unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
+
     * When importing stomachs, make the default prey count unknown
     * When importing stomachs, use same weight_total option for prey as regular samples
     * Add mfdb_concatenate_results to help when you want to concatenate 2 result sets

@@ -225,6 +225,10 @@ schema_from_3 <- function(mdb) {
 }
 
 schema_from_4 <- function(mdb) {
+    stop("Cannot upgrade directly from 4-->5, need to recreate in separate schema")
+}
+
+schema_from_5 <- function(mdb) {
     mdb$logger$info("Schema up-to-date")
 }
 
