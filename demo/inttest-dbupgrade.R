@@ -15,12 +15,22 @@ source('mfdb/tests/utils/inttest-helpers.R')
 if (exists("mdb")) mfdb_disconnect(mdb)
 
 # Rebuild the version 2 schema
+mdb <- mfdb('Test', db_params = db_params, destroy_schema = TRUE)
 system(paste(
-    'pg_restore',
-    ' --clean',
+    'echo "DROP SCHEMA public CASCADE" | psql',
     ' --host=', db_params$host,
     ' --dbname=', db_params$dbname,
-    ' mfdb/tests/utils/schema_2.x.sql',
+    sep="", collapse=""))
+system(paste(
+    'echo "DROP SCHEMA test CASCADE" | psql',
+    ' --host=', db_params$host,
+    ' --dbname=', db_params$dbname,
+    sep="", collapse=""))
+system(paste(
+    'psql',
+    ' --host=', db_params$host,
+    ' --dbname=', db_params$dbname,
+    ' --file=mfdb/tests/utils/schema_2.x.sql',
     sep="", collapse=""))
 
 # Create a proper MFDB object, should upgrade to latest version
