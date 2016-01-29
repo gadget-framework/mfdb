@@ -1470,8 +1470,9 @@ COPY case_study (case_study_id, name, description) FROM stdin;
 --
 
 COPY data_source (case_study_id, data_source_id, name, description) FROM stdin;
-0	1	survey1	\N
-0	2	survey2	\N
+0	1	cod2000	\N
+0	2	survey1	\N
+0	3	survey2	\N
 \.
 
 
@@ -1479,7 +1480,7 @@ COPY data_source (case_study_id, data_source_id, name, description) FROM stdin;
 -- Name: data_source_data_source_id_seq; Type: SEQUENCE SET; Schema: public; Owner: lentinj
 --
 
-SELECT pg_catalog.setval('data_source_data_source_id_seq', 2, true);
+SELECT pg_catalog.setval('data_source_data_source_id_seq', 3, true);
 
 
 --
@@ -1500,9 +1501,9 @@ COPY digestion_stage (digestion_stage_id, name, description) FROM stdin;
 --
 
 COPY division (division_id, case_study_id, division, areacell_id) FROM stdin;
-4	0	divA	1
-5	0	divA	2
-6	0	divB	1
+7	0	divA	1
+8	0	divA	2
+9	0	divB	1
 \.
 
 
@@ -1510,7 +1511,7 @@ COPY division (division_id, case_study_id, division, areacell_id) FROM stdin;
 -- Name: division_division_id_seq; Type: SEQUENCE SET; Schema: public; Owner: lentinj
 --
 
-SELECT pg_catalog.setval('division_division_id_seq', 6, true);
+SELECT pg_catalog.setval('division_division_id_seq', 9, true);
 
 
 --
@@ -1671,6 +1672,9 @@ COPY mfdb_schema (version) FROM stdin;
 --
 
 COPY predator (predator_id, data_source_id, case_study_id, institute_id, gear_id, vessel_id, sampling_type_id, year, month, areacell_id, stomach_name, species_id, age, sex_id, maturity_stage_id, stomach_state_id, length, weight) FROM stdin;
+10	1	0	\N	\N	\N	\N	2000	1	2	AA	8791030402	\N	\N	\N	\N	21	210
+11	1	0	\N	\N	\N	\N	2000	1	2	CC	8791030402	\N	\N	\N	\N	34	230
+12	1	0	\N	\N	\N	\N	2000	1	2	BB	8791030402	\N	\N	\N	\N	34	220
 \.
 
 
@@ -1678,7 +1682,7 @@ COPY predator (predator_id, data_source_id, case_study_id, institute_id, gear_id
 -- Name: predator_predator_id_seq; Type: SEQUENCE SET; Schema: public; Owner: lentinj
 --
 
-SELECT pg_catalog.setval('predator_predator_id_seq', 1, false);
+SELECT pg_catalog.setval('predator_predator_id_seq', 12, true);
 
 
 --
@@ -1686,6 +1690,7 @@ SELECT pg_catalog.setval('predator_predator_id_seq', 1, false);
 --
 
 COPY prey (prey_id, predator_id, species_id, digestion_stage_id, length, weight, count) FROM stdin;
+11	10	8755030201	1	1	10	5
 \.
 
 
@@ -1693,7 +1698,7 @@ COPY prey (prey_id, predator_id, species_id, digestion_stage_id, length, weight,
 -- Name: prey_prey_id_seq; Type: SEQUENCE SET; Schema: public; Owner: lentinj
 --
 
-SELECT pg_catalog.setval('prey_prey_id_seq', 1, false);
+SELECT pg_catalog.setval('prey_prey_id_seq', 11, true);
 
 
 --
@@ -1701,30 +1706,30 @@ SELECT pg_catalog.setval('prey_prey_id_seq', 1, false);
 --
 
 COPY sample (sample_id, data_source_id, case_study_id, institute_id, gear_id, vessel_id, sampling_type_id, year, month, areacell_id, species_id, age, sex_id, maturity_stage_id, length, length_var, length_min, weight, weight_var, count) FROM stdin;
-13	1	0	1	102	1011	1	1998	1	1	8791030402	1	1	\N	10	\N	\N	100	\N	1
-14	1	0	1	102	1011	1	1998	2	1	8791030402	2	2	\N	50	\N	\N	500	\N	1
-15	1	0	1	102	1011	1	1998	3	1	8791030402	1	3	\N	30	\N	\N	300	\N	1
-16	1	0	1	102	1011	1	1998	4	1	8791030402	2	1	\N	10	\N	\N	100	\N	1
-17	1	0	1	102	1011	1	1998	5	1	8791030402	1	2	\N	35	\N	\N	350	\N	1
-18	1	0	1	102	1011	1	1998	6	1	8791030402	2	3	\N	46	\N	\N	460	\N	1
-19	1	0	1	102	1011	1	1998	7	1	8791030402	1	1	\N	65	\N	\N	650	\N	1
-20	1	0	1	102	1011	1	1998	8	1	8791030402	2	2	\N	62	\N	\N	320	\N	1
-21	1	0	1	102	1011	1	1998	9	1	8791030402	1	3	\N	36	\N	\N	360	\N	1
-22	1	0	1	102	1011	1	1998	10	1	8791030402	2	1	\N	35	\N	\N	350	\N	1
-23	1	0	1	102	1011	1	1998	11	1	8791030402	1	2	\N	34	\N	\N	340	\N	1
-24	1	0	1	102	1011	1	1998	12	1	8791030402	2	3	\N	22	\N	\N	220	\N	1
-25	2	0	10	105	1021	1	1998	1	1	8791031301	1	1	\N	35	\N	\N	110	\N	1
-26	2	0	10	105	1021	1	1998	2	1	8791031301	2	2	\N	64	\N	\N	510	\N	1
-27	2	0	10	105	1021	1	1998	3	1	8791031301	1	3	\N	23	\N	\N	310	\N	1
-28	2	0	10	105	1021	1	1998	4	1	8791031301	2	1	\N	13	\N	\N	110	\N	1
-29	2	0	10	105	1021	1	1998	5	1	8791031301	1	2	\N	99	\N	\N	310	\N	1
-30	2	0	10	105	1021	1	1998	6	1	8791031301	2	3	\N	83	\N	\N	410	\N	1
-31	2	0	10	105	1021	1	1998	7	1	8791031301	1	1	\N	54	\N	\N	610	\N	1
-32	2	0	10	105	1021	1	1998	8	1	8791031301	2	2	\N	23	\N	\N	310	\N	1
-33	2	0	10	105	1021	1	1998	9	1	8791031301	1	3	\N	65	\N	\N	310	\N	1
-34	2	0	10	105	1021	1	1998	10	1	8791031301	2	1	\N	12	\N	\N	310	\N	1
-35	2	0	10	105	1021	1	1998	11	1	8791031301	1	2	\N	22	\N	\N	310	\N	1
-36	2	0	10	105	1021	1	1998	12	1	8791031301	2	3	\N	9	\N	\N	230	\N	1
+13	2	0	1	102	1011	1	1998	1	1	8791030402	1	1	\N	10	\N	\N	100	\N	1
+14	2	0	1	102	1011	1	1998	2	1	8791030402	2	2	\N	50	\N	\N	500	\N	1
+15	2	0	1	102	1011	1	1998	3	1	8791030402	1	3	\N	30	\N	\N	300	\N	1
+16	2	0	1	102	1011	1	1998	4	1	8791030402	2	1	\N	10	\N	\N	100	\N	1
+17	2	0	1	102	1011	1	1998	5	1	8791030402	1	2	\N	35	\N	\N	350	\N	1
+18	2	0	1	102	1011	1	1998	6	1	8791030402	2	3	\N	46	\N	\N	460	\N	1
+19	2	0	1	102	1011	1	1998	7	1	8791030402	1	1	\N	65	\N	\N	650	\N	1
+20	2	0	1	102	1011	1	1998	8	1	8791030402	2	2	\N	62	\N	\N	320	\N	1
+21	2	0	1	102	1011	1	1998	9	1	8791030402	1	3	\N	36	\N	\N	360	\N	1
+22	2	0	1	102	1011	1	1998	10	1	8791030402	2	1	\N	35	\N	\N	350	\N	1
+23	2	0	1	102	1011	1	1998	11	1	8791030402	1	2	\N	34	\N	\N	340	\N	1
+24	2	0	1	102	1011	1	1998	12	1	8791030402	2	3	\N	22	\N	\N	220	\N	1
+25	3	0	10	105	1021	1	1998	1	1	8791031301	1	1	\N	35	\N	\N	110	\N	1
+26	3	0	10	105	1021	1	1998	2	1	8791031301	2	2	\N	64	\N	\N	510	\N	1
+27	3	0	10	105	1021	1	1998	3	1	8791031301	1	3	\N	23	\N	\N	310	\N	1
+28	3	0	10	105	1021	1	1998	4	1	8791031301	2	1	\N	13	\N	\N	110	\N	1
+29	3	0	10	105	1021	1	1998	5	1	8791031301	1	2	\N	99	\N	\N	310	\N	1
+30	3	0	10	105	1021	1	1998	6	1	8791031301	2	3	\N	83	\N	\N	410	\N	1
+31	3	0	10	105	1021	1	1998	7	1	8791031301	1	1	\N	54	\N	\N	610	\N	1
+32	3	0	10	105	1021	1	1998	8	1	8791031301	2	2	\N	23	\N	\N	310	\N	1
+33	3	0	10	105	1021	1	1998	9	1	8791031301	1	3	\N	65	\N	\N	310	\N	1
+34	3	0	10	105	1021	1	1998	10	1	8791031301	2	1	\N	12	\N	\N	310	\N	1
+35	3	0	10	105	1021	1	1998	11	1	8791031301	1	2	\N	22	\N	\N	310	\N	1
+36	3	0	10	105	1021	1	1998	12	1	8791031301	2	3	\N	9	\N	\N	230	\N	1
 \.
 
 
@@ -3274,6 +3279,315 @@ COPY survey_index (survey_index_id, data_source_id, case_study_id, index_type_id
 --
 
 SELECT pg_catalog.setval('survey_index_survey_index_id_seq', 1, false);
+
+
+--
+-- Data for Name: vessel; Type: TABLE DATA; Schema: public; Owner: lentinj
+--
+
+COPY vessel (vessel_id, name, description) FROM stdin;
+101	1	<12m
+1011	1.RSH	<12m research
+1012	1.COM	<12m commercial
+1013	1.CQT	<12m commercial, quota
+1014	1.CDA	<12m commercial, days
+1015	1.FGN	<12m foreign
+1016	1.FRZ	<12m freezer
+102	2	12-24m
+1021	2.RSH	12-24m research
+1022	2.COM	12-24m commercial
+1023	2.CQT	12-24m commercial, quota
+1024	2.CDA	12-24m commercial, days
+1025	2.FGN	12-24m foreign
+1026	2.FRZ	12-24m freezer
+103	3	>24m
+1031	3.RSH	>24m research
+1032	3.COM	>24m commercial
+1033	3.CQT	>24m commercial, quota
+1034	3.CDA	>24m commercial, days
+1035	3.FGN	>24m foreign
+1036	3.FRZ	>24m freezer
+\.
+
+
+--
+-- Name: areacell_case_study_id_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY areacell
+    ADD CONSTRAINT areacell_case_study_id_name_key UNIQUE (case_study_id, name);
+
+
+--
+-- Name: areacell_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY areacell
+    ADD CONSTRAINT areacell_pkey PRIMARY KEY (case_study_id, areacell_id);
+
+
+--
+-- Name: case_study_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY case_study
+    ADD CONSTRAINT case_study_name_key UNIQUE (name);
+
+
+--
+-- Name: case_study_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY case_study
+    ADD CONSTRAINT case_study_pkey PRIMARY KEY (case_study_id);
+
+
+--
+-- Name: data_source_case_study_id_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY data_source
+    ADD CONSTRAINT data_source_case_study_id_name_key UNIQUE (case_study_id, name);
+
+
+--
+-- Name: data_source_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY data_source
+    ADD CONSTRAINT data_source_pkey PRIMARY KEY (case_study_id, data_source_id);
+
+
+--
+-- Name: digestion_stage_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY digestion_stage
+    ADD CONSTRAINT digestion_stage_name_key UNIQUE (name);
+
+
+--
+-- Name: digestion_stage_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY digestion_stage
+    ADD CONSTRAINT digestion_stage_pkey PRIMARY KEY (digestion_stage_id);
+
+
+--
+-- Name: division_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY division
+    ADD CONSTRAINT division_pkey PRIMARY KEY (division_id);
+
+
+--
+-- Name: fleet_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY fleet
+    ADD CONSTRAINT fleet_name_key UNIQUE (name);
+
+
+--
+-- Name: fleet_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY fleet
+    ADD CONSTRAINT fleet_pkey PRIMARY KEY (fleet_id);
+
+
+--
+-- Name: gear_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY gear
+    ADD CONSTRAINT gear_name_key UNIQUE (name);
+
+
+--
+-- Name: gear_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY gear
+    ADD CONSTRAINT gear_pkey PRIMARY KEY (gear_id);
+
+
+--
+-- Name: index_type_case_study_id_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY index_type
+    ADD CONSTRAINT index_type_case_study_id_name_key UNIQUE (case_study_id, name);
+
+
+--
+-- Name: index_type_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY index_type
+    ADD CONSTRAINT index_type_pkey PRIMARY KEY (case_study_id, index_type_id);
+
+
+--
+-- Name: institute_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY institute
+    ADD CONSTRAINT institute_name_key UNIQUE (name);
+
+
+--
+-- Name: institute_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY institute
+    ADD CONSTRAINT institute_pkey PRIMARY KEY (institute_id);
+
+
+--
+-- Name: market_category_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY market_category
+    ADD CONSTRAINT market_category_name_key UNIQUE (name);
+
+
+--
+-- Name: market_category_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY market_category
+    ADD CONSTRAINT market_category_pkey PRIMARY KEY (market_category_id);
+
+
+--
+-- Name: maturity_stage_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY maturity_stage
+    ADD CONSTRAINT maturity_stage_name_key UNIQUE (name);
+
+
+--
+-- Name: maturity_stage_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY maturity_stage
+    ADD CONSTRAINT maturity_stage_pkey PRIMARY KEY (maturity_stage_id);
+
+
+--
+-- Name: predator_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY predator
+    ADD CONSTRAINT predator_pkey PRIMARY KEY (predator_id);
+
+
+--
+-- Name: prey_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY prey
+    ADD CONSTRAINT prey_pkey PRIMARY KEY (prey_id);
+
+
+--
+-- Name: sample_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY sample
+    ADD CONSTRAINT sample_pkey PRIMARY KEY (sample_id);
+
+
+--
+-- Name: sampling_type_case_study_id_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY sampling_type
+    ADD CONSTRAINT sampling_type_case_study_id_name_key UNIQUE (case_study_id, name);
+
+
+--
+-- Name: sampling_type_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY sampling_type
+    ADD CONSTRAINT sampling_type_pkey PRIMARY KEY (case_study_id, sampling_type_id);
+
+
+--
+-- Name: sex_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY sex
+    ADD CONSTRAINT sex_name_key UNIQUE (name);
+
+
+--
+-- Name: sex_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY sex
+    ADD CONSTRAINT sex_pkey PRIMARY KEY (sex_id);
+
+
+--
+-- Name: species_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY species
+    ADD CONSTRAINT species_name_key UNIQUE (name);
+
+
+--
+-- Name: species_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY species
+    ADD CONSTRAINT species_pkey PRIMARY KEY (species_id);
+
+
+--
+-- Name: stomach_state_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY stomach_state
+    ADD CONSTRAINT stomach_state_name_key UNIQUE (name);
+
+
+--
+-- Name: stomach_state_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY stomach_state
+    ADD CONSTRAINT stomach_state_pkey PRIMARY KEY (stomach_state_id);
+
+
+--
+-- Name: survey_index_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY survey_index
+    ADD CONSTRAINT survey_index_pkey PRIMARY KEY (survey_index_id);
+
+
+--
+-- Name: vessel_name_key; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY vessel
+    ADD CONSTRAINT vessel_name_key UNIQUE (name);
+
+
+--
+-- Name: vessel_pkey; Type: CONSTRAINT; Schema: public; Owner: lentinj; Tablespace: 
+--
+
+ALTER TABLE ONLY vessel
+    ADD CONSTRAINT vessel_pkey PRIMARY KEY (vessel_id);
 
 
 --
