@@ -55,7 +55,7 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
         #     In practice this probably won't happen, but a reasonable solution would be nice.
         mfdb_insert(mdb,
             table_name,
-            data_in[data_in$name == setdiff(data_in$name, existing$name), ],
+            data_in[data_in$name %in% setdiff(data_in$name, existing$name), ],
             extra = (if (cs_specific) c(case_study_id = mdb$case_study_id) else c()))
 
         # Rows with matching names should be updated, but existing ids kept
