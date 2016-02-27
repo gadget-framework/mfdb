@@ -27,6 +27,7 @@ mfdb_update_schema <- function(
             res <- mfdb_fetch(mdb, "SELECT MAX(version) FROM mfdb_schema")
             ifelse(nrow(res) == 0, 0, res[1, 1])
         }, error = function (e) 0)
+        str(c(schema_version, target_version))
 
         fn <- tryCatch(get(paste0("schema_from_", schema_version)), error = function (e) {
             stop(paste(

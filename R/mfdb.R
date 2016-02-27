@@ -83,7 +83,7 @@ mfdb <- function(case_study_name = "",
 
             # Upgrade the old database to a known state
             mfdb_send(mdb, "SET search_path TO public, pg_temp")
-            mfdb_update_schema(mdb, 4)
+            mfdb_update_schema(mdb, target_version = 4)
             mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
 
             # TODO: Copy data from old tables
