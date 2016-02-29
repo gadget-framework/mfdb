@@ -146,10 +146,15 @@ to scale counts by the tow length.
             Returns year, step, area, (cols), number (of prey found in stomach)
         }
         \item{mfdb_stomach_preymeanlength}{
-            Returns year, step, area, (cols), number, mean_length (of prey found in stomach)
+            Returns year, step, area, (cols),
+            number (of prey found in stomach),
+            mean_length (of prey found in stomach).
+            NB: Entries where count is NA (i.e. totals) are ignored with this function.
         }
         \item{mfdb_stomach_preymeanweight}{
-            Returns year, step, area, (cols), number, mean_weight (of prey found in stomach)
+            Returns year, step, area, (cols),
+            number (of unique stomachs in group),
+            mean_weight (per unique stomach).
         }
         \item{mfdb_stomach_presenceratio}{
             Returns year, step, area, (cols), ratio (of selected prey in stomach to all prey by count)

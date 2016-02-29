@@ -45,8 +45,8 @@ A		CAP		1	1	10	5
 A		CAP		1	4	40	1
 B		CAP		1	1	10	5
 B		CAP		4	1	10	5
-B		CAP		5	1	10	8
-B		CAP		5	1	10	5
+B		CAP		5	1	10	NA
+B		CAP		5	1	10	NA
 C		CLL		2	3.5	9.5	3
 
 D		CAP		1	1.4	10	1
@@ -100,7 +100,7 @@ E		CAP		1	1.4	10	1
              digestion_stage = c('digested', 'digested', 'digested', 'undigested', 'undigested'),
              prey_length = c('pl1', 'pl3', 'pl4', 'pl1', 'pl4'),
              number = c(
-                 5 + 8 + 5,
+                 5 + 0 + 0,
                  3,
                  1,
                  5 + 5 + 1 + 1,
@@ -115,10 +115,10 @@ E		CAP		1	1.4	10	1
          data.frame(
              year = 'all', step = 'all', area = 'all',
              digestion_stage = c('digested', 'undigested'),
-             number = c(sum(5, 8, 5, 3, 1), sum(5, 1, 5, 1, 1)),
+             number = c(sum(5, 0, 0, 3, 1), sum(5, 1, 5, 1, 1)),
              mean_length = c(
                  weighted.mean(c(1, 1, 1, 3.5, 4),
-                               c(5, 8, 5, 3,   1)),
+                               c(5, 0, 0, 3,   1)),
                  weighted.mean(c(1, 4, 1, 1.4, 1.4),
                                c(5, 1, 5, 1,   1)),
              NULL),
@@ -131,12 +131,10 @@ E		CAP		1	1.4	10	1
          data.frame(
              year = 'all', step = 'all', area = 'all',
              digestion_stage = c('digested', 'undigested'),
-             number = c(sum(5, 8, 5, 3, 1), sum(5, 1, 5, 1, 1)),
+             number = c(3, 4),
              mean_weight = c(
-                 weighted.mean(c(10, 10, 10, 9.5, 40),
-                               c( 5,  8,  5,   3,  1)),
-                 weighted.mean(c(10, 40, 10, 10, 10),
-                               c( 5,  1,  5,  1,  1)),
+                 (10*5 + 10*1 + 10*1 + 9.5*3 + 40*1) / 3,
+                 (10*5 + 40*1 + 10*5 + 10*1 + 10*1) / 4,
              NULL),
              stringsAsFactors = FALSE)), "Mean weight of all prey")
 })

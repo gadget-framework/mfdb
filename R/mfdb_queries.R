@@ -212,13 +212,20 @@ mfdb_stomach_preymeanlength <- function (mdb, cols, params) {
         col_defs = as.list(c(pred_col_defs, prey_col_defs)),
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            paste0("SUM(prey.count) AS number"),
-            paste0("WEIGHTED_MEAN(prey.length::numeric, prey.count::numeric) AS mean_length"),
+            paste0("SUM(COALESCE(prey.count, 0)) AS number"),
+            paste0("WEIGHTED_MEAN(prey.length::numeric, COALESCE(prey.count, 0)::numeric) AS mean_length"),
             NULL),
         params = params)
 }
 
 # Returns year, step, area, (cols), number, mean_weight (of prey found in stomach)
+# stomach count weight
+#   A      01     49 \
+#   A      04     24  -- Sum
+#   A      08     30 /
+#   B      NA     34  ==> Total
+#   C      NA     74  ==> Total
+# ==> ( 49*1 + 24*4 + 30*8 + 34 + 74 ) / 3 ( unique stomachs )
 mfdb_stomach_preymeanweight <- function (mdb, cols, params) {
     mfdb_sample_grouping(mdb,
         core_table = "predator",
@@ -226,8 +233,8 @@ mfdb_stomach_preymeanweight <- function (mdb, cols, params) {
         col_defs = as.list(c(pred_col_defs, prey_col_defs)),
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            paste0("SUM(prey.count) AS number"),
-            paste0("WEIGHTED_MEAN(prey.weight::numeric, prey.count::numeric) AS mean_weight"),
+            paste0("COUNT(DISTINCT c.predator_id) AS number"),
+            paste0("SUM(prey.weight::numeric * COALESCE(prey.count, 1)) / COUNT(DISTINCT c.predator_id) AS mean_weight"),
             NULL),
         params = params)
 }
