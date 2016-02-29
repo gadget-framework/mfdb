@@ -239,6 +239,52 @@ mfdb_stomach_preymeanweight <- function (mdb, cols, params) {
         params = params)
 }
 
+# percentage of stomach weight is prey
+mfdb_stomach_preyweightratio <- function (mdb, cols, params) {
+    # Group without prey options first
+    without_prey <- mfdb_sample_grouping(mdb,
+        core_table = "predator",
+        join_tables = c(
+            paste0("INNER JOIN prey ON c.predator_id = prey.predator_id"),
+            NULL),
+        col_defs = as.list(c(pred_col_defs)),
+        group_cols = c("year", "timestep", "area", intersect(cols, names(pred_col_defs))),
+        calc_cols = c(
+            "SUM(prey.weight::numeric * COALESCE(prey.count, 1)) AS weight_total",
+            NULL),
+        params = params)
+
+    # Group with prey restrictions
+    with_prey <- mfdb_sample_grouping(mdb,
+        core_table = "predator",
+        join_tables = c(
+            paste0("INNER JOIN prey ON c.predator_id = prey.predator_id"),
+            NULL),
+        col_defs = as.list(c(pred_col_defs, prey_col_defs)),
+        group_cols = c("year", "timestep", "area", cols),
+        calc_cols = c(
+            "SUM(prey.weight::numeric * COALESCE(prey.count, 1)) AS weight_present",
+            NULL),
+        params = params)
+
+    if (length(with_prey) == 0) return(list())
+    # TODO: Bootstrapping is very likely broken
+    if (length(with_prey) != length(without_prey)) stop("Don't support bootstrapping for stomachs")
+
+    # If there's nothing to merge, don't bother
+    if (nrow(without_prey[[1]]) == 0) return(without_prey)
+
+    # Merge data frames together, return with ratio of present / total
+    mapply(function (w, wo) {
+        merged <- merge(w, wo)
+        merged$ratio <- merged$weight_present / merged$weight_total
+        do.call(structure, c(
+            list(merged[, c("year", "step", "area", cols, "ratio"), drop = FALSE]),
+            attributes(w)[c("year", "step", "area", cols, "generator")],
+            NULL))
+    }, with_prey, without_prey, SIMPLIFY = FALSE)
+}
+
 # Returns year, step, area, (cols), ratio (of selected prey in stomach to all prey by count)
 mfdb_stomach_presenceratio <- function (mdb, cols, params) {
     # Group without prey options first

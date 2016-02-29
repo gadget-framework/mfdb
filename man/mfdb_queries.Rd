@@ -12,6 +12,7 @@
 \alias{mfdb_stomach_preycount}
 \alias{mfdb_stomach_preymeanlength}
 \alias{mfdb_stomach_preymeanweight}
+\alias{mfdb_stomach_preyweightratio}
 \alias{mfdb_stomach_presenceratio}
 
 \title{MareFrame DB queries}
@@ -34,6 +35,7 @@ mfdb_sample_meanweight_stddev(mdb, cols, params, scale_index = NULL)
 mfdb_stomach_preycount(mdb, cols, params)
 mfdb_stomach_preymeanlength(mdb, cols, params)
 mfdb_stomach_preymeanweight(mdb, cols, params)
+mfdb_stomach_preyweightratio(mdb, cols, params)
 mfdb_stomach_presenceratio(mdb, cols, params)
 }
 
@@ -155,6 +157,9 @@ to scale counts by the tow length.
             Returns year, step, area, (cols),
             number (of unique stomachs in group),
             mean_weight (per unique stomach).
+        }
+        \item{mfdb_stomach_preyweightratio}{
+            Returns year, step, area, (cols), ratio (of selected prey in stomach to all prey by weight)
         }
         \item{mfdb_stomach_presenceratio}{
             Returns year, step, area, (cols), ratio (of selected prey in stomach to all prey by count)

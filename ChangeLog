@@ -1,3 +1,4 @@
+    * Add mfdb_stomach_preyweightratio to get ratio of prey by weight
     * mfdb_stomach_preymeanweight should take the mean of unique stomachs
     * mfdb_stomach_preymeanlength should ignore prey samples without count
     * When importing stomachs, make the default prey count unknown

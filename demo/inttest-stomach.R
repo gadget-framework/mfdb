@@ -137,6 +137,26 @@ E		CAP		1	1.4	10	1
                  (10*5 + 40*1 + 10*5 + 10*1 + 10*1) / 4,
              NULL),
              stringsAsFactors = FALSE)), "Mean weight of all prey")
+
+     # Find out the ratio of capelin, grouped by digestion stage
+     ok(cmp_table(
+         mfdb_stomach_preyweightratio(mdb, c("predator_weight", "digestion_stage"), list(
+             predator_weight = mfdb_interval("w", c(200,300,400,500)),
+             digestion_stage = mfdb_group(undigested = 1, digested = 2:5),
+             prey_species = 'CAP')),
+         data.frame(
+             year = 'all', step = 'all', area = 'all',
+             predator_weight = c('w200', 'w200', 'w300'),
+             digestion_stage = c('digested', 'undigested', 'undigested'),
+             ratio = c(
+                 # digested CAP in B (stages 4 & 5) out of A, B, C
+                 sum(10*5, 10*1, 10*1) / sum(10*5, 40*1, 10*5, 10*5, 10*1, 10*1, 9.5*3),
+                 # undigested CAP in A, B out of A, B, C
+                 sum(10*5, 40*1, 10*5) / sum(10*5, 40*1, 10*5, 10*5, 10*1, 10*1, 9.5*3),
+                 # undigested CAP in D, E out of D, E
+                 sum(10, 10) / sum(10, 40, 10),
+                 NULL),
+             stringsAsFactors = FALSE)), "Ratio of stomach content by weight")
 })
 
 ok_group("Stomach content likelihood compoment", {
