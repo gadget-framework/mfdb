@@ -9,6 +9,7 @@
 \alias{mfdb_sample_totalweight}
 \alias{mfdb_sample_meanweight}
 \alias{mfdb_sample_meanweight_stddev}
+\alias{mfdb_sample_rawdata}
 \alias{mfdb_stomach_preycount}
 \alias{mfdb_stomach_preymeanlength}
 \alias{mfdb_stomach_preymeanweight}
@@ -32,6 +33,7 @@ mfdb_sample_meanlength_stddev(mdb, cols, params, scale_index = NULL)
 mfdb_sample_totalweight(mdb, cols, params)
 mfdb_sample_meanweight(mdb, cols, params, scale_index = NULL)
 mfdb_sample_meanweight_stddev(mdb, cols, params, scale_index = NULL)
+mfdb_sample_rawdata(mdb, cols, params, scale_index = NULL)
 mfdb_stomach_preycount(mdb, cols, params)
 mfdb_stomach_preymeanlength(mdb, cols, params)
 mfdb_stomach_preymeanweight(mdb, cols, params)
@@ -143,6 +145,11 @@ to scale counts by the tow length.
         }
         \item{mfdb_sample_meanweight_stddev}{
             As mfdb_sample_meanweight, but also returns std. deviation.
+        }
+        \item{mfdb_sample_rawdata}{
+            Returns year,step,area,(group cols),number of samples, weight and length.
+
+            NB: Unlike other functions, no aggregation is performed. This is mostly for debugging
         }
         \item{mfdb_stomach_preycount}{
             Returns year, step, area, (cols), number (of prey found in stomach)

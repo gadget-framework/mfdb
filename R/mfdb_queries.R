@@ -161,6 +161,21 @@ mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL
     out
 }
 
+mfdb_sample_rawdata <- function (mdb, cols, params, scale_index = NULL) {
+    abundance <- abundance_core_table(mdb, scale_index)
+    out <- mfdb_sample_grouping(mdb,
+        core_table = abundance[[1]],
+        disable_group_by = TRUE,
+        group_cols = c("year", "timestep", "area", cols),
+        calc_cols = c(
+            paste0(abundance[[2]], " AS number"),
+            "c.length AS length",
+            "c.weight AS weight",
+            NULL),
+        params = params)
+    out
+}
+
 # Common definitions for stomach columns
 pred_col_defs <- c(
     data_source = 'c.data_source_id',
@@ -346,6 +361,7 @@ mfdb_sample_grouping <- function (mdb,
         core_table = "sample",
         # join_tables: JOIN statements to attach to the main table
         join_tables = c(),
+        disable_group_by = FALSE,
         generator = as.character(sys.call(-1)[[1]])) {
 
     if (!is.list(params)) {
@@ -409,16 +425,19 @@ mfdb_sample_grouping <- function (mdb,
             paste("c.case_study_id =", sql_quote(mdb$case_study_id)),
             clauses(union(group_cols, filter_cols), where_clause),
             NULL), collapse = " AND "),
-        " GROUP BY ", paste(c(
-            "bssample",
-            paste0("grp_", group_cols),
-            NULL), collapse=","),
+        if (disable_group_by) c() else c(
+            " GROUP BY ", paste(c("bssample", paste0("grp_", group_cols)), collapse=",")),
         " ORDER BY ", paste(c(
             "bssample",
-            paste0("grp_", group_cols),
+            if (length(group_cols) > 0) paste0("grp_", group_cols) else c(),
             NULL), collapse=","),
         NULL)
     names(out) <- gsub("grp_(.*)", "\\1", names(out))
+
+    if (disable_group_by) {
+        # No groups, so not much point continuing
+        return(list(out));
+    }
 
     # No data, so fake enough to generate list of empty frames
     if (nrow(out) == 0) {
