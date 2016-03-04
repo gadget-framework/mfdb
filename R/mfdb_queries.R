@@ -242,16 +242,47 @@ mfdb_stomach_preymeanlength <- function (mdb, cols, params) {
 #   C      NA     74  ==> Total
 # ==> ( 49*1 + 24*4 + 30*8 + 34 + 74 ) / 3 ( unique stomachs )
 mfdb_stomach_preymeanweight <- function (mdb, cols, params) {
-    mfdb_sample_grouping(mdb,
+    # Group without prey options first
+    without_prey <- mfdb_sample_grouping(mdb,
         core_table = "predator",
-        join_tables = "INNER JOIN prey ON c.predator_id = prey.predator_id",
+        join_tables = c(
+            NULL),
+        col_defs = as.list(c(pred_col_defs)),
+        group_cols = c("year", "timestep", "area", intersect(cols, names(pred_col_defs))),
+        calc_cols = c(
+            paste0("COUNT(DISTINCT c.predator_id) AS predator_count"),
+            NULL),
+        params = params)
+
+    # Group with prey restrictions
+    with_prey <- mfdb_sample_grouping(mdb,
+        core_table = "predator",
+        join_tables = c(
+            paste0("INNER JOIN prey ON c.predator_id = prey.predator_id"),
+            NULL),
         col_defs = as.list(c(pred_col_defs, prey_col_defs)),
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            paste0("COUNT(DISTINCT c.predator_id) AS number"),
-            paste0("SUM(prey.weight::numeric * COALESCE(prey.count, 1)) / COUNT(DISTINCT c.predator_id) AS mean_weight"),
+            paste0("SUM(prey.weight::numeric * COALESCE(prey.count, 1)) AS weight_total"),
             NULL),
         params = params)
+
+    if (length(with_prey) == 0) return(list())
+    # TODO: Bootstrapping is very likely broken
+    if (length(with_prey) != length(without_prey)) stop("Don't support bootstrapping for stomachs")
+
+    # If there's nothing to merge, don't bother
+    if (nrow(without_prey[[1]]) == 0) return(without_prey)
+
+    # Merge data frames together, return with ratio of present / total
+    mapply(function (w, wo) {
+        merged <- merge(w, wo)
+        merged$mean_weight <- merged$weight_total / merged$predator_count
+        do.call(structure, c(
+            list(merged[, c("year", "step", "area", cols, "predator_count", "mean_weight"), drop = FALSE]),
+            attributes(w)[c("year", "step", "area", cols, "generator")],
+            NULL))
+    }, with_prey, without_prey, SIMPLIFY = FALSE)
 }
 
 # percentage of stomach weight is prey

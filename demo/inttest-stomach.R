@@ -131,10 +131,10 @@ E		CAP		1	1.4	10	1
          data.frame(
              year = 'all', step = 'all', area = 'all',
              digestion_stage = c('digested', 'undigested'),
-             number = c(3, 4),
+             predator_count = c(6, 6),
              mean_weight = c(
-                 (10*5 + 10*1 + 10*1 + 9.5*3 + 40*1) / 3,
-                 (10*5 + 40*1 + 10*5 + 10*1 + 10*1) / 4,
+                 (10*5 + 10*1 + 10*1 + 9.5*3 + 40*1) / 6,
+                 (10*5 + 40*1 + 10*5 + 10*1 + 10*1) / 6,
              NULL),
              stringsAsFactors = FALSE)), "Mean weight of all prey")
 
