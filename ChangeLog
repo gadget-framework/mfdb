@@ -1,3 +1,4 @@
+    * Add mfdb_sample_scaled with ability to scale by tow_length
     * mfdb_stomach_preymeanweight shoult take the mean of unique stomachs, ignoring prey restrictions
     * Add mfdb_sample_rawdata to help debugging
     * Add mfdb_stomach_preyweightratio to get ratio of prey by weight

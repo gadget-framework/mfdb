@@ -176,6 +176,26 @@ mfdb_sample_rawdata <- function (mdb, cols, params, scale_index = NULL) {
     out
 }
 
+# Return year, step, area, ... , number (of samples), mean weight -- scaled by tow_length
+mfdb_sample_scaled <- function (mdb, cols, params, abundance_scale = NULL, scale = 'tow_length') {
+    if (scale == 'tow_length') {
+        scale_fn <- "1/SUM(t_scale.length)"
+        scale_tables <- c("JOIN tow t_scale ON c.case_study_id = t_scale.case_study_id AND c.tow_id = t_scale.tow_id")
+    } else {
+        stop("Don't know how to scale by column ", scale)
+    }
+    abundance <- abundance_core_table(mdb, abundance_scale)
+    mfdb_sample_grouping(mdb,
+        core_table = abundance[[1]],
+        join_tables = scale_tables,
+        group_cols = c("year", "timestep", "area", cols),
+        calc_cols = c(
+            paste0("SUM(", abundance[[2]], ") * ", scale_fn, " AS number"),
+            paste0("WEIGHTED_MEAN(c.length::numeric, (", abundance[[2]], ")::numeric) * ", scale_fn, " AS mean_weight"),
+            NULL),
+        params = params)
+}
+
 # Common definitions for stomach columns
 pred_col_defs <- c(
     data_source = 'c.data_source_id',

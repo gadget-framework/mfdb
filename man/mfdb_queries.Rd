@@ -10,6 +10,7 @@
 \alias{mfdb_sample_meanweight}
 \alias{mfdb_sample_meanweight_stddev}
 \alias{mfdb_sample_rawdata}
+\alias{mfdb_sample_scaled}
 \alias{mfdb_stomach_preycount}
 \alias{mfdb_stomach_preymeanlength}
 \alias{mfdb_stomach_preymeanweight}
@@ -34,6 +35,7 @@ mfdb_sample_totalweight(mdb, cols, params)
 mfdb_sample_meanweight(mdb, cols, params, scale_index = NULL)
 mfdb_sample_meanweight_stddev(mdb, cols, params, scale_index = NULL)
 mfdb_sample_rawdata(mdb, cols, params, scale_index = NULL)
+mfdb_sample_scaled(mdb, cols, params, abundance_scale = NULL, scale = 'tow_length')
 mfdb_stomach_preycount(mdb, cols, params)
 mfdb_stomach_preymeanlength(mdb, cols, params)
 mfdb_stomach_preymeanweight(mdb, cols, params)
@@ -46,6 +48,8 @@ mfdb_stomach_presenceratio(mdb, cols, params)
     \item{cols}{Any additonal columns to group by, see details.}
     \item{params}{A list of parameters, see details.}
     \item{scale_index}{Optional. survey_index used to scale results before aggregation, either "tow_length" or from \link{mfdb_import_survey_index}}
+    \item{abundance_scale}{Optional. Same as \code{scale_index}}
+    \item{scale}{Optional. A scale to apply to the resulting values, e.g. 'tow_length'}
 }
 
 \details{
