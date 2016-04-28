@@ -21,13 +21,16 @@ mfdb_update_schema <- function(
         mdb,
         schema_version = -1,
         target_version = package_major_version()) {
-    while (schema_version != target_version) {
+    while (TRUE) {
         # Find out existing schema version, if it's what we want return
         schema_version <- tryCatch({
             res <- mfdb_fetch(mdb, "SELECT MAX(version) FROM mfdb_schema")
             ifelse(nrow(res) == 0, 0, res[1, 1])
         }, error = function (e) 0)
-        str(c(schema_version, target_version))
+
+        if (schema_version == target_version) {
+            return();
+        }
 
         fn <- tryCatch(get(paste0("schema_from_", schema_version)), error = function (e) {
             stop(paste(
