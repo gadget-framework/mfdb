@@ -64,14 +64,7 @@ mfdb <- function(case_study_name = "",
     # Update schema and taxonomies
     if (schema_count == 0) {
         mfdb_send(mdb, "CREATE SCHEMA ", mdb$schema)
-    }
 
-    # Now we've done any data fetching, make sure our schema is up-to-date.
-    mfdb_update_schema(mdb)
-    mfdb_update_taxonomy(mdb)
-    mfdb_update_cs_taxonomy(mdb)
-
-    if (schema_count == 0) {
         # If schema didn't exist before, see if there's data to be had in the old public tables
         res <- tryCatch(
             mfdb_fetch(mdb,
@@ -88,9 +81,40 @@ mfdb <- function(case_study_name = "",
             mfdb_update_schema(mdb, target_version = 4)
             mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
 
-            # TODO: Copy data from old tables
+            # Create new schema, to known state
+            mfdb_update_schema(mdb, target_version = 5)
+            mfdb_update_taxonomy(mdb)
+
+            # Copy data from old tables
+            mfdb4_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type", "tow", "vessel")
+            mfdb4_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', 'prey')
+            for (table_name in c(mfdb4_cs_taxonomy, mfdb4_measurement_tables)) {
+                cols <- mfdb_fetch(mdb, "SELECT column_name",
+                    " FROM information_schema.columns",
+                    " WHERE table_schema = ", sql_quote(mdb$schema),
+                    " AND table_name = ", sql_quote(table_name),
+                    NULL
+                )[,1]
+                cols <- cols[cols != "case_study_id"]
+
+                mfdb_send(mdb,
+                    "INSERT INTO ", table_name,
+                    " (", paste(cols, collapse = ","), ")",
+                    " SELECT ", paste(cols, collapse = ","),
+                    " FROM public.", table_name,
+                    if (table_name == 'prey')
+                        c(" WHERE predator_id IN (SELECT DISTINCT predator_id FROM public.predator WHERE case_study_id = ", old_case_study_id, ")")
+                    else
+                        c(" WHERE case_study_id = ", old_case_study_id),
+                    "");
+            }
         }
     }
+
+    # Now we've done any data fetching, make sure our schema is up-to-date.
+    mfdb_update_schema(mdb)
+    mfdb_update_taxonomy(mdb)
+    mfdb_update_cs_taxonomy(mdb)
 
     invisible(mdb)
 }
