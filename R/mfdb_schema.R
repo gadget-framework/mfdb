@@ -291,6 +291,9 @@ schema_from_3 <- function(mdb) {
             NULL)
         if (col_exists > 0) {
             # Do nothing, already there
+        } else if (t %in% setdiff(mfdb4_cs_taxonomy, 'vessel')) {
+            mfdb_send(mdb, "ALTER TABLE ", t, " ADD COLUMN t_group VARCHAR(1024) NULL")
+            mfdb_send(mdb, "ALTER TABLE ", t, " ADD FOREIGN KEY (case_study_id, t_group) REFERENCES ", t, "(case_study_id, name)")
         } else {
             mfdb_send(mdb, "ALTER TABLE ", t, " ADD COLUMN t_group VARCHAR(1024) NULL")
             mfdb_send(mdb, "ALTER TABLE ", t, " ADD FOREIGN KEY (t_group) REFERENCES ", t, "(name)")
@@ -303,7 +306,8 @@ schema_from_3 <- function(mdb) {
     mfdb4_create_taxonomy_table(mdb, "vessel")
     # Create vessel for each vessel type so we can map data
     mfdb_insert(mdb, 'vessel', mfdb_fetch(mdb,
-        "SELECT DISTINCT s.vessel_id AS vessel_id",
+        "SELECT DISTINCT s.case_study_id",
+        ", s.vessel_id AS vessel_id",
         ", v.name AS name",
         ", s.vessel_id AS vessel_type_id",
         " FROM sample s",
