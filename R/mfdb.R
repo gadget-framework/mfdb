@@ -64,7 +64,14 @@ mfdb <- function(case_study_name = "",
     # Update schema and taxonomies
     if (schema_count == 0) {
         mfdb_send(mdb, "CREATE SCHEMA ", mdb$schema)
+    }
 
+    # Now we've done any data fetching, make sure our schema is up-to-date.
+    mfdb_update_schema(mdb)
+    mfdb_update_taxonomy(mdb)
+    mfdb_update_cs_taxonomy(mdb)
+
+    if (schema_count == 0) {
         # If schema didn't exist before, see if there's data to be had in the old public tables
         res <- tryCatch(
             mfdb_fetch(mdb,
@@ -84,11 +91,6 @@ mfdb <- function(case_study_name = "",
             # TODO: Copy data from old tables
         }
     }
-
-    # Now we've done any data fetching, make sure our schema is up-to-date.
-    mfdb_update_schema(mdb)
-    mfdb_update_taxonomy(mdb)
-    mfdb_update_cs_taxonomy(mdb)
 
     invisible(mdb)
 }
