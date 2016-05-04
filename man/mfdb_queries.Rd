@@ -9,9 +9,12 @@
 \alias{mfdb_sample_totalweight}
 \alias{mfdb_sample_meanweight}
 \alias{mfdb_sample_meanweight_stddev}
+\alias{mfdb_sample_rawdata}
+\alias{mfdb_sample_scaled}
 \alias{mfdb_stomach_preycount}
 \alias{mfdb_stomach_preymeanlength}
 \alias{mfdb_stomach_preymeanweight}
+\alias{mfdb_stomach_preyweightratio}
 \alias{mfdb_stomach_presenceratio}
 
 \title{MareFrame DB queries}
@@ -31,9 +34,12 @@ mfdb_sample_meanlength_stddev(mdb, cols, params, scale_index = NULL)
 mfdb_sample_totalweight(mdb, cols, params)
 mfdb_sample_meanweight(mdb, cols, params, scale_index = NULL)
 mfdb_sample_meanweight_stddev(mdb, cols, params, scale_index = NULL)
+mfdb_sample_rawdata(mdb, cols, params, scale_index = NULL)
+mfdb_sample_scaled(mdb, cols, params, abundance_scale = NULL, scale = 'tow_length')
 mfdb_stomach_preycount(mdb, cols, params)
 mfdb_stomach_preymeanlength(mdb, cols, params)
 mfdb_stomach_preymeanweight(mdb, cols, params)
+mfdb_stomach_preyweightratio(mdb, cols, params)
 mfdb_stomach_presenceratio(mdb, cols, params)
 }
 
@@ -42,6 +48,8 @@ mfdb_stomach_presenceratio(mdb, cols, params)
     \item{cols}{Any additonal columns to group by, see details.}
     \item{params}{A list of parameters, see details.}
     \item{scale_index}{Optional. survey_index used to scale results before aggregation, either "tow_length" or from \link{mfdb_import_survey_index}}
+    \item{abundance_scale}{Optional. Same as \code{scale_index}}
+    \item{scale}{Optional. A scale to apply to the resulting values, e.g. 'tow_length'}
 }
 
 \details{
@@ -142,14 +150,27 @@ to scale counts by the tow length.
         \item{mfdb_sample_meanweight_stddev}{
             As mfdb_sample_meanweight, but also returns std. deviation.
         }
+        \item{mfdb_sample_rawdata}{
+            Returns year,step,area,(group cols),number of samples, weight and length.
+
+            NB: Unlike other functions, no aggregation is performed. This is mostly for debugging
+        }
         \item{mfdb_stomach_preycount}{
             Returns year, step, area, (cols), number (of prey found in stomach)
         }
         \item{mfdb_stomach_preymeanlength}{
-            Returns year, step, area, (cols), number, mean_length (of prey found in stomach)
+            Returns year, step, area, (cols),
+            number (of prey found in stomach),
+            mean_length (of prey found in stomach).
+            NB: Entries where count is NA (i.e. totals) are ignored with this function.
         }
         \item{mfdb_stomach_preymeanweight}{
-            Returns year, step, area, (cols), number, mean_weight (of prey found in stomach)
+            Returns year, step, area, (cols),
+            number (of unique stomachs in group),
+            mean_weight (per unique stomach).
+        }
+        \item{mfdb_stomach_preyweightratio}{
+            Returns year, step, area, (cols), ratio (of selected prey in stomach to all prey by weight)
         }
         \item{mfdb_stomach_presenceratio}{
             Returns year, step, area, (cols), ratio (of selected prey in stomach to all prey by count)

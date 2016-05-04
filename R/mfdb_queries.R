@@ -159,6 +159,41 @@ mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL
     out
 }
 
+mfdb_sample_rawdata <- function (mdb, cols, params, scale_index = NULL) {
+    abundance <- abundance_core_table(mdb, scale_index)
+    out <- mfdb_sample_grouping(mdb,
+        core_table = abundance[[1]],
+        disable_group_by = TRUE,
+        group_cols = c("year", "timestep", "area", cols),
+        calc_cols = c(
+            paste0(abundance[[2]], " AS number"),
+            "c.length AS length",
+            "c.weight AS weight",
+            NULL),
+        params = params)
+    out
+}
+
+# Return year, step, area, ... , number (of samples), mean weight -- scaled by tow_length
+mfdb_sample_scaled <- function (mdb, cols, params, abundance_scale = NULL, scale = 'tow_length') {
+    if (scale == 'tow_length') {
+        scale_fn <- "1/SUM(t_scale.length)"
+        scale_tables <- c("JOIN tow t_scale ON c.tow_id = t_scale.tow_id")
+    } else {
+        stop("Don't know how to scale by column ", scale)
+    }
+    abundance <- abundance_core_table(mdb, abundance_scale)
+    mfdb_sample_grouping(mdb,
+        core_table = abundance[[1]],
+        join_tables = scale_tables,
+        group_cols = c("year", "timestep", "area", cols),
+        calc_cols = c(
+            paste0("SUM(", abundance[[2]], ") * ", scale_fn, " AS number"),
+            paste0("WEIGHTED_MEAN(c.length::numeric, (", abundance[[2]], ")::numeric) * ", scale_fn, " AS mean_weight"),
+            NULL),
+        params = params)
+}
+
 # Common definitions for stomach columns
 pred_col_defs <- c(
     data_source = 'c.data_source_id',
@@ -210,24 +245,108 @@ mfdb_stomach_preymeanlength <- function (mdb, cols, params) {
         col_defs = as.list(c(pred_col_defs, prey_col_defs)),
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            paste0("SUM(prey.count) AS number"),
-            paste0("WEIGHTED_MEAN(prey.length::numeric, prey.count::numeric) AS mean_length"),
+            paste0("SUM(COALESCE(prey.count, 0)) AS number"),
+            paste0("WEIGHTED_MEAN(prey.length::numeric, COALESCE(prey.count, 0)::numeric) AS mean_length"),
             NULL),
         params = params)
 }
 
 # Returns year, step, area, (cols), number, mean_weight (of prey found in stomach)
+# stomach count weight
+#   A      01     49 \
+#   A      04     24  -- Sum
+#   A      08     30 /
+#   B      NA     34  ==> Total
+#   C      NA     74  ==> Total
+# ==> ( 49*1 + 24*4 + 30*8 + 34 + 74 ) / 3 ( unique stomachs )
 mfdb_stomach_preymeanweight <- function (mdb, cols, params) {
-    mfdb_sample_grouping(mdb,
+    # Group without prey options first
+    without_prey <- mfdb_sample_grouping(mdb,
         core_table = "predator",
-        join_tables = "INNER JOIN prey ON c.predator_id = prey.predator_id",
+        join_tables = c(
+            NULL),
+        col_defs = as.list(c(pred_col_defs)),
+        group_cols = c("year", "timestep", "area", intersect(cols, names(pred_col_defs))),
+        calc_cols = c(
+            paste0("COUNT(DISTINCT c.predator_id) AS predator_count"),
+            NULL),
+        params = params)
+
+    # Group with prey restrictions
+    with_prey <- mfdb_sample_grouping(mdb,
+        core_table = "predator",
+        join_tables = c(
+            paste0("INNER JOIN prey ON c.predator_id = prey.predator_id"),
+            NULL),
         col_defs = as.list(c(pred_col_defs, prey_col_defs)),
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            paste0("SUM(prey.count) AS number"),
-            paste0("WEIGHTED_MEAN(prey.weight::numeric, prey.count::numeric) AS mean_weight"),
+            paste0("SUM(prey.weight::numeric * COALESCE(prey.count, 1)) AS weight_total"),
             NULL),
         params = params)
+
+    if (length(with_prey) == 0) return(list())
+    # TODO: Bootstrapping is very likely broken
+    if (length(with_prey) != length(without_prey)) stop("Don't support bootstrapping for stomachs")
+
+    # If there's nothing to merge, don't bother
+    if (nrow(without_prey[[1]]) == 0) return(without_prey)
+
+    # Merge data frames together, return with ratio of present / total
+    mapply(function (w, wo) {
+        merged <- merge(w, wo)
+        merged$mean_weight <- merged$weight_total / merged$predator_count
+        do.call(structure, c(
+            list(merged[, c("year", "step", "area", cols, "predator_count", "mean_weight"), drop = FALSE]),
+            attributes(w)[c("year", "step", "area", cols, "generator")],
+            NULL))
+    }, with_prey, without_prey, SIMPLIFY = FALSE)
+}
+
+# percentage of stomach weight is prey
+mfdb_stomach_preyweightratio <- function (mdb, cols, params) {
+    # Group without prey options first
+    without_prey <- mfdb_sample_grouping(mdb,
+        core_table = "predator",
+        join_tables = c(
+            paste0("INNER JOIN prey ON c.predator_id = prey.predator_id"),
+            NULL),
+        col_defs = as.list(c(pred_col_defs)),
+        group_cols = c("year", "timestep", "area", intersect(cols, names(pred_col_defs))),
+        calc_cols = c(
+            "SUM(prey.weight::numeric * COALESCE(prey.count, 1)) AS weight_total",
+            NULL),
+        params = params)
+
+    # Group with prey restrictions
+    with_prey <- mfdb_sample_grouping(mdb,
+        core_table = "predator",
+        join_tables = c(
+            paste0("INNER JOIN prey ON c.predator_id = prey.predator_id"),
+            NULL),
+        col_defs = as.list(c(pred_col_defs, prey_col_defs)),
+        group_cols = c("year", "timestep", "area", cols),
+        calc_cols = c(
+            "SUM(prey.weight::numeric * COALESCE(prey.count, 1)) AS weight_present",
+            NULL),
+        params = params)
+
+    if (length(with_prey) == 0) return(list())
+    # TODO: Bootstrapping is very likely broken
+    if (length(with_prey) != length(without_prey)) stop("Don't support bootstrapping for stomachs")
+
+    # If there's nothing to merge, don't bother
+    if (nrow(without_prey[[1]]) == 0) return(without_prey)
+
+    # Merge data frames together, return with ratio of present / total
+    mapply(function (w, wo) {
+        merged <- merge(w, wo)
+        merged$ratio <- merged$weight_present / merged$weight_total
+        do.call(structure, c(
+            list(merged[, c("year", "step", "area", cols, "ratio"), drop = FALSE]),
+            attributes(w)[c("year", "step", "area", cols, "generator")],
+            NULL))
+    }, with_prey, without_prey, SIMPLIFY = FALSE)
 }
 
 # Returns year, step, area, (cols), ratio (of selected prey in stomach to all prey by count)
@@ -291,6 +410,7 @@ mfdb_sample_grouping <- function (mdb,
         core_table = "sample",
         # join_tables: JOIN statements to attach to the main table
         join_tables = c(),
+        disable_group_by = FALSE,
         generator = as.character(sys.call(-1)[[1]])) {
 
     if (!is.list(params)) {
@@ -354,16 +474,19 @@ mfdb_sample_grouping <- function (mdb,
             "TRUE",
             clauses(union(group_cols, filter_cols), where_clause),
             NULL), collapse = " AND "),
-        " GROUP BY ", paste(c(
-            "bssample",
-            paste0("grp_", group_cols),
-            NULL), collapse=","),
+        if (disable_group_by) c() else c(
+            " GROUP BY ", paste(c("bssample", paste0("grp_", group_cols)), collapse=",")),
         " ORDER BY ", paste(c(
             "bssample",
-            paste0("grp_", group_cols),
+            if (length(group_cols) > 0) paste0("grp_", group_cols) else c(),
             NULL), collapse=","),
         NULL)
     names(out) <- gsub("grp_(.*)", "\\1", names(out))
+
+    if (disable_group_by) {
+        # No groups, so not much point continuing
+        return(list(out));
+    }
 
     # No data, so fake enough to generate list of empty frames
     if (nrow(out) == 0) {
