@@ -63,6 +63,7 @@ mfdb <- function(case_study_name = "",
 
     # Update schema and taxonomies
     if (schema_count == 0) {
+        logger$info(paste0("No schema, creating ", mdb$schema))
         mfdb_send(mdb, "CREATE SCHEMA ", mdb$schema)
 
         # If schema didn't exist before, see if there's data to be had in the old public tables
@@ -73,6 +74,7 @@ mfdb <- function(case_study_name = "",
                 " WHERE name = ", sql_quote(case_study_name)),
             error = function(e) c())
         if (length(res) == 1) {
+            logger$info(paste0("Copying data from ", case_study_name))
             # A case study exists by this ID
             old_case_study_id <- res[1,1]
 
