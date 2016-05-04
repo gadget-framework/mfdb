@@ -1,5 +1,5 @@
 # Init mfdb object and open connection to database
-mfdb <- function(case_study_name,
+mfdb <- function(case_study_name = "",
                  db_params = list(),
                  destroy_schema = FALSE,
                  save_temp_tables = FALSE) {
@@ -27,42 +27,95 @@ mfdb <- function(case_study_name,
         stop("Could not find a local mf database")
     }
 
-    # Create temporary mdb object and ensure we have a valid schema
+    # Create mdb object, set connection to use selected schema
     mdb <- structure(list(
             logger = logger,
-            schema = 'public',
+            save_temp_tables = save_temp_tables,
+            state = new.env(),
+            schema = if (nzchar(case_study_name)) gsub('\\W', '_', tolower(case_study_name)) else "public",
             db = db_connection), class = "mfdb_temp")
+    mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
+    schema_count <- mfdb_fetch(mdb,
+        "SELECT COUNT(*)",
+        " FROM pg_catalog.pg_namespace",
+        " WHERE nspname IN ", sql_quote(mdb$schema, always_bracket = TRUE))[, c(1)]
+
+    if (!nzchar(case_study_name)) {
+        names <- mfdb_fetch(mdb,
+            "SELECT table_schema",
+            " FROM information_schema.tables",
+            " WHERE table_schema != 'public' AND table_name = 'mfdb_schema'")
+        names <- if (ncol(names) > 0) names[,1] else c()
+        stop("You must supply a schema name for case_study_name to use in the database. Available names:-\n", paste0("* ", names, collapse = "\n"))
+    }
+
     if (destroy_schema) {
         mfdb_destroy_schema(mdb)
         mdb$logger$info("Schema removed, connect again to repopulate DB.")
         dbDisconnect(mdb$db)
         return(invisible(NULL))
     }
-    mfdb_update_schema(mdb)
-    mfdb_update_taxonomy(mdb)
 
-    # Look up case study ID
-    res <- mfdb_fetch(mdb,
-        "SELECT case_study_id",
-        " FROM case_study",
-        " WHERE name = ", sql_quote(case_study_name))
-    if (length(res) == 1) {
-        case_study_id <- res[1,1]
-    } else {
-        stop("Unknown case study ", case_study_name)
+    if (case_study_name == 'public') {
+        stop("Can't connect to the public schema, since the database tables will be different. ",
+            "Instead, use the case study name and copy the data out of public")
     }
 
-    # Create full mdb object
-    mfdb_send(mdb, "CREATE TEMPORARY TABLE tmp_schema (moo INT)")
-    mdb <- structure(list(
-            logger = logger,
-            save_temp_tables = save_temp_tables,
-            case_study_id = case_study_id,
-            state = new.env(),
-            schema = mdb$schema,
-            temp_schema = mfdb_fetch(mdb, "SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema()")[1,1],
-            db = db_connection), class = "mfdb")
+    # Update schema and taxonomies
+    if (schema_count == 0) {
+        logger$info(paste0("No schema, creating ", mdb$schema))
+        mfdb_send(mdb, "CREATE SCHEMA ", mdb$schema)
 
+        # If schema didn't exist before, see if there's data to be had in the old public tables
+        res <- tryCatch(
+            mfdb_fetch(mdb,
+                "SELECT case_study_id",
+                " FROM public.case_study",
+                " WHERE name = ", sql_quote(case_study_name)),
+            error = function(e) c())
+        if (length(res) == 1) {
+            logger$info(paste0("Copying data from ", case_study_name))
+            # A case study exists by this ID
+            old_case_study_id <- res[1,1]
+
+            # Upgrade the old database to a known state
+            mfdb_send(mdb, "SET search_path TO public, pg_temp")
+            mfdb_update_schema(mdb, target_version = 4)
+            mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
+
+            # Create new schema, to known state
+            mfdb_update_schema(mdb, target_version = 5)
+            mfdb_update_taxonomy(mdb)
+
+            # Copy data from old tables
+            mfdb4_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type", "tow", "vessel")
+            mfdb4_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', 'prey')
+            for (table_name in c(mfdb4_cs_taxonomy, mfdb4_measurement_tables)) {
+                cols <- mfdb_fetch(mdb, "SELECT column_name",
+                    " FROM information_schema.columns",
+                    " WHERE table_schema = ", sql_quote(mdb$schema),
+                    " AND table_name = ", sql_quote(table_name),
+                    NULL
+                )[,1]
+                cols <- cols[cols != "case_study_id"]
+
+                mfdb_send(mdb,
+                    "INSERT INTO ", table_name,
+                    " (", paste(cols, collapse = ","), ")",
+                    " SELECT ", paste(cols, collapse = ","),
+                    " FROM public.", table_name,
+                    if (table_name == 'prey')
+                        c(" WHERE predator_id IN (SELECT DISTINCT predator_id FROM public.predator WHERE case_study_id = ", old_case_study_id, ")")
+                    else
+                        c(" WHERE case_study_id = ", old_case_study_id),
+                    "");
+            }
+        }
+    }
+
+    # Now we've done any data fetching, make sure our schema is up-to-date.
+    mfdb_update_schema(mdb)
+    mfdb_update_taxonomy(mdb)
     mfdb_update_cs_taxonomy(mdb)
 
     invisible(mdb)
@@ -75,7 +128,8 @@ mfdb_finish_import <- function(mdb) {
         tables <- mfdb_fetch(mdb,
             "SELECT table_name",
             " FROM information_schema.tables",
-            " WHERE table_schema IN ", sql_quote(c(mdb$schema, mdb$temp_schema), always_bracket = TRUE),
+            " WHERE (table_schema IN ", sql_quote(mdb$schema, always_bracket = TRUE),
+            " OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema()))",
             "")[, c(1)]
         for (t in tables) mfdb_send(mdb, "ANALYZE ", t)
         assign('index_created', TRUE, pos = mdb$state)
@@ -263,7 +317,8 @@ mfdb_table_exists <- function(mdb, table_name) {
     mfdb_fetch(mdb,
         "SELECT COUNT(*)",
         " FROM information_schema.tables",
-        " WHERE table_schema IN ", sql_quote(c(mdb$schema, mdb$temp_schema), always_bracket = TRUE),
+        " WHERE (table_schema IN ", sql_quote(mdb$schema, always_bracket = TRUE),
+        " OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema()))",
         " AND table_name IN ", sql_quote(table_name, always_bracket = TRUE))[, c(1)] > 0
 }
 

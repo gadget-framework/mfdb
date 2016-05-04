@@ -209,17 +209,17 @@ ok_group("mfdb_table_exists", {
     }
 
     ok(cmp(table_exists("carol", ret = data.frame(count = 1)), c(
-        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema IN ('fake_schema','fake_temp_schema') AND table_name IN ('carol')",
+        "SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('carol')",
         "Returned: TRUE ",
         NULL)), "SQL looks good")
 
     ok(cmp(table_exists("carol", ret = data.frame(count = 0)), c(
-        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema IN ('fake_schema','fake_temp_schema') AND table_name IN ('carol')",
+        "SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('carol')",
         "Returned: FALSE ",
         NULL)), "Can alter return value")
 
     ok(cmp(table_exists(c("frank", "carol"), ret = data.frame(count = c(0, 1))), c(
-        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema IN ('fake_schema','fake_temp_schema') AND table_name IN ('frank','carol')",
+        "SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('frank','carol')",
         "Returned: FALSE TRUE ",
         NULL)), "Vectorises")
 })

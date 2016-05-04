@@ -16,7 +16,7 @@ avg <- function (...) {
 
 # Empty database
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('', db_params = db_params, destroy_schema = TRUE)
+mfdb('Test', db_params = db_params, destroy_schema = TRUE)
 
 # Rebuild database, taxonomy got populated
 mdb <- mfdb('Test', db_params = db_params, save_temp_tables = FALSE)
@@ -109,7 +109,7 @@ ok_group("Using a survey_index as measure of abundance", {
             timestep = mfdb_timestep_quarterly,
             length = length_group))[[1]]),
         data.frame(
-                year = c(1998),
+                year = as.integer(1998),
                 step = as.character(c(1,1,1,2,2,2,3,3,3,4,4)),
                 area = c("divA"),
                 length = c(
@@ -152,7 +152,7 @@ ok_group("Using a survey_index as measure of abundance", {
             timestep = mfdb_timestep_quarterly,
             length = length_group), scale_index = 'acoustic')[[1]]),
         data.frame(
-                year = c(1998),
+                year = as.integer(1998),
                 step = as.character(c(1,1,1,2,2,2,3,3,3,4,4)),
                 area = c("divA"),
                 length = c(
@@ -200,7 +200,7 @@ ok_group("Using a survey_index as measure of abundance", {
             timestep = mfdb_timestep_quarterly,
             length = length_group), scale_index = 'acoustic')[[1]]),
         data.frame(
-                year = c(1998),
+                year = as.integer(1998),
                 step = as.character(c(1,1,1,2,2,2,3,3,3,4,4)),
                 area = c("divA"),
                 length = c(
@@ -250,7 +250,7 @@ ok_group("Missing values in a survey_index", {
             timestep = mfdb_timestep_quarterly,
             length = length_group), scale_index = 'acoustic')[[1]]),
         data.frame(
-                year = c(1998),
+                year = as.integer(1998),
                 step = as.character(c(1,1,1,2,2,2,3,3,3,4,4)),
                 area = c("divA"),
                 length = c(

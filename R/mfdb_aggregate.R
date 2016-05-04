@@ -37,11 +37,7 @@ sample_clause.NULL <- sample_clause.mfdb_aggregate
 select_clause.NULL <- function(mdb, x, col, outputname) {
     lookup <- gsub('(.*\\.)|_id', '', col)
 
-    if ((lookup %in% mfdb_taxonomy)) {
-        return(paste0("'all' AS ", outputname))
-    }
-
-    if ((lookup %in% mfdb_cs_taxonomy)) {
+    if ((lookup %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
         return(paste0("'all' AS ", outputname))
     }
 
@@ -56,16 +52,8 @@ where_clause.NULL <- function(mdb, x, col, outputname) c()
 agg_summary.NULL <- function(mdb, x, col, outputname, data, sample_num) {
     lookup <- gsub('(.*\\.)|_id', '', col)
 
-    if ((lookup %in% mfdb_taxonomy)) {
+    if ((lookup %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
         return(list(all = mfdb_fetch(mdb, "SELECT name FROM ", lookup)$name))
-    }
-
-    if ((lookup %in% mfdb_cs_taxonomy)) {
-        return(list(all = mfdb_fetch(mdb,
-            "SELECT name",
-            " FROM ", lookup,
-            " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-            NULL)$name))
     }
 
     return(list(all = c(
@@ -80,22 +68,12 @@ sample_clause.numeric <- sample_clause.mfdb_aggregate
 select_clause.numeric <- function(mdb, x, col, outputname) {
     lookup <- gsub('(.*\\.)|_id', '', col)
 
-    # Look up in global taxonomy
-    if ((lookup %in% mfdb_taxonomy)) {
+    # Look up in taxonomy
+    if ((lookup %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
         return(paste0(
             "(SELECT name",
             " FROM ", lookup,
             " WHERE ", lookup, "_id = ", col,
-            ") AS ", outputname))
-    }
-
-    # Look up in CS-specific taxonomy
-    if ((lookup %in% mfdb_cs_taxonomy)) {
-        return(paste0(
-            "(SELECT name",
-            " FROM ", lookup,
-            " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-            " AND ", lookup, "_id = ", col,
             ") AS ", outputname))
     }
 
@@ -107,8 +85,8 @@ where_clause.numeric <- function(mdb, x, col, outputname) {
 
     if (!is.vector(x)) return("")
 
-    # Look up in global taxonomy
-    if ((lookup %in% mfdb_taxonomy)) {
+    # Look up in taxonomy
+    if ((lookup %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
         return(paste0(
             "(", col, " IN ",
             "(SELECT ", lookup, "_id FROM ", lookup, " WHERE name IN ",
@@ -116,21 +94,6 @@ where_clause.numeric <- function(mdb, x, col, outputname) {
             " OR t_group IN ",
             sql_quote(x[!is.na(x)], always_bracket = TRUE),
             ")",
-            if (NA %in% x) paste0(" OR ", col, " IS NULL"),
-            ")"))
-    }
-
-    # Look up in CS-specific taxonomy
-    if ((lookup %in% mfdb_cs_taxonomy)) {
-        return(paste0(
-            "(", col, " IN ",
-            "(SELECT ", lookup, "_id FROM ", lookup,
-            " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-            " AND (name IN ",
-            sql_quote(x[!is.na(x)], always_bracket = TRUE),
-            " OR t_group IN ",
-            sql_quote(x[!is.na(x)], always_bracket = TRUE),
-            "))",
             if (NA %in% x) paste0(" OR ", col, " IS NULL"),
             ")"))
     }

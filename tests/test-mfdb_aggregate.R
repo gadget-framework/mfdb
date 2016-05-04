@@ -2,7 +2,7 @@ library(mfdb)
 library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
-mdb <- fake_mdb(case_study_id = 5)
+mdb <- fake_mdb()
 
 cap <- function(code) {
     capture.output({
@@ -53,7 +53,7 @@ ok_group("Aggregates with NULL for a taxonomy", local({
     ok(cmp(cap(agg_summary(mdb, NULL, 'tbl.sampling_type_id', 'sampling_type', data.frame(
         sampling_type = 'all',
         stringsAsFactors = FALSE), 0)), c(
-        "SELECT name FROM sampling_type WHERE case_study_id = 5",
+        "SELECT name FROM sampling_type",
         "Return Value:",
         "List of 1",
         " $ all: chr [1:3] \"cuthbert\" \"dibble\" \"grub\"",
@@ -117,12 +117,12 @@ ok_group("Aggregates with CS-specific taxonomies", local({
 
     ok(cmp(
         select_clause(mdb, 'a', 'tbl.sampling_type_id', 'out'),
-        "(SELECT name FROM sampling_type WHERE case_study_id = 5 AND sampling_type_id = tbl.sampling_type_id) AS out"))
+        "(SELECT name FROM sampling_type WHERE sampling_type_id = tbl.sampling_type_id) AS out"))
 
     ok(cmp(from_clause(mdb, "c", "tbl.sampling_type_id", "out"), c()), "From clause")
 
     ok(cmp(where_clause(mdb, c("SEA"), 'tbl.sampling_type_id'),
-        "(tbl.sampling_type_id IN (SELECT sampling_type_id FROM sampling_type WHERE case_study_id = 5 AND (name IN ('SEA') OR t_group IN ('SEA'))))"))
+        "(tbl.sampling_type_id IN (SELECT sampling_type_id FROM sampling_type WHERE name IN ('SEA') OR t_group IN ('SEA')))"))
 
     ok(cmp(agg_summary(mdb, c("SEA"), "tbl.sampling_type_id", "sampling_type", list(data.frame()), 0), list("SEA" = "SEA")), "Agg summary")
 }, asNamespace('mfdb')))

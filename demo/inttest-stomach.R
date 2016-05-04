@@ -17,7 +17,7 @@ cmp_table <- function(tbls, expected) {
 
 # Empty database & rebuild
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('', db_params = db_params, destroy_schema = TRUE)
+mfdb('Test', db_params = db_params, destroy_schema = TRUE)
 mdb <- mfdb('Test', db_params = db_params, save_temp_tables = FALSE)
 
 # Set-up areas/divisions
@@ -45,8 +45,8 @@ A		CAP		1	1	10	5
 A		CAP		1	4	40	1
 B		CAP		1	1	10	5
 B		CAP		4	1	10	5
-B		CAP		5	1	10	8
-B		CAP		5	1	10	5
+B		CAP		5	1	10	NA
+B		CAP		5	1	10	NA
 C		CLL		2	3.5	9.5	3
 
 D		CAP		1	1.4	10	1
@@ -100,7 +100,7 @@ E		CAP		1	1.4	10	1
              digestion_stage = c('digested', 'digested', 'digested', 'undigested', 'undigested'),
              prey_length = c('pl1', 'pl3', 'pl4', 'pl1', 'pl4'),
              number = c(
-                 5 + 8 + 5,
+                 5 + 0 + 0,
                  3,
                  1,
                  5 + 5 + 1 + 1,
@@ -115,10 +115,10 @@ E		CAP		1	1.4	10	1
          data.frame(
              year = 'all', step = 'all', area = 'all',
              digestion_stage = c('digested', 'undigested'),
-             number = c(sum(5, 8, 5, 3, 1), sum(5, 1, 5, 1, 1)),
+             number = c(sum(5, 0, 0, 3, 1), sum(5, 1, 5, 1, 1)),
              mean_length = c(
                  weighted.mean(c(1, 1, 1, 3.5, 4),
-                               c(5, 8, 5, 3,   1)),
+                               c(5, 0, 0, 3,   1)),
                  weighted.mean(c(1, 4, 1, 1.4, 1.4),
                                c(5, 1, 5, 1,   1)),
              NULL),
@@ -131,14 +131,32 @@ E		CAP		1	1.4	10	1
          data.frame(
              year = 'all', step = 'all', area = 'all',
              digestion_stage = c('digested', 'undigested'),
-             number = c(sum(5, 8, 5, 3, 1), sum(5, 1, 5, 1, 1)),
+             predator_count = c(6, 6),
              mean_weight = c(
-                 weighted.mean(c(10, 10, 10, 9.5, 40),
-                               c( 5,  8,  5,   3,  1)),
-                 weighted.mean(c(10, 40, 10, 10, 10),
-                               c( 5,  1,  5,  1,  1)),
+                 (10*5 + 10*1 + 10*1 + 9.5*3 + 40*1) / 6,
+                 (10*5 + 40*1 + 10*5 + 10*1 + 10*1) / 6,
              NULL),
              stringsAsFactors = FALSE)), "Mean weight of all prey")
+
+     # Find out the ratio of capelin, grouped by digestion stage
+     ok(cmp_table(
+         mfdb_stomach_preyweightratio(mdb, c("predator_weight", "digestion_stage"), list(
+             predator_weight = mfdb_interval("w", c(200,300,400,500)),
+             digestion_stage = mfdb_group(undigested = 1, digested = 2:5),
+             prey_species = 'CAP')),
+         data.frame(
+             year = 'all', step = 'all', area = 'all',
+             predator_weight = c('w200', 'w200', 'w300'),
+             digestion_stage = c('digested', 'undigested', 'undigested'),
+             ratio = c(
+                 # digested CAP in B (stages 4 & 5) out of A, B, C
+                 sum(10*5, 10*1, 10*1) / sum(10*5, 40*1, 10*5, 10*5, 10*1, 10*1, 9.5*3),
+                 # undigested CAP in A, B out of A, B, C
+                 sum(10*5, 40*1, 10*5) / sum(10*5, 40*1, 10*5, 10*5, 10*1, 10*1, 9.5*3),
+                 # undigested CAP in D, E out of D, E
+                 sum(10, 10) / sum(10, 40, 10),
+                 NULL),
+             stringsAsFactors = FALSE)), "Ratio of stomach content by weight")
 })
 
 ok_group("Stomach content likelihood compoment", {

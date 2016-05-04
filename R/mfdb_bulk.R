@@ -32,11 +32,6 @@ mfdb_cs_dump <- function(mdb, out_location) {
         mdb$logger$info(paste0("Dumping table ", table_name))
         mfdb_send(mdb,
             "SELECT * FROM ", table_name,
-            ifelse(
-                table_name == "prey",
-                " WHERE predator_id IN (SELECT predator_id FROM predator WHERE case_study_id = ",
-                " WHERE (case_study_id = "),
-            sql_quote(mdb$case_study_id), ")",
             result = function (data_out, offset) {
                 write.table(
                     data_out,
@@ -73,17 +68,13 @@ mfdb_cs_restore <- function(mdb, in_location) {
 
     mfdb_transaction(mdb, mfdb_disable_constraints(mdb, mfdb_measurement_tables, {
         # Prey is indirectly linked to case_study, so need to do this first
-        mfdb_send(mdb, "DELETE FROM prey",
-            " WHERE predator_id IN (",
-            "SELECT predator_id FROM predator WHERE case_study_id = ", sql_quote(mdb$case_study_id),
-            ")")
+        mfdb_send(mdb, "DELETE FROM prey")
 
         # Delete from everything else
         for (table_name in rev(c(mfdb_cs_taxonomy, mfdb_measurement_tables))) {
             mdb$logger$info(paste0("Emptying ", table_name))
             if (table_name != 'prey') {
                 mfdb_send(mdb, "DELETE FROM ", table_name,
-                    " WHERE case_study_id = ", sql_quote(mdb$case_study_id),
                     NULL)
             }
         }
@@ -93,11 +84,6 @@ mfdb_cs_restore <- function(mdb, in_location) {
             data_in <- read_data(table_name)
             id_col <- paste0(table_name, '_id')
             if (nrow(data_in) == 0) next
-
-            # Override any case study column with our current one
-            if ('case_study_id' %in% colnames(data_in)) {
-                data_in$case_study_id <- mdb$case_study_id
-            }
 
             # Set offset for autoincrement IDs
             if (table_name %in% mfdb_measurement_tables) {

@@ -12,7 +12,7 @@ source('mfdb/tests/utils/inttest-helpers.R')
 
 # Empty database & rebuild
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('', db_params = db_params, destroy_schema = TRUE)
+mfdb('Test', db_params = db_params, destroy_schema = TRUE)
 mdb <- mfdb('Test', db_params = db_params, save_temp_tables = TRUE) # TODO:
 
 # Set-up areas/divisions
@@ -110,4 +110,27 @@ year    month   areacell        species tow  length  age     weight
             (12 * (1/20) + 44 * (1/20) + 14 * (1/20)) / (3/20),
         NULL),
         stringsAsFactors = FALSE)), "Grouped by tow_depth")
+
+    # Scale data by tow_length
+    agg_data <- mfdb_sample_scaled(mdb, c('tow_depth'), list(
+        step = mfdb_timestep_yearly,
+        tow_depth = mfdb_interval('depth', c(0, 50, 100, 150)),
+        null = NULL), scale = 'tow_length')
+    ok(cmp(unattr(agg_data[[1]]), data.frame(
+        year = c('all'),
+        step = c('1'),
+        area = c('all'),
+        tow_depth = c('depth0', 'depth100', 'depth50'),
+        number = c(
+            3 / sum(10, 10, 10),  # B
+            6 / sum(20, 20, 20, 20, 20, 20), # C+D
+            3 / sum(10, 10, 10),  # A
+        NULL),
+        mean_weight = c(
+            mean(c(62, 53, 54)) / sum(10, 10, 10),  # B
+            mean(c(28, 34, 24, 12, 44, 14)) / sum(20, 20, 20, 20, 20, 20), # C+D
+            mean(c(21, 34, 34)) / sum(10, 10, 10),  # A
+        NULL),
+        stringsAsFactors = FALSE)), "Grouped by tow_depth")
+
 })

@@ -5,7 +5,6 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
     if (!(table_name %in% mfdb_taxonomy | table_name %in% mfdb_cs_taxonomy)) {
         stop("Unknown taxonomy table ", table_name)
     }
-    cs_specific <- (table_name %in% mfdb_cs_taxonomy)
 
     # Check there's something to do first
     if (nrow(data_in) == 0) {
@@ -34,7 +33,6 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
     existing <- mfdb_fetch(mdb,
         "SELECT ", id_col, ", name, ", paste(extra_cols, collapse = ", "),
         " FROM ", table_name,
-        if (cs_specific) c(" WHERE case_study_id = ", mdb$case_study_id) else "",
         " ORDER BY 1")
 
     # Throw away rows which don't need updating
@@ -55,14 +53,14 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
         #     In practice this probably won't happen, but a reasonable solution would be nice.
         mfdb_insert(mdb,
             table_name,
-            data_in[data_in$name == setdiff(data_in$name, existing$name), ],
-            extra = (if (cs_specific) c(case_study_id = mdb$case_study_id) else c()))
+            data_in[data_in$name %in% setdiff(data_in$name, existing$name), ],
+            extra = c())
 
         # Rows with matching names should be updated, but existing ids kept
         if (nrow(existing) > 0) mfdb_update(mdb,
             table_name,
             merge(existing[, c(id_col, 'name')], data_in[, c('name', extra_cols)]),
-            where = if (cs_specific) list(case_study_id = mdb$case_study_id) else c())
+            where = c())
     })
 
     invisible(NULL)
@@ -120,12 +118,10 @@ mfdb_import_division <- function (mdb, data_in) {
     }
     mfdb_transaction(mdb, {
         dbSendQuery(mdb$db, paste0(
-            "DELETE FROM division WHERE",
-            " case_study_id IN ", sql_quote(mdb$case_study_id, always_bracket = TRUE),
-            " AND division IN ", sql_quote(names(data_in), always_bracket = TRUE),
+            "DELETE FROM division",
+            " WHERE division IN ", sql_quote(names(data_in), always_bracket = TRUE),
             ""))
         res <- mfdb_insert(mdb, 'division', data.frame(
-            case_study_id = c(mdb$case_study_id),
             division = unlist(lapply(names(data_in), function(n) { rep(n, length(data_in[[n]])) })),
             areacell_id = sanitise_col(mdb, data.frame(areacell = unlist(data_in)), 'areacell', lookup = 'areacell')))
     })

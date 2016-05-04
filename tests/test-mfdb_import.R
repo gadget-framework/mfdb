@@ -2,7 +2,7 @@ library(mfdb)
 library(unittest, quietly = TRUE)
 source('utils/helpers.R')
 
-mdb <- fake_mdb(case_study_id = 5)
+mdb <- fake_mdb()
 even <- function (x) x %% 2 == 0
 
 # Capture all output, filtering log messages

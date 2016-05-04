@@ -12,7 +12,7 @@ source('mfdb/tests/utils/inttest-helpers.R')
 
 # Empty database
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('', db_params = db_params, destroy_schema = TRUE)
+mfdb('Test', db_params = db_params, destroy_schema = TRUE)
 
 #TODO: Connecting to empty database without ability to populate fails
 
@@ -73,6 +73,16 @@ ok_group("Unaggregated length / weight / age samples", {
             age = age_group,
             generator = "mfdb_sample_meanlength"))),
        "Aggregated length data")
+
+    ok(cmp(
+        mfdb_sample_rawdata(mdb, c('age'), list(
+            year = 1998:2000,
+            area = area_group,
+            timestep = mfdb_timestep_biannually,
+            data_source = "survey1",
+            age = mfdb_group(all = 1),
+            length = length_group))[[1]][,'weight'],
+        c(100,300,350,360,340)), "Fetched raw weight data for age 1, length less than 50")
 
     # mfdb_sample_meanlength_stddev is the same, but with an extra column
     ok(cmp(
