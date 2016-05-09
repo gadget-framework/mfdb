@@ -66,6 +66,9 @@ export(mfdb_stomach_presenceratio)
 # mfdb_aggregate_unaggregated.R
 export(mfdb_unaggregated)
 
+# ewe_model.R
+export(ewe_generate_model)
+
 # gadget_areafile.R
 export(gadget_areafile)
 S3method(gadget_dir_write, gadget_areafile)
