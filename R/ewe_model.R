@@ -1,17 +1,46 @@
 # Fetch the agg_summary off a data.frame
 fetch_agg_summary <- function (data, name) {
    out <- attr(data, name)
-   if (is.null(out)) stop("Can't find ", data, " grouping data for catch_data")
+   if (is.null(out)) stop("Can't find ", data, " grouping data for survey_data")
    return(out)
 }
 
+# List of character vectors of all the grouping columns in the df
+stanza_list <- function (df) {
+    out <- apply(
+       df[,names(df) != 'total_weight'],
+       1,
+       function (row) row[row != 'all'])
+
+    # apply() tries to simplify if everything has the same dimensions, we don't want that
+    if (!is.list(out)) {
+        out <- split(out, rep(1:ncol(out), each = nrow(out)))
+    }
+    return(out)
+}
+
+# Fetch the value at position i from each of the vectors
+stanza_col <- function (group_stanzas, i) {
+    vapply(group_stanzas, function (s) s[i], "")
+}
+
+# Generate labels for list-of-vector stanzas
+stanza_labels <- function (group_stanzas) {
+    vapply(group_stanzas, function (x) paste(x, collapse="."), "")
+}
+    
+
 # stanza_group.csv: functional group definition.
-ewe_tbl_stanza_group <- function (stanza_structure) {
+ewe_tbl_stanza_group <- function (stanzas) {
+    # Ignore stanzas that don't have at least 2 labels
+    group_stanzas <- stanzas[vapply(stanzas, length, 0) >= 2]
+    parent_stanzas <- table(stanza_col(group_stanzas, 1))
+
     # TODO: Summary of the first, top-level group
     data.frame(
-        StGroupNum = 1:length(stanza_structure),
-        Stanza_Group = names(stanza_structure),
-        nstanzas = vapply(stanza_structure, length, 0),  # Number of stanzas in group
+        StGroupNum = 1:length(parent_stanzas),
+        Stanza_Group = names(parent_stanzas),
+        nstanzas = as.vector(parent_stanzas),  # Number of stanzas in group
         VBGF_Ksp = NA, #  The K in the von Bartalanffy
         VBGF_d = 0.66667,  # Constant.
         Wmat = NA,  # Weight at maturity
@@ -19,28 +48,46 @@ ewe_tbl_stanza_group <- function (stanza_structure) {
         stringsAsFactors = FALSE)
 }
 
-# stanzas.csv: 
-ewe_tbl_stanzas <- function(stanza_structure, all_stanzas, catch_data) {
-    # Get the min and max values for all age groups
-    age_groups <- fetch_agg_summary(catch_data, 'age')
-    stanzas_min <- unlist(mfdb:::agg_prop(age_groups, "min"))
-    stanzas_max <- unlist(mfdb:::agg_prop(age_groups, "max"))
+
+# stanzas.csv: List of all functional groups, min/max ages
+ewe_tbl_stanzas <- function(stanzas, survey_data=NULL) {
+    # Ignore stanzas that don't have at least 2 labels
+    group_stanzas <- stanzas[vapply(stanzas, length, 0) >= 2]
+    parent_stanzas <- table(stanza_col(group_stanzas, 1))
+
+    # Get the agg_prop value relating to each of the stanzas
+    get_age_prop <- function (group_stanzas, prop_name) {
+        if (is.null(survey_data)) return(NULL);
+
+        values_for_prop <- unlist(agg_prop(fetch_agg_summary(survey_data, 'age'), prop_name))
+        return(values_for_prop[stanza_col(group_stanzas, 'age')])
+    }
+
+    st_group_num <- function (parent_stanzas) {
+        # Return s repeated as many times as parent_stanzas thinks is required
+        st_rep <- function (s) {
+            rep(s, times=parent_stanzas[s])
+        }
+
+        # For each index in parent_stanzas, generate a list of indexes
+        unlist(lapply(seq_len(length(parent_stanzas)), st_rep))
+    }
 
     data.frame(
-        StGroupNum = unlist(lapply(seq_len(length(stanza_structure)), function(i) rep(i, times = length(stanza_structure[[i]])))),  # Number of stanza group
-        Stanza = unlist(lapply(stanza_structure, function(x) seq_len(length(x)))),  # number of stanza within group
-        GroupNum = seq_len(length(all_stanzas)) + 3,  # Number of stanza outside group TODO: 3 is number of fisheries, presumably
-        Group = all_stanzas,  # Group name
-        First = stanzas_min[all_stanzas],  # First month of age group
-        Last = stanzas_max[all_stanzas] - 1,  # Last month of age group(non-inclusive)
+        StGroupNum = st_group_num(parent_stanzas),  # Number of stanza group
+        Stanza = unlist(lapply(parent_stanzas, seq_len)),  # number of stanza within group
+        GroupNum = seq_len(length(group_stanzas)) + 3,  # Number of stanza outside group TODO: 3 is number of fisheries, presumably
+        Group = stanza_labels(group_stanzas), # Group name, i.e. each list collapsed
+        First = get_age_prop(group_stanzas, 'min'),  # First month of age group
+        Last = get_age_prop(group_stanzas, 'max'),  # Last month of age group(non-inclusive)
         Z = NA, # total mortality (Z) = fishing mortality + natural mortality (TODO: Generate & hardcode to 0.2?)
         Leading = NA,
         stringsAsFactors = FALSE)
 }
 
 # pedigree.csv: 1 for functional/vessel groups
-ewe_tbl_pedigree <- function(all_stanzas, catch_data) {
-    vessel_groups <- fetch_agg_summary(catch_data, 'vessel')
+ewe_tbl_pedigree <- function(all_stanzas, survey_data) {
+    vessel_groups <- fetch_agg_summary(survey_data, 'vessel')
 
     tbl_pedigree <- data.frame(
         Group = c(all_stanzas, names(vessel_groups)),
@@ -54,98 +101,117 @@ ewe_tbl_pedigree <- function(all_stanzas, catch_data) {
 }
 
 # model.csv: Catch biomass in t/km^2 for starting year, for each fleet
-ewe_tbl_model <- function (all_stanzas, catch_data, area_data) {
-    vessel_groups <- fetch_agg_summary(catch_data, 'vessel')
+ewe_tbl_model <- function (stanzas, area_data, survey_data, catch_data = NULL) {
+    if (nrow(area_data) != 1) stop("Should only be 1 row in area_data, not ", nrow(area_data))
 
-    # Run function for each vessel, returned a named list of the outputs
-    foreach_vessel <- function(fn, discards = FALSE) {
-        out <- lapply(names(vessel_groups), fn)
-        if (discards) {
-            names(out) <- paste(names(vessel_groups), "disc", sep = '.')
-        } else {
-            names(out) <- names(vessel_groups)
-        }
-        return(out)
-    }
+    consumer_names <- stanza_labels(stanzas)
+    detritus_names <- c("Detritus", "Discards")
+    pproducer_names <- c()
+    fleet_names <- if (is.null(catch_data)) c() else names(attr(catch_data, 'vessel'))
 
-    # Join with all_stanzas, assume missing values are 0
-    stanza_list <- function(df) {
-        df <- merge(data.frame(age = all_stanzas), df, by = c('age'), all.x = TRUE)
+    out <- data.frame(
+        Group = c(
+            consumer_names,
+            detritus_names,
+            pproducer_names,
+            fleet_names),
+        Type = c(  # 0 = consumer, 1 = primary producer, 2 = detritus and 3 = fleets
+            rep(0, length(consumer_names)),
+            rep(1, length(pproducer_names)),
+            rep(2, length(detritus_names)),
+            rep(3, length(fleet_names))),
+        Biomass = c(  # Biomass/km^2, from GADGET normally
+            survey_data$total_weight / area_data$size,
+            rep(NA, length(pproducer_names)),
+            rep(NA, length(detritus_names)),
+            rep(NA, length(fleet_names))),
+        PB = NA,  # PB: biomass production ratio (Z = total mortality)
+        QB = NA,  # QB: consumption biomass ratio. How many times they consume their own biomass in a year (around 3 times for most)
+        EE = NA,  # EE: Ecotrophic efficiency. Left as NA unless some of the other parameters is not know then put to 0.8-0.95.
+        ProdCons = NA,  # ProdCons: Production consumption ratio
+        BioAcc = c(
+            rep(0, length(consumer_names)),
+            rep(0, length(pproducer_names)),
+            rep(0, length(detritus_names)),
+            rep(NA, length(fleet_names))),
+        Unassim = c(  # Unassim: unassimilated food
+            rep(0.2, length(consumer_names)),
+            rep(0,2, length(pproducer_names)),
+            rep(0.2, length(detritus_names)),
+            rep(NA, length(fleet_names))),
+        DetInput = c(  # DetInput:
+            rep(NA, length(consumer_names)),
+            rep(NA, length(pproducer_names)),
+            rep(0, length(detritus_names)),
+            rep(NA, length(fleet_names))),
+        Detritus = c(  # Detritus: how much goes to detritus
+            rep(1, length(consumer_names)),
+            rep(0, length(pproducer_names)),
+            rep(0, length(detritus_names)),
+            rep(0, length(fleet_names))),
+        Discards = c(  # Discards:
+            rep(0, length(consumer_names)),
+            rep(0, length(pproducer_names)),
+            rep(0, length(detritus_names)),
+            rep(1, length(fleet_names))),
+        stringsAsFactors = FALSE)
 
-        # Replace NAs (i.e. no catch for this age) with zero
-        #TODO: This scales by the entire area, should this be swept area for vessels?
-        return(replace(df$total_weight, which(is.na(df$total_weight)), 0) / area_data$size)
-    }
+     # Add vessel columns
+     for (v in unique(catch_data$vessel)) {
+         vessel_data <- catch_data[catch_data$vessel==v, names(catch_data) != 'vessel']
+         vessel_out <- data.frame(
+             Group = stanza_labels(stanza_list(vessel_data)),
+             total_weight = vessel_data$total_weight,
+             stringsAsFactors = FALSE)
 
-    # Combine each list argument, turn the whole lot into a data.frame
-    df_from_lists <- function (...) {
-        do.call(data.frame, c(...))
-    }
+         # Create new column with either the corresponding vessel value, 0 or NA
+         out[,v] <- vapply(out$Group, function (g) {
+             if (g %in% fleet_names) return(NA)
 
-    rbind(
-        df_from_lists(
-            list( # Consumers
-                Group = all_stanzas,
-                Type = 0,  # 0 = consumer, 1 = primary producer, 2 = detritus and 3 = fleets
-                Biomass = stanza_list(aggregate(total_weight ~ age, catch_data, sum)),  # Biomass/km^2, from GADGET normally TODO: generate something anyway, in the hope we can apply a translation?
-                PB = NA,  # PB: biomass production ratio (Z = total mortality)
-                QB = NA,  # QB: consumption biomass ratio. How many times they consume their own biomass in a year (around 3 times for most)
-                EE = NA,  # EE: Ecotrophic efficiency. Left as NA unless some of the other parameters is not know then put to 0.8-0.95.
-                ProdCons = NA,  # ProdCons: Production consumption ratio
-                BioAcc = 0,
-                Unassim = 0.2,  # Unassim: unassimilated food
-                DetInput = NA,  # DetInput:
-                Detritus = 1,  # Detritus: how much goes to detritus
-                Discards = 0,  # Discards:
-                stringsAsFactors = FALSE),
-            foreach_vessel(function (vessel) stanza_list(catch_data[catch_data$vessel == vessel, c('age', 'total_weight')])),
-            foreach_vessel(function (vessel) 0, discards = TRUE),
-            NULL),
-        # NB: Primary producers (type 1) not generated
-        df_from_lists(
-            list(
-                Group = c("Detritus", "Discards"),
-                Type = 2,
-                Biomass = NA,
-                PB = NA,
-                QB = NA,
-                EE = NA,
-                ProdCons = NA,
-                BioAcc = 0,
-                Unassim = 0.0,
-                DetInput = NA,
-                Detritus = 0,
-                Discards = 0,
-                stringsAsFactors = FALSE),
-            foreach_vessel(function (vessel) 0),
-            foreach_vessel(function (vessel) 0, discards = TRUE),
-            NULL),
-        df_from_lists(
-            list(
-                Group = names(vessel_groups),
-                Type = 3,
-                Biomass = NA,
-                PB = NA,
-                QB = NA,
-                EE = NA,
-                ProdCons = NA,
-                BioAcc = NA,
-                Unassim = NA,
-                DetInput = NA,
-                Detritus = 0,
-                Discards = 1,
-                stringsAsFactors = FALSE),
-            foreach_vessel(function (vessel) NA),
-            foreach_vessel(function (vessel) NA, discards = TRUE),
-            NULL))
+             tw <- vessel_out[vessel_out$Group == g, 'total_weight']
+             if(length(tw) == 0) 0 else tw[[1]] / area_data$size  # TODO: Should we be scaling by swept area?
+         }, 0)
+     }
+
+     # Add vessel discard placeholders
+     for (v in unique(catch_data$vessel)) {
+         # Create new column with either the corresponding vessel value, 0 or NA
+         out[,paste0(v, '.disc')] <- vapply(out$Group, function (g) {
+             if (g %in% fleet_names) return(NA)
+
+             return(0)
+         }, 0)
+     }
+
+     return(out[with(out, order(Type, Group)), ])
+}
+
+# Find a row in the df that matches all selections
+df_row <- function (df, selections, ...) {
+    df[apply(df[,names(c(selections, ...))], 1, identical, c(selections, ...)),]
+}
+
+df_merge_with_order <- function (orig, extra) {
+    
+}
+
+ewe_generate_model <- function(area_data, survey_data, catch_data = NULL) {
+    # Generate list of groupings, ignoring any "all" values
+    stanzas <- stanza_list(survey_data)
+
+    # Return a list of files
+    return(list(
+        stanzas = ewe_tbl_stanzas(stanzas, survey_data),
+        stanza_group = ewe_tbl_stanza_group(stanzas),
+        model = ewe_tbl_model(stanzas, area_data, survey_data, catch_data)))
 }
 
 # diet.csv: Proportions for all functional group combinations
-ewe_tbl_diet <- function (all_stanzas, catch_data, consumption_data) {
+ewe_tbl_diet <- function (all_stanzas, survey_data, consumption_data) {
     if (is.null(consumption_data)) {
         return(NULL)
     }
-    vessel_groups <- fetch_agg_summary(catch_data, 'vessel')
+    vessel_groups <- fetch_agg_summary(survey_data, 'vessel')
 
     age_map <- structure(seq_len(length(all_stanzas)), names = names(all_stanzas))
     list(  # TODO: should be a sparseMatrix
@@ -157,18 +223,3 @@ ewe_tbl_diet <- function (all_stanzas, catch_data, consumption_data) {
 }
 
 # Run ewe_tbl_* with given data, return a list with each output
-ewe_generate_model <- function(stanza_groups, area_data, catch_data, consumption_data = NULL) {
-    if (nrow(area_data) != 1) stop("Should only be 1 row in area_data, not ", nrow(area_data))
-
-    age_groups <- fetch_agg_summary(catch_data, 'age')
-    stanza_structure <- lapply(stanza_groups, function (re) grep(re, names(age_groups), value = TRUE))
-    all_stanzas <- unname(unlist(stanza_structure))
-
-    # Return a list of files
-    return(list(
-        stanzas = ewe_tbl_stanzas(stanza_structure, all_stanzas, catch_data),
-        stanza_group = ewe_tbl_stanza_group(stanza_structure),
-        pedigree = ewe_tbl_pedigree(all_stanzas, catch_data),
-        model = ewe_tbl_model(all_stanzas, catch_data, area_data),
-        diet = ewe_tbl_diet(all_stanzas, catch_data, consumption_data)))
-}
