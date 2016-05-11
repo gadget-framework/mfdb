@@ -1,4 +1,5 @@
 example-datras			Example script generating model files from DATRAS data
+example-ewe			Example script generating EwE model files from generated data
 example-iceland			Example script generating model files from Iceland data
 inttest-aggregatefunctions	Exercise postgresql aggregate functions
 inttest-gadgetdirectory		Demonstrate importing data and writing to GADGET directory
