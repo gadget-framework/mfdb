@@ -187,9 +187,12 @@ consumption_data <- mfdb_concatenate_results(
 area_data <- mfdb_area_size(mdb, grouping_area)[[1]]
 
 # Generate CSVs and print out each
-model_files <- ewe_generate_model(area_data, survey_data, catch_data)
-model_files$diet <- ewe_generate_diet(consumption_data)
-model_files$pedigree <- ewe_generate_pedigree(survey_data, catch_data)
+model_files <- list(
+    stanza_group = ewe_stanza_group(survey_data),
+    stanzas = ewe_stanzas(survey_data),
+    model = ewe_model(area_data, survey_data, catch_data),
+    diet = ewe_diet(consumption_data),
+    pedigree = ewe_pedigree(survey_data, catch_data))
 
 for (x in names(model_files)) {
     cat("== ", x, " ==============\n")

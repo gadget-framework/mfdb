@@ -33,7 +33,9 @@ stanza_labels <- function (group_stanzas) {
 }
 
 # stanza_group.csv: functional group definition.
-ewe_tbl_stanza_group <- function (stanzas) {
+ewe_stanza_group <- function (survey_data) {
+    stanzas <- stanza_list(survey_data)
+
     # Ignore stanzas that don't have at least 2 labels
     group_stanzas <- stanzas[vapply(stanzas, length, 0) >= 2]
     parent_stanzas <- table(stanza_col(group_stanzas, 1))
@@ -50,9 +52,10 @@ ewe_tbl_stanza_group <- function (stanzas) {
         stringsAsFactors = FALSE)
 }
 
-
 # stanzas.csv: List of all functional groups, min/max ages
-ewe_tbl_stanzas <- function(stanzas, survey_data=NULL) {
+ewe_stanzas <- function(survey_data) {
+    stanzas <- stanza_list(survey_data)
+
     # Ignore stanzas that don't have at least 2 labels
     group_stanzas <- stanzas[vapply(stanzas, length, 0) >= 2]
     parent_stanzas <- table(stanza_col(group_stanzas, 1))
@@ -87,23 +90,10 @@ ewe_tbl_stanzas <- function(stanzas, survey_data=NULL) {
         stringsAsFactors = FALSE)
 }
 
-# pedigree.csv: 1 for functional/vessel groups
-ewe_tbl_pedigree <- function(all_stanzas, survey_data) {
-    vessel_groups <- fetch_agg_summary(survey_data, 'vessel')
-
-    tbl_pedigree <- data.frame(
-        Group = c(all_stanzas, names(vessel_groups)),
-        B = 1,
-        PB = 1,
-        QB = 1,
-        Diet = 1,
-        stringsAsFactors = FALSE)
-    tbl_pedigree[names(vessel_groups)] <- 1
-    return(tbl_pedigree)
-}
-
 # model.csv: Catch biomass in t/km^2 for starting year, for each fleet
-ewe_tbl_model <- function (stanzas, area_data, survey_data, catch_data = NULL) {
+ewe_model <- function (area_data, survey_data, catch_data = NULL) {
+    stanzas <- stanza_list(survey_data)
+
     if (nrow(area_data) != 1) stop("Should only be 1 row in area_data, not ", nrow(area_data))
 
     consumer_names <- stanza_labels(stanzas)
@@ -188,28 +178,8 @@ ewe_tbl_model <- function (stanzas, area_data, survey_data, catch_data = NULL) {
      return(out[with(out, order(Type, Group)), ])
 }
 
-# Find a row in the df that matches all selections
-df_row <- function (df, selections, ...) {
-    df[apply(df[,names(c(selections, ...))], 1, identical, c(selections, ...)),]
-}
-
-df_merge_with_order <- function (orig, extra) {
-    
-}
-
-ewe_generate_model <- function(area_data, survey_data, catch_data = NULL) {
-    # Generate list of groupings, ignoring any "all" values
-    stanzas <- stanza_list(survey_data)
-
-    # Return a list of files
-    return(list(
-        stanzas = ewe_tbl_stanzas(stanzas, survey_data),
-        stanza_group = ewe_tbl_stanza_group(stanzas),
-        model = ewe_tbl_model(stanzas, area_data, survey_data, catch_data)))
-}
-
 # diet.csv: Proportions for all functional group combinations
-ewe_generate_diet <- function (consumption_data) {
+ewe_diet <- function (consumption_data) {
     if (is.null(consumption_data)) {
         return(NULL)
     }
@@ -240,7 +210,7 @@ ewe_generate_diet <- function (consumption_data) {
         byrow = TRUE)
 }
 
-ewe_generate_pedigree <- function (survey_data, catch_data = NULL) {
+ewe_pedigree <- function (survey_data, catch_data = NULL) {
     stanzas <- stanza_list(survey_data)
 
     consumer_names <- stanza_labels(stanzas)

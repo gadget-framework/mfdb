@@ -67,9 +67,11 @@ export(mfdb_stomach_presenceratio)
 export(mfdb_unaggregated)
 
 # ewe_model.R
-export(ewe_generate_model)
-export(ewe_generate_diet)
-export(ewe_generate_pedigree)
+export(ewe_stanza_group)
+export(ewe_stanzas)
+export(ewe_model)
+export(ewe_diet)
+export(ewe_pedigree)
 
 # gadget_areafile.R
 export(gadget_areafile)
