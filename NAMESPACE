@@ -68,6 +68,7 @@ export(mfdb_unaggregated)
 
 # ewe_model.R
 export(ewe_generate_model)
+export(ewe_generate_diet)
 
 # gadget_areafile.R
 export(gadget_areafile)

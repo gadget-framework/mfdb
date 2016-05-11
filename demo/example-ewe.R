@@ -161,14 +161,17 @@ grouping_cod_nogroup <- list(
     species = 'COD',
     age = NULL)
 grouping_cod <- list(
+    predator_species = 'COD',
     species = 'COD',
     age = mfdb_group(juv=1:4, adult=5:10))
 grouping_had <- list(
+    predator_species = 'HAD',
     species = 'HAD',
     age = mfdb_group(juv=1:2, adult=3:5))
 grouping_vessel = list(
     vessel = mfdb_unaggregated())
-grouping_prey = list()
+grouping_prey = list(
+    prey_species = mfdb_unaggregated())
 
 # Query data and group together
 survey_data <- mfdb_concatenate_results(
@@ -179,14 +182,14 @@ catch_data <- mfdb_concatenate_results(
     mfdb_sample_totalweight(mdb, c('species', 'age', 'vessel'), c(grouping_area, grouping_cod, grouping_vessel))[[1]],
     mfdb_sample_totalweight(mdb, c('species', 'age', 'vessel'), c(grouping_area, grouping_had, grouping_vessel))[[1]])
 consumption_data <- mfdb_concatenate_results(
-    mfdb_stomach_preyweightratio(mdb, c('age', 'prey_species'), c(grouping_area, grouping_cod, grouping_prey))[[1]],
-    mfdb_stomach_preyweightratio(mdb, c('age', 'prey_species'), c(grouping_area, grouping_had, grouping_prey))[[1]])
+    mfdb_stomach_preyweightratio(mdb, c('predator_species', 'age', 'prey_species'), c(grouping_area, grouping_cod, grouping_prey))[[1]],
+    mfdb_stomach_preyweightratio(mdb, c('predator_species', 'age', 'prey_species'), c(grouping_area, grouping_had, grouping_prey))[[1]])
 area_data <- mfdb_area_size(mdb, grouping_area)[[1]]
 
 # Generate CSVs and print out each
 model_files <- ewe_generate_model(area_data, survey_data, catch_data)
+model_files$diet <- ewe_generate_diet(consumption_data)
 #TODO:
-#diet_files <- ewe_generate_diet(area_data, consumption_data)
 #pedigree_files <- ewe_generate_pedigree(area_data, model_files)
 
 for (x in names(model_files)) {

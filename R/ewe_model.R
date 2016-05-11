@@ -5,30 +5,32 @@ fetch_agg_summary <- function (data, name) {
    return(out)
 }
 
-# List of character vectors of all the grouping columns in the df
-stanza_list <- function (df) {
-    out <- apply(
-       df[,names(df) != 'total_weight'],
-       1,
-       function (row) row[row != 'all'])
-
-    # apply() tries to simplify if everything has the same dimensions, we don't want that
-    if (!is.list(out)) {
-        out <- split(out, rep(1:ncol(out), each = nrow(out)))
+# List of character lists of all the grouping columns in the df
+stanza_list <- function (df, ignore_re = c(), include_re = c()) {
+    # Generate boolean vector of what to include
+    if (length(include_re) > 0) {
+        cols <- grepl(paste(include_re, collapse="|"), names(df))
+    } else {
+        cols <- rep(TRUE, times = ncol(df))
     }
-    return(out)
+    cols <- cols & !grepl(paste(c("^total_weight$", "^ratio$", ignore_re), collapse="|"), names(df))
+
+    apply(
+        df[, cols, drop = FALSE],
+        1,
+        # Strip anything "all", return list so apply doesn't apply simplification
+        function (row) as.list(row[row != 'all']))
 }
 
-# Fetch the value at position i from each of the vectors
+# Fetch the value at position i from each of the lists
 stanza_col <- function (group_stanzas, i) {
-    vapply(group_stanzas, function (s) s[i], "")
+    vapply(group_stanzas, function (s) s[[i]], "")
 }
 
-# Generate labels for list-of-vector stanzas
+# Generate labels for list-of-list stanzas
 stanza_labels <- function (group_stanzas) {
     vapply(group_stanzas, function (x) paste(x, collapse="."), "")
 }
-    
 
 # stanza_group.csv: functional group definition.
 ewe_tbl_stanza_group <- function (stanzas) {
@@ -207,19 +209,35 @@ ewe_generate_model <- function(area_data, survey_data, catch_data = NULL) {
 }
 
 # diet.csv: Proportions for all functional group combinations
-ewe_tbl_diet <- function (all_stanzas, survey_data, consumption_data) {
+ewe_generate_diet <- function (consumption_data) {
     if (is.null(consumption_data)) {
         return(NULL)
     }
-    vessel_groups <- fetch_agg_summary(survey_data, 'vessel')
 
-    age_map <- structure(seq_len(length(all_stanzas)), names = names(all_stanzas))
-    list(  # TODO: should be a sparseMatrix
-        dims = c(length(all_stanzas), length(all_stanzas)),
-        dimnames = list(all_stanzas, all_stanzas),
-        i = age_map[consumption_data$predator_age],
-        j = age_map[consumption_data$prey_age],
-        x = consumption_data$ratio)
+    # Make data.frame of labels to values
+    df <- data.frame(
+        predator = stanza_labels(stanza_list(consumption_data, ignore_re = '^prey_')),
+        prey = stanza_labels(stanza_list(consumption_data, include_re = '^prey_')),
+        ratio = consumption_data$ratio,
+        stringsAsFactors = FALSE)
+    # Make a combinatoral explosion of all predator/preys with NAs
+    empty_df <- expand.grid(
+        predator = unique(c(df$predator, df$prey)),
+        prey = unique(c(df$predator, df$prey)),
+        ratio = NA)
+    # Combine, take the first value (i.e. the actual value if it exists, fall back to NA)
+    full_df <- aggregate(
+        ratio ~ predator + prey,
+        rbind(df, empty_df),
+        function (x) x[[1]],
+        na.action = na.pass)
+    # Turn this into a matrix
+    matrix(
+        nrow = length(unique(full_df$predator)),
+        ncol = length(unique(full_df$prey)),
+        dimnames = list(unique(full_df$predator), unique(full_df$prey)),
+        data = full_df$ratio,
+        byrow = TRUE)
 }
 
 # Run ewe_tbl_* with given data, return a list with each output
