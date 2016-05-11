@@ -189,8 +189,7 @@ area_data <- mfdb_area_size(mdb, grouping_area)[[1]]
 # Generate CSVs and print out each
 model_files <- ewe_generate_model(area_data, survey_data, catch_data)
 model_files$diet <- ewe_generate_diet(consumption_data)
-#TODO:
-#pedigree_files <- ewe_generate_pedigree(area_data, model_files)
+model_files$pedigree <- ewe_generate_pedigree(survey_data, catch_data)
 
 for (x in names(model_files)) {
     cat("== ", x, " ==============\n")

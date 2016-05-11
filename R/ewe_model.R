@@ -240,4 +240,30 @@ ewe_generate_diet <- function (consumption_data) {
         byrow = TRUE)
 }
 
-# Run ewe_tbl_* with given data, return a list with each output
+ewe_generate_pedigree <- function (survey_data, catch_data = NULL) {
+    stanzas <- stanza_list(survey_data)
+
+    consumer_names <- stanza_labels(stanzas)
+    detritus_names <- c("Detritus", "Discards")
+    pproducer_names <- c()
+    fleet_names <- if (is.null(catch_data)) c() else names(attr(catch_data, 'vessel'))
+
+    out <- data.frame(
+        Group = c(
+            consumer_names,
+            detritus_names,
+            pproducer_names,
+            fleet_names),
+        B = 1,
+        PB = 1,
+        QB = 1,
+        Diet = 1,
+        stringsAsFactors = FALSE)
+
+     # Add vessel columns
+     for (v in fleet_names) {
+         out[,v] <- 1
+     }
+
+     return(out[with(out, order(Group)),])
+}
