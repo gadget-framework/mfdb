@@ -40,7 +40,6 @@ ewe_stanza_group <- function (survey_data) {
     group_stanzas <- stanzas[vapply(stanzas, length, 0) >= 2]
     parent_stanzas <- table(stanza_col(group_stanzas, 1))
 
-    # TODO: Summary of the first, top-level group
     data.frame(
         StGroupNum = 1:length(parent_stanzas),
         Stanza_Group = names(parent_stanzas),
@@ -210,6 +209,7 @@ ewe_diet <- function (consumption_data) {
         byrow = TRUE)
 }
 
+# pedigree.csv: Lots of 1
 ewe_pedigree <- function (survey_data, catch_data = NULL) {
     stanzas <- stanza_list(survey_data)
 

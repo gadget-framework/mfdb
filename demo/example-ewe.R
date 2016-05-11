@@ -200,46 +200,43 @@ for (x in names(model_files)) {
 }
 
 # Example output from script:-
-# ==  stanzas  ==============
-#              StGroupNum Stanza GroupNum Group First Last  Z Leading
-# all_cod1              1      1        4  cod0     0    1 NA      NA
-# all_cod2              1      2        5  cod2     2    3 NA      NA
-# all_cod3              1      3        6  cod4     4    5 NA      NA
-# all_cod4              1      4        7  cod6     6    7 NA      NA
-# all_cod5              1      5        8  cod8     8    9 NA      NA
-# all_haddock1          2      1        9 had10    10   19 NA      NA
-# all_haddock2          2      2       10 had20    20   29 NA      NA
-# all_haddock3          2      3       11 had30    30   39 NA      NA
 # ==  stanza_group  ==============
-#             StGroupNum Stanza_Group nstanzas VBGF_Ksp  VBGF_d Wmat RecPower
-# all_cod              1      all_cod        5       NA 0.66667   NA        1
-# all_haddock          2  all_haddock        3       NA 0.66667   NA        1
-# ==  pedigree  ==============
-#              Group B PB QB Diet
-# all_cod1      cod0 1  1  1    1
-# all_cod2      cod2 1  1  1    1
-# all_cod3      cod4 1  1  1    1
-# all_cod4      cod6 1  1  1    1
-# all_cod5      cod8 1  1  1    1
-# all_haddock1 had10 1  1  1    1
-# all_haddock2 had20 1  1  1    1
-# all_haddock3 had30 1  1  1    1
+#   StGroupNum Stanza_Group nstanzas VBGF_Ksp  VBGF_d Wmat RecPower
+# 1          1          COD        2       NA 0.66667   NA        1
+# 2          2          HAD        2       NA 0.66667   NA        1
+# ==  stanzas  ==============
+#      StGroupNum Stanza GroupNum     Group First Last  Z Leading
+# COD1          1      1        4 COD.adult     5   10 NA      NA
+# COD2          1      2        5   COD.juv     1    4 NA      NA
+# HAD1          2      1        6 HAD.adult     5   10 NA      NA
+# HAD2          2      2        7   HAD.juv     1    4 NA      NA
 # ==  model  ==============
-#              Group Type Biomass PB QB EE ProdCons Unassim DetInput Detritus Discards
-# all_cod1      cod0    0      NA NA NA NA       NA      NA       NA       NA       NA
-# all_cod2      cod2    0      NA NA NA NA       NA      NA       NA       NA       NA
-# all_cod3      cod4    0      NA NA NA NA       NA      NA       NA       NA       NA
-# all_cod4      cod6    0      NA NA NA NA       NA      NA       NA       NA       NA
-# all_cod5      cod8    0      NA NA NA NA       NA      NA       NA       NA       NA
-# all_haddock1 had10    0      NA NA NA NA       NA      NA       NA       NA       NA
-# all_haddock2 had20    0      NA NA NA NA       NA      NA       NA       NA       NA
-# all_haddock3 had30    0      NA NA NA NA       NA      NA       NA       NA       NA
+#        Group Type Biomass PB QB EE ProdCons BioAcc Unassim DetInput Detritus Discards      vA      vB      vC vA.disc vB.disc vC.disc
+# 1        COD    0 7862.71 NA NA NA       NA      0     0.2       NA        1        0    0.00    0.00    0.00       0       0       0
+# 2  COD.adult    0 3072.89 NA NA NA       NA      0     0.2       NA        1        0 1030.39 1140.79  901.71       0       0       0
+# 3    COD.juv    0 4789.82 NA NA NA       NA      0     0.2       NA        1        0 1872.81 1751.00 1166.01       0       0       0
+# 4  HAD.adult    0  949.56 NA NA NA       NA      0     0.2       NA        1        0  387.40  227.96  334.20       0       0       0
+# 5    HAD.juv    0 1294.82 NA NA NA       NA      0     0.2       NA        1        0  366.66  531.45  396.71       0       0       0
+# 6   Detritus    2      NA NA NA NA       NA      0     0.2        0        0        0    0.00    0.00    0.00       0       0       0
+# 7   Discards    2      NA NA NA NA       NA      0     0.2        0        0        0    0.00    0.00    0.00       0       0       0
+# 8         vA    3      NA NA NA NA       NA     NA      NA       NA        0        1      NA      NA      NA      NA      NA      NA
+# 9         vB    3      NA NA NA NA       NA     NA      NA       NA        0        1      NA      NA      NA      NA      NA      NA
+# 10        vC    3      NA NA NA NA       NA     NA      NA       NA        0        1      NA      NA      NA      NA      NA      NA
 # ==  diet  ==============
-# $dimnames
-# $dimnames[[1]]
-#     all_cod1     all_cod2     all_cod3     all_cod4     all_cod5 all_haddock1 all_haddock2 all_haddock3 
-#       "cod0"       "cod2"       "cod4"       "cod6"       "cod8"      "had10"      "had20"      "had30" 
-# 
-# $dimnames[[2]]
-#     all_cod1     all_cod2     all_cod3     all_cod4     all_cod5 all_haddock1 all_haddock2 all_haddock3 
-#       "cod0"       "cod2"       "cod4"       "cod6"       "cod8"      "had10"      "had20"      "had30" 
+#           CAP CLL COD.adult   COD.juv
+# CAP        NA  NA 0.3854749 0.6378378
+# CLL        NA  NA 0.6145251 0.3621622
+# COD.adult  NA  NA        NA        NA
+# COD.juv    NA  NA        NA        NA
+# ==  pedigree  ==============
+#        Group B PB QB Diet vA vB vC
+# 1        COD 1  1  1    1  1  1  1
+# 2  COD.adult 1  1  1    1  1  1  1
+# 3    COD.juv 1  1  1    1  1  1  1
+# 6   Detritus 1  1  1    1  1  1  1
+# 7   Discards 1  1  1    1  1  1  1
+# 4  HAD.adult 1  1  1    1  1  1  1
+# 5    HAD.juv 1  1  1    1  1  1  1
+# 8         vA 1  1  1    1  1  1  1
+# 9         vB 1  1  1    1  1  1  1
+# 10        vC 1  1  1    1  1  1  1
