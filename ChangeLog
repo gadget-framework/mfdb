@@ -1,3 +1,7 @@
+2016-05-20  Jamie Lentin  <lentinj@shuttlethread.com>
+
+    * Allow arbitary case studies, break up case studies into schemas
+
     Version 5.0-0
 
     Schema changes:
