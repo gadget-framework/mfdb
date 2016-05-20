@@ -125,6 +125,34 @@ and allows you to swap out data as necessary
 
 See \link{mfdb_import_survey} for more information or 
 \href{../demo}{the demo directory} for concrete examples.
+
+\subsection{Dumping / Restoring a DB}{
+You can also dump/import a dump from another host using the postgres pg_dump
+and pg_restore commands. You can dump/restore indvidual schemas (i.e. the 
+case study you give to the mfdb() command), to list all the schemas installed
+run \code{SELECT DISTINCT(table_schema) FROM information_schema.tables} from
+psql. Note that if you use \code{mfdb('Baltic')}, the Postgres schema name will
+be lower-cased.
+
+Create a dump of your chosen schema with the following command:
+
+\preformatted{
+pg_dump --schema=baltic -F tar mf > baltic.tar
+}
+
+This will make a dump of the "baltic" case study into "baltic.tar". It can
+then be restored onto another computer with the following:
+
+\preformatted{
+pg_restore --clean -d mf baltic.tar
+}
+
+If you already have a baltic schema you wish to preserve, you can rename it
+first by issuing \code{ALTER SCHEMA baltic RENAME TO baltic_o} in psql. Once
+the restore is done you can rename the new schema and put the name of the old
+schema back.
+}
+
 }
 
 \section{Querying data}{

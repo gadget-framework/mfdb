@@ -22,6 +22,11 @@ mfdb_cs_restore(mdb, in_location)
 }
 
 \details{
+Deprecated: These commands aren't strictly necessary any more. In most
+situations it will be easier to use Postgres' \code{pg_dump} and \code{pg_restore}.
+See \link{mfdb-package} for some examples of how to do it. These functions
+don't offer much more functionality and much slower.
+
 \code{mfdb_cs_dump} copies all data from the database/case-study that \code{mdb}
 is connected to, and writes it out to files in \code{out_location}. If this
 ends with 'tar.gz', then all files will be put into a tarball with the name
