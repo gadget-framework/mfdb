@@ -366,6 +366,9 @@ mfdb_create_aggregate <- function(mdb, func_name, accum_body, final_body,
         state_type = "numeric[2]",
         return_type = "numeric") {
 
+    # Make sure all this happens in the selected schema
+    func_name <- paste(mdb$schema, func_name, sep = ".")
+
     mfdb_send(mdb,
         "CREATE OR REPLACE FUNCTION ", func_name, "_accum(",
         "p ", state_type,
