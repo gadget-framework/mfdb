@@ -1,11 +1,39 @@
 2016-05-20  Jamie Lentin  <lentinj@shuttlethread.com>
 
-    * Allow arbitary case studies, break up case studies into schemas
-
     Version 5.0-0
 
     Schema changes:
-    * Break up case_study's into schemata, ditch case_study_id
+    * Break up case_study's into schemata, ditch case_study_id:
+
+      This is a fairly major behind the scenes change. Postgres separates tables
+      into schemas. Before MFDB put everything into the default "public" schema.
+      Now MFDB will use a different schema for each case study (i.e. the
+      parameter you give to mfdb()).
+
+      Whereas before there was a list of case studies that could be used, now
+      you can specify any name to use as a case study. Note that the names are
+      case-insensitive, so "North-Sea", "north_sea", "North-sea" are all
+      considered the same name.
+
+      This also means you can use pg_dump and pg_restore to backup and restore
+      (or transfer to a different computer) individual case studies. For
+      examples, see:
+      http://mareframe.github.io/packages/mfdb/html/mfdb-package.html
+
+      Finally, the mfdb(destroy_schema = TRUE) option now expects a case study
+      / schema name, since it is able to remove just one schema instead of
+      removing everything.
+
+      To make upgrades seamless, MFDB 5.x will, if the schema is new, check the
+      "public" schema first to see if there is any existing MFDB 4.x data stored
+      under the same case study name. If so it will copy the data into a new
+      schema. In theory once it's done this for any case studies you use you
+      can drop the tables in the public schema to save space, although make
+      sure your data is copied correctly first.
+
+      If you look at MFDB data via. psql, then you will need to make sure you
+      either set the default schema with "SET search_path TO north_sea", or
+      specify the schema in queries, e.g. "SELECT * FROM north_sea.sample".
 
 (unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
 
