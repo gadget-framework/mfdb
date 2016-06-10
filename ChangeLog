@@ -39,7 +39,9 @@
       either set the default schema with "SET search_path TO north_sea", or
       specify the schema in queries, e.g. "SELECT * FROM north_sea.sample".
 
-(unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
+2016-06-10  Jamie Lentin  <lentinj@shuttlethread.com>
+
+    Version 4.1-0
 
     * Add mfdb_sample_scaled with ability to scale by tow_length
     * mfdb_stomach_preymeanweight shoult take the mean of unique stomachs, ignoring prey restrictions
