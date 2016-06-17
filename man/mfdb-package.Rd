@@ -224,6 +224,12 @@ and 2, then if querying for a stockdistribution component, one could do:
 
 }
 
+\section{Acknowledgements}{
+This project has received funding from the European Union's Seventh Framework
+Programme for research, technological development and demonstration under grant
+agreement no.613571.
+}
+
 \author{
 Jamie Lentin
 
