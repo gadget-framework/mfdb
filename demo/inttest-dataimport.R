@@ -40,9 +40,6 @@ ok_group("Areacell/divisions", {
     ok(cmp_error(mfdb_import_division(mdb2, list(divB = c('45G01', '45G02', '45G03'), divC = c('45G01'))), 'areacell vocabulary'), "areacell values not for this case-study")
     mfdb_import_division(mdb2, list(divA = c('45G03', '45G04'), divD = c('45G04', '45G05')))
 
-    # Can't make a report without an area grouping
-    ok(cmp_error(mfdb_area_size(mdb, list()), "area"), "Noticed lack of area grouping")
-
     # Finally, we can make a report out of this
     area_group <- mfdb_group(divA = c("divA"), divB = c("divB"), divAB = c("divA", "divB"))
     ok(cmp(mfdb_area_size(mdb, list(area = area_group)),

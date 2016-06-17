@@ -1,6 +1,5 @@
 # Return area, size
 mfdb_area_size <- function (mdb, params) {
-#    if (is.null(params$area)) stop("Must specify 'area' in params")
     mfdb_sample_grouping(mdb,
         group_cols = c("area"),
         calc_cols = c("SUM(c.size) AS size"),
