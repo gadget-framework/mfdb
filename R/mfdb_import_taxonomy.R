@@ -49,12 +49,16 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
 
     mfdb_transaction(mdb, {
         # New rows should be inserted
-        # NB: We don't handle the case of new data having the same ID as existing data.
-        #     In practice this probably won't happen, but a reasonable solution would be nice.
-        mfdb_insert(mdb,
-            table_name,
-            data_in[data_in$name %in% setdiff(data_in$name, existing$name), ],
-            extra = c())
+        new_data <- data_in[data_in$name %in% setdiff(data_in$name, existing$name), ]
+
+        # If some ids appear in both new and existing, give them new IDs.
+        overlapping_ids <- intersect(new_data[[id_col]], existing[[id_col]])
+        if (length(overlapping_ids) > 0) {
+            new_data[match(overlapping_ids, new_data[[id_col]]), id_col] <-
+                seq(max(existing[[id_col]]) + 1, length.out = length(overlapping_ids))
+        }
+
+        mfdb_insert(mdb, table_name, new_data)
 
         # Rows with matching names should be updated, but existing ids kept
         if (nrow(existing) > 0) mfdb_update(mdb,
