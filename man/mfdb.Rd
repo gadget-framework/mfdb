@@ -17,8 +17,10 @@
 }
 \arguments{
     \item{case_study_name}{
-        The name of the case study you are working with, should be a valid
-        name from \code{mfdb::case_study}.
+        The name of your case study. Your Postgres database can be used to
+        store any number of case studies, by storing them in separate
+        \emph{schemas}. This parameter defines the schema to connect to,
+        and can contain any lower case characters or underscore.
     }
     \item{db_params}{
         Extra parameters to supply to \code{DBI::dbConnect}. By default it will
@@ -27,9 +29,11 @@
         See \code{methods?RPostgreSQL::dbConnect} for more information.
     }
     \item{destroy_schema}{
-        Optional boolean. If true, all mfdb tables will be dropped, allowing
-        you to recreate your schema. Returns NULL, you need to call \code{mfdb}
-        to connect and rebuild schema.
+        Optional boolean. If true, all mfdb tables will be destroyed when
+        connecting. This allows you to start populating your case study from
+        scratch if required. The function will return NULL, you need to call
+        \code{mfdb} again to connect, at which point the mfdb tables will be
+        recreated and you can populate with data again.
     }
     \item{save_temp_tables}{
         Optional boolean. If true, any temporary tables will be made permanent
@@ -41,7 +45,7 @@
 }
 \examples{\dontrun{
     # Connect to local DB, as the Iceland case study
-    mdb <- mfdb('Iceland')
+    mdb <- mfdb('iceland')
 
     # Connect to "mf2014" on remote DB server
     mdb <- mfdb('Iceland', db_params = list(host = "db.mareframe-fp7.org", dbname = "mf2014")
@@ -50,5 +54,5 @@
     mfdb_disconnect(mdb)
 
     # Destroy everything, since schema was out of date.
-    mfdb('Iceland', destroy_schema = TRUE)
+    mfdb('iceland', destroy_schema = TRUE)
 }}

@@ -59,10 +59,8 @@ functions. All measurement data is separated by case study, so multiple case
 studies can be loaded into a database without conflicts.
 
 Taxonomy tables store all possible values for terms and their meaning, to
-ensure consistency in the data. A particularly important table is
-\samp{case_study}, which lists the possible case studies that the database can
-store. When connecting to mfdb, you need to specify which case study you will
-be working with, so you access the correct data.
+ensure consistency in the data. For example, \samp{species} stores short-names
+and full latin names of all known species to MFDB, to ensure consistency in naming.
 
 Most Taxonomies are the same across any installation, and their definitions are
 stored as data attached to this package. See \link{mfdb-data} for more
@@ -112,7 +110,7 @@ querying data. If you want to use a sampling type, then define it using
 \subsection{Import temperature data}{
 At this point, you can start uploading actual measurements. The easiest of
 which is temperature. Upload a table of areacell/month/temperature data
-using \link{mfdb_import_temperature}()
+using \link{mfdb_import_temperature}().
 }
 
 \subsection{Import survey data}{
@@ -120,7 +118,14 @@ Finally, import any survey data using \link{mfdb_import_survey}(). Ideally
 upload your data in separate chunks. For example, if you have length and
 age-length data, don't combine them in R, upload them separately and both
 will be used when querying for length data. This keeps the process simple,
-and allows you to swap out data as necessary
+and allows you to swap out data as necessary.
+}
+
+\subsection{Import stomach survey}{
+Stomach surveys are imported in much the same way, however there are 2 data.frames,
+one representing predators, one preys. The column \samp{stomach_name} links the
+two, which can contain any numeric / character value, as long as it is unique
+for predators and prey measurements are assigned to the correct stomach.
 }
 
 See \link{mfdb_import_survey} for more information or 
