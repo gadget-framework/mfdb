@@ -108,7 +108,7 @@ Installing
 You can use devtools to install this directly:
 
     # install.packages("devtools")
-    devtools::install_github("mareframe/mfdb", ref = "4.x")
+    devtools::install_github("mareframe/mfdb", ref = "5.x")
 
 Or without:-
 
