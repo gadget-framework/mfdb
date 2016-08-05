@@ -115,7 +115,7 @@ Or without:-
     # install.packages("downloader")
     pkg_file <- tempfile()
     downloader::download(url =
-        'https://github.com/mareframe/mfdb/archive/4.x.tar.gz',
+        'https://github.com/mareframe/mfdb/archive/5.x.tar.gz',
         mode = 'wb', destfile = pkg_file)
     install.packages(pkg_file, repos = NULL, type = 'source')
 
