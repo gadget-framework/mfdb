@@ -33,6 +33,23 @@ mfdb_import_vessel_taxonomy(mdb, data.frame(
     stringsAsFactors = FALSE
 ))
 
+# Tracer data for year 2000, month 1
+mfdb_import_survey(mdb, data_source = "tracer_2000", string_to_data.frame("
+year month areacell species length age weight count
+2000   1    45G01     COD     77    1   352    333
+2000   1    45G01     COD     92    2   337    368
+2000   1    45G01     COD     93    3   291    662
+2000   1    45G01     COD     95    4   292    784
+2000   1    45G01     COD     72    5   447    842
+2000   1    45G01     COD     60    6   109    411
+2000   1    45G01     HAD     86    1   217    730
+2000   1    45G01     HAD     62    2   104    395
+2000   1    45G01     HAD     55    3   122    522
+2000   1    45G01     HAD     71    4   141    102
+2000   1    45G01     HAD     65    5   462    805
+2000   1    45G01     HAD     93    6   110    426
+"))
+
 # Vessel A's data for 2000
 mfdb_import_survey(mdb, data_source = "2000.vA.COD", string_to_data.frame("
 year month areacell species vessel length age weight count
@@ -168,16 +185,19 @@ grouping_had <- list(
     predator_species = 'HAD',
     species = 'HAD',
     age = mfdb_group(juv=1:2, adult=3:5))
+grouping_tracer = list(
+    data_source = 'tracer_2000')  # Make sure we only fetch tracer data
 grouping_vessel = list(
+    vessel_type = c('1.RSH', '1.COM'),  # NB: This will skip tracer data (since it has no vessel type)
     vessel = mfdb_unaggregated())
 grouping_prey = list(
     prey_species = mfdb_unaggregated())
 
 # Query data and group together
 survey_data <- mfdb_concatenate_results(
-    mfdb_sample_totalweight(mdb, c('species', 'age'), c(grouping_area, grouping_cod_nogroup))[[1]],
-    mfdb_sample_totalweight(mdb, c('species', 'age'), c(grouping_area, grouping_cod))[[1]],
-    mfdb_sample_totalweight(mdb, c('species', 'age'), c(grouping_area, grouping_had))[[1]])
+    mfdb_sample_totalweight(mdb, c('species', 'age'), c(grouping_area, grouping_cod_nogroup, grouping_tracer))[[1]],
+    mfdb_sample_totalweight(mdb, c('species', 'age'), c(grouping_area, grouping_cod, grouping_tracer))[[1]],
+    mfdb_sample_totalweight(mdb, c('species', 'age'), c(grouping_area, grouping_had, grouping_tracer))[[1]])
 catch_data <- mfdb_concatenate_results(
     mfdb_sample_totalweight(mdb, c('species', 'age', 'vessel'), c(grouping_area, grouping_cod, grouping_vessel))[[1]],
     mfdb_sample_totalweight(mdb, c('species', 'age', 'vessel'), c(grouping_area, grouping_had, grouping_vessel))[[1]])
