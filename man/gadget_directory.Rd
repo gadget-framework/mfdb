@@ -42,7 +42,15 @@ gadget_dir_read(gd, file_name, missing_okay = TRUE, file_type = c())
 }
 
 \details{
-This handles 
+These functions handle reading and writing of files to a directory
+containing GADGET model files.
+
+First a gadget_directory object needs to be created with \code{gadget_directory},
+this ensures the directory exists and stores the name of the mainfile to use.
+
+Any portion of a gadget model can then be written out with \code{gadget_dir_write}.
+You do not need to tell it which files in the model to update, since this is worked
+out based on what you are writing out.
 }
 
 \examples{\dontrun{
