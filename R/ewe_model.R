@@ -148,7 +148,7 @@ ewe_model <- function (area_data, survey_data, catch_data = NULL) {
         stringsAsFactors = FALSE)
 
      # Add vessel columns
-     for (v in unique(catch_data$vessel)) {
+     for (v in fleet_names) {
          vessel_data <- catch_data[catch_data$vessel==v, names(catch_data) != 'vessel']
          vessel_out <- data.frame(
              Group = stanza_labels(stanza_list(vessel_data)),
