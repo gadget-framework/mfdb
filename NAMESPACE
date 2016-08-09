@@ -1,4 +1,7 @@
-importFrom(utils, str, capture.output, packageVersion)
+importFrom("utils", "str", "capture.output", "packageVersion")
+importFrom("stats", "aggregate", "na.pass")
+importFrom("utils", "head", "read.table", "tar", "untar",
+                 "write.table")
 
 # mfdb_bulk.R
 export(mfdb_cs_dump)
