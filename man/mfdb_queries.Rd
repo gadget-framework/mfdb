@@ -62,8 +62,8 @@ following:
 
 \describe{
     \item{NULL}{
-        Don't do any grouping, instead put 'any' in the resulting column.
-        For example, \code{age = NULL} results in "any".
+        Don't do any grouping, instead put 'all' in the resulting column.
+        For example, \code{age = NULL} results in "all".
     }
     \item{character / numeric vector}{
         Aggregate all samples together where they match.
