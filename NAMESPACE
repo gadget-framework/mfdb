@@ -28,6 +28,13 @@ importFrom(logging, getLogger)
 export(mfdb)
 export(mfdb_disconnect)
 
+# mfdb_dplyr.R
+export(mfdb_dplyr_survey_index)
+export(mfdb_dplyr_division)
+export(mfdb_dplyr_sample)
+export(mfdb_dplyr_predator)
+export(mfdb_dplyr_prey)
+
 # mfdb_helpers.R
 export(mfdb_concatenate_results)
 export(mfdb_find_species)

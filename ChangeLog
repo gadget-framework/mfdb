@@ -1,3 +1,4 @@
+    * Add dplyr interface
     * Allow EwE output to be generated without vessel data
     * When presented with overlapping IDs in vocabularies remap the ID.
     * mfdb_area_size can be used to get the entire area size
