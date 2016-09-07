@@ -39,16 +39,17 @@ pre_query.mfdb_group <- function(mdb, x, col) {
         for (set in split(denormalized, list(denormalized$sample, denormalized$name))) {
             # Can't insert 2 copies of a division at the same time, so insert
             # unique subsets of divisions until there's none left
-            divisions <- set[,'value']
-            while(length(divisions) > 0) {
+            values <- set[,'value']
+            while(length(values) > 0) {
+                quoted_values <- sql_quote(unique(values), always_bracket = TRUE, always_quote = TRUE)
                 mfdb_send(mdb,
                     "INSERT INTO ", attr(x, 'table_name'),
                     " SELECT ", sql_quote(set[1, 'sample']), " AS sample",
                     ", ", sql_quote(set[1, 'name']), " AS name",
-                    ", areacell_id AS value",
+                    ", ", lookup, "_id AS value",
                     " FROM division",
-                    " WHERE division IN ", sql_quote(unique(divisions), always_bracket = TRUE, always_quote = TRUE))
-                divisions <- divisions[duplicated(divisions)]
+                    " WHERE division IN ", quoted_values)
+                values <- values[duplicated(values)]
             }
         }
     } else if (lookup %in% mfdb_taxonomy || lookup %in% mfdb_cs_taxonomy) {
@@ -70,6 +71,7 @@ pre_query.mfdb_group <- function(mdb, x, col) {
             # unique subsets until there's none left
             values <- set[,'value']
             while(length(values) > 0) {
+                quoted_values <- sql_quote(unique(values), always_bracket = TRUE, always_quote = TRUE)
                 mfdb_send(mdb,
                     "INSERT INTO ", attr(x, 'table_name'),
                     " SELECT ", sql_quote(set[1, 'sample']), " AS sample",
@@ -77,8 +79,8 @@ pre_query.mfdb_group <- function(mdb, x, col) {
                     ", ", lookup, "_id AS value",
                     " FROM ", lookup,
                     " WHERE (",
-                        "name IN ", sql_quote(unique(values), always_bracket = TRUE, always_quote = TRUE),
-                        " OR t_group IN ", sql_quote(unique(values), always_bracket = TRUE, always_quote = TRUE),
+                        "name IN ", quoted_values,
+                        " OR t_group IN ", quoted_values,
                     ")")
                 values <- values[duplicated(values)]
             }
