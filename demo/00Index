@@ -6,6 +6,7 @@ inttest-gadgetdirectory		Demonstrate importing data and writing to GADGET direct
 inttest-countryquery		Demonstrate querying for an entire country as well as individual institutes
 inttest-dataimport		Exercise data loading
 inttest-dbupgrade		Test that we can upgrade from an old database to a new one
+inttest-dplyr			Exercise MFDB<->dplyr interface
 inttest-fleetfile		Excrcise fleetfile generation
 inttest-samples			Exercise sampling of data
 inttest-bootstrap		Exercise taking bootstrap samples of data

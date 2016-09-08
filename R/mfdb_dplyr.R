@@ -36,7 +36,7 @@ mfdb_dplyr_table <- function (mdb, tbl_name, include_cols) {
     }
 
     # Hide all taxonomy id fields in the output
-    dp_tbl <- dplyr::select(dp_tbl, -one_of(tx_cols))
+    dp_tbl <- dplyr::select_(dp_tbl, ~ -one_of(tx_cols))
 
     return(dp_tbl)
 }
