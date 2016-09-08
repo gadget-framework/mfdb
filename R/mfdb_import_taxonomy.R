@@ -108,6 +108,14 @@ mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
             description = sanitise_col(mdb, data_in, 'description', default = c("")),
             stringsAsFactors = FALSE),
         extra_cols = extra_cols)
+
+    if (taxonomy_name == 'areacell' && 'division' %in% colnames(data_in)) {
+        # Import division data if available
+        division_data <- data_in[,c('name', 'division'), drop = FALSE]
+        colnames(division_data) <- c('areacell', 'division')
+        mfdb_import_division(mdb, division_data)
+    }
+
     invisible(NULL)
 }
 mfdb_import_area <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'areacell', data_in)
@@ -117,16 +125,27 @@ mfdb_import_vessel_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(md
 
 # Import divisions
 mfdb_import_division <- function (mdb, data_in) {
-    if(!is.list(data_in)) {
+    if(is.data.frame(data_in)) {
+        if (length(intersect(colnames(data_in), c('division', 'areacell'))) < 2) {
+            stop("data.frame needs both division and areacell columns")
+        }
+        data_in <- data.frame(
+            division = sanitise_col(mdb, data_in, 'division'),
+            areacell_id = sanitise_col(mdb, data_in, 'areacell', lookup = 'areacell'),
+            stringsAsFactors = FALSE)
+    } else if(is.list(data_in)) {
+        data_in <- data.frame(
+            division = unlist(lapply(names(data_in), function(n) { rep(n, length(data_in[[n]])) })),
+            areacell_id = sanitise_col(mdb, data.frame(areacell = unlist(data_in)), 'areacell', lookup = 'areacell'))
+    } else {
         stop("data_in should be a list of areacell vectors")
     }
+
     mfdb_transaction(mdb, {
         dbSendQuery(mdb$db, paste0(
             "DELETE FROM division",
-            " WHERE division IN ", sql_quote(names(data_in), always_bracket = TRUE),
+            " WHERE division IN ", sql_quote(unique(data_in$division), always_bracket = TRUE),
             ""))
-        res <- mfdb_insert(mdb, 'division', data.frame(
-            division = unlist(lapply(names(data_in), function(n) { rep(n, length(data_in[[n]])) })),
-            areacell_id = sanitise_col(mdb, data.frame(areacell = unlist(data_in)), 'areacell', lookup = 'areacell')))
+        res <- mfdb_insert(mdb, 'division', data_in)
     })
 }

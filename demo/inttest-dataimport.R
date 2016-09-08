@@ -68,6 +68,24 @@ ok_group("Areacell/divisions", {
             area = area_group,
             generator = "mfdb_area_size"))),
         "Get new combined size after updating area sizes")
+
+    # Can import areas and divisions at the same time
+    mfdb_import_area(mdb, table_string("
+id	name	size	division
+10	a10	1001	div10
+11	a11	1003	div10
+12	a12	1005	div10
+13	a20	2002	div20
+14	a21	2004	div20
+15	a22	2008	div20
+    "))
+    ok(cmp(mfdb_area_size(mdb, list(area = mfdb_group(g1 = c('div10'), g2 = c('div20'), g3 = c('div10', 'div20'))))[[1]][,c('area', 'size')],
+        table_string("
+area	size
+g1	3009
+g2	6014
+g3	9023
+        ")), "Inserted divisions at the same time as areas")
 })
 
 ok_group("Temperature", {

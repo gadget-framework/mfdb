@@ -20,11 +20,8 @@ predator_mapping <- data.frame(
 
 mfdb_import_area(mdb, data.frame(
     name = c(reitmapping$GRIDCELL, predator_mapping$GRIDCELL),
+    division = as.character(c(reitmapping$SUBDIVISION, predator_mapping$SUBDIVISION)),
     size = c(5)))
-mfdb_import_division(mdb, c(
-    lapply(split(reitmapping, list(reitmapping$SUBDIVISION)), function (l) l[,'GRIDCELL']),
-    lapply(split(predator_mapping, list(predator_mapping$SUBDIVISION)), function (l) l[,'GRIDCELL']),
-    NULL))
 mfdb_import_temperature(mdb, data.frame(
     year = 2012,
     month = 1:12,

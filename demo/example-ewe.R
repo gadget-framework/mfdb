@@ -19,8 +19,7 @@ mdb <- mfdb('example_ewe')
 # Set-up areas, and combine them into 1 100km^2 division
 all_areas <- c('45G01', '45G02', '45G03', '45G04', '45G05',
                '45G06', '45G07', '45G08', '45G09', '45G10')
-mfdb_import_area(mdb, data.frame(name = all_areas, size = 10))
-mfdb_import_division(mdb, list(all = all_areas))
+mfdb_import_area(mdb, data.frame(name = all_areas, size = 10, division = 'all'))
 
 # Create some vessels
 mfdb_import_vessel_taxonomy(mdb, data.frame(

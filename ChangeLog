@@ -1,3 +1,4 @@
+    * Let mfdb_import_area import divisions, so mfdb_import_division becomes unnecessary
     * Add dplyr interface
     * Allow EwE output to be generated without vessel data
     * When presented with overlapping IDs in vocabularies remap the ID.

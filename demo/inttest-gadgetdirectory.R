@@ -20,16 +20,11 @@ mfdb('Test', db_params = db_params, destroy_schema = TRUE)
 mdb <- mfdb('Test', db_params = db_params, save_temp_tables = FALSE)
 
 ok_group("Area File", {
-    # 3 area cells 45G01--3, each of which are 5km^2
+    # 3 area cells 45G01--3, each of which are 5km^2, divide area up into 2 divisions
     mfdb_import_area(mdb, data.frame(
-        id = c(1,2,3),
         name = c('45G01', '45G02', '45G03'),
+        division = c('divA', 'divB', 'divB'),
         size = c(5)))
-
-    # Divide area up into 2 divisions, divA and divB
-    mfdb_import_division(mdb, list(
-        divA = c('45G01'),
-        divB = c('45G02', '45G03')))
 
     # Import temperature data for these areas
     mfdb_import_temperature(mdb, data.frame(

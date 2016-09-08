@@ -42,8 +42,10 @@ values. Others however this does not make sense, so should be done separately. T
 is what these functions do.
 
 \code{mfdb_import_division} is a special case, which imports groupings of areacells
-into divisions. The \code{data_in} should be a list of areacell vectors, with
-division names. For example, \code{list(divA = c('45G01', '45G02', '45G03'))}
+into divisions, if you haven't already done this with \code{mfdb_import_area} or your
+divisions are too complicated to represent this way. The \code{data_in} should be a
+list of areacell vectors, with division names. For example,
+\code{list(divA = c('45G01', '45G02', '45G03'))}
 
 Beyond this, all functions accept the following columns:
 
@@ -63,6 +65,7 @@ Beyond the above, you can also provide the following:
 
 \describe{
     \item{size}{The size of the areacell}
+    \item{division}{The name of the division this areacell is part of}
 }
 
 \code{mfdb_import_vessel_taxonomy} imports names of vessels into the

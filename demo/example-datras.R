@@ -105,12 +105,9 @@ squares <- c(
   "50E7", "50E8", "50E9", "50F0", "50F1", "50F2", "50F3", "51E8", "51E9", "51F0", "51F1", "51F2", "52E9", "52F0", "52F1",
   NULL)
 mfdb_import_area(mdb, data.frame(
-    id = 1:length(squares),
     name = squares,
-    size = c(5)))  # NB: Assume all squares are 5km^2
-
-# Make a single division for each area
-mfdb_import_division(mdb, structure(as.list(squares), names = squares))
+    size = c(5),  # NB: Assume all squares are 5km^2
+    division = squares))  # Each areacell is in it's own division
 
 # Hard-code temperature data (TODO: Find proper source)
 mfdb_import_temperature(mdb, data.frame(

@@ -24,8 +24,10 @@ ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM species")[1,1], nrow(mfdb::s
 
 ok_group("Unaggregated length / weight / age samples", {
     # Set-up areas/divisions
-    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
-    mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G01')))
+    mfdb_import_area(mdb, data.frame(
+        name = c('45G01', '45G02', '45G03'),
+        division = c('divA', 'divA', 'divB'),
+        size = c(5)))
 
     # Set up the vessels we use in this example
     mfdb_import_vessel_taxonomy(mdb, data.frame(

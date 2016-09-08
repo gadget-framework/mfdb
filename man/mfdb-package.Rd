@@ -96,9 +96,19 @@ Finally, when querying, divisions are grouped together into named collections,
 for instance \code{mfdb_group(north = 1:3, south = 4:6)} will put anything in
 divisions 1--3 under an area named "north", 4--5 under an area named "south".
 
-areacells and divisions are defined using \link{mfdb_import_area}() and
-\link{mfdb_import_division}() respectively. Before you can upload any measurements,
-you have to define the areacells that they will use.
+Before you can upload any measurements, you have to define the areacells
+that they will use. You do this using the \link{mfdb_import_area}() function. This
+allows you to import tables of area/division information, such as:
+
+\code{
+mfdb_import_area(mdb, data.frame(
+    area = c('101', '102', '103', '401','402', '403'),
+    division = c('1', '1', '1', '4', '4', '4'),
+    ))
+}
+
+If you want areas to be part of multiple divisions, then you can use
+\link{mfdb_import_division}() to import extra revisions.
 }
 
 \subsection{Define sampling types}{

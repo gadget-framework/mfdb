@@ -17,8 +17,10 @@ mfdb('Test', db_params = db_params, destroy_schema = TRUE)
 mdb <- mfdb('Test', db_params = db_params, save_temp_tables = TRUE) # TODO:
 
 # Set-up areas/divisions
-mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(10,200,400)))
-mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G03')))
+mfdb_import_area(mdb, data.frame(
+    name = c('45G01', '45G02', '45G03'),
+    division = c('divA', 'divA', 'divB'),
+    size = c(10,200,400)))
 
 to_df <- function (dp) {
     as.data.frame(arrange(dp, sample_id))

@@ -24,8 +24,10 @@ gd <- gadget_directory(tempfile())
 
 ok_group("Generating an acoustic index likelihood component", {
     # Set-up areas/divisions
-    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(10,200,400)))
-    mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G03')))
+    mfdb_import_area(mdb, data.frame(
+        name = c('45G01', '45G02', '45G03'),
+        division = c('divA', 'divA', 'divB'),
+        size = c(10,200,400)))
 
     # Create some index types
     mfdb_import_cs_taxonomy(mdb, 'index_type', data.frame(name = c(

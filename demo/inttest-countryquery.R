@@ -15,8 +15,10 @@ if (exists("mdb")) mfdb_disconnect(mdb)
 mfdb('Test', db_params = db_params, destroy_schema = TRUE)
 mdb <- mfdb('Test', db_params = db_params, save_temp_tables = FALSE)
 
-mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
-mfdb_import_division(mdb, list(divA = c('45G01', '45G02'), divB = c('45G01')))
+mfdb_import_area(mdb, data.frame(
+    name = c('45G01', '45G02', '45G03'),
+    division = c('divA', 'divA', 'divB'),
+    size = c(5)))
 
 # Import surveys for Norway as well as institutes within
 mfdb_import_survey(mdb,
