@@ -20,11 +20,16 @@ mfdb <- function(case_study_name = "",
         logger$info(paste0(
             "Trying to connect to: ",
             paste(capture.output(str(db_combined)), collapse = "\n")))
-        db_connection <- tryCatch(do.call(DBI::dbConnect, db_combined), error = function (e) NULL)
-        if (!is.null(db_connection)) break
+        db_connection <- tryCatch(do.call(DBI::dbConnect, db_combined), error = function (e) e)
+        if ("error" %in% class(db_connection)) {
+            logger$info(paste0("Failed: ", paste(db_connection$message, collapse = "\n")))
+        } else {
+            break
+        }
     }
-    if (is.null(db_connection)) {
-        stop("Could not find a local mf database")
+
+    if ("error" %in% class(db_connection)) {
+        stop("Could not connect to mf database: ", paste(db_connection$message, collapse = "\n"))
     }
 
     # Create mdb object, set connection to use selected schema
