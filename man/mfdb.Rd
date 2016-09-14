@@ -47,8 +47,10 @@
     # Connect to local DB, as the Iceland case study
     mdb <- mfdb('iceland')
 
-    # Connect to "mf2014" on remote DB server
-    mdb <- mfdb('Iceland', db_params = list(host = "db.mareframe-fp7.org", dbname = "mf2014")
+    # Connect to mfdb server, get prompted for your username and password
+    mdb <- mfdb('Iceland', db_params = list(host = "mfdb.rhi.hi.is"))
+    # Connect to mfdb server, get prompted for password
+    mdb <- mfdb('Iceland', db_params = list(host = "mfdb.rhi.hi.is", username = "lentinj"))
 
     # Stop it and tidy up
     mfdb_disconnect(mdb)

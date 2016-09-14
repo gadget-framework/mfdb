@@ -6,7 +6,8 @@ mfdb <- function(case_study_name = "",
     logger <- getLogger('mfdb')
 
     # Try a selection of host strings until we connect to something
-    db_defaults = list(dbname = "mf", drv = PostgreSQL())
+    db_params <- as.list(db_params)
+    db_defaults <- list(dbname = "mf", drv = PostgreSQL())
     db_guesses <- list(
         list(host = "/tmp"),
         list(host = "/var/tmp"),
@@ -14,9 +15,40 @@ mfdb <- function(case_study_name = "",
         list(host = "localhost"),
         list(host = "localhost", user = "mf", password = "mf"),
         list(host = "/tmp/pg_mfdb"))
+
+    if (identical(db_params$host, 'mfdb.rhi.hi.is')) {
+        # Enforce user
+        if (!isTRUE(nzchar(db_params$user))) {
+            db_params$user <- readline("Username: ")
+        }
+        # Enforce password
+        if (!isTRUE(nzchar(db_params$password))) {
+            if (isTRUE(is.na(Sys.getenv()['TERM']))) {
+                # No TERM, so probably not a terminal
+                db_params$password <- readline("Password: ")
+            } else {
+                system("/bin/stty -echo")
+                db_params$password <- readline("Password: ")
+                system("/bin/stty echo")
+            }
+        }
+        # Enforce SSL, no point having lots of guesses
+        db_guesses <- list(list(sslmode = "require"))
+    }
+
     for (guess in db_guesses) {
         db_combined <- c(db_params, guess, db_defaults)
         db_combined <- db_combined[!duplicated(names(db_combined))]
+
+        # SSL mode is actually added to dbname
+        if (isTRUE(nzchar(db_combined$sslmode))) {
+            db_combined$dbname <- paste(
+                c("dbname", "sslmode"),
+                c(db_combined$dbname, db_combined$sslmode),
+                sep = "=", collapse = " ")
+            db_combined$sslmode <- NULL
+        }
+
         logger$info(paste0(
             "Trying to connect to: ",
             paste(capture.output(str(db_combined)), collapse = "\n")))
