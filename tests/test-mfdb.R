@@ -66,6 +66,12 @@ ok_group("mfdb", {
             list(host = "db.com", user = "frank", password = "frank", dbname = "mf", drv = 'PostgreSQLDriver'),
             list(host = "db.com", user = "frank", password = "frank", dbname = "mf", drv = 'PostgreSQLDriver')
         )), "Overrode host/user/pass")
+
+        attempts <<- list()
+        ok(cmp_error(mfdb('Test', db_params = list(host = "mfdb.rhi.hi.is", user = "polly", password = "ppwd")), 'database'), "Didn't connect to db")
+        ok(cmp(attempts, list(
+            list(host = "mfdb.rhi.hi.is", user = "polly", password = "ppwd", dbname = "dbname=mf sslmode=require", drv = 'PostgreSQLDriver')
+        )), "Used special mfdb server parameters")
     })
 })
 
