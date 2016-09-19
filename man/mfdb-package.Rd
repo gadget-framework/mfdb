@@ -168,6 +168,12 @@ the restore is done you can rename the new schema and put the name of the old
 schema back.
 }
 
+\subsection{Using the MFDB server}{
+There is also a semi-public Postgres database available, hosted by the
+University of Iceland. This can be used from your local computer in much the
+same way as a local database, see the \link{mfdb-server} page for more
+information.
+}
 }
 
 \section{Querying data}{

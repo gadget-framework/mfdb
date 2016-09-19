@@ -1,3 +1,4 @@
+    * Document use of MFDB server
     * Force ssl/user/password when connecting to mfdb database
     * Let mfdb_import_area import divisions, so mfdb_import_division becomes unnecessary
     * Add dplyr interface
