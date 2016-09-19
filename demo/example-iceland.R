@@ -4,8 +4,8 @@ library(fjolst)
 library(geo)
 library(data.table)
 
-# Create connection to MFDB database, as the Icelandic case study
-mdb <- mfdb('Iceland')
+# Create connection to MFDB database, using our script name as the case study name
+mdb <- mfdb('example_iceland')
 
 # Import area definitions
 reitmapping <- read.table(

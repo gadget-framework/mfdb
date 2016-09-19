@@ -78,8 +78,8 @@ if (!file.exists('example-datras-data/NS-IBTS_1995.zip')) {
     setwd(oldwd)
 }
 
-# Create connection to MFDB database, as the Baltic case study
-mdb <- mfdb('Baltic')
+# Create connection to MFDB database, using our script name as the case study name
+mdb <- mfdb('example_datras')
 
 # Populated ICES gridcells we are interested in
 squares <- c(
