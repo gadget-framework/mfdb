@@ -1,6 +1,10 @@
 #!/bin/sh -e
 WWW_REPO=git@github.com:mareframe/mareframe.github.io.git
 
+# If running under travis, go into the build dir
+[ -n "${TRAVIS_BUILD_DIR}" ] && cd -- "${TRAVIS_BUILD_DIR}"
+ls -l
+
 # Make sure we are on a stable branch
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 echo $BRANCH | grep -q '^[0-9]\.x$' || exit 0
@@ -28,5 +32,8 @@ END { print "</ul></body></html>" }' \
 (
     cd ${WWW_DIR}
     git add -A ${OUT_DIR}
-    git commit -av -m "Update documentation, mfdb revision "
+    [ -n "${TRAVIS_BUILD_DIR}" ] && git config user.name "Mareframe CI bot"
+    [ -n "${TRAVIS_BUILD_DIR}" ] && git config user.email "jm+mareframe_bot@lentin.co.uk"
+    git commit -av -m "Update documentation, mfdb revision $(git rev-parse HEAD)"
+    git push
 )

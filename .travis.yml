@@ -1,5 +1,14 @@
 language: r
 sudo: required
 warnings_are_errors: true
+before_install:
+- openssl aes-256-cbc
+  -K $encrypted_de527a844e3f_key
+  -iv $encrypted_de527a844e3f_iv
+  -in deploy/documentation_key.enc
+  -out deploy/documentation_key
+  -d
+- chmod 0600 deploy/documentation_key
+- cp deploy/documentation_key ~/.ssh/id_rsa
 after_success:
-- ./update-docs.sh
+- ./deploy/update-docs.sh
