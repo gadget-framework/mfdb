@@ -339,7 +339,7 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
         NULL)
 
     tryCatch({
-        for(i in rev(1:nrow(constraints))) {
+        for(i in rev(seq_len(nrow(constraints)))) {
             mdb$logger$info(paste0("Removing constraint ", constraints[i, "table_name"], ".", constraints[i, "name"]))
             mfdb_send(mdb,
                 "ALTER TABLE ", mdb$schema, ".", constraints[i, "table_name"],
@@ -347,7 +347,7 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
         }
         code_block
     }, finally = {
-        for(i in 1:nrow(constraints)) {
+        for(i in seq_len(nrow(constraints))) {
             mdb$logger$info(paste0("Reinstating constraint ", constraints[i, "table_name"], ".", constraints[i, "name"]))
             mfdb_send(mdb,
                 "ALTER TABLE ", mdb$schema, ".", constraints[i, "table_name"],

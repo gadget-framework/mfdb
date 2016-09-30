@@ -152,13 +152,15 @@ ok_group("mfdb_update", {
 })
 
 ok_group("mfdb_disable_constraints", {
-    disable_constraints <- function(table_name, code_block) {
+    default_constraint_list <- function(table_name) data.frame(
+        name = rep(c("const1", "const2", "const3"), length(table_name)),
+        table_name = rep(table_name, each = 3),
+        definition = rep(c("a", "b", "c"), length(table_name)),
+        stringsAsFactors = FALSE)
+
+    disable_constraints <- function(table_name, code_block, constraint_list = default_constraint_list(table_name)) {
         mdb <- fake_mdb()
-        mdb$ret_rows <- data.frame(
-            name = rep(c("const1", "const2", "const3"), length(table_name)),
-            table_name = rep(table_name, each = 3),
-            definition = rep(c("a", "b", "c"), length(table_name)),
-            stringsAsFactors = FALSE)
+        mdb$ret_rows <- constraint_list
         out <- capture.output(tryCatch({
             out <- mfdb:::mfdb_disable_constraints(mdb, table_name, code_block)
             cat("Returned:", out, "\n")
@@ -201,6 +203,10 @@ ok_group("mfdb_disable_constraints", {
         "ALTER TABLE fake_schema.tbl2 ADD CONSTRAINT const2 b",
         "ALTER TABLE fake_schema.tbl2 ADD CONSTRAINT const3 c",
         "[1] \"Oh noes\"")), "Removed and replaced constraints when something went wrong")
+
+    ok(cmp(disable_constraints("tbl1", cat("executing code block\n"), constraint_list = data.frame()), c(
+        "executing code block",
+        "Returned: ")), "Still works when no constraints exist")
 })
 
 ok_group("mfdb_table_exists", {
