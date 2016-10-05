@@ -23,14 +23,7 @@ mfdb <- function(case_study_name = "",
         }
         # Enforce password
         if (!isTRUE(nzchar(db_params$password))) {
-            if (isTRUE(is.na(Sys.getenv()['TERM']))) {
-                # No TERM, so probably not a terminal
-                db_params$password <- readline("Password: ")
-            } else {
-                system("/bin/stty -echo")
-                db_params$password <- readline("Password: ")
-                system("/bin/stty echo")
-            }
+            db_params$password <- getPass::getPass("Password: ")
         }
         # Enforce SSL, no point having lots of guesses
         db_guesses <- list(list(sslmode = "require"))
