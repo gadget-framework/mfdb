@@ -217,6 +217,35 @@ schema_from_3 <- function(mdb) {
 
     mfdb4_taxonomy <- c("case_study", "institute", "gear", "vessel_type", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage")
     mfdb4_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type", "tow", "vessel")
+    mfdb4_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
+        items <- matrix(c(
+            cols,
+            unlist(lapply(keys, function (k) c(k, "", "")))
+        ), nrow = 3)
+
+        row_to_string <- function (i) {
+            paste0("    ",
+                items[1,i],
+                (if (nzchar(items[2,i])) paste("\t", items[2,i])),
+                (if (i == ncol(items)) "" else ","),
+                (if (nzchar(items[3,i])) paste("\t--", items[3,i])),
+                "\n")
+        }
+
+        mfdb_send(mdb,
+            if (nzchar(desc)) paste0("-- ", desc, "\n", collapse = ""),
+            "CREATE TABLE ", name, " (\n",
+            vapply(1:ncol(items), row_to_string, ""),
+            ")")
+        if (nzchar(desc)) mfdb_send(mdb,
+            "COMMENT ON TABLE ", name,
+            " IS ", sql_quote(desc))
+        for (i in 1:ncol(items)) {
+            if (nzchar(items[3,i])) mfdb_send(mdb,
+                "COMMENT ON COLUMN ", name, ".", items[1,i],
+                " IS ", sql_quote(items[3,i]))
+        }
+    }
     fk4 <- function (...) {
         tbls <- c(...)[c(...) %in% mfdb4_taxonomy]
         cs_tbls <- c(...)[c(...) %in% mfdb4_cs_taxonomy]
@@ -229,7 +258,7 @@ schema_from_3 <- function(mdb) {
     mfdb4_create_taxonomy_table <- function(mdb, table_name) {
         key_col <- paste0(table_name, "_id")
         if (table_name %in% mfdb4_taxonomy) {
-            mfdb_create_table(mdb, table_name, "", cols = c(
+            mfdb4_create_table(mdb, table_name, "", cols = c(
                 key_col, ifelse(table_name == "species", "BIGINT", "INT"), "Numeric ID for this entry",
                 "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
                 "t_group", paste0("VARCHAR(1024) NULL"), "Value grouping (short name)",
@@ -243,7 +272,7 @@ schema_from_3 <- function(mdb) {
                 NULL
             ))
         } else if (table_name %in% mfdb4_cs_taxonomy) {
-            mfdb_create_table(mdb, table_name, "", cols = c(
+            mfdb4_create_table(mdb, table_name, "", cols = c(
                 "case_study_id", "INT REFERENCES case_study(case_study_id)", "Case study data is relevant to",
                 key_col, ifelse(table_name == "data_source", "SERIAL", "INT"), "Numeric ID for this entry",
                 "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",

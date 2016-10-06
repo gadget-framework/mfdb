@@ -376,7 +376,7 @@ mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
 
     mfdb_send(mdb,
         if (nzchar(desc)) paste0("-- ", desc, "\n", collapse = ""),
-        "CREATE TABLE ", name, " (\n",
+        "CREATE TABLE ", mdb$schema, ".", name, " (\n",
         vapply(1:ncol(items), row_to_string, ""),
         ")")
     if (nzchar(desc)) mfdb_send(mdb,
