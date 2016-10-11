@@ -314,7 +314,8 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
     res
 }
 
-# Temporarily remove constraints from a table
+# Temporarily remove constraints from a table, assumes it's been wrapped in a transaction
+# NB: This *has* to be called within mfdb_transaction()
 mfdb_disable_constraints <- function(mdb, table_name, code_block) {
     # Based on http://blog.hagander.net/archives/131-Automatically-dropping-and-creating-constraints.html
 
