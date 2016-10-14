@@ -73,6 +73,9 @@ export(mfdb_stomach_preymeanweight)
 export(mfdb_stomach_preyweightratio)
 export(mfdb_stomach_presenceratio)
 
+# mfdb_sharing.R
+export(mfdb_share_with)
+
 # mfdb_aggregate_unaggregated.R
 export(mfdb_unaggregated)
 

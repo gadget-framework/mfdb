@@ -1,3 +1,4 @@
+    * Add mfdb_share_with, for sharing case studies on the MFDB schema
     * Force tables to be created within schema
     * Document use of MFDB server
     * Force ssl/user/password when connecting to mfdb database
