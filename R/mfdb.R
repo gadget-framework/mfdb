@@ -153,6 +153,7 @@ mfdb <- function(case_study_name = "",
     mfdb_update_schema(mdb)
     mfdb_update_taxonomy(mdb)
     mfdb_update_cs_taxonomy(mdb)
+    mfdb_update_functions(mdb)
 
     invisible(mdb)
 }
@@ -160,7 +161,6 @@ mfdb <- function(case_study_name = "",
 # Create indexes if not already there
 mfdb_finish_import <- function(mdb) {
     if (!exists('index_created', where = mdb$state)) {
-        mfdb_create_indexes(mdb)
         tables <- mfdb_fetch(mdb,
             "SELECT table_name",
             " FROM information_schema.tables",

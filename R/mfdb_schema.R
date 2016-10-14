@@ -442,15 +442,8 @@ mfdb_update_cs_taxonomy <- function(mdb) {
         stringsAsFactors = FALSE))
 }
 
-# Create any required indexes, if they don't already exist
-mfdb_create_indexes <- function(mdb) {
-   create_index <- function (table, cols) {
-       tryCatch(mfdb_send(mdb, sql_create_index(table, cols)),
-           error = function (e) {
-               if (!grepl('relation "[^"]+" already exists', e$message)) stop(e)
-           })
-   }
-
+# Create any required functions, if they don't already exist
+mfdb_update_functions <- function(mdb) {
    mfdb_create_aggregate(mdb, "WEIGHTED_MEAN",
        input_type = c("numeric", "numeric"), # value, weight
        state_type = "numeric[2]",
