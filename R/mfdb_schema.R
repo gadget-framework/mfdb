@@ -24,7 +24,10 @@ mfdb_update_schema <- function(
     while (TRUE) {
         # Find out existing schema version, if it's what we want return
         schema_version <- tryCatch({
-            res <- mfdb_fetch(mdb, "SELECT MAX(version) FROM mfdb_schema")
+            res <- mfdb_fetch(mdb, "SELECT MAX(version) FROM ", ifelse(
+                target_version < 5,
+                "mfdb_schema",
+                paste0(mdb$schema, ".mfdb_schema")))
             ifelse(nrow(res) == 0, 0, res[1, 1])
         }, error = function (e) 0)
 
