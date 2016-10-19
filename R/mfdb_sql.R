@@ -29,14 +29,25 @@ mfdb_send <- function(mdb, ..., result = "") {
     query <- paste0(c(...), collapse = "")
 
     if (class(mdb$db) == 'dbNull') {
+        if (is.list(mdb$ret_rows) && !is.data.frame(mdb$ret_rows)) {
+            # Find the first of ret_rows where the regex name matches query
+            ret_rows <- mdb$ret_rows[vapply(names(mdb$ret_rows), function (x) grepl(x, query), FALSE)]
+            if (length(ret_rows) == 0) {
+                ret_rows <- data.frame()
+            } else {
+                ret_rows <- ret_rows[[1]]
+            }
+        } else {
+            ret_rows <- mdb$ret_rows
+        }
         cat(query)
         cat("\n")
         if (is.function(result)) {
-            result(mdb$ret_rows, 0)
+            result(ret_rows, 0)
             return(invisible(NULL))
         }
         if (result == "rowcount") return(mdb$ret_rowcount)
-        if (result == "rows") return(mdb$ret_rows)
+        if (result == "rows") return(ret_rows)
         return(mdb$ret_recordset)
     }
 
@@ -171,9 +182,21 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
 # Temporarily remove constraints from a table, assumes it's been wrapped in a transaction
 # NB: This *has* to be called within mfdb_transaction()
 mfdb_disable_constraints <- function(mdb, table_name, code_block) {
-    # Based on http://blog.hagander.net/archives/131-Automatically-dropping-and-creating-constraints.html
+    # If we're not the owner of these tables, just execute code_block
+    owner <- mfdb_fetch(mdb,
+        "SELECT COUNT(*)",
+        " FROM pg_tables",
+        " WHERE tableowner = current_user",
+        " AND schemaname IN ", sql_quote(mdb$schema, always_bracket = TRUE),
+        " AND tablename IN ", sql_quote(table_name, always_bracket = TRUE),
+        NULL)[1,1]
+    if (owner == 0) {
+        mdb$logger$info("Not owner of table, so can't drop constraints")
+        return(code_block)
+    }
 
     # Get a list of constraints and the order to recreate them
+    # Based on http://blog.hagander.net/archives/131-Automatically-dropping-and-creating-constraints.html
     constraints <- mfdb_fetch(mdb,
         "SELECT relname AS table_name, conname AS name",
         ", pg_get_constraintdef(pg_constraint.oid) AS definition",

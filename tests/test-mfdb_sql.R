@@ -112,16 +112,24 @@ ok_group("mfdb_disable_constraints", {
         definition = rep(c("a", "b", "c"), length(table_name)),
         stringsAsFactors = FALSE)
 
-    disable_constraints <- function(table_name, code_block, constraint_list = default_constraint_list(table_name)) {
+    disable_constraints <- function(table_name, code_block, am_owner = 1, constraint_list = default_constraint_list(table_name)) {
         mdb <- fake_mdb()
-        mdb$ret_rows <- constraint_list
+        mdb$ret_rows <- list(
+            "tableowner = current_user" = data.frame(count = am_owner),
+            "SELECT relname" = constraint_list
+        )
         out <- capture.output(tryCatch({
             out <- mfdb:::mfdb_disable_constraints(mdb, table_name, code_block)
             cat("Returned:", out, "\n")
         }, error = function (e) e$message))
 
-        ok(grepl("SELECT.*pg_get_constraintdef", out[[1]]), "First item selects constraints")
-        return(out[-1])
+        if (am_owner == 0) {
+            ok(grepl("SELECT.*current_user", out[[1]]), "First query selects ownership")
+            return(out[2:length(out)])
+        }
+        ok(grepl("SELECT.*current_user", out[[1]]), "First query selects ownership")
+        ok(grepl("SELECT.*pg_get_constraintdef", out[[2]]), "Second query selects constraints")
+        return(out[3:length(out)])
     }
 
     ok(cmp(disable_constraints("tbl1", cat("executing code block\n")), c(
@@ -161,6 +169,11 @@ ok_group("mfdb_disable_constraints", {
     ok(cmp(disable_constraints("tbl1", cat("executing code block\n"), constraint_list = data.frame()), c(
         "executing code block",
         "Returned: ")), "Still works when no constraints exist")
+
+    ok(cmp(disable_constraints("tbl1", cat("executing code block\n"), am_owner = 0), c(
+        "executing code block",
+        "Returned: ")), "Left constraints alone when not owner")
+
 })
 
 ok_group("mfdb_table_exists", {
