@@ -146,11 +146,19 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
     if (nrow(cols) == 0) stop("Didn't find table ", target_table)
 
     mdb$logger$info("Writing rows to temporary table")
-    if (mfdb_table_exists(mdb, temp_tbl)) mfdb_send(mdb, "DROP TABLE ", temp_tbl)
-    mfdb_send(mdb, "SET CLIENT_ENCODING TO 'LATIN1'") # Not sure.
-    dbWriteTable(mdb$db, temp_tbl, data_in, row.names = FALSE,
-        field.types = structure(cols[names(data_in), 'data_type'], names = names(data_in)))
-    mfdb_send(mdb, "SET CLIENT_ENCODING TO 'UTF8'")
+
+    tryCatch({
+        mfdb_send(mdb, "SET CLIENT_ENCODING TO 'LATIN1'") # Not sure.
+        mfdb_send(mdb, "SET search_path TO pg_temp")
+        if (mfdb_table_exists(mdb, temp_tbl)) mfdb_send(mdb, "DROP TABLE ", temp_tbl)
+
+        dbWriteTable(mdb$db, temp_tbl, data_in, row.names = FALSE,
+            field.types = structure(cols[names(data_in), 'data_type'], names = names(data_in)))
+    }, finally = {
+        mfdb_send(mdb, "SET CLIENT_ENCODING TO 'UTF8'")
+        mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
+    })
+    temp_tbl <- paste(c('pg_temp', temp_tbl), collapse = ".")
 
     res <- tryCatch(fn(temp_tbl), error = function (e) {
         tryCatch(mfdb_send(mdb, "DROP TABLE ", temp_tbl), error = function (e) NULL)
