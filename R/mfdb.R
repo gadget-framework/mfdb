@@ -153,7 +153,15 @@ mfdb <- function(case_study_name = "",
     mfdb_update_schema(mdb)
     mfdb_update_taxonomy(mdb)
     mfdb_update_cs_taxonomy(mdb)
-    mfdb_update_functions(mdb)
+    tryCatch({
+        mfdb_update_functions(mdb)
+    }, error = function (e) {
+        if (grepl('ERROR:\\s+permission denied', e$message)) {
+            TRUE
+        } else {
+            stop(e)
+        }
+    })
 
     invisible(mdb)
 }
