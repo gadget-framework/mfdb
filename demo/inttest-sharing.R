@@ -93,3 +93,13 @@ mfdb_share_with(mdb, 'gelda', query = FALSE, import = FALSE)
 ok(
     cmp_error(mfdb(schema_name, db_params = gelda_params), 'denied'),
     "Gelda can no longer connect")
+
+# Use public
+mfdb_share_with(mdb, 'public')
+ok(
+    cmp(mfdb_sample_count(gelda_mdb, c(), list())[[1]]$number, 13),
+    "Now we've granted permissions, they can")
+ok(
+    cmp_error(mfdb_import_survey(gelda_mdb, data_source = "gelda", more_data), "denied"),
+    "But importing isn't allowed")
+mfdb_share_with(mdb, 'public', query = FALSE, import = FALSE)

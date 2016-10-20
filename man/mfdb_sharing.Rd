@@ -15,7 +15,7 @@ mfdb_share_with(mdb, user_or_role, query = TRUE, import = FALSE)
         (required) A database connection created by \code{mfdb}()
     }
     \item{user_or_role}{
-        (required) Another database user, or a role
+        (required) Another database user, or a role, or 'public' to share with all users
     }
     \item{query}{
         Should the user be able to query the current case study?
