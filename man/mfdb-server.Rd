@@ -58,6 +58,16 @@ If you want to copy from the MFDB server to your computer, put the \code{--host}
 and \code{--username} parameters onto the \code{pg_dump} command.
 }
 
+\section{Sharing case studies with other users}{
+By default, only you are able to share case study data. However the \link{mfdb_share_with}()
+command allows you to let others read / modify your case study. For example:-
+
+\preformatted{mfdb_share_with(mdb, 'anne')}
+
+... will allow anne to read the case study you are currently connected to.
+}
+
+
 \section{Connecting directly to MFDB server}{
 Finally, you can connect directly using psql if it proves useful. Note you
 shouldn't need to do this for general use.
