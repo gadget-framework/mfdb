@@ -43,7 +43,7 @@ year    month   areacell        species length  age     weight
 ")
 
 # Make sure our user gelda exists
-mfdb:::mfdb_send(mdb, "DROP OWNED BY gelda")
+tryCatch(mfdb:::mfdb_send(mdb, "DROP OWNED BY gelda"), error = function (e) NULL)
 mfdb:::mfdb_send(mdb, "DROP USER IF EXISTS gelda")
 mfdb:::mfdb_send(mdb, "CREATE USER gelda WITH PASSWORD 'adleg'")
 gelda_params <- db_params
