@@ -39,6 +39,12 @@ ok(cmp(
     mfdb:::mfdb_fetch(mdb, "SELECT MAX(version) FROM mfdb_schema")[1,1],
     as.integer(gsub("\\..*", "", packageVersion("mfdb")))), "Database now at latest release")
 
+# Can add more data after upgrading
+mfdb_import_survey(mdb, data_source = "had_post_upgrade", table_string("
+year    month   areacell        species length  age     weight
+2000    1       45G01           HAD     21      2       210
+    "))
+
 # Check schema name edge cases
 ok(cmp_error(
     mfdb('public', db_params = db_params, save_temp_tables = FALSE),

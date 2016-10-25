@@ -146,6 +146,12 @@ mfdb <- function(case_study_name = "",
                     else
                         c(" WHERE case_study_id = ", old_case_study_id),
                     "");
+
+                # Ensure the sequence is up to date for the table
+                table_primary_key <- paste0(table_name, '_id')
+                mfdb_fetch(mdb,
+                    "SELECT pg_catalog.setval(pg_get_serial_sequence('", table_name, "', '", table_primary_key, "'), MAX(", table_primary_key, "))",
+                    " FROM ", table_name)
             }
         }
     }
