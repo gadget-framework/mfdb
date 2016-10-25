@@ -55,3 +55,6 @@ ok(cmp_error(
 ok(cmp_error(
     mfdb('', db_params = db_params, save_temp_tables = FALSE),
     "case_study_name[^X]*\\* test"), "Not allowed to give an empty case_study name, test schema still there")
+
+# Drop public schema so we don't import this data later
+mdb <- mfdb('public', db_params = db_params, destroy_schema = TRUE)
