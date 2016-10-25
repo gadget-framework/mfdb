@@ -1,3 +1,4 @@
+    * destroy_schema = TRUE should drop the whole schema, not just the tables within
     * Add mfdb_share_with, for sharing case studies on the MFDB schema
     * Force tables to be created within schema
     * Document use of MFDB server
