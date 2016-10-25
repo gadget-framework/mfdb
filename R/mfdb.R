@@ -78,13 +78,11 @@ mfdb <- function(case_study_name = "",
         stop("You must supply a schema name for case_study_name to use in the database. Available names:-\n", paste0("* ", names, collapse = "\n"))
     }
 
-    # Set search path for connection, so we look in correct schema
-    mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
-
     if (destroy_schema) {
         if (schema_count == 0) {
             mdb$logger$info(paste0("Schema ", mdb$schema, " does not exist. Doing nothing"))
         } else {
+            mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
             mfdb_destroy_schema(mdb)
             mdb$logger$info(paste0("Schema ", mdb$schema, " removed, connect again to repopulate DB."))
         }
@@ -98,9 +96,12 @@ mfdb <- function(case_study_name = "",
     }
 
     # Update schema and taxonomies
-    if (schema_count == 0) {
+    if (schema_count > 0) {
+        mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
+    } else {
         logger$info(paste0("No schema, creating ", mdb$schema))
         mfdb_send(mdb, "CREATE SCHEMA ", mdb$schema)
+        mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
 
         # If schema didn't exist before, see if there's data to be had in the old public tables
         res <- tryCatch(
