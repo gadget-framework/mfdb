@@ -8,7 +8,7 @@ mfdb_show_schema <- function() {
 mfdb_destroy_schema <- function(mdb) {
     for(t in c('prey', 'predator', 'sample', 'survey', 'division', 'survey_index', 'fleet', mfdb_cs_taxonomy, mfdb_taxonomy, 'mfdb_schema')) {
         mdb$logger$info(paste("Removing table", t))
-        tryCatch(mfdb_send(mdb, "DROP TABLE ", t, " CASCADE"), error = function(e) {
+        tryCatch(mfdb_send(mdb, "DROP TABLE ", mdb$schema, ".", t, " CASCADE"), error = function(e) {
             if(grepl("does not exist", e$message)) return();
             stop(e)
         })
