@@ -13,8 +13,8 @@ source('mfdb/tests/utils/inttest-helpers.R')
 
 # Empty database & rebuild
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('Test', db_params = db_params, destroy_schema = TRUE)
-mdb <- mfdb('Test', db_params = db_params, save_temp_tables = TRUE) # TODO:
+mfdb('inttest-dplyr', db_params = db_params, destroy_schema = TRUE)
+mdb <- mfdb('inttest-dplyr', db_params = db_params, save_temp_tables = TRUE) # TODO:
 
 # Set-up areas/divisions
 mfdb_import_area(mdb, data.frame(
