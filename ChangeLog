@@ -1,3 +1,7 @@
+2015-10-25  Jamie Lentin  <lentinj@shuttlethread.com>
+
+    Version 5.1-0
+
     * destroy_schema = TRUE should drop the whole schema, not just the tables within
     * Add mfdb_share_with, for sharing case studies on the MFDB schema
     * Force tables to be created within schema
@@ -8,9 +12,6 @@
     * Allow EwE output to be generated without vessel data
     * When presented with overlapping IDs in vocabularies remap the ID.
     * mfdb_area_size can be used to get the entire area size
-
-(unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
-
     * Add EwE matrix output functions
 
 2016-05-20  Jamie Lentin  <lentinj@shuttlethread.com>

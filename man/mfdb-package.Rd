@@ -15,7 +15,7 @@ Tools to query a MareFrame DB and reformat results in forms
 \tabular{ll}{
 Package: \tab mfdb\cr
 Type: \tab Package\cr
-Version: \tab 5.0-0\cr
+Version: \tab 5.1-0\cr
 Date: \tab 2014-04-23\cr
 License: \tab GPL-3\cr
 Depends: \tab R (>= 3.1.1)\cr
