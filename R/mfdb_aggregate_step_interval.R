@@ -6,6 +6,14 @@ mfdb_step_interval <- function (prefix, by, from = 0, to = NULL, open_ended = FA
     if(!is.wholenumber(by)) {
         stop("Non-integer intervals not supported---by must be a whole number")
     }
+
+    # Convert old T/F form into a list of upper/lower
+    if (identical(TRUE, open_ended)) {
+        open_ended = c('upper')
+    } else if (identical(FALSE, open_ended)) {
+        open_ended = c()
+    }
+
     return(structure(
         list(prefix = prefix, by = by, from = from, to = to),
         open_ended = open_ended,
@@ -26,8 +34,8 @@ select_clause.mfdb_step_interval <- function(mdb, x, col, outputname) {
 # Ensure value is within range specified
 where_clause.mfdb_step_interval <- function(mdb, x, col, outputname) {
     c(
-        paste(col, ">=", sql_quote(x$from)),
-        if (!is.null(x$to) && !attr(x, 'open_ended')) paste(col, "<", sql_quote(x$to)),
+        if (!is.null(x$from) && !('lower' %in% attr(x, 'open_ended'))) paste(col, ">=", sql_quote(x$from)),
+        if (!is.null(x$to) && !('upper' %in% attr(x, 'open_ended'))) paste(col, "<", sql_quote(x$to)),
         NULL)
 }
 

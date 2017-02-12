@@ -202,6 +202,21 @@ ok_group("Unaggregated length / weight / age samples", {
             length = mfdb_step_interval("len", from = 50, to = 100, by = 5)))),
         "Can use either mfdb_interval or mfdb_step_interval")
 
+    ok(cmp(
+        mfdb_sample_meanweight_stddev(mdb, c('age'), list(
+            year = 1998:2000,
+            area = area_group,
+            timestep = mfdb_timestep_biannually,
+            age = age_group,
+            length = mfdb_interval("len", seq(80, 90, by = 5), open_ended = c('lower', 'upper')))),
+        mfdb_sample_meanweight_stddev(mdb, c('age'), list(
+            year = 1998:2000,
+            area = area_group,
+            step = mfdb_timestep_biannually,
+            age = age_group,
+            length = mfdb_step_interval("len", from = 80, to = 90, by = 5, open_ended = c('lower', 'upper'))))),
+        "Can use either mfdb_interval or mfdb_step_interval")
+
     # Age / length splits by age
     length_group <- mfdb_interval("len", seq(50, 100, by = 5))
     age_group <- mfdb_group(age1 = c(1), age2 = c(2))

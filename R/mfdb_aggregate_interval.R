@@ -5,6 +5,14 @@ mfdb_interval <- function (prefix, vect, open_ended = FALSE) {
     if (length(vect) < 2) {
         stop("vect must at least be 2 items long (min & max)")
     }
+
+    # Convert old T/F form into a list of upper/lower
+    if (identical(TRUE, open_ended)) {
+        open_ended = c('upper')
+    } else if (identical(FALSE, open_ended)) {
+        open_ended = c()
+    }
+
     return(structure(vect,
         names = paste0(prefix, vect),
         open_ended = open_ended,
@@ -14,22 +22,36 @@ mfdb_interval <- function (prefix, vect, open_ended = FALSE) {
 # Generate CASE statement to pick correct group for value
 select_clause.mfdb_interval <- function(mdb, x, col, outputname) {
     sorted <- sort(x, decreasing = TRUE)
-    if (!attr(x, 'open_ended')) {
+    final <- c()
+
+    if (!('upper' %in% attr(x, 'open_ended'))) {
         # Assign stuff outside highest group to NULL
         names(sorted)[[1]] <- NA
     }
+
+    if ('lower' %in% attr(x, 'open_ended')) {
+        # Final item should be a less-than instead
+        final <- tail(sorted, 1)
+        sorted <- head(sorted, -1)
+
+        final <- paste("WHEN",
+            col, "<", tail(sorted, 1), "THEN",
+            sql_quote(names(final)), collapse = " ")
+    }
+
     paste("CASE",
-        paste("WHEN",
+        paste("WHEN",  # TODO: open_ended: lower condition
             col, ">=", sorted, "THEN",
-            vapply(names(sorted), sql_quote, ""), collapse = " ")
-        , "END AS", outputname)
+            vapply(names(sorted), sql_quote, ""), collapse = " "),
+        final,
+        "END AS", outputname)
 }
 
 # Ensure value is within range specified
 where_clause.mfdb_interval <- function(mdb, x, col, outputname) {
     c(
-        paste(col, ">=", sql_quote(min(x))),
-        if (!attr(x, 'open_ended')) paste(col, "<", sql_quote(max(x))),
+        if (!('lower' %in% attr(x, 'open_ended'))) paste(col, ">=", sql_quote(min(x))),
+        if (!('upper' %in% attr(x, 'open_ended'))) paste(col, "<", sql_quote(max(x))),
         NULL)
 }
 

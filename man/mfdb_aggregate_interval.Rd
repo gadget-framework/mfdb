@@ -18,7 +18,9 @@ mfdb_interval(prefix, vect, open_ended = FALSE)
         (required) A vector representing the minimum for each group, and the maximum
     }
     \item{open_ended}{
-        If true, the last group will include everything >= the last value in vect
+        If TRUE / c('upper'), the last group will include everything >= the last value in vect.
+        If c('lower'), the first group will include everything < the first value in vect.
+        If c('upper', 'lower'), both the above occur.
     }
 }
 

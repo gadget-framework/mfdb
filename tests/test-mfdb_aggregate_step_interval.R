@@ -83,4 +83,13 @@ ok_group("Aggregates with open_ended mfdb_step_interval", local({
     ok(cmp(select_clause(mdb, g, "col", "out"), "'l' || (least(greatest(floor(col)::integer, 10), 90) / 5) * 5 AS out"), "Select clause")
     ok(cmp(from_clause(mdb, g, "col", "out"), c()), "From clause")
     ok(cmp(where_clause(mdb, g, "col", "out"), c("col >= 10")), "Where clause")
+
+    g <<- mfdb_step_interval('l', 5, from = 10, to = 90, open_ended = c('upper'))
+    ok(cmp(where_clause(mdb, g, "col", "out"), c("col >= 10")), "Where clause c('upper')")
+
+    g <<- mfdb_step_interval('l', 5, from = 10, to = 90, open_ended = c('lower'))
+    ok(cmp(where_clause(mdb, g, "col", "out"), c("col < 90")), "Where clause c('lower')")
+
+    g <<- mfdb_step_interval('l', 5, from = 10, to = 90, open_ended = c('upper', 'lower'))
+    ok(cmp(where_clause(mdb, g, "col", "out"), c()), "Where clause c('upper', 'lower')")
 }, asNamespace('mfdb')))
