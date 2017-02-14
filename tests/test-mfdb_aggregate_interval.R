@@ -59,12 +59,12 @@ ok_group("Aggregates with open_ended mfdb_interval", local({
     ok(cmp(where_clause(mdb, g, "col", "out"), "col >= 10"), "Where clause")
 
     g <<- mfdb_interval('l', c(10, 20, 100), open_ended = c('upper'))
-    ok(cmp(select_clause(mdb, g, "col", "out"), "CASE WHEN col >= 20 THEN 'l20' WHEN col >= 10 THEN 'l10'  END AS out"), "Select clause c('upper')")
+    ok(cmp(select_clause(mdb, g, "col", "out"), "CASE WHEN col >= 100 THEN 'l20' WHEN col >= 20 THEN 'l20' WHEN col >= 10 THEN 'l10'  END AS out"), "Select clause c('upper')")
 
     g <<- mfdb_interval('l', c(10, 20, 100), open_ended = c('lower'))
     ok(cmp(select_clause(mdb, g, "col", "out"), "CASE WHEN col >= 100 THEN NULL WHEN col >= 20 THEN 'l20' WHEN col < 20 THEN 'l10' END AS out"), "Select clause c('lower')")
 
     g <<- mfdb_interval('l', c(10, 20, 100), open_ended = c('lower', 'upper'))
-    ok(cmp(select_clause(mdb, g, "col", "out"), "CASE WHEN col >= 100 THEN 'l100' WHEN col >= 20 THEN 'l20' WHEN col < 20 THEN 'l10' END AS out"), "Select clause c('lower', 'upper')")
+    ok(cmp(select_clause(mdb, g, "col", "out"), "CASE WHEN col >= 100 THEN 'l20' WHEN col >= 20 THEN 'l20' WHEN col < 20 THEN 'l10' END AS out"), "Select clause c('lower', 'upper')")
 
 }, asNamespace('mfdb')))
