@@ -25,8 +25,13 @@ select_clause.mfdb_interval <- function(mdb, x, col, outputname) {
     final <- c()
 
     if (!('upper' %in% attr(x, 'open_ended'))) {
-        # Assign stuff outside highest group to NULL
-        names(sorted)[[1]] <- NA
+      # Assign stuff outside highest group to NULL
+      names(sorted)[[1]] <- NA
+    } 
+    
+    if('upper' %in% attr(x, 'open_ended')){
+      # assign everything outside the highest group to the highest interval  
+      sorted <- sorted[-1] 
     }
 
     if ('lower' %in% attr(x, 'open_ended')) {
