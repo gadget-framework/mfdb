@@ -23,18 +23,15 @@ mfdb_interval <- function (prefix, vect, open_ended = FALSE) {
 select_clause.mfdb_interval <- function(mdb, x, col, outputname) {
     sorted <- sort(x, decreasing = TRUE)
     final <- c()
-    
 
-    
     if (!('upper' %in% attr(x, 'open_ended'))) {
-      # Assign stuff outside highest group to NULL
-      names(sorted)[[1]] <- NA
+        # Assign stuff outside highest group to NULL
+        names(sorted)[[1]] <- NA
     } else {
-      # assign everything outside the highest group to the highest interval  
-     names(sorted)[1]<-names(sorted[2])
+        # assign everything outside the highest group to the highest interval
+        names(sorted)[1]<-names(sorted[2])
     }
-    
-    
+
     if ('lower' %in% attr(x, 'open_ended')) {
         # Final item should be a less-than instead
         final <- tail(sorted, 1)
@@ -45,9 +42,6 @@ select_clause.mfdb_interval <- function(mdb, x, col, outputname) {
             sql_quote(names(final)), collapse = " ")
     }
 
-    
-
-    
     paste("CASE",
         paste("WHEN",  # TODO: open_ended: lower condition
             col, ">=", sorted, "THEN",

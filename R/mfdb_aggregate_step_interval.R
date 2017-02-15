@@ -41,30 +41,30 @@ where_clause.mfdb_step_interval <- function(mdb, x, col, outputname) {
 
 # Return a list of the form "group" = c("min", "max"), as required by gadget_file
 agg_summary.mfdb_step_interval <- function(mdb, x, col, outputname, data, sample_num) {
-  if (!is.null(x$to)) {
-    to <- x$to
-  } else {
-    # Find the biggest grouping in the data, go one up
-    if (is.null(data[[outputname]])) {
-      stop("Column ", outputname, " missing from data")
+    if (!is.null(x$to)) {
+        to <- x$to
+    } else {
+        # Find the biggest grouping in the data, go one up
+        if (is.null(data[[outputname]])) {
+            stop("Column ", outputname, " missing from data")
+        }
+        to <- max(as.integer(gsub(paste0("^", x$prefix), "", data[[outputname]]))) + x$by
     }
-    to <- max(as.integer(gsub(paste0("^", x$prefix), "", data[[outputname]]))) + x$by
-  }
-  
-  if('upper' %in% attr(x, 'open_ended')){
-    ## go one up
-    to <- to + x$by
-  }
-  
-  # Vector of groupings
-  out <- seq(from = x$from, to = to, by = x$by)
-  names(out) <- paste0(x$prefix, out)
-  
-  # Expand this to have min/max values
-  return(mapply(function (curVal, nextVal) {
-    structure(
-      call("seq", curVal, nextVal - 1),
-      min = curVal,
-      max = nextVal)
-  }, out[1:length(out) - 1], out[2:length(out)], SIMPLIFY = FALSE))
+
+    if('upper' %in% attr(x, 'open_ended')){
+        ## go one up
+        to <- to + x$by
+    }
+
+    # Vector of groupings
+    out <- seq(from = x$from, to = to, by = x$by)
+    names(out) <- paste0(x$prefix, out)
+
+    # Expand this to have min/max values
+    return(mapply(function (curVal, nextVal) {
+        structure(
+            call("seq", curVal, nextVal - 1),
+            min = curVal,
+            max = nextVal)
+    }, out[1:length(out) - 1], out[2:length(out)], SIMPLIFY = FALSE))
 }
