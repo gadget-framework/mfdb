@@ -203,19 +203,110 @@ ok_group("Unaggregated length / weight / age samples", {
         "Can use either mfdb_interval or mfdb_step_interval")
 
     ok(cmp(
-        mfdb_sample_meanweight_stddev(mdb, c('age'), list(
+        unattr(mfdb_sample_count(mdb, c('length'), list(
             year = 1998:2000,
-            area = area_group,
-            timestep = mfdb_timestep_biannually,
-            age = age_group,
-            length = mfdb_interval("len", seq(80, 90, by = 5), open_ended = c('lower', 'upper')))),
-        mfdb_sample_meanweight_stddev(mdb, c('age'), list(
+            length = mfdb_interval("len", seq(30, 60, by = 10), open_ended = c())))[[1]]),
+        data.frame(
+            year = as.integer(1998),
+            step = 'all',
+            area = 'all',
+            length = c('len30', 'len40', 'len50'),
+            number = c(5, 1, 1),
+            stringsAsFactors = FALSE
+        )
+    ), "Without open_ended, only 30,34,35,35,36 46 and 50 fit in bounds")
+    ok(cmp(
+        unattr(mfdb_sample_count(mdb, c('length'), list(
             year = 1998:2000,
-            area = area_group,
-            step = mfdb_timestep_biannually,
-            age = age_group,
-            length = mfdb_step_interval("len", from = 80, to = 90, by = 5, open_ended = c('lower', 'upper'))))),
-        "Can use either mfdb_interval or mfdb_step_interval")
+            length = mfdb_interval("len", seq(30, 60, by = 10), open_ended = c("upper"))))[[1]]),
+        data.frame(
+            year = as.integer(1998),
+            step = 'all',
+            area = 'all',
+            length = c('len30', 'len40', 'len50'),
+            number = c(5, 1, 3),
+            stringsAsFactors = FALSE
+        )
+    ), "Upper adds 62,55 to upper bound")
+    ok(cmp(
+        unattr(mfdb_sample_count(mdb, c('length'), list(
+            year = 1998:2000,
+            length = mfdb_interval("len", seq(30, 60, by = 10), open_ended = c("lower"))))[[1]]),
+        data.frame(
+            year = as.integer(1998),
+            step = 'all',
+            area = 'all',
+            length = c('len30', 'len40', 'len50'),
+            number = c(8, 1, 1),
+            stringsAsFactors = FALSE
+        )
+    ), "Lower adds 10,10,22 to lower bound")
+    ok(cmp(
+        unattr(mfdb_sample_count(mdb, c('length'), list(
+            year = 1998:2000,
+            length = mfdb_interval("len", seq(30, 60, by = 10), open_ended = c("upper", "lower"))))[[1]]),
+        data.frame(
+            year = as.integer(1998),
+            step = 'all',
+            area = 'all',
+            length = c('len30', 'len40', 'len50'),
+            number = c(8, 1, 3),
+            stringsAsFactors = FALSE
+        )
+    ), "Can do both at the same time")
+
+    ok(cmp(
+        unattr(mfdb_sample_count(mdb, c('length'), list(
+            year = 1998:2000,
+            length = mfdb_step_interval("len", 30, 60, by = 10, open_ended = c())))[[1]]),
+        data.frame(
+            year = as.integer(1998),
+            step = 'all',
+            area = 'all',
+            length = c('len30', 'len40', 'len50'),
+            number = c(5, 1, 1),
+            stringsAsFactors = FALSE
+        )
+    ), "Without open_ended, only 30,34,35,35,36 46 and 50 fit in bounds (step_interval)")
+    ok(cmp(
+        unattr(mfdb_sample_count(mdb, c('length'), list(
+            year = 1998:2000,
+            length = mfdb_step_interval("len", 30, 60, by = 10, open_ended = c("upper"))))[[1]]),
+        data.frame(
+            year = as.integer(1998),
+            step = 'all',
+            area = 'all',
+            length = c('len30', 'len40', 'len50'),
+            number = c(5, 1, 3),
+            stringsAsFactors = FALSE
+        )
+    ), "Upper adds 62,55 to upper bound (step_interval)")
+    ok(cmp(
+        unattr(mfdb_sample_count(mdb, c('length'), list(
+            year = 1998:2000,
+            length = mfdb_step_interval("len", 30, 60, by = 10, open_ended = c("lower"))))[[1]]),
+        data.frame(
+            year = as.integer(1998),
+            step = 'all',
+            area = 'all',
+            length = c('len30', 'len40', 'len50'),
+            number = c(8, 1, 1),
+            stringsAsFactors = FALSE
+        )
+    ), "Lower adds 10,10,22 to lower bound (step_interval)")
+    ok(cmp(
+        unattr(mfdb_sample_count(mdb, c('length'), list(
+            year = 1998:2000,
+            length = mfdb_step_interval("len", 30, 60, by = 10, open_ended = c("upper", "lower"))))[[1]]),
+        data.frame(
+            year = as.integer(1998),
+            step = 'all',
+            area = 'all',
+            length = c('len30', 'len40', 'len50'),
+            number = c(8, 1, 3),
+            stringsAsFactors = FALSE
+        )
+    ), "Can do both at the same time (step_interval)")
 
     # Age / length splits by age
     length_group <- mfdb_interval("len", seq(50, 100, by = 5))
