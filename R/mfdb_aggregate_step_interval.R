@@ -24,7 +24,7 @@ mfdb_step_interval <- function (prefix, by, from = 0, to = NULL, open_ended = FA
 select_clause.mfdb_step_interval <- function(mdb, x, col, outputname) {
     #TODO: add x$from somewhere to fudge steps
     val <- paste0("greatest(floor(", col, ")::integer, ", sql_quote(x$from), ")")
-    if (!is.null(x$to)) val <- paste0("least(", val, ", ", sql_quote(x$to), ")")
+    if (!is.null(x$to)) val <- paste0("least(", val, ", ", sql_quote(x$to - x$by), ")")
 
     paste0(sql_quote(x$prefix),
         " || (", val, " / ", sql_quote(x$by), ") * ", sql_quote(x$by),
@@ -49,11 +49,6 @@ agg_summary.mfdb_step_interval <- function(mdb, x, col, outputname, data, sample
             stop("Column ", outputname, " missing from data")
         }
         to <- max(as.integer(gsub(paste0("^", x$prefix), "", data[[outputname]]))) + x$by
-    }
-
-    if('upper' %in% attr(x, 'open_ended')){
-        ## go one up
-        to <- to + x$by
     }
 
     # Vector of groupings

@@ -21,9 +21,10 @@ mfdb_step_interval(prefix, by, from = 0, to = NULL, open_ended = FALSE)
         Start / end of the sequence. Defaults to 0 / infinity respectively.
     }
     \item{open_ended}{
-        If TRUE / c('upper'), the last group will include everything >= the last value in vect.
-        If c('lower'), the first group will include everything < the first value in vect.
+        If TRUE / c('upper'), the last group will ignore it's upper bound and include any value.
+        If c('lower'), the first group will ignore it's lower bound include everything < the first value in vect.
         If c('upper', 'lower'), both the above occur.
+        This is useful when creating plus groups for GADGET, as GADGET will still be presented a bounded group, but will contain all remaining data.
     }
 }
 

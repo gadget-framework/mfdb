@@ -47,6 +47,15 @@ ok_group("Can convert mfdb_step_intervals into lists", local({
             l30 = structure(call("seq", 30, 39), min = 30, max = 40),
             l40 = structure(call("seq", 40, 49), min = 40, max = 50))),
         "Can convert unbounded interval using returned data (max: 40)")
+
+    ok(cmp(
+        agg_summary(mdb, mfdb_step_interval('l', 10, from = 10, to = 50, open_ended = c('upper')), 'c.len', 'len', data.frame(), 0),
+        list(
+            l10 = structure(call("seq", 10, 19), min = 10, max = 20),
+            l20 = structure(call("seq", 20, 29), min = 20, max = 30),
+            l30 = structure(call("seq", 30, 39), min = 30, max = 40),
+            l40 = structure(call("seq", 40, 49), min = 40, max = 50))),
+        "Being defined as open_ended=upper makes no difference to the structure of the group")
 }, asNamespace('mfdb')))
 
 ok_group("Aggregates with close_ended mfdb_step_interval", local({
@@ -62,7 +71,7 @@ ok_group("Aggregates with close_ended mfdb_step_interval", local({
     ok(cmp(capture.output(pre_query(NULL, g, "col")), c(
         "NULL")), "Nothing happened pre_query")
     ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
-    ok(cmp(select_clause(mdb, g, "col", "out"), "'l' || (least(greatest(floor(col)::integer, 10), 90) / 5) * 5 AS out"), "Select clause")
+    ok(cmp(select_clause(mdb, g, "col", "out"), "'l' || (least(greatest(floor(col)::integer, 10), 85) / 5) * 5 AS out"), "Select clause")
     ok(cmp(from_clause(mdb, g, "col", "out"), c()), "From clause")
     ok(cmp(where_clause(mdb, g, "col", "out"), c("col >= 10", "col < 90")), "Where clause")
 }, asNamespace('mfdb')))
@@ -80,7 +89,7 @@ ok_group("Aggregates with open_ended mfdb_step_interval", local({
     ok(cmp(capture.output(pre_query(NULL, g, "col")), c(
         "NULL")), "Nothing happened pre_query")
     ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
-    ok(cmp(select_clause(mdb, g, "col", "out"), "'l' || (least(greatest(floor(col)::integer, 10), 90) / 5) * 5 AS out"), "Select clause")
+    ok(cmp(select_clause(mdb, g, "col", "out"), "'l' || (least(greatest(floor(col)::integer, 10), 85) / 5) * 5 AS out"), "Select clause")
     ok(cmp(from_clause(mdb, g, "col", "out"), c()), "From clause")
     ok(cmp(where_clause(mdb, g, "col", "out"), c("col >= 10")), "Where clause")
 
