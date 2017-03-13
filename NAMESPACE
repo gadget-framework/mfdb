@@ -17,6 +17,7 @@ export(mfdb_bootstrap_group)
 
 # mfdb_aggregate_interval.R
 export(mfdb_interval)
+importFrom("utils", "tail")
 
 # mfdb_aggregate_step_interval.R
 export(mfdb_step_interval)
