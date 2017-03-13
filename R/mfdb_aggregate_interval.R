@@ -43,7 +43,7 @@ select_clause.mfdb_interval <- function(mdb, x, col, outputname) {
     }
 
     paste("CASE",
-        paste("WHEN",  # TODO: open_ended: lower condition
+        paste("WHEN",
             col, ">=", sorted, "THEN",
             vapply(names(sorted), sql_quote, ""), collapse = " "),
         final,
