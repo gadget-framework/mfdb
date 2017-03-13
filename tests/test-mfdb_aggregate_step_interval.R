@@ -24,11 +24,11 @@ ok_group("Can convert mfdb_step_intervals into lists", local({
             l20 = structure(call("seq", 20, 29), min = 20, max = 30),
             l30 = structure(call("seq", 30, 39), min = 30, max = 40),
             l40 = structure(call("seq", 40, 49), min = 40, max = 50))),
-        "Can convert closed interval to list")
+        "Can convert hard-coded interval to list")
 
     ok(cmp_error(
         agg_summary(mdb, mfdb_step_interval('l', 10), 'c.claire', 'claire', data.frame(), 0),
-        "claire"), "Can't convert open interval without data")
+        "claire"), "Can't convert unbounded interval without data")
 
     ok(cmp(
         agg_summary(mdb, mfdb_step_interval('l', 10), 'c.len', 'len', data.frame(len = c('l0', 'l20', 'l30', 'l20')), 0),
@@ -37,7 +37,7 @@ ok_group("Can convert mfdb_step_intervals into lists", local({
             l10 = structure(call("seq", 10, 19), min = 10, max = 20),
             l20 = structure(call("seq", 20, 29), min = 20, max = 30),
             l30 = structure(call("seq", 30, 39), min = 30, max = 40))),
-        "Can convert open interval using returned data (max: 30)")
+        "Can convert unbounded interval using returned data (max: 30)")
     ok(cmp(
         agg_summary(mdb, mfdb_step_interval('l', 10), 'c.len', 'len', data.frame(len = c('l0', 'l20', 'l30', 'l40')), 0),
         list(
@@ -46,7 +46,7 @@ ok_group("Can convert mfdb_step_intervals into lists", local({
             l20 = structure(call("seq", 20, 29), min = 20, max = 30),
             l30 = structure(call("seq", 30, 39), min = 30, max = 40),
             l40 = structure(call("seq", 40, 49), min = 40, max = 50))),
-        "Can convert open interval using returned data (max: 40)")
+        "Can convert unbounded interval using returned data (max: 40)")
 }, asNamespace('mfdb')))
 
 ok_group("Aggregates with close_ended mfdb_step_interval", local({
