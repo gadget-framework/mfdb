@@ -18,9 +18,10 @@ mfdb_interval(prefix, vect, open_ended = FALSE)
         (required) A vector representing the minimum for each group, and the maximum
     }
     \item{open_ended}{
-        If TRUE / c('upper'), the last group will include everything >= the last value in vect.
-        If c('lower'), the first group will include everything < the first value in vect.
+        If TRUE / c('upper'), the last group will ignore it's upper bound and include any value.
+        If c('lower'), the first group will ignore it's lower bound include everything < the first value in vect.
         If c('upper', 'lower'), both the above occur.
+        This is useful when creating plus groups for GADGET, as GADGET will still be presented a bounded group, but will contain all remaining data.
     }
 }
 
@@ -30,4 +31,7 @@ g1 <- mfdb_interval("len", c(40, 60, 80))
 
 ## Use seq to make life easier
 g2 <- mfdb_interval("len", seq(40, 80, by = 20))
+
+## Create groups len40: [40, 60), len60: [60, inf) (but will be described as [60, 80) in the GADGET model)
+g1 <- mfdb_interval("len", c(40, 60, 80), open_ended = c("upper"))
 }
