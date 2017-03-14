@@ -1,3 +1,7 @@
+2017-03-14  Jamie Lentin  <lentinj@shuttlethread.com>
+
+    Version 5.2-0
+
     * Make upper/lower include tail on final group, don't add additional groups to end
     * Allow open_ended at either end of an mfdb_interval / mfdb_step_interval by specifying c('upper', 'lower')
 
