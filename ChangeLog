@@ -3,6 +3,7 @@
     Version 6.0-0
 
     Schema changes:
+    * age now stored as REAL
 
 2017-03-14  Jamie Lentin  <lentinj@shuttlethread.com>
 

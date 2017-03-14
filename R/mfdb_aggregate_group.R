@@ -16,7 +16,7 @@ mfdb_group <- function (...) {
 pre_query.mfdb_group <- function(mdb, x, col) {
     group <- x
     lookup <- gsub('(.*\\.)|_id', '', col)
-    datatype <- ifelse(lookup == "species", "BIGINT", "INT")
+    datatype <- ifelse(lookup == "species", "BIGINT", ifelse(lookup == "age", "REAL", "INT"))
 
     # If the table already exists, nothing to do
     if (mfdb_table_exists(mdb, attr(x, 'table_name'))) {

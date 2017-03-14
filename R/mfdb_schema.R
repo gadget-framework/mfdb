@@ -111,7 +111,7 @@ schema_from_0 <- function(mdb) {
         "month", "INT NOT NULL", "Month sample was undertaken",
         "areacell_id", "INT", "Areacell data relates to",
         "species_id", "BIGINT REFERENCES species(species_id)", "",
-        "age", "INT", "Age (years)",
+        "age", "REAL", "Age (years)",
         "sex_id", "INT REFERENCES sex(sex_id)", "Sex ID",
         "maturity_stage_id", "INT REFERENCES maturity_stage(maturity_stage_id)", "Maturity Stage ID",
 
@@ -142,7 +142,7 @@ schema_from_0 <- function(mdb) {
 
         "stomach_name", "VARCHAR(128) NOT NULL", "Stomach identifier",
         "species_id", "BIGINT REFERENCES species(species_id)", "",
-        "age", "INT", "Age (years)",
+        "age", "REAL", "Age (years)",
         "sex_id", "INT REFERENCES sex(sex_id)", "Sex ID",
         "maturity_stage_id", "INT REFERENCES maturity_stage(maturity_stage_id)", "Maturity Stage ID",
         "stomach_state_id", "INT REFERENCES stomach_state(stomach_state_id)", "Status of stomach when caught",
@@ -380,6 +380,9 @@ schema_from_4 <- function(mdb) {
 
 schema_from_5 <- function(mdb) {
     mdb$logger$info("Upgrading schema from version 5")
+
+    mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN age TYPE REAL")
+    mfdb_send(mdb, "ALTER TABLE predator ALTER COLUMN age TYPE REAL")
 
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 6")
 }
