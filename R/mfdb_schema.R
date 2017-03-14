@@ -39,6 +39,10 @@ mfdb_update_schema <- function(
             return();
         }
 
+        if (schema_version > target_version) {
+            stop("Cannot downgrade schema from ", schema_version, " to ", target_version)
+        }
+
         fn <- tryCatch(get(paste0("schema_from_", schema_version)), error = function (e) {
             stop(paste(
                 "DB Schema version", schema_version,
