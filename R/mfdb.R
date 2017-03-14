@@ -130,7 +130,7 @@ mfdb <- function(case_study_name = "",
             for (table_name in c(mfdb4_cs_taxonomy, mfdb4_measurement_tables)) {
                 cols <- mfdb_fetch(mdb, "SELECT column_name",
                     " FROM information_schema.columns",
-                    " WHERE table_schema = ", sql_quote(mdb$schema),
+                    " WHERE table_schema = 'public'",
                     " AND table_name = ", sql_quote(table_name),
                     NULL
                 )[,1]
