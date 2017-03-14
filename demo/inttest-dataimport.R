@@ -23,7 +23,7 @@ ok_group("Areacell/divisions", {
     ok(cmp_error(mfdb_import_division(mdb, list(divA = c('45G01', '45G02', '45G03'))), 'areacell vocabulary'), "Areacell not populated yet")
 
     # So define some, so it should work
-    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5)))
+    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5.1, 5.2, 5.3)))
     mfdb_import_division(mdb, list(divA = c('45G01', '45G02', '45G03')))
     ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM division")[1,1], 3), "Inserted 3 rows into division")
 
@@ -44,7 +44,7 @@ ok_group("Areacell/divisions", {
     area_group <- mfdb_group(divA = c("divA"), divB = c("divB"), divAB = c("divA", "divB"))
     ok(cmp(mfdb_area_size(mdb, list(area = area_group)),
         list("0" = structure(
-            data.frame(area = c("divA", "divAB", "divB"), size = c(15, 25, 10), stringsAsFactors = FALSE),
+            data.frame(area = c("divA", "divAB", "divB"), size = c(15.6, 25.9, 10.3), stringsAsFactors = FALSE),
             area = area_group,
             generator = "mfdb_area_size"))),
         "Can combine divA & B and get combined size")

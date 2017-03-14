@@ -4,6 +4,7 @@
 
     Schema changes:
     * age now stored as REAL
+    * areacell size now stored as REAL
 
 2017-03-14  Jamie Lentin  <lentinj@shuttlethread.com>
 

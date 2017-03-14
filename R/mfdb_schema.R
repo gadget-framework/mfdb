@@ -383,6 +383,7 @@ schema_from_5 <- function(mdb) {
 
     mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN age TYPE REAL")
     mfdb_send(mdb, "ALTER TABLE predator ALTER COLUMN age TYPE REAL")
+    mfdb_send(mdb, "ALTER TABLE areacell ALTER COLUMN size TYPE REAL")
 
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 6")
 }
@@ -417,7 +418,7 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
             "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
             "t_group", paste0("VARCHAR(1024) NULL"), "Value grouping (short name)",
             if (table_name == "areacell") c(
-                "size", "INT", "Size of areacell",
+                "size", "REAL", "Size of areacell",
                 NULL
             ) else if (table_name == "vessel") c(
                 "vessel_type_id", "INT", "Vessel type used",
