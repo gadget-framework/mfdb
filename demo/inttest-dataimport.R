@@ -151,6 +151,45 @@ ok_group("Temperature", {
         "Second import cleared previous data")
 })
 
+ok_group("Species", {
+    mfdb_disconnect(mdb)
+    mfdb('inttest-dataimport', db_params = db_params, destroy_schema = TRUE)
+    mdb <- mfdb('inttest-dataimport', db_params = db_params, save_temp_tables = FALSE)
+    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5.1, 5.2, 5.3)))
+
+    # Can't empty taxonomy if we already have data
+    mfdb_import_survey(mdb,
+        data_source = 'survey1',
+        data.frame(
+            Year = c('1998'),  # NB: Not case-sensitive
+            mOnth = c(1:12),
+            areacell = c('45G01'),
+            species = c('COD'),
+            age =    c(  1),
+            length = c( 10),
+            weight = c(100)))
+    ok(cmp_error(mfdb_empty_taxonomy(mdb, 'species'), 'delete on table "species"'), "Can't empty taxonony when it's used")
+
+    # Can after emptying
+    mfdb_import_survey(mdb,
+        data_source = 'survey1',
+        data.frame())
+    mfdb_empty_taxonomy(mdb, 'species')
+
+    # Now can't import data
+    ok(cmp_error(mfdb_import_survey(mdb,
+        data_source = 'survey1',
+        data.frame(
+            Year = c('1998'),  # NB: Not case-sensitive
+            mOnth = c(1:12),
+            areacell = c('45G01'),
+            species = c('COD'),
+            age =    c(  1),
+            length = c( 10),
+            weight = c(100))
+    ), "species"), "Can't insert with an empty species taxonomy")
+})
+
 # Disconnect
 mfdb_disconnect(mdb)
 mfdb_disconnect(mdb2)

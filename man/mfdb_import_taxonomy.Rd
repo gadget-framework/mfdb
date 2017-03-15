@@ -5,6 +5,8 @@
 \alias{mfdb_import_cs_taxonomy}
 \alias{mfdb_import_tow_taxonomy}
 \alias{mfdb_import_vessel_taxonomy}
+\alias{mfdb_import_species_taxonomy}
+\alias{mfdb_empty_taxonomy}
 
 \title{MareFrame Taxonomy import functions}
 \description{
@@ -17,6 +19,8 @@
     mfdb_import_sampling_type(mdb, data_in)
     mfdb_import_tow_taxonomy(mdb,  data_in)
     mfdb_import_vessel_taxonomy(mdb,  data_in)
+
+    mfdb_empty_taxonomy(mdb, taxonomy_name)
 
     mfdb_import_cs_taxonomy(mdb, taxonomy_name, data_in)
 }
@@ -97,4 +101,15 @@ these against records in the \code{sample} table. You can also provide:
     \item{description}{Optional. A vector of descriptive names, e.g. "sea sampling"}
 }
 
+\code{mfdb_empty_taxonomy} allows you to empty out a taxonomy of previous data.
+The import functions insert or update values that already exist, based on the
+numeric ID for these values. They do not delete anything, as it may be impossible
+to remove rows without destroying existing data.
+
+However, if e.g. you want to replace the species taxonomy with an entirely different
+one you will need to flush it first, before you import any data. Use this function,
+then \code{mfdb_import_species_taxonomy} to import the new taxonomy.
+
+NB: This won't be possible if there is some data already using any of the terms. It
+is best used before your database is populated.
 }

@@ -62,8 +62,8 @@ Taxonomy tables store all possible values for terms and their meaning, to
 ensure consistency in the data. For example, \samp{species} stores short-names
 and full latin names of all known species to MFDB, to ensure consistency in naming.
 
-Most Taxonomies are the same across any installation, and their definitions are
-stored as data attached to this package. See \link{mfdb-data} for more
+Most Taxonomies have defaults which are populated when the database is created,
+and their definitions are stored as data attached to this package. See \link{mfdb-data} for more
 information on these. Others, such as \samp{areacell} and \samp{sampling_type} are
 case study specific, and you will need to define your terms before you can
 import data.

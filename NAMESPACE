@@ -53,6 +53,8 @@ export(mfdb_import_sampling_type)
 export(mfdb_import_cs_taxonomy)
 export(mfdb_import_tow_taxonomy)
 export(mfdb_import_vessel_taxonomy)
+export(mfdb_import_species_taxonomy)
+export(mfdb_empty_taxonomy)
 
 # mfdb_queries.R
 #alsoUses(logging, getLogger)

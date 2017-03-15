@@ -123,6 +123,14 @@ mfdb_import_area <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'areacel
 mfdb_import_sampling_type <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'sampling_type', data_in)
 mfdb_import_tow_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'tow', data_in)
 mfdb_import_vessel_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'vessel', data_in)
+mfdb_import_species_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'species', data_in)
+
+mfdb_empty_taxonomy <- function(mdb, taxonomy_name) {
+    if (!(taxonomy_name %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
+        stop("Unknown taxonomy table ", taxonomy_name)
+    }
+    mfdb_send(mdb, "DELETE FROM ", taxonomy_name)
+}
 
 # Import divisions
 mfdb_import_division <- function (mdb, data_in) {
