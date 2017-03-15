@@ -36,7 +36,7 @@ mfdb_update_schema <- function(
         }, error = function (e) 0)
 
         if (schema_version == target_version) {
-            return();
+            break
         }
 
         if (schema_version > target_version) {
@@ -168,6 +168,15 @@ schema_from_0 <- function(mdb) {
         NULL
     ), keys = c(
     ))
+
+    # Populate tables with package-provided data
+    for (t in mfdb_taxonomy) {
+        mfdb_import_taxonomy(mdb, t, get(t, pos = as.environment("package:mfdb")))
+    }
+    mfdb_import_cs_taxonomy(mdb, "index_type", data.frame(
+        id = c(99999),
+        name = 'temperature',
+        stringsAsFactors = FALSE))
 }
 
 schema_from_2 <- function(mdb) {
@@ -431,21 +440,6 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
         paste0("FOREIGN KEY (t_group) REFERENCES ", table_name, "(name)"),
         NULL
     ))
-}
-
-# Populate tables with package-provided data
-mfdb_update_taxonomy <- function(mdb) {
-    for (t in mfdb_taxonomy) {
-        mfdb_import_taxonomy(mdb, t, get(t, pos = as.environment("package:mfdb")))
-    }
-}
-
-# Populate case-study taxonomy tables with default data
-mfdb_update_cs_taxonomy <- function(mdb) {
-    mfdb_import_cs_taxonomy(mdb, "index_type", data.frame(
-        id = c(99999),
-        name = 'temperature',
-        stringsAsFactors = FALSE))
 }
 
 # Create any required functions, if they don't already exist

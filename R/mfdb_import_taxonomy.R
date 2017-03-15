@@ -92,6 +92,7 @@ mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
         data.frame(
             id = sanitise_col(mdb, data_in, 'id', default = seq_len(length(data_in$name))),
             name = sanitise_col(mdb, data_in, 'name'),
+            t_group = sanitise_col(mdb, data_in, 't_group', default = c(NA)),
 
             size = sanitise_col(mdb, data_in, 'size', default = c(NA)),
 

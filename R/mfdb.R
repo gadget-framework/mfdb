@@ -122,7 +122,6 @@ mfdb <- function(case_study_name = "",
 
             # Create new schema, to known state
             mfdb_update_schema(mdb, target_version = 6)
-            mfdb_update_taxonomy(mdb)
 
             # Copy data from old tables
             mfdb4_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type", "tow", "vessel")
@@ -143,6 +142,8 @@ mfdb <- function(case_study_name = "",
                     " FROM public.", table_name,
                     if (table_name == 'prey')
                         c(" WHERE predator_id IN (SELECT DISTINCT predator_id FROM public.predator WHERE case_study_id = ", old_case_study_id, ")")
+                    else if (table_name == 'index_type')
+                        c(" WHERE case_study_id = ", old_case_study_id, " AND index_type_id != 99999")
                     else
                         c(" WHERE case_study_id = ", old_case_study_id),
                     "");
@@ -158,8 +159,6 @@ mfdb <- function(case_study_name = "",
 
     # Now we've done any data fetching, make sure our schema is up-to-date.
     mfdb_update_schema(mdb)
-    mfdb_update_taxonomy(mdb)
-    mfdb_update_cs_taxonomy(mdb)
     tryCatch({
         mfdb_update_functions(mdb)
     }, error = function (e) {
