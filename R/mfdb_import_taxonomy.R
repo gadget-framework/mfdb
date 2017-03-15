@@ -72,10 +72,10 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
 
 # Import any cs_specific taxonomies
 mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
-    if (!(taxonomy_name %in% mfdb_cs_taxonomy)) {
+    if (!(taxonomy_name %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
         stop(
             "Unknown taxonomy name '", taxonomy_name,
-            "' should be one of ", paste(mfdb_cs_taxonomy, collapse = ", "))
+            "' should be one of ", paste(c(mfdb_taxonomy, mfdb_cs_taxonomy), collapse = ", "))
     }
 
     if (taxonomy_name == 'areacell') {

@@ -28,7 +28,7 @@ mfdb_cs_dump <- function(mdb, out_location) {
     })
     if(!utils::file_test("-d", out_location)) stop(paste("Could not create output directory", out_location))
 
-    for (table_name in c(mfdb_cs_taxonomy, mfdb_measurement_tables)) {
+    for (table_name in c(mfdb_taxonomy, mfdb_cs_taxonomy, mfdb_measurement_tables)) {
         mdb$logger$info(paste0("Dumping table ", table_name))
         mfdb_send(mdb,
             "SELECT * FROM ", table_name,
@@ -71,7 +71,7 @@ mfdb_cs_restore <- function(mdb, in_location) {
         mfdb_send(mdb, "DELETE FROM prey")
 
         # Delete from everything else
-        for (table_name in rev(c(mfdb_cs_taxonomy, mfdb_measurement_tables))) {
+        for (table_name in rev(c(mfdb_taxonomy, mfdb_cs_taxonomy, mfdb_measurement_tables))) {
             mdb$logger$info(paste0("Emptying ", table_name))
             if (table_name != 'prey') {
                 mfdb_send(mdb, "DELETE FROM ", table_name,
@@ -79,7 +79,7 @@ mfdb_cs_restore <- function(mdb, in_location) {
             }
         }
 
-        for (table_name in c(mfdb_cs_taxonomy, mfdb_measurement_tables)) {
+        for (table_name in c(mfdb_taxonomy, mfdb_cs_taxonomy, mfdb_measurement_tables)) {
             mdb$logger$info(paste0("Restoring table ", table_name))
             data_in <- read_data(table_name)
             id_col <- paste0(table_name, '_id')

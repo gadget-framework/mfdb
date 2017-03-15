@@ -398,54 +398,39 @@ mfdb_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', '
 
 mfdb_create_taxonomy_table <- function(mdb, table_name) {
     key_col <- paste0(table_name, "_id")
-    if (table_name %in% mfdb_taxonomy) {
-        mfdb_create_table(mdb, table_name, "", cols = c(
-            key_col, ifelse(table_name == "species", "BIGINT", "INT"), "Numeric ID for this entry",
-            "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
-            "t_group", paste0("VARCHAR(1024) NULL"), "Value grouping (short name)",
+    key_type <- ifelse(table_name == "data_source", "SERIAL", ifelse(table_name == "species", "BIGINT", "INT"))
+    mfdb_create_table(mdb, table_name, "", cols = c(
+        key_col, key_type, "Numeric ID for this entry",
+        "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
+        "t_group", paste0("VARCHAR(1024) NULL"), "Value grouping (short name)",
+        if (table_name == "areacell") c(
+            "size", "REAL", "Size of areacell",
+            NULL
+        ) else if (table_name == "vessel") c(
+            "vessel_type_id", "INT", "Vessel type used",
+            "full_name", "TEXT", "Full name of vessel",
+            "length", "REAL", "Vessel length (m)",
+            "power", "REAL", "Vessel engine power (KW)",
+            "tonnage", "REAL", "Vessel gross tonnage",
+            NULL
+        ) else if (table_name == "tow") c(
+            "latitude", "REAL", "Latutide of sample",
+            "longitude", "REAL", "Longitude of sample",
+            "depth", "REAL", "Tow depth (m)",
+            "length", "REAL", "Tow length (m)",
+            NULL
+        ) else c(
             "description", "VARCHAR(1024)", "Long description",
             NULL
-        ), keys = c(
-            paste0(c("PRIMARY KEY(", key_col, ")"), collapse = ""),
-            "CHECK(name ~ '^[A-Za-z0-9_.\\-]+$')",
-            paste0("UNIQUE(name)"),
-            paste0("FOREIGN KEY (t_group) REFERENCES ", table_name, "(name)"),
-            NULL
-        ))
-    } else if (table_name %in% mfdb_cs_taxonomy) {
-        mfdb_create_table(mdb, table_name, "", cols = c(
-            key_col, ifelse(table_name == "data_source", "SERIAL", "INT"), "Numeric ID for this entry",
-            "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
-            "t_group", paste0("VARCHAR(1024) NULL"), "Value grouping (short name)",
-            if (table_name == "areacell") c(
-                "size", "REAL", "Size of areacell",
-                NULL
-            ) else if (table_name == "vessel") c(
-                "vessel_type_id", "INT", "Vessel type used",
-                "full_name", "TEXT", "Full name of vessel",
-                "length", "REAL", "Vessel length (m)",
-                "power", "REAL", "Vessel engine power (KW)",
-                "tonnage", "REAL", "Vessel gross tonnage",
-                NULL
-            ) else if (table_name == "tow") c(
-                "latitude", "REAL", "Latutide of sample",
-                "longitude", "REAL", "Longitude of sample",
-                "depth", "REAL", "Tow depth (m)",
-                "length", "REAL", "Tow length (m)",
-                NULL
-            ) else c(
-                "description", "VARCHAR(1024)", "Long description",
-                NULL
-            ),
-            NULL
-        ), keys = c(
-            paste0(c("PRIMARY KEY(", key_col, ")"), collapse = ""),
-            "CHECK(name ~ '^[A-Za-z0-9_.\\-]+$')",
-            paste0("UNIQUE(name)"),
-            paste0("FOREIGN KEY (t_group) REFERENCES ", table_name, "(name)"),
-            NULL
-        ))
-    }
+        ),
+        NULL
+    ), keys = c(
+        paste0(c("PRIMARY KEY(", key_col, ")"), collapse = ""),
+        "CHECK(name ~ '^[A-Za-z0-9_.\\-]+$')",
+        paste0("UNIQUE(name)"),
+        paste0("FOREIGN KEY (t_group) REFERENCES ", table_name, "(name)"),
+        NULL
+    ))
 }
 
 # Populate tables with package-provided data
