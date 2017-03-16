@@ -39,7 +39,7 @@ ok_group("Aggregates with mfdb_unaggregated(omitNA = TRUE)", local({
     ok(cmp(where_clause(mdb, g, "col", "out"), "col IS NOT NULL"), "Where clause")
 }, asNamespace('mfdb')))
 
-ok_group("Aggregates with mfdb_unaggregated() global taxonomies", local({
+ok_group("Aggregates with mfdb_unaggregated() taxonomies", local({
     g <<- mfdb_unaggregated()
 
     ok(cmp(
@@ -47,10 +47,30 @@ ok_group("Aggregates with mfdb_unaggregated() global taxonomies", local({
         "(SELECT name FROM gear WHERE gear_id = tbl.gear_id) AS out"), "Select clause")
 }, asNamespace('mfdb')))
 
-ok_group("Aggregates with mfdb_unaggregated() CS taxonomies", local({
-    g <<- mfdb_unaggregated()
-
+ok_group("Aggregates with mfdb_unaggregated(like / not_like)", local({
+    g <<- mfdb_unaggregated(like = "fish%")
     ok(cmp(
-        select_clause(mdb, g, 'tbl.sampling_type_id', 'out'),
-        "(SELECT name FROM sampling_type WHERE sampling_type_id = tbl.sampling_type_id) AS out"), "Select clause")
+        where_clause(mdb, g, "col", "out"),
+        "(col LIKE 'fish%')"
+    ), "Where clause (not-taxonomy)")
+    ok(cmp(
+        where_clause(mdb, g, "tbl.gear_id", "out"),
+        "(tbl.gear_id IN (SELECT gear_id FROM gear WHERE name  LIKE 'fish%'))"
+    ), "Where clause (taxonomy)")
+
+    g <<- mfdb_unaggregated(like = c("fish%", "boops%"), not_like = c("crab%"))
+    ok(cmp(
+        where_clause(mdb, g, "col", "out"),
+        c(
+            "(col LIKE 'fish%' OR col LIKE 'boops%')",
+            "(col NOT LIKE 'crab%')"
+        )
+    ), "Where clause (not-taxonomy, multiple terms)")
+    ok(cmp(
+        where_clause(mdb, g, "tbl.gear_id", "out"),
+        c(
+            "(tbl.gear_id IN (SELECT gear_id FROM gear WHERE name  LIKE 'fish%' OR name  LIKE 'boops%'))",
+            "(tbl.gear_id IN (SELECT gear_id FROM gear WHERE name  NOT LIKE 'crab%'))"
+        )
+    ), "Where clause (taxonomy, multiple terms)")
 }, asNamespace('mfdb')))
