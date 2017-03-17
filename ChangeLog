@@ -8,6 +8,8 @@
     * areacell size now stored as REAL
     * Allow gear taxonomy to be changed
     * Allow the species schema to be changed also
+    * Add tow_end_latitude/tow_end_longitude/tow_start/tow_duration
+    * Add gear_mesh_size/gear_mesh_size_min/gear_mesh_size_max
 
 2017-03-14  Jamie Lentin  <lentinj@shuttlethread.com>
 

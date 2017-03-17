@@ -393,6 +393,14 @@ schema_from_5 <- function(mdb) {
     mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN age TYPE REAL")
     mfdb_send(mdb, "ALTER TABLE predator ALTER COLUMN age TYPE REAL")
     mfdb_send(mdb, "ALTER TABLE areacell ALTER COLUMN size TYPE REAL")
+    mfdb_send(mdb, "ALTER TABLE tow ADD COLUMN end_latitude REAL")
+    mfdb_send(mdb, "ALTER TABLE tow ADD COLUMN end_longitude REAL")
+    mfdb_send(mdb, "ALTER TABLE tow ADD COLUMN start TIMESTAMP WITH TIME ZONE")
+    mfdb_send(mdb, "ALTER TABLE tow ADD COLUMN duration REAL")
+
+    mfdb_send(mdb, "ALTER TABLE gear ADD COLUMN mesh_size REAL")
+    mfdb_send(mdb, "ALTER TABLE gear ADD COLUMN mesh_size_min REAL")
+    mfdb_send(mdb, "ALTER TABLE gear ADD COLUMN mesh_size_max REAL")
 
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 6")
 }
@@ -419,9 +427,23 @@ mfdb_taxonomy_cols <- list(
     tow = c(
             "latitude", "REAL", "Latutide of sample",
             "longitude", "REAL", "Longitude of sample",
+            "end_latitude", "REAL", "Latutide of sample end",
+            "end_longitude", "REAL", "Longitude of sample end",
+            "start", "TIMESTAMP WITH TIME ZONE", "Time tow started",
             "depth", "REAL", "Tow depth (m)",
             "length", "REAL", "Tow length (m)",
-            #"duration", "REAL", "Tow duration (hours)",
+            "duration", "REAL", "Tow duration (hours)",
+            NULL),
+    gear = c(
+            "description", "VARCHAR(1024)", "Long description",
+            "mesh_size", "REAL", "Mesh size (mm)",
+            "mesh_size_min", "REAL", "Minimum mesh size (mm)",
+            "mesh_size_max", "REAL", "Maximum mesh size (mm)",
+            # other gear specific
+            # information (number of hooks/lines, vertical opening, length
+            # of wire, etc..). Sadly the best documentation I have in mind for
+            # this stuff is all in Icelandic, I'll see if I manage to find
+            # anything detailed in English on this.
             NULL),
     null = c()
 )
