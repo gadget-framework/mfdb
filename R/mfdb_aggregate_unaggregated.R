@@ -23,7 +23,7 @@ gen_likes <- function(col, conditions, operator) {
     return(paste0("(", paste0(col, operator, sql_vquote(conditions), collapse = " OR "), ")"))
 }
 
-where_clause.mfdb_unaggregated <- function(mdb, x, col, outputname) {
+where_clause.mfdb_unaggregated <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     lookup <- gsub('(.*\\.)|_id', '', col)
 
     c(

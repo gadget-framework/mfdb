@@ -446,7 +446,8 @@ mfdb_sample_grouping <- function (mdb,
                 mdb,
                 params[[col]],
                 col_defs[[col]],
-                col)))
+                col,
+                group_disabled = disable_group_by)))
     }
 
     # Importing is probably done, so create indexes if we need to

@@ -4,19 +4,19 @@ pre_query <- function(mdb, x, col) {
     UseMethod("pre_query", x)
 }
 
-sample_clause <- function(mdb, x, col, outputname) {
+sample_clause <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     UseMethod("sample_clause", x)
 }
 
-select_clause <- function(mdb, x, col, outputname) {
+select_clause <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     UseMethod("select_clause", x)
 }
 
-from_clause <- function(mdb, x, col, outputname) {
+from_clause <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     UseMethod("from_clause", x)
 }
 
-where_clause <- function(mdb, x, col, outputname) {
+where_clause <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     UseMethod("where_clause", x)
 }
 
@@ -27,14 +27,14 @@ agg_summary <- function(mdb, x, col, outputname, data, sample_num) {
 
 # Add some do-nothing cases where definining the function is optional
 pre_query.mfdb_aggregate <- function(mdb, x, col) NULL
-sample_clause.mfdb_aggregate <- function(mdb, x, col, outputname) "0"
-from_clause.mfdb_aggregate <- function(mdb, x, col, outputname) c()
+sample_clause.mfdb_aggregate <- function(mdb, x, col, outputname, group_disabled = FALSE) "0"
+from_clause.mfdb_aggregate <- function(mdb, x, col, outputname, group_disabled = FALSE) c()
 agg_summary.mfdb_aggregate <- function(mdb, x, col, outputname, data, sample_num) as.list(x)
 
 # NULL implies everything grouped under an "all"
 pre_query.NULL <- pre_query.mfdb_aggregate
 sample_clause.NULL <- sample_clause.mfdb_aggregate
-select_clause.NULL <- function(mdb, x, col, outputname) {
+select_clause.NULL <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     lookup <- gsub('(.*\\.)|_id', '', col)
 
     if ((lookup %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
@@ -43,12 +43,12 @@ select_clause.NULL <- function(mdb, x, col, outputname) {
 
     return(c(
         paste0("'all' AS ", outputname),
-        paste0("MIN(", col, ") AS ", "min_", outputname),
-        paste0("MAX(", col, ") AS ", "max_", outputname),
+        paste0("MIN(", col, ")", ifelse(group_disabled, " OVER ()", ""), " AS ", "min_", outputname),
+        paste0("MAX(", col, ")", ifelse(group_disabled, " OVER ()", ""), " AS ", "max_", outputname),
         NULL))
 }
 from_clause.NULL <- from_clause.mfdb_aggregate
-where_clause.NULL <- function(mdb, x, col, outputname) c()
+where_clause.NULL <- function(mdb, x, col, outputname, group_disabled = FALSE) c()
 agg_summary.NULL <- function(mdb, x, col, outputname, data, sample_num) {
     lookup <- gsub('(.*\\.)|_id', '', col)
 
@@ -65,7 +65,7 @@ agg_summary.NULL <- function(mdb, x, col, outputname, data, sample_num) {
 # Numeric vectors, first checked to see if there's a lookup
 pre_query.numeric <- pre_query.mfdb_aggregate
 sample_clause.numeric <- sample_clause.mfdb_aggregate
-select_clause.numeric <- function(mdb, x, col, outputname) {
+select_clause.numeric <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     lookup <- gsub('(.*\\.)|_id', '', col)
 
     # Look up in taxonomy
@@ -80,7 +80,7 @@ select_clause.numeric <- function(mdb, x, col, outputname) {
     return(paste(col, "AS", outputname))
 }
 from_clause.numeric <- from_clause.mfdb_aggregate
-where_clause.numeric <- function(mdb, x, col, outputname) {
+where_clause.numeric <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     lookup <- gsub('(.*\\.)|_id', '', col)
 
     if (!is.vector(x)) return("")

@@ -21,7 +21,7 @@ mfdb_step_interval <- function (prefix, by, from = 0, to = NULL, open_ended = FA
 }
 
 # Use integer division to pick correct group
-select_clause.mfdb_step_interval <- function(mdb, x, col, outputname) {
+select_clause.mfdb_step_interval <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     #TODO: add x$from somewhere to fudge steps
     val <- paste0("greatest(floor(", col, ")::integer, ", sql_quote(x$from), ")")
     if (!is.null(x$to)) val <- paste0("least(", val, ", ", sql_quote(x$to - x$by), ")")
@@ -32,7 +32,7 @@ select_clause.mfdb_step_interval <- function(mdb, x, col, outputname) {
 }
 
 # Ensure value is within range specified
-where_clause.mfdb_step_interval <- function(mdb, x, col, outputname) {
+where_clause.mfdb_step_interval <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     c(
         if (!is.null(x$from) && !('lower' %in% attr(x, 'open_ended'))) paste(col, ">=", sql_quote(x$from)),
         if (!is.null(x$to) && !('upper' %in% attr(x, 'open_ended'))) paste(col, "<", sql_quote(x$to)),

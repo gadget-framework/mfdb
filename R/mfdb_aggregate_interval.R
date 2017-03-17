@@ -20,7 +20,7 @@ mfdb_interval <- function (prefix, vect, open_ended = FALSE) {
 }
 
 # Generate CASE statement to pick correct group for value
-select_clause.mfdb_interval <- function(mdb, x, col, outputname) {
+select_clause.mfdb_interval <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     sorted <- sort(x, decreasing = TRUE)
     final <- c()
 
@@ -51,7 +51,7 @@ select_clause.mfdb_interval <- function(mdb, x, col, outputname) {
 }
 
 # Ensure value is within range specified
-where_clause.mfdb_interval <- function(mdb, x, col, outputname) {
+where_clause.mfdb_interval <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     c(
         if (!('lower' %in% attr(x, 'open_ended'))) paste(col, ">=", sql_quote(min(x))),
         if (!('upper' %in% attr(x, 'open_ended'))) paste(col, "<", sql_quote(max(x))),

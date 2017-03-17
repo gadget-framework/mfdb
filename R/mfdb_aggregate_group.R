@@ -96,15 +96,15 @@ pre_query.mfdb_group <- function(mdb, x, col) {
     invisible(NULL)
 }
 
-select_clause.mfdb_group <- function(mdb, x, col, outputname) {
+select_clause.mfdb_group <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     paste0(attr(x, 'table_name'), ".name AS ", outputname)
 }
 
-from_clause.mfdb_group <- function(mdb, x, col, outputname) {
+from_clause.mfdb_group <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     paste0(attr(x, 'table_name'))
 }
 
-where_clause.mfdb_group <- function(mdb, x, col, outputname) {
+where_clause.mfdb_group <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     paste0(col, " = ", attr(x, 'table_name'), ".value")
 }
 
@@ -150,7 +150,7 @@ mfdb_bootstrap_group <- function (count, group, seed = NULL) {
     invisible(bs_group)
 }
 
-sample_clause.mfdb_bootstrap_group <- function(mdb, x, col, outputname) {
+sample_clause.mfdb_bootstrap_group <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     paste0(attr(x, 'table_name'), ".sample")
 }
 
