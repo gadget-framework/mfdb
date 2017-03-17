@@ -154,9 +154,9 @@ to scale counts by the tow length.
             As mfdb_sample_meanweight, but also returns std. deviation.
         }
         \item{mfdb_sample_rawdata}{
-            Returns year,step,area,(group cols),number of samples, weight and length.
+            Returns year,step,area,(group cols),number of samples, raw_weight and raw_length.
 
-            NB: Unlike other functions, no aggregation is performed. This is mostly for debugging
+            NB: No grouping of results is performed, instead all matching table entries are returned
         }
         \item{mfdb_sample_scaled}{
             Returns year, step, area, (group cols), number (i.e. sum of count, scaled by tow_length), mean_weight (scaled by tow_length)

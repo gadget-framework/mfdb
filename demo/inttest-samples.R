@@ -81,7 +81,7 @@ ok_group("Unaggregated length / weight / age samples", {
             timestep = mfdb_timestep_biannually,
             data_source = "survey1",
             age = mfdb_group(all = 1),
-            length = length_group))[[1]][,'weight'],
+            length = length_group))[[1]][,'raw_weight'],
         c(100,300,350,360,340)), "Fetched raw weight data for age 1, length less than 50")
 
     # mfdb_sample_meanlength_stddev is the same, but with an extra column

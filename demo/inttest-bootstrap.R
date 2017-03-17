@@ -220,6 +220,26 @@ ok_group("Bootstrap samples of area sizes and lengths", {
             len300 = structure(call("seq", 300, 349), min = 300, max = 350),
             len350 = structure(call("seq", 350, 399), min = 350, max = 400)),
         generator = "mfdb_sample_count")), "divB, divB")
+
+    agg <- mfdb_sample_rawdata(mdb, c('length'), params = list(
+        area = area_bootstrap_group,
+        length = length_group,
+        null = NULL))
+    ok(cmp(attr(agg[['0.0.1.0']], 'area'), list(all = c("divB", "divA"))), "area agg_summary for bs 1")
+    ok(cmp(attr(agg[['0.0.2.0']], 'area'), list(all = c("divB", "divB"))), "area agg_summary for bs 2")
+    ok(cmp(attr(agg[['0.0.3.0']], 'area'), list(all = c("divA", "divA"))), "area agg_summary for bs 3")
+    ok(cmp(attr(agg[['0.0.4.0']], 'area'), list(all = c("divA", "divB"))), "area agg_summary for bs 4")
+    ok(cmp(attr(agg[['0.0.5.0']], 'area'), list(all = c("divB", "divB"))), "area agg_summary for bs 5")
+    ok(cmp(sum(agg[['0.0.1.0']]$length == 'len300'),  9), "len300/divB appears once in bs 1")
+    ok(cmp(sum(agg[['0.0.2.0']]$length == 'len300'), 18), "len300/divB appears twice in bs 2")
+    ok(cmp(sum(agg[['0.0.3.0']]$length == 'len300'),  0), "len300/divB does not appear in bs 3")
+    ok(cmp(sum(agg[['0.0.4.0']]$length == 'len300'),  9), "len300/divB appears once in bs 4")
+    ok(cmp(sum(agg[['0.0.5.0']]$length == 'len300'), 18), "len300/divB appears twice in bs 5")
+
+    ok(cmp(
+        sort(agg[['0.0.1.0']][c(agg[['0.0.1.0']]$length == 'len300'), c('raw_length')]),
+        sort(c(310, 330, 310, 335, 346, 336, 335, 334, 322))
+    ), "Contents of len300/divB match")
 })
 
 ok_group("Bootstrapped empty results", {

@@ -185,8 +185,8 @@ mfdb_sample_rawdata <- function (mdb, cols, params, scale_index = NULL) {
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0(abundance[[2]], " AS number"),
-            "c.length AS length",
-            "c.weight AS weight",
+            "c.length AS raw_length",
+            "c.weight AS raw_weight",
             NULL),
         params = params)
     out
@@ -499,11 +499,6 @@ mfdb_sample_grouping <- function (mdb,
             NULL), collapse=","),
         NULL)
     names(out) <- gsub("grp_(.*)", "\\1", names(out))
-
-    if (disable_group_by) {
-        # No groups, so not much point continuing
-        return(list(out));
-    }
 
     # No data, so fake enough to generate list of empty frames
     if (nrow(out) == 0) {
