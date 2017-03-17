@@ -78,36 +78,24 @@ mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
             "' should be one of ", paste(c(mfdb_taxonomy, mfdb_cs_taxonomy), collapse = ", "))
     }
 
-    if (taxonomy_name == 'areacell') {
-        extra_cols <- c('size')
-    } else if (taxonomy_name == 'vessel') {
-        extra_cols <- c('vessel_type_id', 'full_name', 'length', 'power', 'tonnage')
-    } else if (taxonomy_name == 'tow') {
-        extra_cols <- c('latitude', 'longitude', 'depth', 'length')
-    } else {
-        extra_cols <- c('description')
-    }
+    extra_cols <- mfdb_get_taxonomy_extra_cols(taxonomy_name)
+    sanitized_extra_data <- lapply(extra_cols, function (col) {
+        if (grepl("_id$", col)) {
+            return(sanitise_col(mdb, data_in, gsub("_id$", "", col), lookup = gsub("_id$", "", col), default = c(NA)))
+        }
+        return(sanitise_col(mdb, data_in, col, default = c(NA)))
+    })
+    names(sanitized_extra_data) <- extra_cols
 
     mfdb_import_taxonomy(mdb, taxonomy_name,
-        data.frame(
+        cbind(data.frame(
             id = sanitise_col(mdb, data_in, 'id', default = seq_len(length(data_in$name))),
             name = sanitise_col(mdb, data_in, 'name'),
             t_group = sanitise_col(mdb, data_in, 't_group', default = c(NA)),
 
             size = sanitise_col(mdb, data_in, 'size', default = c(NA)),
 
-            vessel_type_id = sanitise_col(mdb, data_in, 'vessel_type', lookup = 'vessel_type', default = c(NA)),
-            full_name = sanitise_col(mdb, data_in, 'full_name', default = c(NA)),
-            length = sanitise_col(mdb, data_in, 'length', default = c(NA)),
-            power = sanitise_col(mdb, data_in, 'power', default = c(NA)),
-            tonnage = sanitise_col(mdb, data_in, 'tonnage', default = c(NA)),
-
-            latitude = sanitise_col(mdb, data_in, 'latitude', default = c(NA)),
-            longitude = sanitise_col(mdb, data_in, 'longitude', default = c(NA)),
-            depth = sanitise_col(mdb, data_in, 'depth', default = c(NA)),
-
-            description = sanitise_col(mdb, data_in, 'description', default = c("")),
-            stringsAsFactors = FALSE),
+            stringsAsFactors = FALSE), sanitized_extra_data),
         extra_cols = extra_cols)
 
     if (taxonomy_name == 'areacell' && 'division' %in% colnames(data_in)) {

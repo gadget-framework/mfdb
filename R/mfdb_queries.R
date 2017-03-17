@@ -1,3 +1,22 @@
+# Generate a list of col_defs for a given taxonomy table
+col_defs_for <- function (table_name, prefix = table_name) {
+    table_def <- list(paste0("c.", table_name, "_id"))
+    names(table_def) <- table_name
+
+    extra_cols <- mfdb_get_taxonomy_extra_cols(table_name)
+    table_col_defs <- paste0(prefix, ".", extra_cols)
+    names(table_col_defs) <- gsub("_id$", "", paste0(table_name, "_", extra_cols))
+
+    # Don't want to call the column vessel_vessel_type_id
+    names(table_col_defs) <- gsub(
+        paste0(table_name, "_", table_name),
+        table_name,
+        names(table_col_defs)
+    )
+
+    c(table_def, table_col_defs)
+}
+
 # Return area, size
 mfdb_area_size <- function (mdb, params) {
     mfdb_sample_grouping(mdb,
@@ -395,15 +414,14 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
 mfdb_sample_grouping <- function (mdb,
         params = list(),
         group_cols = c("year", "timestep", "area", "age"),
-        col_defs = list(
-            data_source = "c.data_source_id",
-            year = "c.year", step = "c.month", area = "c.areacell_id", age = "c.age",
-            maturity_stage = "c.maturity_stage_id", length = "c.length",
-            institute = "c.institute_id", gear = "c.gear_id", vessel = "c.vessel_id",
-            sampling_type = "c.sampling_type_id", species ="c.species_id", sex = "c.sex_id",
-            vessel_type = "v.vessel_type_id", vessel_full_name = "v.full_name",
-            vessel_length = "v.length", vessel_power = "v.power", vessel_tonnage = "v.tonnage",
-            tow = "c.tow_id", tow_latitude = "t.latitude", tow_longitude = "t.longitude", tow_depth = "t.depth", tow_length = "t.length",
+        col_defs = c(
+            list(data_source = "c.data_source_id"),
+            list(year = "c.year", step = "c.month", area = "c.areacell_id", age = "c.age"),
+            list(maturity_stage = "c.maturity_stage_id", length = "c.length"),
+            list(institute = "c.institute_id", gear = "c.gear_id", vessel = "c.vessel_id"),
+            list(sampling_type = "c.sampling_type_id", species ="c.species_id", sex = "c.sex_id"),
+            col_defs_for('vessel'),
+            col_defs_for('tow'),
         NULL),
         calc_cols = c(),
         core_table = "sample",
@@ -442,11 +460,11 @@ mfdb_sample_grouping <- function (mdb,
     }
 
     # If we need tow or vessel, join these tables
-    if (length(grep("^v\\.", col_defs[names(params)])) > 0) {
-        join_tables = c("JOIN vessel v ON c.vessel_id = v.vessel_id", join_tables)
+    if (length(grep("^vessel\\.", col_defs[names(params)])) > 0) {
+        join_tables = c("JOIN vessel ON c.vessel_id = vessel.vessel_id", join_tables)
     }
-    if (length(grep("^t\\.", col_defs[names(params)])) > 0) {
-        join_tables = c("JOIN tow t ON c.tow_id = t.tow_id", join_tables)
+    if (length(grep("^tow\\.", col_defs[names(params)])) > 0) {
+        join_tables = c("JOIN tow ON c.tow_id = tow.tow_id", join_tables)
     }
 
     # Pick out any extra params we can make use of, ignore rest

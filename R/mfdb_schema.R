@@ -405,6 +405,42 @@ mfdb_taxonomy <- c("case_study", "institute", "gear", "vessel_type", "market_cat
 mfdb_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type", "tow", "vessel")
 mfdb_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', 'prey')
 
+mfdb_taxonomy_cols <- list(
+    areacell = c(
+            "size", "REAL", "Size of areacell",
+            NULL),
+    vessel = c(
+            "vessel_type_id", "INT", "Vessel type used",
+            "full_name", "TEXT", "Full name of vessel",
+            "length", "REAL", "Vessel length (m)",
+            "power", "REAL", "Vessel engine power (KW)",
+            "tonnage", "REAL", "Vessel gross tonnage",
+            NULL),
+    tow = c(
+            "latitude", "REAL", "Latutide of sample",
+            "longitude", "REAL", "Longitude of sample",
+            "depth", "REAL", "Tow depth (m)",
+            "length", "REAL", "Tow length (m)",
+            #"duration", "REAL", "Tow duration (hours)",
+            NULL),
+    null = c()
+)
+mfdb_taxonomy_col_default <- c(
+            "description", "VARCHAR(1024)", "Long description",
+            NULL)
+mfdb_get_taxonomy_extra_cols <- function (table_name, create_detail = FALSE) {
+    extra_cols <- mfdb_taxonomy_cols[[table_name]]
+    if (is.null(extra_cols)) {
+        extra_cols <- mfdb_taxonomy_col_default
+    }
+    if (!create_detail) {
+        # Filter so we just get the column name
+        extra_cols <- extra_cols[seq(1, length(extra_cols), 3)]
+    }
+    return(extra_cols)
+}
+mfdb_get_taxonomy_extra_cols('vessel', create_detail = TRUE)
+
 mfdb_create_taxonomy_table <- function(mdb, table_name) {
     key_col <- paste0(table_name, "_id")
     key_type <- ifelse(table_name == "data_source", "SERIAL", ifelse(table_name == "species", "BIGINT", "INT"))
@@ -412,26 +448,7 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
         key_col, key_type, "Numeric ID for this entry",
         "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
         "t_group", paste0("VARCHAR(1024) NULL"), "Value grouping (short name)",
-        if (table_name == "areacell") c(
-            "size", "REAL", "Size of areacell",
-            NULL
-        ) else if (table_name == "vessel") c(
-            "vessel_type_id", "INT", "Vessel type used",
-            "full_name", "TEXT", "Full name of vessel",
-            "length", "REAL", "Vessel length (m)",
-            "power", "REAL", "Vessel engine power (KW)",
-            "tonnage", "REAL", "Vessel gross tonnage",
-            NULL
-        ) else if (table_name == "tow") c(
-            "latitude", "REAL", "Latutide of sample",
-            "longitude", "REAL", "Longitude of sample",
-            "depth", "REAL", "Tow depth (m)",
-            "length", "REAL", "Tow length (m)",
-            NULL
-        ) else c(
-            "description", "VARCHAR(1024)", "Long description",
-            NULL
-        ),
+        mfdb_get_taxonomy_extra_cols(table_name, create_detail = TRUE),
         NULL
     ), keys = c(
         paste0(c("PRIMARY KEY(", key_col, ")"), collapse = ""),
