@@ -6,6 +6,7 @@
     Schema changes:
     * age now stored as REAL
     * areacell size now stored as REAL
+    * Allow gear taxonomy to be changed
     * Allow the species schema to be changed also
 
 2017-03-14  Jamie Lentin  <lentinj@shuttlethread.com>

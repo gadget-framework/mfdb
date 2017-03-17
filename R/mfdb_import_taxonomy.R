@@ -112,6 +112,7 @@ mfdb_import_sampling_type <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb,
 mfdb_import_tow_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'tow', data_in)
 mfdb_import_vessel_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'vessel', data_in)
 mfdb_import_species_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'species', data_in)
+mfdb_import_gear_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'gear', data_in)
 
 mfdb_empty_taxonomy <- function(mdb, taxonomy_name) {
     if (!(taxonomy_name %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {

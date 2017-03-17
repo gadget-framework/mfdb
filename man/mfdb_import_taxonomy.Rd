@@ -3,6 +3,7 @@
 \alias{mfdb_import_division}
 \alias{mfdb_import_sampling_type}
 \alias{mfdb_import_cs_taxonomy}
+\alias{mfdb_import_gear_taxonomy}
 \alias{mfdb_import_tow_taxonomy}
 \alias{mfdb_import_vessel_taxonomy}
 \alias{mfdb_import_species_taxonomy}

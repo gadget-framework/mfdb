@@ -418,8 +418,9 @@ mfdb_sample_grouping <- function (mdb,
             list(data_source = "c.data_source_id"),
             list(year = "c.year", step = "c.month", area = "c.areacell_id", age = "c.age"),
             list(maturity_stage = "c.maturity_stage_id", length = "c.length"),
-            list(institute = "c.institute_id", gear = "c.gear_id", vessel = "c.vessel_id"),
+            list(institute = "c.institute_id"),
             list(sampling_type = "c.sampling_type_id", species ="c.species_id", sex = "c.sex_id"),
+            col_defs_for('gear'),
             col_defs_for('vessel'),
             col_defs_for('tow'),
         NULL),
@@ -460,12 +461,12 @@ mfdb_sample_grouping <- function (mdb,
         }
     }
 
-    # If we need tow or vessel, join these tables
-    if (length(grep("^vessel\\.", col_defs[names(params)])) > 0) {
-        join_tables = c("JOIN vessel ON c.vessel_id = vessel.vessel_id", join_tables)
-    }
-    if (length(grep("^tow\\.", col_defs[names(params)])) > 0) {
-        join_tables = c("JOIN tow ON c.tow_id = tow.tow_id", join_tables)
+    # If we need any taxonomy table, join them
+    for (sub_tbl in c('gear', 'vessel', 'tow')) {
+        if (length(grep(paste0("^", sub_tbl, "\\."), col_defs[c(names(params), group_cols)])) > 0) {
+            join_tables = c(paste0(
+                "JOIN ", sub_tbl, " ON c.", sub_tbl, "_id = ", sub_tbl, ".", sub_tbl, "_id"), join_tables)
+        }
     }
 
     # Pick out any extra params we can make use of, ignore rest
