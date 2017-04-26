@@ -37,7 +37,7 @@ sample_clause.NULL <- sample_clause.mfdb_aggregate
 select_clause.NULL <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     lookup <- gsub('(.*\\.)|_id', '', col)
 
-    if ((lookup %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
+    if (lookup %in% mfdb_taxonomy_tables) {
         return(paste0("'all' AS ", outputname))
     }
 
@@ -52,7 +52,7 @@ where_clause.NULL <- function(mdb, x, col, outputname, group_disabled = FALSE) c
 agg_summary.NULL <- function(mdb, x, col, outputname, data, sample_num) {
     lookup <- gsub('(.*\\.)|_id', '', col)
 
-    if ((lookup %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
+    if (lookup %in% mfdb_taxonomy_tables) {
         return(list(all = mfdb_fetch(mdb, "SELECT name FROM ", lookup)$name))
     }
 
@@ -69,7 +69,7 @@ select_clause.numeric <- function(mdb, x, col, outputname, group_disabled = FALS
     lookup <- gsub('(.*\\.)|_id', '', col)
 
     # Look up in taxonomy
-    if ((lookup %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
+    if (lookup %in% mfdb_taxonomy_tables) {
         return(paste0(
             "(SELECT name",
             " FROM ", lookup,
@@ -86,7 +86,7 @@ where_clause.numeric <- function(mdb, x, col, outputname, group_disabled = FALSE
     if (!is.vector(x)) return("")
 
     # Look up in taxonomy
-    if ((lookup %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
+    if (lookup %in% mfdb_taxonomy_tables) {
         return(paste0(
             "(", col, " IN ",
             "(SELECT ", lookup, "_id FROM ", lookup, " WHERE name IN ",

@@ -32,7 +32,7 @@
     }
     \item{taxonomy_name}{
         The name of the taxonomy to import, if there isn't a special function for it.
-        See \code{mfdb:::mfdb_cs_taxonomy} for possible values.
+        See \code{mfdb:::mfdb_taxonomy_tables} for possible values.
     }
     \item{data_in}{
         A \code{data.frame} of data to import, see details.

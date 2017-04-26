@@ -1,6 +1,7 @@
 (unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
 
     Version 6.0-0
+    * Remove remaining cs_taxonomy differences, simplify code
     * mfdb_sample_rawdata now will group into a list, like other sample functions
 
     Schema changes:

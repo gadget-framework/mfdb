@@ -52,7 +52,7 @@ pre_query.mfdb_group <- function(mdb, x, col) {
                 values <- values[duplicated(values)]
             }
         }
-    } else if (lookup %in% mfdb_taxonomy || lookup %in% mfdb_cs_taxonomy) {
+    } else if (lookup %in% mfdb_taxonomy_tables) {
         mismatches <- mfdb_fetch(mdb,
             "SELECT d.name",
             " FROM UNNEST(ARRAY", sql_quote(unique(unlist(x)), always_bracket = TRUE, brackets = "[]"), ") AS d",

@@ -17,12 +17,12 @@ mfdb_dplyr_table <- function (mdb, tbl_name, include_cols) {
 
     # Get all possible taxonomy columns in this table
     tx_cols <- intersect(
-        paste0(c(mfdb_taxonomy, mfdb_cs_taxonomy), '_id'),
+        paste0(mfdb_taxonomy_tables, '_id'),
         colnames(dp_tbl))
 
     # Replace all_cols marker with real thing
     if (identical(include_cols, all_cols)) {
-        include_cols <- c(mfdb_taxonomy, mfdb_cs_taxonomy)
+        include_cols <- mfdb_taxonomy_tables
     }
 
     # Left-join each desired taxonomy table

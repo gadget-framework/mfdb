@@ -32,8 +32,7 @@ next.
 There is one function for each measurement table. By default every possible
 taxonomy column is included. However this is somewhat inefficient if you do
 not require the data, in which case specify the columns requred with
-\code{include_cols}. See \code{mfdb::mfdb::taxonomy} and
-\code{mfdb::mfdb_cs_taxonomy} for possible values.
+\code{include_cols}. See \code{mfdb::mfdb_taxonomy_tables} for possible values.
 }
 
 \value{

@@ -7,7 +7,7 @@ mfdb_show_schema <- function() {
 # Destroy everything in current schema
 mfdb_destroy_schema <- function(mdb) {
     if (mdb$schema == 'public') {
-        for(t in c('prey', 'predator', 'sample', 'survey', 'division', 'survey_index', 'fleet', mfdb_cs_taxonomy, mfdb_taxonomy, 'mfdb_schema')) {
+        for(t in c('prey', 'predator', 'sample', 'survey', 'division', 'survey_index', 'fleet', mfdb_taxonomy_tables, 'mfdb_schema')) {
             mdb$logger$info(paste("Removing table", t))
             tryCatch(mfdb_send(mdb, "DROP TABLE ", mdb$schema, ".", t, " CASCADE"), error = function(e) {
                 if(grepl("does not exist", e$message)) return();
@@ -57,7 +57,7 @@ mfdb_update_schema <- function(
 
 # Generate foreign key definition for each table given
 fk <- function (...) {
-    tbls <- c(...)[c(...) %in% c(mfdb_taxonomy, mfdb_cs_taxonomy)]
+    tbls <- c(...)[c(...) %in% c(mfdb_taxonomy_tables)]
     c(
         if (length(tbls) > 0) paste0("FOREIGN KEY(", tbls, "_id) REFERENCES ", tbls, "(", tbls, "_id)"),
         NULL
@@ -73,7 +73,7 @@ schema_from_0 <- function(mdb) {
     mfdb_insert(mdb, "mfdb_schema", list(version = package_major_version()))
 
     # Create all required taxonomy tables
-    for (t in c(mfdb_taxonomy, mfdb_cs_taxonomy)) mfdb_create_taxonomy_table(mdb, t)
+    for (t in c(mfdb_taxonomy_tables)) mfdb_create_taxonomy_table(mdb, t)
 
     mfdb_create_table(mdb, "survey_index", "Indices used to modify surveys", cols = c(
         "survey_index_id", "SERIAL PRIMARY KEY", "",
@@ -170,8 +170,10 @@ schema_from_0 <- function(mdb) {
     ))
 
     # Populate tables with package-provided data
-    for (t in mfdb_taxonomy) {
-        mfdb_import_taxonomy(mdb, t, get(t, pos = as.environment("package:mfdb")))
+    for (t in mfdb_taxonomy_tables) {
+        if (exists(t, where = as.environment("package:mfdb"))) {
+            mfdb_import_taxonomy(mdb, t, get(t, pos = as.environment("package:mfdb")))
+        }
     }
     mfdb_import_cs_taxonomy(mdb, "index_type", data.frame(
         id = c(99999),
@@ -409,8 +411,9 @@ schema_from_6 <- function(mdb) {
     mdb$logger$info("Schema up-to-date")
 }
 
-mfdb_taxonomy <- c("case_study", "institute", "gear", "vessel_type", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage")
-mfdb_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type", "tow", "vessel")
+mfdb_taxonomy_tables <- c(
+    "case_study", "institute", "gear", "vessel_type", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage",
+    "areacell", "sampling_type", "data_source", "index_type", "tow", "vessel")
 mfdb_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', 'prey')
 
 mfdb_taxonomy_cols <- list(

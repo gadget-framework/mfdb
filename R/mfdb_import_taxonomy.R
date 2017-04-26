@@ -2,7 +2,7 @@
 # data_in should have columns id, name, description
 mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('description')) {
     # Is table_name one of the recognised tables?
-    if (!(table_name %in% mfdb_taxonomy | table_name %in% mfdb_cs_taxonomy)) {
+    if (!(table_name %in% mfdb_taxonomy_tables)) {
         stop("Unknown taxonomy table ", table_name)
     }
 
@@ -72,10 +72,10 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
 
 # Import any cs_specific taxonomies
 mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
-    if (!(taxonomy_name %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
+    if (!(taxonomy_name %in% mfdb_taxonomy_tables)) {
         stop(
             "Unknown taxonomy name '", taxonomy_name,
-            "' should be one of ", paste(c(mfdb_taxonomy, mfdb_cs_taxonomy), collapse = ", "))
+            "' should be one of ", paste(mfdb_taxonomy_tables, collapse = ", "))
     }
 
     extra_cols <- mfdb_get_taxonomy_extra_cols(taxonomy_name)
@@ -115,7 +115,7 @@ mfdb_import_species_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(m
 mfdb_import_gear_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'gear', data_in)
 
 mfdb_empty_taxonomy <- function(mdb, taxonomy_name) {
-    if (!(taxonomy_name %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
+    if (!(taxonomy_name %in% mfdb_taxonomy_tables)) {
         stop("Unknown taxonomy table ", taxonomy_name)
     }
     mfdb_send(mdb, "DELETE FROM ", taxonomy_name)

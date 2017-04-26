@@ -11,7 +11,7 @@ gen_likes <- function(col, conditions, operator) {
 
     # Look up in taxonomy
     lookup <- gsub('(.*\\.)|_id', '', col)
-    if ((lookup %in% c(mfdb_taxonomy, mfdb_cs_taxonomy))) {
+    if (lookup %in% mfdb_taxonomy_tables) {
         return(paste0(
             "(", col, " IN ",
             "(SELECT ", lookup, "_id FROM ", lookup, " WHERE ",
