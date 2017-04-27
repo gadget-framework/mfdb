@@ -48,7 +48,16 @@ agg_summary.mfdb_step_interval <- function(mdb, x, col, outputname, data, sample
         if (is.null(data[[outputname]])) {
             stop("Column ", outputname, " missing from data")
         }
-        to <- max(as.integer(gsub(paste0("^", x$prefix), "", data[[outputname]]))) + x$by
+        to <- x$from
+        m <- data[[outputname]]
+        if (is.factor(m)) m <- levels(m)
+        m <- regmatches(m, regexec(paste0("^", x$prefix, "(\\d+)"), m))
+        for (match in m) {
+            if (length(match) == 2 && match[[2]] > to) {
+                to <- as.integer(match[[2]])
+            }
+        }
+        to <- to + x$by
     }
 
     # Vector of groupings
