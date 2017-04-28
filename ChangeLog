@@ -1,6 +1,7 @@
 (unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
 
     Version 6.0-0
+    * Add mfdb_na_group function to put NAs in the their own group
     * Remove remaining cs_taxonomy differences, simplify code
     * mfdb_sample_rawdata now will group into a list, like other sample functions
 

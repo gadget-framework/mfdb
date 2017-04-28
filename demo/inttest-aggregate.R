@@ -122,3 +122,50 @@ year    month   areacell        species tow  vessel length  age     weight
         stringsAsFactors = FALSE)), "Selected all vessels ending with e")
 })
 
+ok_group("mfdb_na_group", {
+    # Import a survey for the data we are interested in
+    mfdb_import_survey(mdb, data_source = "cod2000",
+        table_string("
+year    month   areacell        species length  age     weight
+1998    1       45G01           COD     21      2       210
+1999    1       45G02           COD     34      3       NA
+2000    1       45G03           COD     NA      3       230
+1998    1       45G01           COD     62      1       320
+1999    1       45G02           COD     NA      1       330
+2000    1       45G03           COD     54      2       430
+1998    1       45G01           HAD     28      2       NA
+1999    1       45G02           HAD     NA      3       220
+2000    1       45G03           HAD     NA      3       NA
+1998    1       45G01           HAD     12      1       NA
+1999    1       45G02           HAD     NA      1       330
+2000    1       45G03           HAD     14      2       430
+        "))
+
+    # Group by length without na_group, NA's shouldn't be visible
+    agg_data <- mfdb_sample_count(mdb, c('species', 'length'), list(
+        species = mfdb_unaggregated(),
+        length = mfdb_step_interval("len", 10),
+        null = NULL))
+    ok(cmp(unattr(agg_data[[1]]), data.frame(
+        year = c("all"),
+        step = c('all'),
+        area = c('all'),
+        species = c('COD', 'COD', 'COD', 'COD', 'HAD', 'HAD'),
+        length = c('len20', 'len30', 'len50', 'len60', 'len10', 'len20'),
+        number = c(1,1,1,1,2,1),
+        stringsAsFactors = FALSE)), "NAs aren't visible by default")
+
+    # Add na_group for others
+    agg_data <- mfdb_sample_count(mdb, c('species', 'length'), list(
+        species = mfdb_unaggregated(),
+        length = mfdb_na_group(mfdb_step_interval("len", 10), 'len_unknown'),
+        null = NULL))
+    ok(cmp(unattr(agg_data[[1]]), data.frame(
+        year = c("all"),
+        step = c('all'),
+        area = c('all'),
+        species = c('COD', 'COD', 'COD', 'COD', 'COD', 'HAD', 'HAD', 'HAD'),
+        length = c('len20', 'len30', 'len50', 'len60', 'len_unknown', 'len10', 'len20', 'len_unknown'),
+        number = c(1,1,1,1,2,2,1,3),
+        stringsAsFactors = FALSE)), "NAs aren't visible by default")
+})
