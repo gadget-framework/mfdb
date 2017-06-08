@@ -124,3 +124,23 @@ gadget_dir_write.gadget_stockfile <- function(gd, obj) {
     gadget_mainfile_update(gd, stockfiles = stock_filename)
     invisible(NULL)
 }
+
+# function to write predator suitability - added by PNF - June 7, 2017
+pred_suit <- function(pred='comm', 
+                      stock=NULL, 
+                      fun='newexponentiall50', 
+                      params=NULL) {
+    paste0('\n',
+           paste(stock, 'function', fun, 
+                 ifelse(is.numeric(params),
+                        params,
+                        do.call(paste, lapply(params, function(x) {
+                            if (is.numeric(x)) {
+                                return(x)
+                            } else {
+                                sprintf('#%1$s.%2$s.%3$s',
+                                        stock, pred, x)
+                            }
+                        }))),
+                 sep='\t'))
+}

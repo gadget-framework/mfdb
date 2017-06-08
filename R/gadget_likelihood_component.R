@@ -246,6 +246,8 @@ gadget_surveydistribution_component <- function (
         age = NULL,
         stocknames = c(),
         fittype = 'linearfit',
+        parameters = NULL,
+        suitability = NULL,
         slope = NULL,
         intercept = NULL,
         epsilon = 10,
@@ -262,7 +264,8 @@ gadget_surveydistribution_component <- function (
             ageaggfile  = agg_file('age', fname_prefix(sys.call(0), name), if(is.null(age)) attr(data, "age") else age),
             stocknames = stocknames,
             fittype = fittype,
-            parameters = ""),
+            parameters = parameters,
+            suitability),
         if (is.null(slope)) c() else list(slope = slope),
         if (is.null(intercept)) c() else list(intercept = intercept),
         list(
@@ -270,6 +273,27 @@ gadget_surveydistribution_component <- function (
             likelihoodtype = likelihoodtype),
         NULL))
 }
+
+# function to write surveydistribution suitability 
+# added by PNF - June 7, 2017
+surveydist_suit <- function(pred='survey',
+                            stock=NULL,
+                            fun='newexponentiall50',
+                            params=NULL) {
+    paste0(paste('function', fun, 
+                 ifelse(is.numeric(params),
+                        params,
+                        do.call(paste, lapply(params, function(x) {
+                            if (is.numeric(x)) {
+                                return(x)
+                            } else {
+                                sprintf('#%1$s.%2$s.%3$s',
+                                        stock, pred, x)
+                            }
+                        }))),
+                 sep='\t'))
+}
+
 
 # http://www.hafro.is/gadget/userguide/userguide.html#x1-1300008.8
 gadget_stomachcontent_component <- function (
