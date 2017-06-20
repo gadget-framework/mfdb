@@ -39,4 +39,3 @@ compare_cols <- function (actual, expected) {
     }
     return(invisible(NULL))
 }
-
