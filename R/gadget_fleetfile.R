@@ -91,23 +91,3 @@ gadget_dir_write.gadget_fleet_component <- function(gd, obj) {
     }, component_name = "fleetcomponent")
     gadget_dir_write(gd, fleetfile)
 }
-
-## function to write fleet suitability - added by PNF - June 7, 2017
-fleet_suit <- function(fleet='comm', 
-                       stock=NULL, 
-                       fun='exponentiall50', 
-                       params=NULL) {
-    paste0('\n',
-           paste(stock, 'function', fun, 
-                 ifelse(is.numeric(params),
-                        params,
-                        do.call(paste, lapply(params, function(x) {
-                            if (is.numeric(x)) {
-                                return(x)
-                            } else {
-                                sprintf('#%1$s.%2$s.%3$s',
-                                        stock, fleet, x)
-                            }
-                        }))),
-                 sep='\t'))
-}

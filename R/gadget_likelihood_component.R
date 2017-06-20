@@ -274,27 +274,6 @@ gadget_surveydistribution_component <- function (
         NULL))
 }
 
-# function to write surveydistribution suitability 
-# added by PNF - June 7, 2017
-surveydist_suit <- function(pred='survey',
-                            stock=NULL,
-                            fun='newexponentiall50',
-                            params=NULL) {
-    paste0(paste('function', fun, 
-                 ifelse(is.numeric(params),
-                        params,
-                        do.call(paste, lapply(params, function(x) {
-                            if (is.numeric(x)) {
-                                return(x)
-                            } else {
-                                sprintf('#%1$s.%2$s.%3$s',
-                                        stock, pred, x)
-                            }
-                        }))),
-                 sep='\t'))
-}
-
-
 # http://www.hafro.is/gadget/userguide/userguide.html#x1-1300008.8
 gadget_stomachcontent_component <- function (
         name,
