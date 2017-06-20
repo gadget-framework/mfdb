@@ -12,8 +12,8 @@ mfdb_dplyr_table <- function (mdb, tbl_name, include_cols) {
     }
 
     # Turn mdb connection into dplyr & get table
-    dp <- dplyr::src_sql("postgres", mdb$db, info = DBI::dbGetInfo(mdb$db))
-    dp_tbl <- dplyr::tbl(dp, tbl_name)
+    #dp <- mdb$db#dbplyr::src_sql("postgres", mdb$db, info = DBI::dbGetInfo(mdb$db))
+    dp_tbl <- dplyr::tbl(mdb$db, tbl_name)
 
     # Get all possible taxonomy columns in this table
     tx_cols <- intersect(
@@ -29,7 +29,7 @@ mfdb_dplyr_table <- function (mdb, tbl_name, include_cols) {
     for (tx_col in intersect(tx_cols, paste0(include_cols, '_id'))) {
         tx <- sub('_id$', '', tx_col)
         tx_tbl <- do.call(dplyr::select_, c(
-            list(dplyr::tbl(dp, tx)),
+            list(dplyr::tbl(mdb$db, tx)),
             named_list("name", tx, tx_col, tx_col),
             NULL))
         dp_tbl <- dplyr::left_join(dp_tbl, tx_tbl, by = tx_col)
