@@ -274,10 +274,10 @@ mfdb_create_aggregate <- function(mdb, func_name, accum_body, final_body,
         return_type = "numeric") {
 
     # Make sure all this happens in the selected schema
-    func_name <- paste(mdb$schema, func_name, sep = ".")
+    func_dotted_name <- paste(mdb$schema, func_name, sep = ".")
 
     mfdb_send(mdb,
-        "CREATE OR REPLACE FUNCTION ", func_name, "_accum(",
+        "CREATE OR REPLACE FUNCTION ", func_dotted_name, "_accum(",
         "p ", state_type,
         ", ", paste0(
             c("n", "n"),
@@ -288,27 +288,27 @@ mfdb_create_aggregate <- function(mdb, func_name, accum_body, final_body,
         ") RETURNS ", state_type, " AS ", accum_body, " IMMUTABLE;");
 
     mfdb_send(mdb,
-        "CREATE OR REPLACE FUNCTION ", func_name, "_final(",
+        "CREATE OR REPLACE FUNCTION ", func_dotted_name, "_final(",
         "p ", state_type,
         ") RETURNS ", return_type, " AS ", final_body, " IMMUTABLE;");
 
     # (re)create aggregate function
     agg_count <- mfdb_fetch(mdb,
         "SELECT COUNT(*) FROM pg_proc",
-        " WHERE proname = ", sql_quote(func_name),
+        " WHERE LOWER(proname) = LOWER(", sql_quote(func_name), ")",
         " AND pronamespace = (",
             "SELECT oid FROM pg_namespace",
-            " WHERE nspname = ", sql_quote(mdb$schema), ") AND proisagg;")
+            " WHERE LOWER(nspname) = LOWER(", sql_quote(mdb$schema), ")) AND proisagg;")
     if (agg_count[1][1] > 0) mfdb_send(mdb,
-        "DROP AGGREGATE IF EXISTS ", func_name,
+        "DROP AGGREGATE IF EXISTS ", func_dotted_name,
         "(", paste0(input_type, collapse = ","), ")",
         NULL)
     mfdb_send(mdb,
-        "CREATE AGGREGATE ", func_name,
+        "CREATE AGGREGATE ", func_dotted_name,
         "(", paste0(input_type, collapse = ","), ")",
-        " (SFUNC=", func_name, "_accum",
+        " (SFUNC=", func_dotted_name, "_accum",
         ", STYPE=", state_type,
-        ", FINALFUNC=", func_name, "_final",
+        ", FINALFUNC=", func_dotted_name, "_final",
         ", INITCOND=", sql_quote(init_cond),
         ");")
 
