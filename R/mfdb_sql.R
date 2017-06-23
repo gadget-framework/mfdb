@@ -293,7 +293,13 @@ mfdb_create_aggregate <- function(mdb, func_name, accum_body, final_body,
         ") RETURNS ", return_type, " AS ", final_body, " IMMUTABLE;");
 
     # (re)create aggregate function
-    mfdb_send(mdb,
+    agg_count <- mfdb_fetch(mdb,
+        "SELECT COUNT(*) FROM pg_proc",
+        " WHERE proname = ", sql_quote(func_name),
+        " AND pronamespace = (",
+            "SELECT oid FROM pg_namespace",
+            " WHERE nspname = ", sql_quote(mdb$schema), ") AND proisagg;")
+    if (agg_count[1][1] > 0) mfdb_send(mdb,
         "DROP AGGREGATE IF EXISTS ", func_name,
         "(", paste0(input_type, collapse = ","), ")",
         NULL)
