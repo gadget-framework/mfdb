@@ -82,6 +82,8 @@ In addition, \code{penalty} understands:
     \item{age}{An \code{list} of ages, taken from \code{attr(data, "age")} if not supplied}
     \item{stocknames}{List of stock names}
     \item{fittype, slope, intercept}{Fit options, see GADGET manual}
+    \item{parameters}{A vector of length 2}
+    \item{suitability}{A single suitability function}
     \item{epsilon}{Numeric, defaults to 10}
     \item{likelihoodtype}{String, see GADGET manual}
 }
