@@ -28,7 +28,9 @@ print.gadget_file <- function (x, ...) {
 
         # properties are in key\tvalue1\tvalue2... form
         for (i in seq_len(length(comp))) {
-            cat(names(comp)[[i]], "\t", sep = "")
+            if (names(comp)[[i]] != "") {
+                cat(names(comp)[[i]], "\t", sep = "")
+            }
             cat(comp[[i]], sep = "\t")
 
             if (length(attr(comp[[i]], "comment")) > 0) {

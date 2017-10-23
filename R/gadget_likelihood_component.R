@@ -265,8 +265,8 @@ gadget_surveydistribution_component <- function (
             stocknames = stocknames,
             fittype = fittype,
             parameters = parameters,
-            # NB: Gadget requires the function on it's own line, cheat for now and insert a newline in the value
-            suitability = paste0("\n", suitability)),
+            # NB: No name, as gadget requires the suitability function on it's own line
+            suitability),
         if (is.null(slope)) c() else list(slope = slope),
         if (is.null(intercept)) c() else list(intercept = intercept),
         list(

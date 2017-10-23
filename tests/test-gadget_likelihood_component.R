@@ -506,7 +506,6 @@ ok_group("surveydistribution", {
         "stocknames\tfrank\tbarbara",
         "fittype\tlinearfit",
         "parameters\t2\t4",
-        "suitability\t",
         "function woo",
         "epsilon\t10",
         "likelihoodtype\tmultinomial",
