@@ -24,7 +24,7 @@ gadget_mainfile_update <- function (gd,
     # Read file, create basic outline if doesn't exist
     mfile <- gadget_dir_read(gd, gd$mainfile, missing_okay = TRUE)
     if (length(mfile$components) == 0) mfile$components <- list(
-        list(timefile = "", areafile = "", printfiles = structure(c(), comment = "Required comment")),
+        list(timefile = "", areafile = "", printfiles = structure(list(), comment = "Required comment")),
         stock = list(),
         tagging = list(),
         otherfood = list(),
