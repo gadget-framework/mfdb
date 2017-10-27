@@ -10,7 +10,7 @@ xlsx_files <- c(
     ""
 )
 sanitize_lat_lon <- function (s) {
-    s <- gsub("°", " ", s)
+    s <- gsub("\u00B0", " ", s) # i.e. degree symbol
     s <- gsub("'", " ", s)
     measurements::conv_unit(s, from = 'deg_min_sec', to = 'dec_deg')
 }
@@ -72,9 +72,9 @@ OTB.DM57	"traditional Catalan trawl"	40	40
 OTB.DM58	"traditional Catalan trawl"	40	40
 OTB.DM59	"traditional Catalan trawl"	40	40
 HOK.5		"Bottom Longline hooksize <5"	5	5
-GTS.GNS_50_100	"Gill net ≥50 mm and <100 mm"	50	100
+GTS.GNS_50_100	"Gill net \u226550 mm and <100 mm"	50	100
 GTS.GTR_40	"Trammel net <40 mm"		0	40
-GTS.GTR_40_60	"Trammel net ≥40 and <60"	40	6
+GTS.GTR_40_60	"Trammel net \u226540 and <60"	40	6
 '), header = TRUE)
 ########### Read in CSIC
 case_study <- "csic"

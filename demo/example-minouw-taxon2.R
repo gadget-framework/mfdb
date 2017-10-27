@@ -10,7 +10,7 @@ xlsx_files <- c(
     ""
 )
 sanitize_lat_lon <- function (s) {
-    s <- gsub("°", " ", s)
+    s <- gsub("\u00B0", " ", s) # i.e. degree symbol
     s <- gsub("'", " ", s)
     measurements::conv_unit(s, from = 'deg_min_sec', to = 'dec_deg')
 }
@@ -90,9 +90,9 @@ fleets <- c(
     otb.large = "OTBlarge",
     otb.small = "OTBsmall",
     bll.small = "Bottom Longline hooksize  <5",
-    gil.med = "Gill net ≥50 mm and <100 mm",
+    gil.med = "Gill net \u226550 mm and <100 mm",
     gtr.small = "Trammel net <40 mm",
-    gtr.med = "Trammel net ≥40 and <60",
+    gtr.med = "Trammel net \u226540 and <60",
     gtr.large = "Trammel net <40 mm"
 )
 reverse_lookup <- function (l, col) {

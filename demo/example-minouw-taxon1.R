@@ -15,7 +15,7 @@ library(mfdb)
 #    "42:32" mins/secs
 # cibm problems
 # * Empty rows at start of spreadsheet
-# * Inconsistent lat/lon formats: 42°29'50 vs 42 26 13
+# * Inconsistent lat/lon formats: 42\u00B029'50 vs 42 26 13
 # * 10 46978 --> 10 46 978
 # * No locations defined
 # * Column names including all data "discarded (D) N"
@@ -27,7 +27,7 @@ xlsx_files <- c(
     ""
 )
 sanitize_lat_lon <- function (s) {
-    s <- gsub("°", " ", s)
+    s <- gsub("\u00B0", " ", s) # i.e. degree symbol
     s <- gsub("'", " ", s)
     measurements::conv_unit(s, from = 'deg_min_sec', to = 'dec_deg')
 }
