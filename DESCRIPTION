@@ -16,5 +16,6 @@ Imports:
     RPostgreSQL (>= 0.4)
 Suggests:
     unittest (>= 1.2),
-    dplyr (>= 0.3.0)
+    dplyr (>= 0.7.1),
+    dbplyr (>= 1.0.0)
 LazyData: true

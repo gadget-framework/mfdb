@@ -246,6 +246,8 @@ gadget_surveydistribution_component <- function (
         age = NULL,
         stocknames = c(),
         fittype = 'linearfit',
+        parameters = NULL,
+        suitability = list(),
         slope = NULL,
         intercept = NULL,
         epsilon = 10,
@@ -262,7 +264,9 @@ gadget_surveydistribution_component <- function (
             ageaggfile  = agg_file('age', fname_prefix(sys.call(0), name), if(is.null(age)) attr(data, "age") else age),
             stocknames = stocknames,
             fittype = fittype,
-            parameters = ""),
+            parameters = parameters,
+            # NB: No name, as gadget requires the suitability function on it's own line
+            suitability),
         if (is.null(slope)) c() else list(slope = slope),
         if (is.null(intercept)) c() else list(intercept = intercept),
         list(

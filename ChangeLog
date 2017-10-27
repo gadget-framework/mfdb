@@ -13,6 +13,10 @@
     * Add tow_end_latitude/tow_end_longitude/tow_start/tow_duration
     * Add gear_mesh_size/gear_mesh_size_min/gear_mesh_size_max
 
+(unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
+
+    * Add parameters/suitiability support to surveydistribution
+
 2017-03-14  Jamie Lentin  <lentinj@shuttlethread.com>
 
     Version 5.2-0

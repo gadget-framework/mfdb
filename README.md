@@ -145,7 +145,7 @@ function calls).
 Models using MFDB
 -----------------
 
-* https://github.com/bthe/gadget-models
+* https://github.com/fishvice/gadget-models
 
 Acknowledgements
 ----------------

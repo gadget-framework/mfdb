@@ -478,6 +478,41 @@ ok_group("surveyindices", {
 })
 
 ###############################################################################
+ok_group("surveydistribution", {
+    component <- gadget_likelihood_component('surveydistribution', name = 'sd',
+        data = structure(
+            data.frame(year = 1998, step = 1:2, area = 101, age = c(1,2), length = c(3,4), number = c(100,200)),
+            area = list(all = 101),
+            age = list(all = 1:20),
+            length = list(all = 1:10)),
+        stocknames = c('frank', 'barbara'),
+        fittype = 'linearfit',
+        parameters = c(2, 4),
+        suitability = "function woo",
+        epsilon = 10,
+        likelihoodtype = 'multinomial')
+    ok(cmp(class(component)[[1]], 'gadget_surveydistribution_component'), "Made effort sitype")
+    ok(cmp_component(component,
+        ver_string,
+        "; ",
+        "[component]",
+        "name\tsd",
+        "weight\t0",
+        "type\tsurveydistribution",
+        "datafile\tData/surveydistribution.sd.",
+        "areaaggfile\tAggfiles/surveydistribution.sd.area.agg",
+        "lenaggfile\tAggfiles/surveydistribution.sd.len.agg",
+        "ageaggfile\tAggfiles/surveydistribution.sd.age.agg",
+        "stocknames\tfrank\tbarbara",
+        "fittype\tlinearfit",
+        "parameters\t2\t4",
+        "function woo",
+        "epsilon\t10",
+        "likelihoodtype\tmultinomial",
+        NULL), "Wrote component with effort sitype")
+})
+
+###############################################################################
 ok_group("stomachcontent - matching of prey to labels", {
     # Create a temporary directory, starts off empty
     dir <- tempfile()
