@@ -1,6 +1,9 @@
 example-datras			Example script generating model files from DATRAS data
 example-ewe			Example script generating EwE model files from generated data
 example-iceland			Example script generating model files from Iceland data
+example-minouw-size_frq		Example importing a minouw size_frq table
+example-minouw-taxon1		Example importing a minouw taxon1 table
+example-minouw-taxon2		Example importing a minouw taxon2 table
 inttest-aggregate		Exercise mfdb_aggregate_* functions
 inttest-aggregatefunctions	Exercise postgresql aggregate functions
 inttest-gadgetdirectory		Demonstrate importing data and writing to GADGET directory
