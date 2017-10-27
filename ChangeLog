@@ -1,4 +1,4 @@
-(unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
+2017-10-27  Jamie Lentin  <lentinj@shuttlethread.com>
 
     Version 6.0-0
     * Add mfdb_na_group function to put NAs in the their own group
