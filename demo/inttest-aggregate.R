@@ -169,3 +169,43 @@ year    month   areacell        species length  age     weight
         number = c(1,1,1,1,2,2,1,3),
         stringsAsFactors = FALSE)), "NAs aren't visible by default")
 })
+
+ok_group("mfdb_nonint_groups", {
+    # Import a survey for the data we are interested in
+    # https://github.com/mareframe/mfdb/issues/52
+    mfdb_import_survey(mdb, data_source = "mfdb_nonint_groups",
+        table_string("
+year    month   areacell        species length  count
+1998    1       45G01           COD     1.00    1125.9259
+1998    1       45G01           COD     1.05    2848.2495
+1998    1       45G01           COD     1.10    5933.5657
+1998    1       45G01           COD     1.15    19033.4530
+1998    1       45G01           COD     1.20    48470.2480
+1998    1       45G01           COD     1.25    134606.1640
+1998    1       45G01           COD     1.30    236715.6261
+1998    1       45G01           COD     1.35    433520.1095
+1998    1       45G01           COD     1.40    577904.8897
+1998    1       45G01           COD     1.45    386259.3622
+1998    1       45G01           COD     1.50    241126.0718
+1998    1       45G01           COD     1.55    127828.4487
+        "))
+
+    # Group by length without na_group, NA's shouldn't be visible
+    agg_data <- mfdb_sample_count(mdb, c('length'), list(
+        data_source = "mfdb_nonint_groups",
+        length = mfdb_interval("len", seq(from=1, to=2, by = 0.1), open_ended = c("upper","lower")),
+        null = NULL))
+    ok(cmp(unattr(agg_data[[1]]), data.frame(
+        year = c("all"),
+        step = c('all'),
+        area = c('all'),
+        length = c("len1", "len1.1", "len1.2", "len1.3", "len1.4", "len1.5"),
+        number = c(
+            1125.9259 + 2848.2495,
+            5933.5657 + 19033.4530,
+            48470.2480 + 134606.1640,
+            236715.6261 + 433520.1095,
+            577904.8897 + 386259.3622,
+            241126.0718 + 127828.4487),
+        stringsAsFactors = FALSE)), "We can group by non-integer groups (interval)")
+})

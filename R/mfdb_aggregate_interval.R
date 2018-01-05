@@ -19,6 +19,13 @@ mfdb_interval <- function (prefix, vect, open_ended = FALSE) {
         class = c("mfdb_interval", "mfdb_aggregate")))
 }
 
+# Cast value to something that matches column
+col_cast <- function (col) {
+    lookup <- gsub('(.*\\.)|_id', '', col)
+    # NB: Not exhaustive, but main thing to avoid is comparing REAL to NUMERIC types
+    ifelse(lookup == "species", "::BIGINT", ifelse(lookup == "year", "::INT", "::REAL"))
+}
+
 # Generate CASE statement to pick correct group for value
 select_clause.mfdb_interval <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     sorted <- sort(x, decreasing = FALSE)
@@ -30,7 +37,7 @@ select_clause.mfdb_interval <- function(mdb, x, col, outputname, group_disabled 
 
     paste("CASE",
         paste("WHEN",
-            col, "<", sorted, "THEN",
+            col, "<", paste0(sorted, col_cast(col)), "THEN",
             vapply(names(sorted), sql_quote, ""), collapse = " "),
         "ELSE", sql_quote(tail(names(sorted), 1)),  # If upper is open ended, remainder is bunged in with final group
         "END AS", outputname)
@@ -39,8 +46,8 @@ select_clause.mfdb_interval <- function(mdb, x, col, outputname, group_disabled 
 # Ensure value is within range specified
 where_clause.mfdb_interval <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     c(
-        if (!('lower' %in% attr(x, 'open_ended'))) paste(col, ">=", sql_quote(min(x))),
-        if (!('upper' %in% attr(x, 'open_ended'))) paste(col, "<", sql_quote(max(x))),
+        if (!('lower' %in% attr(x, 'open_ended'))) paste(col, ">=", paste0(sql_quote(min(x)), col_cast(col))),
+        if (!('upper' %in% attr(x, 'open_ended'))) paste(col, "<", paste0(sql_quote(max(x)), col_cast(col))),
         NULL)
 }
 
