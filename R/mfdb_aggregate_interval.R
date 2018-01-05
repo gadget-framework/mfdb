@@ -21,32 +21,18 @@ mfdb_interval <- function (prefix, vect, open_ended = FALSE) {
 
 # Generate CASE statement to pick correct group for value
 select_clause.mfdb_interval <- function(mdb, x, col, outputname, group_disabled = FALSE) {
-    sorted <- sort(x, decreasing = TRUE)
-    final <- c()
+    sorted <- sort(x, decreasing = FALSE)
 
-    if ('upper' %in% attr(x, 'open_ended')) {
-        # assign everything outside the highest group to the highest interval
-        names(sorted)[1]<-names(sorted[2])
-    } else {
-        # Assign stuff outside highest group to NULL
-        names(sorted)[[1]] <- NA
-    }
-
-    if ('lower' %in% attr(x, 'open_ended')) {
-        # Final item should be a less-than instead
-        final <- tail(sorted, 1)
-        sorted <- head(sorted, -1)
-
-        final <- paste("WHEN",
-            col, "<", tail(sorted, 1), "THEN",
-            sql_quote(names(final)), collapse = " ")
-    }
+    # Shift names up by one, ignore minimum value (only relevant for filters)
+    sorted <- structure(
+        sorted[2:length(sorted)],
+        names = names(sorted)[1:length(sorted) - 1])
 
     paste("CASE",
         paste("WHEN",
-            col, ">=", sorted, "THEN",
+            col, "<", sorted, "THEN",
             vapply(names(sorted), sql_quote, ""), collapse = " "),
-        final,
+        "ELSE", sql_quote(tail(names(sorted), 1)),  # If upper is open ended, remainder is bunged in with final group
         "END AS", outputname)
 }
 
