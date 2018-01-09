@@ -1,5 +1,9 @@
 language: r
-sudo: required
+r:
+  - release
+  - devel
+cache: packages
+sudo: false
 warnings_are_errors: true
 before_install:
 - openssl aes-256-cbc
