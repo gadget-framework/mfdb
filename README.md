@@ -1,6 +1,8 @@
 MareFrame DB Access package
 ===========================
 
+[![Build Status](https://travis-ci.org/mareframe/mfdb.svg?branch=6.x)](https://travis-ci.org/mareframe/mfdb)
+
 This package enables automated processing of fisheries data into suitable forms
 for running ecosystem models against it, e.g. [GADGET](http://www.hafro.is/gadget/).
 
