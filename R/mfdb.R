@@ -104,12 +104,14 @@ mfdb <- function(case_study_name = "",
         mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
 
         # If schema didn't exist before, see if there's data to be had in the old public tables
-        res <- tryCatch(
-            mfdb_fetch(mdb,
+        if (mfdb_table_exists(mdb, 'case_study', schema_name = 'public')) {
+            res <- mfdb_fetch(mdb,
                 "SELECT case_study_id",
                 " FROM public.case_study",
-                " WHERE name = ", sql_quote(case_study_name)),
-            error = function(e) c())
+                " WHERE name = ", sql_quote(case_study_name))
+        } else {
+            res <- c()
+        }
         if (length(res) == 1) {
             logger$info(paste0("Copying data from ", case_study_name))
             # A case study exists by this ID
