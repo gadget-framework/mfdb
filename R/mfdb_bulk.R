@@ -37,6 +37,7 @@ mfdb_cs_dump <- function(mdb, out_location) {
                     data_out,
                     file = file.path(out_location, table_name),
                     append = (offset > 0),
+                    row.names = FALSE,
                     col.names = (offset == 0),
                     fileEncoding = "UTF-8")
         })
