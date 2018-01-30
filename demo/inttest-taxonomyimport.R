@@ -17,7 +17,7 @@ mdb <- mfdb('inttest-taxonomyimport', db_params = db_params, save_temp_tables = 
 
 ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE species_id = 9999999999")[1,] == 
   mfdb::species[mfdb::species$name == 'TBX', c('name', 'description')]), "Entry for 9999999999 matches package")
-ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM species")[1,1], nrow(mfdb::species)), "Species has right number of entries")
+ok(cmp(as.integer(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM species")[1,1]), nrow(mfdb::species)), "Species has right number of entries")
 
 # Fiddle about with entry
 mfdb:::mfdb_import_taxonomy(mdb, 'species', data.frame(id = c(1), name = c('TBX'), description = c('Wormy Worms')))
