@@ -55,7 +55,7 @@ mfdb_send <- function(mdb, ..., result = "") {
 
     if (is.function(result)) {
         offset <- 0
-        while (!DBI::dbHasCompleted(res)) {
+        while (offset == 0 || !DBI::dbHasCompleted(res)) {
             result(DBI::dbFetch(res, n = 1000), offset)
             offset <- offset + 1000
         }
