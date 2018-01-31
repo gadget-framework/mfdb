@@ -12,6 +12,14 @@ source('mfdb/tests/utils/inttest-helpers.R')
 
 cmp_table <- function(tbls, expected) {
     ok(cmp(length(tbls), 1), "result only returned one data.frame")
+
+    if (class(tbls[[1]]$number) == 'integer64') {
+        tbls[[1]]$number <- as.numeric(tbls[[1]]$number)
+    }
+    if (class(tbls[[1]]$predator_count) == 'integer64') {
+        tbls[[1]]$predator_count <- as.numeric(tbls[[1]]$predator_count)
+    }
+
     cmp(tbls[[1]][names(tbls[[1]])], expected)
 }
 
