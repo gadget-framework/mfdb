@@ -5,20 +5,19 @@ mfdb_show_schema <- function() {
 }
 
 # Destroy everything in current schema
-mfdb_destroy_schema <- function(mdb) {
+mfdb_destroy_schema <- function(mdb) mfdb_transaction(mdb, {
     if (mdb$schema == 'public') {
         for(t in c('prey', 'predator', 'sample', 'survey', 'division', 'survey_index', 'fleet', mfdb_taxonomy_tables, 'mfdb_schema')) {
             mdb$logger$info(paste("Removing table", t))
-            tryCatch(mfdb_send(mdb, "DROP TABLE ", mdb$schema, ".", t, " CASCADE"), error = function(e) {
-                if(grepl("does not exist", e$message)) return();
-                stop(e)
-            })
+            if (mfdb_table_exists(mdb, t)) {
+                mfdb_send(mdb, "DROP TABLE ", mdb$schema, ".", t, " CASCADE")
+            }
         }
     } else {
         mfdb_send(mdb, "DROP SCHEMA ", mdb$schema, " CASCADE")
     }
     invisible(TRUE)
-}
+})
 
 # Check to see if we need to update schema do it,
 mfdb_update_schema <- function(
@@ -28,10 +27,7 @@ mfdb_update_schema <- function(
     while (TRUE) {
         # Find out existing schema version, if it's what we want return
         if (mfdb_table_exists(mdb, 'mfdb_schema')) {
-            res <- mfdb_fetch(mdb, "SELECT MAX(version) FROM ", ifelse(
-                target_version < 5,
-                "mfdb_schema",
-                paste0(mdb$schema, ".mfdb_schema")))
+            res <- mfdb_fetch(mdb, "SELECT MAX(version) FROM ", mdb$schema, ".mfdb_schema")
             schema_version <- ifelse(nrow(res) == 0, 0, res[1, 1])
         } else {
             schema_version <- 0
@@ -69,7 +65,22 @@ fk <- function (...) {
 # Create MFDB schema from scratch, or print commands
 schema_from_0 <- function(mdb) {
     mdb$logger$info("Creating schema from scratch")
+    schema_create_tables(mdb)
 
+    # Populate tables with package-provided data
+    for (t in mfdb_taxonomy_tables) {
+        if (exists(t, where = as.environment("package:mfdb"))) {
+            mfdb_import_taxonomy(mdb, t, get(t, pos = as.environment("package:mfdb")))
+        }
+    }
+    mfdb_import_cs_taxonomy(mdb, "index_type", data.frame(
+        id = c(99999),
+        name = 'temperature',
+        stringsAsFactors = FALSE))
+}
+
+# Create all tables required for schema
+schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
     mfdb_create_table(mdb, "mfdb_schema", "Table to keep track of schema version", cols = c(
         "version", "INT NOT NULL", "Version of MFDB schema"))
     mfdb_insert(mdb, "mfdb_schema", list(version = package_major_version()))
@@ -170,20 +181,9 @@ schema_from_0 <- function(mdb) {
         NULL
     ), keys = c(
     ))
+})
 
-    # Populate tables with package-provided data
-    for (t in mfdb_taxonomy_tables) {
-        if (exists(t, where = as.environment("package:mfdb"))) {
-            mfdb_import_taxonomy(mdb, t, get(t, pos = as.environment("package:mfdb")))
-        }
-    }
-    mfdb_import_cs_taxonomy(mdb, "index_type", data.frame(
-        id = c(99999),
-        name = 'temperature',
-        stringsAsFactors = FALSE))
-}
-
-schema_from_2 <- function(mdb) {
+schema_from_2 <- function(mdb) mfdb_transaction(mdb, {
     mdb$logger$info("Upgrading schema from version 2")
     mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN count DROP NOT NULL")
     mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN count TYPE REAL")
@@ -233,9 +233,9 @@ schema_from_2 <- function(mdb) {
     }
 
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 3")
-}
+})
 
-schema_from_3 <- function(mdb) {
+schema_from_3 <- function(mdb) mfdb_transaction(mdb, {
     mdb$logger$info("Upgrading schema from version 3")
     mfdb_send(mdb, "ALTER TABLE prey ALTER COLUMN count DROP NOT NULL")
 
@@ -385,13 +385,13 @@ schema_from_3 <- function(mdb) {
     }
 
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 4")
-}
+})
 
 schema_from_4 <- function(mdb) {
     stop("Cannot upgrade directly from 4-->5, need to recreate in separate schema")
 }
 
-schema_from_5 <- function(mdb) {
+schema_from_5 <- function(mdb) mfdb_transaction(mdb, {
     mdb$logger$info("Upgrading schema from version 5")
 
     mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN age TYPE REAL")
@@ -407,7 +407,7 @@ schema_from_5 <- function(mdb) {
     mfdb_send(mdb, "ALTER TABLE gear ADD COLUMN mesh_size_max REAL")
 
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 6")
-}
+})
 
 schema_from_6 <- function(mdb) {
     mdb$logger$info("Schema up-to-date")

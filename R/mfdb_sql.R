@@ -328,6 +328,7 @@ mfdb_transaction <- function(mdb, transaction) {
             stop(e)
         }
     })
+    mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
     ret <- tryCatch(transaction, error = function (e) e)
     if ("error" %in% class(ret)) {
         mdb$logger$warn("Rolling back transaction...")
