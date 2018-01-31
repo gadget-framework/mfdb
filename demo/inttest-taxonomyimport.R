@@ -27,9 +27,9 @@ ok(all(mfdb:::mfdb_fetch(mdb, "SELECT species_id, description FROM species WHERE
 # Connect as a different case study. should have it's own tables, not affected by the above
 mdb2 <- mfdb('inttest-taxonomyimport Baltic', db_params = db_params, save_temp_tables = FALSE)
 ok(cmp(
-    mfdb:::mfdb_fetch(mdb2, "SELECT species_id, description FROM species WHERE name = 'TBX'")[1,],
+    mfdb:::mfdb_fetch(mdb2, "SELECT species_id::text, description FROM species WHERE name = 'TBX'")[1,],
     data.frame(
-        species_id = 9999999999,
+        species_id = '9999999999',
         description = as.character(mfdb::species[mfdb::species$name == 'TBX', 'description']),
         stringsAsFactors = FALSE)), "Test Baltic's schema is distinct")
 
