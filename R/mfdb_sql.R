@@ -320,7 +320,14 @@ mfdb_transaction <- function(mdb, transaction) {
     }
 
     mdb$logger$info("Starting transaction...")
-    dbSendQuery(mdb$db, "BEGIN TRANSACTION")
+    tryCatch(dbBegin(mdb$db), error = function (e) {
+        if (grepl('unable to find an inherited method for function.*dbBegin', e$message)) {
+            # Old PostgreSQL DBI driver is missing dbBegin
+            dbSendQuery(mdb$db, "BEGIN TRANSACTION")
+        } else {
+            stop(e)
+        }
+    })
     ret <- tryCatch(transaction, error = function (e) e)
     if ("error" %in% class(ret)) {
         mdb$logger$warn("Rolling back transaction...")

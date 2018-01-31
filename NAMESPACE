@@ -26,7 +26,7 @@ export(mfdb_na_group)
 export(mfdb_step_interval)
 
 # mfdb.R
-importFrom(DBI, dbConnect, dbDisconnect, dbDriver, dbSendQuery, dbFetch, dbGetQuery, dbCommit, dbRollback, dbGetRowsAffected, dbClearResult, dbWriteTable)
+importFrom(DBI, dbConnect, dbDisconnect, dbDriver, dbSendQuery, dbFetch, dbGetQuery, dbCommit, dbRollback, dbGetRowsAffected, dbClearResult, dbWriteTable, dbBegin)
 importFrom(RPostgreSQL, PostgreSQL)
 importFrom(logging, getLogger)
 export(mfdb)
