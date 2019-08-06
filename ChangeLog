@@ -1,3 +1,4 @@
+    * Postgres 11: Don't try checking if existing function is aggregate
     * Compare REAL to REAL when dividing items up into intervals
 
 2017-10-27  Jamie Lentin  <lentinj@shuttlethread.com>

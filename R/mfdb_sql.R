@@ -298,7 +298,7 @@ mfdb_create_aggregate <- function(mdb, func_name, accum_body, final_body,
         " WHERE LOWER(proname) = LOWER(", sql_quote(func_name), ")",
         " AND pronamespace = (",
             "SELECT oid FROM pg_namespace",
-            " WHERE LOWER(nspname) = LOWER(", sql_quote(mdb$schema), ")) AND proisagg;")
+            " WHERE LOWER(nspname) = LOWER(", sql_quote(mdb$schema), "));")
     if (agg_count[1][1] > 0) mfdb_send(mdb,
         "DROP AGGREGATE IF EXISTS ", func_dotted_name,
         "(", paste0(input_type, collapse = ","), ")",
