@@ -52,7 +52,7 @@ Now, create an ``mf`` database that the user on your computer owns:
     $ su
     # su - postgres
     $ psql
-    postgres=# CREATE USER lentinj
+    postgres=# CREATE USER lentinj;
     postgres=# CREATE DATABASE mf OWNER lentinj;
 
 If you don't want to use a system-wide database, then investigate https://github.com/mareframe/mfdb-workspace
