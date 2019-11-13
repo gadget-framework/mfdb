@@ -8,8 +8,8 @@
 library(DBI)
 library(unittest)
 library(mfdb)
-source('mfdb/tests/utils/helpers.R')
-source('mfdb/tests/utils/inttest-helpers.R')
+source('tests/utils/helpers.R')
+source('tests/utils/inttest-helpers.R')
 
 # Recreate schema
 schema_name <- 'inttest_sharing'

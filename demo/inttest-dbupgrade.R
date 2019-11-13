@@ -8,8 +8,8 @@
 library(DBI)
 library(unittest)
 library(mfdb)
-source('mfdb/tests/utils/helpers.R')
-source('mfdb/tests/utils/inttest-helpers.R')
+source('tests/utils/helpers.R')
+source('tests/utils/inttest-helpers.R')
 
 # Empty database
 if (exists("mdb")) mfdb_disconnect(mdb)
@@ -30,7 +30,7 @@ system(paste(
     'psql',
     ' --host=', db_params$host,
     ' --dbname=', db_params$dbname,
-    ' --file=mfdb/tests/utils/schema_2.x.sql',
+    ' --file=tests/utils/schema_2.x.sql',
     sep="", collapse=""))
 
 # Create a proper MFDB object, should upgrade to latest version

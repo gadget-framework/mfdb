@@ -7,8 +7,8 @@
 # any data stored in your database will be destroyed.
 library(unittest)
 library(mfdb)
-source('mfdb/tests/utils/helpers.R')
-source('mfdb/tests/utils/inttest-helpers.R')
+source('tests/utils/helpers.R')
+source('tests/utils/inttest-helpers.R')
 
 cmp_table <- function(tbls, expected) {
     ok(cmp(length(tbls), 1), "result only returned one data.frame")

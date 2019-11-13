@@ -4,8 +4,8 @@
 # any data stored in your database will be destroyed.
 library(unittest)
 library(mfdb)
-source('mfdb/tests/utils/helpers.R')
-source('mfdb/tests/utils/inttest-helpers.R')
+source('tests/utils/helpers.R')
+source('tests/utils/inttest-helpers.R')
 
 # Empty database & rebuild
 if (exists("mdb")) mfdb_disconnect(mdb)
