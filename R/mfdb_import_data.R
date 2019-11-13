@@ -192,7 +192,7 @@ sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL,
         if (!is.null(default)) return(default);
         stop("Input data is missing '", col_name, "'. Columns available: ", paste(names(data_in), collapse = ","))
     }
-    col <- data_in[,data_col_name[[1]]]
+    col <- data_in[[data_col_name[[1]]]]
 
     if (!is.null(test)) {
         mismatches <- test(col)
