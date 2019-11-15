@@ -1,4 +1,5 @@
 .git
 .travis.yml
 ^deploy
+^Makefile
 ^.bash_history
