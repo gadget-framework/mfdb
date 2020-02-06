@@ -32,6 +32,6 @@ g1 <- mfdb_interval("len", c(40, 60, 80))
 ## Use seq to make life easier
 g2 <- mfdb_interval("len", seq(40, 80, by = 20))
 
-## Create groups len40: [40, 60), len60: [60, inf) (but will be described as [60, 80) in the GADGET model)
+## Create groups len40: [40, 60), len60: [60, inf) (but [60, 80) in the GADGET model)
 g1 <- mfdb_interval("len", c(40, 60, 80), open_ended = c("upper"))
 }
