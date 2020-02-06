@@ -259,5 +259,5 @@ Maintainer: Jamie Lentin <jamie.lentin@shuttlethread.com>
 
 \seealso{
 \href{https://github.com/bthe/rgadget}{rgadget},
-\href{http://www.hafro.is/gadget/userguide/userguide.html}{Gadget user guide}
+\href{https://hafro.github.io/gadget2}{Gadget user guide}
 }

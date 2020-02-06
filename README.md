@@ -135,7 +135,7 @@ Using
 -----
 
 For an introduction to the package, read the ``package?mfdb`` help file in R.
-[This is also available online](http://mareframe.github.io/packages/mfdb/html/mfdb-package.html).
+[This is also available online](http://mareframe.github.io/).
 
 There are a selection of example scripts in the ``demo/`` folder. The
 ``example-*`` scripts show the full process of importing data from specified
