@@ -170,9 +170,12 @@ ok_group("mfdb_disable_constraints", {
         "executing code block",
         "Returned: ")), "Still works when no constraints exist")
 
+    out <- disable_constraints("tbl1", cat("executing code block\n"), am_owner = 0)
+    ok(grepl('Not owner of table', out[[1]], fixed = TRUE), "Left constraints alone when not owner")
     ok(cmp(disable_constraints("tbl1", cat("executing code block\n"), am_owner = 0), c(
+        out[[1]],
         "executing code block",
-        "Returned: ")), "Left constraints alone when not owner")
+        "Returned: ")), "Still executed code block")
 
 })
 
