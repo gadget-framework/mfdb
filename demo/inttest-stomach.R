@@ -224,6 +224,109 @@ ok_group("Stomach content likelihood compoment", {
         NULL), "Predator length aggregation file")
 })
 
+ok_group("Stomach content likelihood compoment, multiple species", {
+     gd <- gadget_directory(tempfile())
+     # Find out the ratio of capelin in stomachs
+     res <- mfdb_concatenate_results(
+         mfdb_stomach_presenceratio(mdb, c("predator_length", "prey_length"), list(
+             predator_length = mfdb_interval("cod", c(20,30,40,50)),
+             prey_length = mfdb_interval("cap", c(1,1.3,3,5)),
+             prey_species = 'CAP'))[[1]],
+         mfdb_stomach_presenceratio(mdb, c("predator_length", "prey_length"), list(
+             predator_length = mfdb_interval("cod", c(20,30,40,50)),
+             prey_length = mfdb_interval("cll", c(1,2,3,4,5,6)),
+             prey_species = 'CLL'))[[1]])
+
+     gadget_dir_write(gd, gadget_likelihood_component(
+         "stomachcontent",
+         name = "cod-stomachs",
+         prey_labels = list(
+             "cod50" = "codmat",
+             "cod" = c("codimm", "codother"),
+             "cap3" = "capmat",
+             "cap" = c("cap", "capimm"),
+             "other"),
+         prey_digestion_coefficients = 3:1,
+         predator_names = c("cuthbert", "dibble"),
+         data = res))
+
+     ok(cmp_file(gd, "likelihood",
+         ver_string,
+         "; ",
+         "[component]",
+         "name\tcod-stomachs",
+         "weight\t0",
+         "type\tstomachcontent",
+         "function\tscsimple",
+         "datafile\tData/stomachcontent.cod-stomachs.scsimple",
+         "epsilon\t10",
+         "areaaggfile\tAggfiles/stomachcontent.cod-stomachs.area.agg",
+         "predatornames\tcuthbert\tdibble",
+         "predatorlengths\t",
+         "lenaggfile\tAggfiles/stomachcontent.cod-stomachs.len.agg",
+         "preyaggfile\tAggfiles/stomachcontent.cod-stomachs.prey.agg",
+         NULL), "likelihood file contains stomachcontent component")
+    ok(cmp_file(gd, "Aggfiles/stomachcontent.cod-stomachs.prey.agg",
+        ver_string,
+        "; ",
+        "cap1\t",
+        "cap\tcapimm",
+        "lengths\t1\t1.3",
+        "digestioncoefficients\t3\t2\t1",
+        "; ",
+        "cap1.3\t",
+        "cap\tcapimm",
+        "lengths\t1.3\t3",
+        "digestioncoefficients\t3\t2\t1",
+        "; ",
+        "cap3\t",
+        "capmat\t",
+        "lengths\t3\t5",
+        "digestioncoefficients\t3\t2\t1",
+        "; ",
+        "cll1\t",
+        "other\t",
+        "lengths\t1\t2",
+        "digestioncoefficients\t3\t2\t1",
+        "; ",
+        "cll2\t",
+        "other\t",
+        "lengths\t2\t3",
+        "digestioncoefficients\t3\t2\t1",
+        "; ",
+        "cll3\t",
+        "other\t",
+        "lengths\t3\t4",
+        "digestioncoefficients\t3\t2\t1",
+        "; ",
+        "cll4\t",
+        "other\t",
+        "lengths\t4\t5",
+        "digestioncoefficients\t3\t2\t1",
+        "; ",
+        "cll5\t",
+        "other\t",
+        "lengths\t5\t6",
+        "digestioncoefficients\t3\t2\t1",
+        NULL), "prey aggregation file")
+    ok(cmp_file(gd, "Aggfiles/stomachcontent.cod-stomachs.len.agg",
+        ver_string,
+        "cod20\t20\t30",
+        "cod30\t30\t40",
+        "cod40\t40\t50",
+        NULL), "Predator length aggregation file")
+    ok(cmp_file(gd, "Data/stomachcontent.cod-stomachs.scsimple",
+        ver_string,
+        "; -- data --",
+        "; year\tstep\tarea\tpredator_length\tprey_length\tratio",
+        "all\tall\tall\tcod20\tcap1\t1",
+        "all\tall\tall\tcod20\tcap3\t1",
+        "all\tall\tall\tcod30\tcap1\t0.25",
+        "all\tall\tall\tcod30\tcap1.3\t0.25",
+        "all\tall\tall\tcod30\tcll3\t0.25",
+        NULL), "Stomach data has both CAP and CLL")
+})
+
 ok_group("Stomach data with only weights", {
     # Import a stomach survey, only have total weights
     mfdb_import_stomach(mdb,
