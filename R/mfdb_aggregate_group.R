@@ -134,7 +134,7 @@ mfdb_bootstrap_group <- function (count, group, seed = NULL) {
 
     # Save PRNG state and set seed / reset it
     old_seed <- tryCatch(get(".Random.seed", pos = globalenv()), error = function (e) NULL)
-    set.seed(seed, kind = "Mersenne-Twister")
+    set.seed(seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
 
     bs_group <- structure(
             lapply(1:count, function(i) { lapply(group, function (g) { if (length(g) == 1) g else sample(g, replace = TRUE) }) }),
