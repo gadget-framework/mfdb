@@ -1,6 +1,6 @@
 library(mfdb)
 library(unittest, quietly = TRUE)
-source('utils/helpers.R')
+helpers <- c('utils/helpers.R', 'tests/utils/helpers.R') ; source(helpers[file.exists(helpers)])
 
 ok_group("Total Fleet (no extra fields)", {
     write_component <- function (comp, ...) {

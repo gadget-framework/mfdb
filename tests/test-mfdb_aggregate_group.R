@@ -1,6 +1,6 @@
 library(mfdb)
 library(unittest, quietly = TRUE)
-source('utils/helpers.R')
+helpers <- c('utils/helpers.R', 'tests/utils/helpers.R') ; source(helpers[file.exists(helpers)])
 
 cmp_group <- function (a, b) {
     cmp(a[names(a)], b[names(b)])

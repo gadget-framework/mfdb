@@ -1,6 +1,6 @@
 library(mfdb)
 library(unittest, quietly = TRUE)
-source('utils/helpers.R')
+helpers <- c('utils/helpers.R', 'tests/utils/helpers.R') ; source(helpers[file.exists(helpers)])
 
 ok_group("mfdb_concatenate_results", {
     year_group <- mfdb_group("1998" = "1998", "1999" = "1999", "2000" = "2000", "2001" = "2001")
