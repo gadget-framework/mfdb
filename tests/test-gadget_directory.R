@@ -5,7 +5,7 @@ source('utils/helpers.R')
 ok_group("Will create a directory when creating gadget_directories", {
     expect_error(
         gadget_directory("/dont-run-as-root"),
-        "/dont-run-as-root")
+        "dont-run-as-root")
 
     dir <- tempfile()
     ok(!file.exists(dir))
