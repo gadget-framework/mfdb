@@ -1,3 +1,4 @@
+    * Produce same seeded bootstrap group output on 3.6.0+
     * Postgres 11: Don't try checking if existing function is aggregate
     * Compare REAL to REAL when dividing items up into intervals
 

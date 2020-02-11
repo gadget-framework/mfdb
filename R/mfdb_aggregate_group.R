@@ -134,7 +134,10 @@ mfdb_bootstrap_group <- function (count, group, seed = NULL) {
 
     # Save PRNG state and set seed / reset it
     old_seed <- tryCatch(get(".Random.seed", pos = globalenv()), error = function (e) NULL)
-    set.seed(seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+    # NB: 3.6.0 introduces sample.kind: https://github.com/wch/r-source/blob/7f6cc784523dfa69087958633f7deb309d9c8718/doc/NEWS.Rd#L150-L161
+    tryCatch(
+        set.seed(seed, kind = "Mersenne-Twister", normal.kind = "Inversion", sample.kind = "Rounding"),
+        error = function (e) set.seed(seed, kind = "Mersenne-Twister", normal.kind = "Inversion"))
 
     bs_group <- structure(
             lapply(1:count, function(i) { lapply(group, function (g) { if (length(g) == 1) g else sample(g, replace = TRUE) }) }),
