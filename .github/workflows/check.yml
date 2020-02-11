@@ -23,6 +23,9 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@master
 
+      - name: System dependencies
+        run: sudo apt-get install libpq-dev
+
       - name: Install dependencies
         run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE)" -e "remotes::install_cran('rcmdcheck')"
 
