@@ -21,7 +21,7 @@
 3	"DIFRES"	"DNK"	"Danish Institute for Fisheries Research, Charlottenlund"
 
 10	"ICES"	"DNK"	"International Council for the Exploration of the Sea, Copenhagen"
-18	"DTU"	"DNK"	"DTU Aqua – National Institute of Aquatic Resources, Technical University of Denmark"
+18	"DTU"	"DNK"	"DTU Aqua - National Institute of Aquatic Resources, Technical University of Denmark"
 
 10724	"ESP"	"ESP"	"Spain"
 11	"AZTI"	"ESP"	"AZTI Foundation, Sukarrieta"
@@ -32,13 +32,13 @@
 14	"NIMRD"	"ROU"	"National Institute for Marine Research and Development, Constanta"
 
 10380	"ITA"		"ITA"	"Italy"
-15	"CNR-IAMC"	"ITA"	"Consiglio Nazionale delle Ricerche - Istituto per l’Ambiente Marino Costiero, Mazara del Vallo"
+15	"CNR-IAMC"	"ITA"	"Consiglio Nazionale delle Ricerche - Istituto per l'Ambiente Marino Costiero, Mazara del Vallo"
 
 10752	"SWE"	"SWE"	"Sweden"
 16	"SLU"	"SWE"	"Swedish University of Agricultural Sciences, Department of Aquatic Resources"
 
 10276	"DEU"	"DEU"	"Germany"
-17	"VTI"	"DEU"	"Johann Heinrich von Thünen-Institute, Federal Research Institute for Rural Areas, Forestry and Fisheries, Institute of Baltic Sea Fisheries"
+17	"VTI"	"DEU"	"Johann Heinrich von Thunen-Institute, Federal Research Institute for Rural Areas, Forestry and Fisheries, Institute of Baltic Sea Fisheries"
 
 10643	"RUS"	"RUS"	"Russian Federation"
 19	"ANIRO"	"RUS"	"AtlantNIRO"
