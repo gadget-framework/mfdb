@@ -65,7 +65,7 @@
       This also means you can use pg_dump and pg_restore to backup and restore
       (or transfer to a different computer) individual case studies. For
       examples, see:
-      http://mareframe.github.io/packages/mfdb/html/mfdb-package.html
+      http://mareframe.github.io/mfdb/reference/mfdb-package.html
 
       Finally, the mfdb(destroy_schema = TRUE) option now expects a case study
       / schema name, since it is able to remove just one schema instead of
