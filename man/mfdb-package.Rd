@@ -11,43 +11,6 @@ Tools to query a MareFrame DB and reformat results in forms
     useful for GADGET and EwE models.
 }
 
-\details{
-\tabular{ll}{
-Package: \tab mfdb\cr
-Type: \tab Package\cr
-Version: \tab 6.0-0\cr
-Date: \tab 2014-04-23\cr
-License: \tab GPL-3\cr
-Depends: \tab R (>= 3.1.1)\cr
-Imports: \tab 
-logging (>= 0.7-103),
-DBI (>= 0.3.1),
-RPostgreSQL (>= 0.4)\cr
-Suggests: \tab unittest\cr
-LazyData: \tab true\cr
-Built: \tab R 3.1.1; ; 2014-12-04 13:31:31 UTC; unix\cr
-}
-
-Index:
-\preformatted{
-gadget_areafile         Gadget area files
-gadget_directory        Gadget directory objects
-gadget_file             Gadget file objects
-gadget_likelihood_component
-                        Gadget likelihood components
-mfdb                    MareFrame DB class
-mfdb-data               MareFrame DB Datasets
-mfdb-package            MareFrame DB querying library
-mfdb_area_size          MareFrame DB queries
-mfdb_group              MareFrame DB groups
-mfdb_import_survey      MareFrame Import functions
-mfdb_interval           MareFrame DB intervals
-mfdb_step_interval      MareFrame DB intervals
-mfdb_unaggregated       MareFrame DB unaggregated data
-}
-
-}
-
 \section{Introduction & Schema description}{
 Before doing anything with \pkg{mfdb}, it is worth knowing a bit about how data
 is stored. Broadly, there are 2 basic types of table in \pkg{mfdb},
