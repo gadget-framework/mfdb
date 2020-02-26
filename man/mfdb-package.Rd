@@ -152,14 +152,14 @@ be lower-cased.
 Create a dump of your chosen schema with the following command:
 
 \preformatted{
-pg_dump --schema=baltic -F tar mf > baltic.tar
+pg_dump --schema=baltic -Fc mf > baltic.dump
 }
 
 This will make a dump of the "baltic" case study into "baltic.tar". It can
 then be restored onto another computer with the following:
 
 \preformatted{
-pg_restore --clean -d mf baltic.tar
+pg_restore --clean -d mf baltic.dump
 }
 
 If you already have a baltic schema you wish to preserve, you can rename it
