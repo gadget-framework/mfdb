@@ -56,57 +56,10 @@ mfdb_bootstrap_group(count, group, seed = NULL)
 ## Aggregate age into 2 groups. "young" (for ages 1--3) and
 ## "old" (for ages 4--6)
 g1 <- mfdb_group(young = c(1,2,3), old = c(4,5,6))
-\dontrun{
-$young
-[1] 1 2 3
-
-$old
-[1] 4 5 6
-
-attr(,"class")
-[1] "mfdb_group"
-}
 
 ## Aggregate areas into "area1" and "area2".
 g2 <- mfdb_group_numbered("area", c(1011,1012,1013), c(1021,1022))
-\dontrun{
-$area1
-[1] 1011 1012 1013
-
-$area2
-[1] 1021 1022
-
-attr(,"class")
-[1] "mfdb_group"
-}
 
 ## Take 3 samples with replacement from each group in area
 g3 <- mfdb_bootstrap_group(3, g2)
-\dontrun{
-[[1]]
-[[1]]$area1
-[1] 1011 1013 1012
-
-[[1]]$area2
-[1] 1021 1021
-
-
-[[2]]
-[[2]]$area1
-[1] 1011 1013 1012
-
-[[2]]$area2
-[1] 1021 1021
-
-
-[[3]]
-[[3]]$area1
-[1] 1012 1013 1013
-
-[[3]]$area2
-[1] 1022 1022
-
-
-attr(,"class")
-[1] "mfdb_bootstrap_group"
-}}
+}
