@@ -3,16 +3,6 @@ library(unittest, quietly = TRUE)
 helpers <- c('utils/helpers.R', 'tests/utils/helpers.R') ; source(helpers[file.exists(helpers)])
 
 ok_group("Will create a directory when creating gadget_directories", {
-    if (.Platform$OS.type == 'windows') {
-        expect_error(
-            gadget_directory("C:\\Windows\\System32\\cant-write-here"),
-            "cant-write-here")
-    } else {
-        expect_error(
-            gadget_directory("/dont-run-as-root"),
-            "dont-run-as-root")
-    }
-
     dir <- tempfile()
     ok(!file.exists(dir))
     gd <- gadget_directory(dir)
