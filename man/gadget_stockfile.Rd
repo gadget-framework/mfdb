@@ -59,7 +59,7 @@ to the filesystem with \code{gadget_dir_write}.
 \examples{
 # Write min/max values and refweight file 
 \dontrun{
-gd <- gadget_directory('./out')
+gd <- gadget_directory(tempfile())
 imm_data <- mfdb_sample_meanweight(mdb, c('age', 'length'), list(
     age = NULL, # The age column will say 'all', but will know the min/max
     length = mfdb_step_interval('', 10, to = 100),

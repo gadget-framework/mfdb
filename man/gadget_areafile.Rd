@@ -31,7 +31,7 @@ GADGET areafile.
 \examples{
 # Any example could be added to a file with the following:-
 \dontrun{
-gd <- gadget_directory('./out')
+gd <- gadget_directory(tempfile())
 agg_data <- gadget_areafile(
     mfdb_area_size(...),
     mfdb_area_temperature(...))

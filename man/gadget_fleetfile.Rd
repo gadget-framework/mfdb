@@ -61,6 +61,8 @@ gadget_fleet_component(type,
 }
 
 \examples{\dontrun{
+    gd <- gadget_directory(tempfile())
+
     # Write a 'totalfleet' component
     gadget_dir_write(gd, gadget_fleet_component(
         'totalfleet',

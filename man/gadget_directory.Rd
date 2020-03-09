@@ -53,17 +53,17 @@ You do not need to tell it which files in the model to update, since this is wor
 out based on what you are writing out.
 }
 
-\examples{\dontrun{
+\examples{
 # Create a gadget directory
-gd <- gadget_directory('./out')
+gd <- gadget_directory(tempfile())
 
 # Read in the likelihood file
 likelihood <- gadget_dir_read(gd, 'likelihood')
 
-# Write out an area file to "./out/areas", replacing any existing file
+# Write out an area file to "(tempfile)/areas", replacing any existing file
 gadget_dir_write(gd, gadget_file("areas", components = list(list(north = 1:3, south = 4:7))))
 
 # Replace a likelihood component if one already exists with
 # the same name/type or append it to the bottom
 gadget_dir_write(gd, gadget_likelihood_component("understocking", name = "frank"))
-}}
+}

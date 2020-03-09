@@ -128,14 +128,8 @@ else will get "other". You can also use regular expression syntax, for example
 }
 
 \examples{
-# Any example could be added to a file with the following:-
-\dontrun{
-gd <- gadget_directory('./out')
-gadget_dir_write(gd, component)
-}
-
 # Create a penalty component
-gadget_likelihood_component("penalty",
+component <- gadget_likelihood_component("penalty",
         name = "bounds",
         weight = "0.5",
         data = data.frame(
@@ -144,5 +138,9 @@ gadget_likelihood_component("penalty",
             stringsAsFactors = FALSE))
 
 # Create an understocking component
-gadget_likelihood_component("understocking", name ="understock")
+component <- gadget_likelihood_component("understocking", name ="understock")
+
+# Any example could be added to a file with the following:-
+gd <- gadget_directory(tempfile())
+gadget_dir_write(gd, component)
 }
