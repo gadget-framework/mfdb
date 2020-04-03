@@ -46,4 +46,5 @@ mfdb_share_with <- function (mdb, user_or_role, query = TRUE, import = FALSE) {
                 EXECUTE = query || import))
         }
     })
+    invisible(NULL)
 }

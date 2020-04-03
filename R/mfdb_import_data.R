@@ -60,6 +60,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
                 NULL)
         }))
     })
+    invisible(NULL)
 }
 
 mfdb_import_survey_index <- function (mdb, data_in, data_source = 'default_index') {
@@ -82,6 +83,7 @@ mfdb_import_survey_index <- function (mdb, data_in, data_source = 'default_index
             " SELECT ", paste(names(data_in), collapse=","), ", ", sql_quote(data_source_id),
             " FROM ", temp_tbl)
     }))
+    invisible(NULL)
 }
 
 # Import 2 data frames, one for predators, one for prey
@@ -178,6 +180,7 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
                 NULL)
         })
     })))
+    invisible(NULL)
 }
 
 # Check column content, optionally resolving lookup

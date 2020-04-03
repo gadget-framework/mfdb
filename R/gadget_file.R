@@ -87,6 +87,7 @@ gadget_dir_write.gadget_file <- function(gd, obj) {
     tryCatch(
         capture.output(print(obj), file = fh),
         finally = close(fh))
+    invisible(NULL)
 }
 
 # Load gadget file into memory

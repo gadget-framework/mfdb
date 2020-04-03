@@ -41,6 +41,7 @@ mfdb_cs_dump <- function(mdb, out_location) {
                     fileEncoding = "UTF-8")
         })
     }
+    invisible(NULL)
 }
 
 # Read data back out again
@@ -122,4 +123,5 @@ mfdb_cs_restore <- function(mdb, in_location) {
             gc()
         }
     }))
+    invisible(NULL)
 }
