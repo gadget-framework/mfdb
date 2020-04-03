@@ -169,6 +169,11 @@ mfdb <- function(case_study_name = "",
         }
     })
 
+    if (mdb$schema == 'examples') {
+        # Add data used in examples
+        mfdb_populate_example_data(mdb)
+    }
+
     invisible(mdb)
 }
 
