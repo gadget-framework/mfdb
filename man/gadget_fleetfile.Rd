@@ -65,38 +65,49 @@ A gadget_fleet_component object that can them be added to a fleetfile with
 \code{gadget_dir_write}
 }
 
-\examples{\dontrun{
+\examples{\donttest{
+    mdb <- mfdb('examples')
     gd <- gadget_directory(tempfile())
 
-    # Write a 'totalfleet' component
-    gadget_dir_write(gd, gadget_fleet_component(
+    # Make a 'totalfleet' component
+    fc <- gadget_fleet_component(
         'totalfleet',
-        name = 'igfs',
+        name = 'research',
         data = mfdb_sample_count(mdb, c(), list(
+            vessel = '1.RSH',
+            area = mfdb_group(x = 'divA', y = 'divB'),
             year = 1998,
-            step = mfdb_timestep_yearly))[[1]]))
+            step = mfdb_timestep_yearly))[[1]])
+    fc
 
-    gadget_dir_write(gd, gadget_fleet_component(
+    # Write out to a directory
+    gadget_dir_write(gd, fc)
+
+    gadget_fleet_component(
         'effortfleet',
-        name = 'barry',
+        name = 'commercial',
         suitability = "function constant 4;",
         catchability = list(stockA=4, stockB=5),
         quotafunction = 'simple',
         biomasslevel = c(1000, 2000),
         quotalevel = c(0.1, 0.4, 0.9),
         data = mfdb_sample_count(mdb, c(), list(
+            vessel = '2.COM',
+            area = mfdb_group(x = 'divA', y = 'divB'),
             year = 1998,
-            step = mfdb_timestep_yearly))[[1]]))
+            step = mfdb_timestep_yearly))[[1]])
 
-    gadget_dir_write(gd, gadget_fleet_component(
+    gadget_fleet_component(
         'quotafleet',
-        name = 'barry',
+        name = 'commercial',
         suitability = "function constant 4;",
         catchability = list(stockA=4, stockB=5),
         quotafunction = 'simple',
         biomasslevel = c(1000, 2000),
         quotalevel = c(0.1, 0.4, 0.9),
         data = mfdb_sample_count(mdb, c(), list(
+            vessel = '2.COM',
+            area = mfdb_group(x = 'divA', y = 'divB'),
             year = 1998,
-            step = mfdb_timestep_yearly))[[1]]))
+            step = mfdb_timestep_yearly))[[1]])
 }}
