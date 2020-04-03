@@ -72,7 +72,7 @@ gadget_file("likelihood", components = list(
 
 # Data
 gadget_file("agelen", components = list(
-    list(stocknames = "big boat")), data = data.frame(
+    list(stocknames = "cod")), data = data.frame(
     area = c(102, 103),
     number = c(2345, 5023)))
 }
