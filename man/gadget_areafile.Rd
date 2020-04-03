@@ -15,7 +15,7 @@ gadget_areafile(size, temperature, area = attr(size, 'area'))
         data.frame as produced by \code{mfdb_area_size}
     }
     \item{temperature}{
-        data.frame as produced by \code{mfdb_area_temperature}
+        data.frame as produced by \code{mfdb_temperature}
     }
     \item{area}{
         Optional. \code{mfdb_group} that you used to specify area. By default
@@ -34,11 +34,24 @@ GADGET areafile.
 
 \examples{
 # Any example could be added to a file with the following:-
-\dontrun{
-gd <- gadget_directory(tempfile())
-agg_data <- gadget_areafile(
-    mfdb_area_size(...),
-    mfdb_area_temperature(...))
-gadget_dir_write(gd, agg_data[[1]])
+\donttest{
+mdb <- mfdb('examples')
+area_group <- mfdb_group(
+    divA = c("divA"),
+    divB = c("divB"),
+    divAB = c("divA", "divB"))
+
+# Create an areafile from 2 mfdb queries
+areafile <- gadget_areafile(
+    mfdb_area_size(mdb, list(
+        area = area_group))[[1]],
+    mfdb_temperature(mdb, list(
+        year = 1998:2000,
+        timestep = mfdb_timestep_quarterly,
+        area = area_group))[[1]])
+areafile
+
+# Write this to a gadget_directory
+gadget_dir_write(gadget_directory(tempfile()), areafile)
 }
 }
