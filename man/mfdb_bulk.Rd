@@ -35,6 +35,8 @@ ends with 'tar.gz', then all files will be put into a tarball with the name
 content of \code{in_location}, a directory or tarball.
 }
 
+\value{NULL}
+
 \examples{\dontrun{
 # Copy case study data from one case study to another
 mdb_out <- mfdb('Iceland')

@@ -121,6 +121,9 @@ The \code{prey_data} should be a data.frame with the following columns:
 }
 
 }
+
+\value{NULL}
+
 \examples{\dontrun{
 # data/cod-1998.csv contains:-
 # year,month,areacell,species,age,sex,length

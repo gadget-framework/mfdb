@@ -53,6 +53,15 @@ You do not need to tell it which files in the model to update, since this is wor
 out based on what you are writing out.
 }
 
+\value{
+\code{gadget_directory} returns a list of class 'gadget_directory',
+containing the location of the mainfile that the gadget configuration will use.
+
+\code{gadget_dir_write} returns NULL
+
+\code{gadget_dir_read} returns a gadget_file object from \code{read.gadget_file}
+}
+
 \examples{
 # Create a gadget directory
 gd <- gadget_directory(tempfile())

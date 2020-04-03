@@ -21,6 +21,11 @@ SQL like expessions can use the wildcards "_" to match any character and
 "%" to match any number of characters.
 }
 
+\value{
+An \code{mfdb_aggregate} object that can then be used in querying functions such as
+\code{mfdb_sample_count}
+}
+
 \examples{
 # All vessels with a name ending with 'e' or 'd'
 mfdb_unaggregated(like = c("\%e", "\%d"))

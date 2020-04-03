@@ -47,6 +47,9 @@
         Database connection created by \code{mfdb()}.
     }
 }
+
+\value{A 'mfdb' object representing the DB connection}
+
 \examples{\dontrun{
     # Connect to local DB, as the Iceland case study
     mdb <- mfdb('iceland')

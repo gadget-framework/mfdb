@@ -52,6 +52,11 @@ mfdb_bootstrap_group(count, group, seed = NULL)
     }
 }
 
+\value{
+An \code{mfdb_aggregate} object that can then be used in querying functions
+such as \code{mfdb_sample_count}
+}
+
 \examples{
 ## Aggregate age into 2 groups. "young" (for ages 1--3) and
 ## "old" (for ages 4--6)

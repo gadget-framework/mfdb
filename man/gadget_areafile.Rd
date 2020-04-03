@@ -28,6 +28,10 @@ Once formed, you can then use \code{gadget_dir_write} to write this out to a
 GADGET areafile.
 }
 
+\value{
+    List of class 'gadget_areafile' that represents the area file contents.
+}
+
 \examples{
 # Any example could be added to a file with the following:-
 \dontrun{

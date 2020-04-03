@@ -127,6 +127,11 @@ else will get "other". You can also use regular expression syntax, for example
 
 }
 
+\value{
+A gadget_likelihood_component object that can then be written to a likelihood
+file with \code{gadget_dir_write}
+}
+
 \examples{
 # Create a penalty component
 component <- gadget_likelihood_component("penalty",

@@ -25,6 +25,11 @@ mfdb_interval(prefix, vect, open_ended = FALSE)
     }
 }
 
+\value{
+An \code{mfdb_aggregate} object that can then be used in querying functions such as
+\code{mfdb_sample_count}
+}
+
 \examples{
 ## Make groups of len40 (40--60), len60 (60--80)
 g1 <- mfdb_interval("len", c(40, 60, 80))

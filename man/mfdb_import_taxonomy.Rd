@@ -114,3 +114,5 @@ then \code{mfdb_import_species_taxonomy} to import the new taxonomy.
 NB: This won't be possible if there is some data already using any of the terms. It
 is best used before your database is populated.
 }
+
+\value{NULL}

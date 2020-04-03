@@ -28,6 +28,11 @@ mfdb_step_interval(prefix, by, from = 0, to = NULL, open_ended = FALSE)
     }
 }
 
+\value{
+An \code{mfdb_aggregate} object that can then be used in querying functions such as
+\code{mfdb_sample_count}
+}
+
 \examples{
 ## Make groups of len0 (0--5), len5 (5--10), ... len45(45--50)
 g1 <- mfdb_step_interval("len", 5, to = 50)

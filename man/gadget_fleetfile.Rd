@@ -60,6 +60,11 @@ gadget_fleet_component(type,
 
 }
 
+\value{
+A gadget_fleet_component object that can them be added to a fleetfile with
+\code{gadget_dir_write}
+}
+
 \examples{\dontrun{
     gd <- gadget_directory(tempfile())
 

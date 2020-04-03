@@ -47,6 +47,18 @@ In slight deviation to GADGET spec, we insist that tabular data begins with
 "; -- data --", to avoid any ambiguity on when it starts.
 }
 
+\value{
+\code{gadget_file} Returns a gadget_file object, a list of components.
+
+\code{print.gadget_file} Prints the gadget file as it would be written to the
+filesystem.
+
+\code{as.character.gadget_file} Returns a character string of the gadget file
+as it would be written to the filesystem.
+
+\code{read.gadget_file} Returns a gadget_file object, a list of components.
+}
+
 \examples{
 # Simple key/values
 gadget_file("age", components = list(

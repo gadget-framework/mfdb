@@ -33,6 +33,8 @@ created it) will be able to change table structure (i.e. upgrade MFDB versions).
 By default nothing is shared between users.
 }
 
+\value{NULL}
+
 \examples{\dontrun{
 mdb <- mfdb('iceland')
 mfdb_share_with(mdb, 'paul') # Allow DB user paul to query the iceland case study data
