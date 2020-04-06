@@ -27,8 +27,8 @@ mfdb_share_with(mdb, user_or_role, query = TRUE, import = FALSE)
 
 \details{
 This allows you to share case study data between users. This is most useful when using
-the \link{mfdb-server}. Regardless, only the owner of the schema (i.e. the user that
-created it) will be able to change table structure (i.e. upgrade MFDB versions).
+a shared database. Only the owner of the schema (i.e. the user that created it)
+will be able to change table structure (i.e. upgrade MFDB versions).
 
 By default nothing is shared between users.
 }

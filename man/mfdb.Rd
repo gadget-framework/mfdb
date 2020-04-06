@@ -27,10 +27,6 @@
         search for a "mf" database locally, but you can override any of the parameters,
         in particular \code{host}, \code{dbname}, \code{user}, \code{password}.
         See \code{methods?RPostgreSQL::dbConnect} for more information.
-
-        As a special case, connecting to mfdb.rhi.hi.is will prompt you for a \code{user}
-        and \code{password} if one isn't provided, since these are essential
-        for connecting.
     }
     \item{destroy_schema}{
         Optional boolean. If true, all mfdb tables will be destroyed when
@@ -54,10 +50,8 @@
     # Connect to local DB, as the Iceland case study
     mdb <- mfdb('iceland')
 
-    # Connect to mfdb server, get prompted for your username and password
+    # Connect to remote server
     mdb <- mfdb('Iceland', db_params = list(host = "mfdb.rhi.hi.is"))
-    # Connect to mfdb server, get prompted for password
-    mdb <- mfdb('Iceland', db_params = list(host = "mfdb.rhi.hi.is", username = "lentinj"))
 
     # Stop it and tidy up
     mfdb_disconnect(mdb)
