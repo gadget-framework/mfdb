@@ -141,9 +141,11 @@ component <- gadget_likelihood_component("penalty",
             switch = c("default"),
             power = c(2),
             stringsAsFactors = FALSE))
+component
 
 # Create an understocking component
 component <- gadget_likelihood_component("understocking", name ="understock")
+component
 
 # Any example could be added to a file with the following:-
 gd <- gadget_directory(tempfile())
