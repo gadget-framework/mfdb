@@ -36,7 +36,8 @@ By default nothing is shared between users.
 \value{NULL}
 
 \examples{\dontrun{
-mdb <- mfdb('iceland')
-mfdb_share_with(mdb, 'paul') # Allow DB user paul to query the iceland case study data
-mfdb_share_with(mdb, 'mary') # Allow DB user mary to add data to the iceland case study
+mdb <- mfdb('examples')
+
+mfdb_share_with(mdb, 'paul') # Allow DB user paul to query the 'examples' case study data
+mfdb_share_with(mdb, 'mary') # Allow DB user mary to add data to the 'examples' case study data
 }}
