@@ -11,10 +11,18 @@ mfdb_concatenate_results <- function (...) {
 }
 
 # Guess at species based on a partial species name
-mfdb_find_species <- Vectorize(function(partial_name) {
-    matches <- mfdb::species[grepl(
+mfdb_find_species <- Vectorize(function(partial_name, single_matches_only = FALSE) {
+    utils::data('species', package = 'mfdb', envir = environment())
+    matches <- species[grepl(
         paste(strsplit(partial_name, "\\s+")[[1]], collapse = ".*\\s+"),
-        mfdb::species$description, ignore.case = TRUE),]
+        species$description, ignore.case = TRUE),]
+    if (single_matches_only && nrow(matches) != 1) {
+        return(data.frame(
+            id = NA,
+            name = NA,
+            description = NA,
+            stringsAsFactors = FALSE))
+    }
     data.frame(
         id = matches$id,
         name = as.character(matches$name),

@@ -8,12 +8,16 @@
 
 \usage{
 # Find species from abbreviated names
-mfdb_find_species(partial_name)
+mfdb_find_species(partial_name, single_matches_only = FALSE)
 }
 \arguments{
     \item{partial_name}{
          Vector of partial species names, e.g. "Gad Mor", "gad. Mor.",
          "Gadus Mor", will all match "Cod (Gadus Morhua)".
+    }
+    \item{single_matches_only}{
+        Logical, default FALSE. If true, return NA for
+        partial_names with multiple or zero matches.
     }
 }
 
@@ -30,15 +34,25 @@ mfdb_find_species(c("gad mor", "tube worms"))
 # description "Cod (Gadus Morhua)" "Tube Worms (Tubeworms)"
 
 # Can also generate a map to help insert a data.frame of foreign data
-\dontrun{
-# Work out a map from all Prey_Species_Name values to MFDB species codes
-species_map <- mfdb_find_species(levels(stomachs$Prey_Species_Name))['name',]
-# Only include data where there is one possible solution
-species_map <- vapply(
-    species_map,
-    function (names) if(length(names) == 1) names else as.character(NA),
-    "")
+stomachs <- read.csv(text = '
+stomach_name,species,digestion_stage,length,weight,count
+A,Palaemon Elegans,1,1,10,5
+A,Palaemon Elegans,1,4,40,1
+B,Palaemon Elegans,1,1,10,5
+B,Palaemon Elegans,4,1,10,5
+B,Palaemon Elegans,5,1,10,NA
+B,Palaemon Elegans,5,1,10,NA
+C,Crangon Crangon,2,3.5,9.5,3
+D,Palaemon Elegans,1,1.4,10,1
+D,Crangon Crangon,5,4,40,1
+E,Worms,1,1.4,10,1
+')
 
-# Can then remap the species column with:
-plyr::revalue(stomachs$Prey_Species_Name, species_map)
-}}
+# Work out a map from all Prey_Species_Name values to MFDB species codes
+species_map <- mfdb_find_species(levels(stomachs$species), single_matches_only = TRUE)['name',]
+
+# Put the new levels back onto the species column
+levels(stomachs$species) <- unlist(species_map)
+
+stomachs
+}

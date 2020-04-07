@@ -1,3 +1,4 @@
+    * Add single_matches_only option to mfdb_find_species()
     * Turn down logging level
 
 2020-03-02  Jamie Lentin  <lentinj@shuttlethread.com>

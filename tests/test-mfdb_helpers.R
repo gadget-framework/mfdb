@@ -73,3 +73,19 @@ ok_group("mfdb_find_species", {
         name = c("")[c()],
         description = c("")[c()])), "No matches produces empty vector")
 })
+
+ok_group("mfdb_find_species:single_matches_only", {
+    out <- mfdb_find_species(c('camel', 'gadus mor', 'gadus'), single_matches_only = T)
+    ok(ut_cmp_identical(out['id',], list(
+        'camel' = NA,
+        'gadus mor' = 8791030402,
+        'gadus' = NA)), "IDs either single value, or NA (0 or multiple)")
+    ok(ut_cmp_identical(out['name',], list(
+        'camel' = NA,
+        'gadus mor' = 'COD',
+        'gadus' = NA)), "names either single value, or NA (0 or multiple)")
+    ok(ut_cmp_identical(out['description',], list(
+        'camel' = NA,
+        'gadus mor' = 'Cod (Gadus Morhua)',
+        'gadus' = NA)), "Descriptions either single value, or NA (0 or multiple)")
+})
