@@ -47,16 +47,20 @@
 \value{A 'mfdb' object representing the DB connection}
 
 \examples{
+\donttest{
 # Connect to local DB, as the "examples" case study
 mdb <- mfdb('examples')
+}
 
 \dontrun{
 # Connect to remote server
 mdb <- mfdb('examples', db_params = list(host = "mfdb.rhi.hi.is"))
 }
 
+\donttest{
 # Disconnect from database
 mfdb_disconnect(mdb)
+}
 
 \dontrun{
 # Destroy examples case study, and all metadata
