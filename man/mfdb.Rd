@@ -46,16 +46,20 @@
 
 \value{A 'mfdb' object representing the DB connection}
 
-\examples{\dontrun{
-    # Connect to local DB, as the Iceland case study
-    mdb <- mfdb('iceland')
+\examples{
+# Connect to local DB, as the "examples" case study
+mdb <- mfdb('examples')
 
-    # Connect to remote server
-    mdb <- mfdb('Iceland', db_params = list(host = "mfdb.rhi.hi.is"))
+\dontrun{
+# Connect to remote server
+mdb <- mfdb('examples', db_params = list(host = "mfdb.rhi.hi.is"))
+}
 
-    # Stop it and tidy up
-    mfdb_disconnect(mdb)
+# Disconnect from database
+mfdb_disconnect(mdb)
 
-    # Destroy everything, since schema was out of date.
-    mfdb('iceland', destroy_schema = TRUE)
-}}
+\dontrun{
+# Destroy examples case study, and all metadata
+mfdb('examples', destroy_schema = TRUE)
+}
+}
