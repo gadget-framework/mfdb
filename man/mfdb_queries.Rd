@@ -184,14 +184,18 @@ to scale counts by the tow length.
     }
 }
 
-\examples{\dontrun{
-agg_data <- mfdb_sample_count(mdb, c('age', 'length'),
-        params = c(list(
-            year = c(1990, 1991),
-            length = mfdb_interval("len", seq(0, 500, by = 30)),
-            age = mfdb_group('young' = c(1,2,3)),
-            null = NULL), opt_catch))
-gadget_dir_write(gd, gadget_likelihood_component("catchdistribution",
+\examples{\donttest{
+mdb <- mfdb('examples')
+
+# Query numbers by age and length
+agg_data <- mfdb_sample_count(mdb, c('age', 'length'), list(
+    length = mfdb_interval("len", seq(0, 500, by = 30)),
+    age = mfdb_group('young' = c(1,2), old = 3),
+    year = c(1998)))
+agg_data
+
+# Use in a catchdistribution likelihood component
+gadget_dir_write(gadget_directory(tempfile()), gadget_likelihood_component("catchdistribution",
         name = "cdist",
         weight = 0.9,
         data = agg_data[[1]],
