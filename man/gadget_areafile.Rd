@@ -33,8 +33,8 @@ GADGET areafile.
 }
 
 \examples{
-# Any example could be added to a file with the following:-
 \donttest{
+# Any example could be added to a file with the following:-
 mdb <- mfdb('examples')
 area_group <- mfdb_group(
     divA = c("divA"),
