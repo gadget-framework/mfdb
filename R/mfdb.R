@@ -42,12 +42,12 @@ mfdb <- function(case_study_name = "",
             db_combined$sslmode <- NULL
         }
 
-        logger$info(paste0(
+        logger$debug(paste0(
             "Trying to connect to: ",
             paste(capture.output(str(db_combined)), collapse = "\n")))
         db_connection <- tryCatch(do.call(DBI::dbConnect, db_combined), error = function (e) e)
         if ("error" %in% class(db_connection)) {
-            logger$info(paste0("Failed: ", paste(db_connection$message, collapse = "\n")))
+            logger$debug(paste0("Failed: ", paste(db_connection$message, collapse = "\n")))
         } else {
             break
         }

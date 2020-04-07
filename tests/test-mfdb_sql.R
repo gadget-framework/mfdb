@@ -2,6 +2,8 @@ library(mfdb)
 library(unittest, quietly = TRUE)
 helpers <- c('utils/helpers.R', 'tests/utils/helpers.R') ; source(helpers[file.exists(helpers)])
 
+logging::logReset()  # Don't let logging messages sneak into test output
+
 ok_group("sql_quote", {
     sql_quote <- mfdb:::sql_quote
     ok(cmp_error(sql_quote(c()), "empty"), "Empty vector results in error")
@@ -171,9 +173,7 @@ ok_group("mfdb_disable_constraints", {
         "Returned: ")), "Still works when no constraints exist")
 
     out <- disable_constraints("tbl1", cat("executing code block\n"), am_owner = 0)
-    ok(grepl('Not owner of table', out[[1]], fixed = TRUE), "Left constraints alone when not owner")
     ok(cmp(disable_constraints("tbl1", cat("executing code block\n"), am_owner = 0), c(
-        out[[1]],
         "executing code block",
         "Returned: ")), "Still executed code block")
 

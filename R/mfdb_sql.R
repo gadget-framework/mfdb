@@ -156,7 +156,7 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
     rownames(cols) <- cols$column_name
     if (nrow(cols) == 0) stop("Didn't find table ", target_table)
 
-    mdb$logger$info("Writing rows to temporary table")
+    mdb$logger$debug("Writing rows to temporary table")
 
     tryCatch({
         mfdb_send(mdb, "SET CLIENT_ENCODING TO 'LATIN1'") # Not sure.
@@ -191,7 +191,7 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
         " AND tablename IN ", sql_quote(table_name, always_bracket = TRUE),
         NULL)[1,1]
     if (owner == 0) {
-        mdb$logger$info("Not owner of table, so can't drop constraints")
+        mdb$logger$debug("Not owner of table, so can't drop constraints")
         return(code_block)
     }
 
@@ -321,7 +321,7 @@ mfdb_transaction <- function(mdb, transaction) {
         return(invisible(TRUE))
     }
 
-    mdb$logger$info("Starting transaction...")
+    mdb$logger$debug("Starting transaction...")
     dbSendQuery(mdb$db, "BEGIN TRANSACTION")
     ret <- tryCatch(transaction, error = function (e) e)
     if ("error" %in% class(ret)) {
@@ -329,7 +329,7 @@ mfdb_transaction <- function(mdb, transaction) {
         tryCatch(dbRollback(mdb$db), error = function (e) NULL)
         stop(ret)
     }
-    mdb$logger$info("Committing transaction...")
+    mdb$logger$debug("Committing transaction...")
     dbCommit(mdb$db)
     invisible(TRUE)
 }

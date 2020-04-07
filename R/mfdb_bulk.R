@@ -73,7 +73,7 @@ mfdb_cs_restore <- function(mdb, in_location) {
 
         # Delete from everything else
         for (table_name in rev(c(mfdb_taxonomy_tables, mfdb_measurement_tables))) {
-            mdb$logger$info(paste0("Emptying ", table_name))
+            mdb$logger$debug(paste0("Emptying ", table_name))
             if (table_name != 'prey') {
                 mfdb_send(mdb, "DELETE FROM ", table_name,
                     NULL)
@@ -81,7 +81,7 @@ mfdb_cs_restore <- function(mdb, in_location) {
         }
 
         for (table_name in c(mfdb_taxonomy_tables, mfdb_measurement_tables)) {
-            mdb$logger$info(paste0("Restoring table ", table_name))
+            mdb$logger$debug(paste0("Restoring table ", table_name))
             data_in <- read_data(table_name)
             id_col <- paste0(table_name, '_id')
             if (nrow(data_in) == 0) next
