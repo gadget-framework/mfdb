@@ -124,17 +124,32 @@ The \code{prey_data} should be a data.frame with the following columns:
 
 \value{NULL}
 
-\examples{\dontrun{
-# data/cod-1998.csv contains:-
-# year,month,areacell,species,age,sex,length
-# 1998,1,35F1,COD,3,M,140
-# 1998,1,35F1,COD,3,M,150
-# 1998,1,35F1,COD,3,F,150
-data_in <- read.csv("data/cod-1998.csv")
+\examples{\donttest{
+mdb <- mfdb('examples-import-data')
+
+# We need to set-up vocabularies first
+mfdb_import_area(mdb, data.frame(
+    id = c(1,2,3),
+    name = c('35F1', '35F2', '35F3'),
+    size = c(5)))
+mfdb_import_vessel_taxonomy(mdb, data.frame(
+    name = c('1.RSH', '2.COM'),
+    stringsAsFactors = FALSE))
+mfdb_import_sampling_type(mdb, data.frame(
+    name = c("RES", "LND"),
+    description = c("Research", "Landings"),
+    stringsAsFactors = FALSE))
+
+data_in <- read.csv(text = '
+year,month,areacell,species,age,sex,length
+1998,1,35F1,COD,3,M,140
+1998,1,35F1,COD,3,M,150
+1998,1,35F1,COD,3,F,150
+')
 
 data_in$institute <- 'MRI'
 data_in$gear <- 'GIL'
-data_in$vessel <- '2.RSH'
-data_in$sampling_type <- 'HAR'
+data_in$vessel <- '1.RSH'
+data_in$sampling_type <- 'RES'
 mfdb_import_survey(mdb, data_in, data_source = 'cod-1998')
 }}
