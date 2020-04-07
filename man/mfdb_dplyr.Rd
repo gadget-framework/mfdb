@@ -39,7 +39,9 @@ not require the data, in which case specify the columns requred with
 A dplyr table object, for you to do as you please.
 }
 
-\examples{\dontrun{
+\examples{\donttest{
+mdb <- mfdb('examples')
+
 # Include as many columns as possible
 mfdb_dplyr_sample(mdb)
 
