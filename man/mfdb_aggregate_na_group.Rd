@@ -27,7 +27,5 @@ An \code{mfdb_aggregate} object that can then be used in querying functions such
 }
 
 \examples{
-length = mfdb_na_group(mfdb_step_interval("len", 10), 'len_unknown')
-# Or you could use magrittr
-length = mfdb_step_interval("len", 10) %>% mfdb_na_group('len_unknown')
+length <- mfdb_na_group(mfdb_step_interval("len", 10), 'len_unknown')
 }
