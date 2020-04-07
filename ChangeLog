@@ -1,3 +1,4 @@
+    * Documentation example overhaul: Now ~all can be run given a Postgres database
     * Add single_matches_only option to mfdb_find_species()
     * Turn down logging level
 

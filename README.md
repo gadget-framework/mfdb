@@ -144,6 +144,17 @@ model files. The ``inttest-*`` scripts demonstrate other aspects, and also
 function as tests to ensure that the library works correctly (thus the ``ok()``
 function calls).
 
+Development
+-----------
+
+### Running integration tests
+
+Given the database is setup as above, integration tests and all package
+examples can be run with ``make inttest``.
+
+To run all tests (unit tests, integration, examples and check-as-cran), use
+``make``.
+
 Models using MFDB
 -----------------
 
