@@ -37,14 +37,12 @@ content of \code{in_location}, a directory or tarball.
 
 \value{NULL}
 
-\examples{\dontrun{
+\examples{\donttest{
 # Copy case study data from one case study to another
-mdb_out <- mfdb('Iceland')
-mdb_in <- mfdb('Test')
+mdb_out <- mfdb('examples')
+mdb_in <- mfdb('examples-copy')
 
-mfdb_cs_dump(mdb_out, '/tmp/cs_dump')
-mfdb_cs_restore(mdb_in, '/tmp/cs_dump')
-
-mfdb_cs_dump(mdb_out, '/tmp/cs_dump.tar.gz')
-mfdb_cs_restore(mdb_in, '/tmp/cs_dump.tar.gz')
+dump_path <- tempfile(fileext='.tar.gz')
+mfdb_cs_dump(mdb_out, dump_path)
+mfdb_cs_restore(mdb_in, dump_path)
 }}
