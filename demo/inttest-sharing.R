@@ -42,10 +42,8 @@ year    month   areacell        species length  age     weight
 2001    1       45G01           COD     21      2       210
 ")
 
-# Make sure our user gelda exists
+# The user we will use for the sharing test
 tryCatch(mfdb:::mfdb_send(mdb, "DROP OWNED BY gelda"), error = function (e) NULL)
-mfdb:::mfdb_send(mdb, "DROP USER IF EXISTS gelda")
-mfdb:::mfdb_send(mdb, "CREATE USER gelda WITH PASSWORD 'adleg'")
 gelda_params <- db_params
 gelda_params$user <- 'gelda'
 gelda_params$password <- 'adleg'
@@ -56,7 +54,11 @@ ok(
     "Gelda can't connect to the main schema")
 
 # Read-only share
-mfdb_share_with(mdb, 'gelda')
+tryCatch({
+    mfdb_share_with(mdb, 'gelda')
+}, error = function (e) {
+    stop("Couldn't share with gelda, maybe they don't exist? Run \"CREATE USER gelda WITH PASSWORD 'adleg'\"")
+})
 gelda_mdb <- mfdb(schema_name, db_params = gelda_params)
 ok(
     cmp(mfdb_sample_count(gelda_mdb, c(), list())[[1]]$number, 12),
