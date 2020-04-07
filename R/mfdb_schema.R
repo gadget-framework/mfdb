@@ -171,8 +171,10 @@ schema_from_0 <- function(mdb) {
 
     # Populate tables with package-provided data
     for (t in mfdb_taxonomy_tables) {
-        if (exists(t, where = as.environment("package:mfdb"))) {
-            mfdb_import_taxonomy(mdb, t, get(t, pos = as.environment("package:mfdb")))
+        e <- new.env()
+        # Try loading data into e, if it works import it
+        if (length(tryCatch(do.call(utils::data, list(t, package = 'mfdb', envir = e)), warning = function (e) NULL)) > 0) {
+            mfdb_import_taxonomy(mdb, t, get(t, envir = e))
         }
     }
     mfdb_import_cs_taxonomy(mdb, "index_type", data.frame(
