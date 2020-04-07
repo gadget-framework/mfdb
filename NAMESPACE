@@ -28,7 +28,6 @@ export(mfdb_step_interval)
 # mfdb.R
 importFrom(DBI, dbConnect, dbDisconnect, dbDriver, dbSendQuery, dbFetch, dbGetQuery, dbCommit, dbRollback, dbGetRowsAffected, dbClearResult, dbWriteTable)
 importFrom(RPostgreSQL, PostgreSQL)
-importFrom(logging, getLogger)
 export(mfdb)
 export(mfdb_disconnect)
 
@@ -61,7 +60,6 @@ export(mfdb_import_species_taxonomy)
 export(mfdb_empty_taxonomy)
 
 # mfdb_queries.R
-#alsoUses(logging, getLogger)
 export(mfdb_area_size)
 export(mfdb_temperature)
 export(mfdb_survey_index_mean)

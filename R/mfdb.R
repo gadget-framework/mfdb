@@ -3,7 +3,7 @@ mfdb <- function(case_study_name = "",
                  db_params = list(),
                  destroy_schema = FALSE,
                  save_temp_tables = FALSE) {
-    logger <- getLogger('mfdb')
+    logger <- logging::getLogger('mfdb')
 
     # Try a selection of host strings until we connect to something
     db_params <- as.list(db_params)
