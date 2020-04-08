@@ -5,4 +5,5 @@
 ^[^/]+\.tar\.gz
 ^.bash_history
 
+^examples$
 ^example-datras-data$
