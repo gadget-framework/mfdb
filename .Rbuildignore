@@ -1,6 +1,5 @@
 .git
 .travis.yml
-^deploy
 ^Makefile
 ^[^/]+\.tar\.gz
 ^.bash_history
