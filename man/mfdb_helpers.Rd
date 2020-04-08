@@ -46,7 +46,7 @@ C,Crangon Crangon,2,3.5,9.5,3
 D,Palaemon Elegans,1,1.4,10,1
 D,Crangon Crangon,5,4,40,1
 E,Worms,1,1.4,10,1
-')
+', stringsAsFactors = TRUE)
 
 # Work out a map from all Prey_Species_Name values to MFDB species codes
 species_map <- mfdb_find_species(levels(stomachs$species), single_matches_only = TRUE)['name',]
