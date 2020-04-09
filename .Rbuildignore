@@ -3,6 +3,7 @@
 ^Makefile
 ^[^/]+\.tar\.gz
 ^.bash_history
+^do-release\.sh$
 
 ^examples$
 ^example-datras-data$
