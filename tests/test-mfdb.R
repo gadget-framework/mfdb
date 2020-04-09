@@ -72,5 +72,7 @@ ok_group("mfdb", {
         ok(cmp(attempts, list(
             list(host = "mfdb.rhi.hi.is", user = "polly", password = "ppwd", dbname = "dbname=mf sslmode=require", drv = 'PostgreSQLDriver')
         )), "Used special mfdb server parameters")
+
+        ok(cmp(mfdb(check_db_available = T), FALSE), "Didn't error with check_db_available, just return FALSE")
     })
 })
