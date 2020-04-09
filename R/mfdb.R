@@ -2,6 +2,7 @@
 mfdb <- function(case_study_name = "",
                  db_params = list(),
                  destroy_schema = FALSE,
+                 check_db_available = FALSE,
                  save_temp_tables = FALSE) {
     logger <- logging::getLogger('mfdb')
 
@@ -51,6 +52,13 @@ mfdb <- function(case_study_name = "",
         } else {
             break
         }
+    }
+
+    if (check_db_available) {
+        # Just check we managed to make a connection, for examples
+        if (nzchar(Sys.getenv('MFDB_FORCE_AVAILABLE'))) return (TRUE)
+        if (!("error" %in% class(db_connection))) return(TRUE)
+        return(FALSE)
     }
 
     if ("error" %in% class(db_connection)) {

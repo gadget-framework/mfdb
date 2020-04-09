@@ -184,7 +184,9 @@ to scale counts by the tow length.
     }
 }
 
-\examples{\donttest{
+\examples{
+if (mfdb(check_db_available = TRUE)) {  # NB: Requires a PostgreSQL installation, see README
+
 mdb <- mfdb('examples')
 
 # Query numbers by age and length

@@ -11,6 +11,7 @@
     mfdb(case_study_name,
          db_params = list(),
          destroy_schema = FALSE,
+         check_db_available = FALSE,
          save_temp_tables = FALSE)
 
     mfdb_disconnect(mdb)
@@ -39,6 +40,10 @@
         Optional boolean. If true, any temporary tables will be made permanent
         for later inspection.
     }
+    \item{check_db_available}{
+        Optionabl boolean. If true, we will only check that the datbase
+        connection could be made. Mostly for use in examples.
+    }
     \item{mdb}{
         Database connection created by \code{mfdb()}.
     }
@@ -47,19 +52,19 @@
 \value{A 'mfdb' object representing the DB connection}
 
 \examples{
-\donttest{
+if (mfdb(check_db_available = TRUE)) {# NB: Requires a PostgreSQL installation, see README
+
 # Connect to local DB, as the "examples" case study
 mdb <- mfdb('examples')
+
+# Disconnect from database
+mfdb_disconnect(mdb)
+
 }
 
 \dontrun{
 # Connect to remote server
 mdb <- mfdb('examples', db_params = list(host = "mfdb.rhi.hi.is"))
-}
-
-\donttest{
-# Disconnect from database
-mfdb_disconnect(mdb)
 }
 
 \dontrun{

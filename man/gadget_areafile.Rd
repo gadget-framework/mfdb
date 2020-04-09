@@ -33,7 +33,8 @@ GADGET areafile.
 }
 
 \examples{
-\donttest{
+if (mfdb(check_db_available = TRUE)) {  # NB: Requires a PostgreSQL installation, see README
+
 # Any example could be added to a file with the following:-
 mdb <- mfdb('examples')
 area_group <- mfdb_group(

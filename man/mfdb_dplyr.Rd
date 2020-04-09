@@ -39,7 +39,9 @@ not require the data, in which case specify the columns requred with
 A dplyr table object, for you to do as you please.
 }
 
-\examples{\donttest{
+\examples{
+if (mfdb(check_db_available = TRUE)) {  # NB: Requires a PostgreSQL installation, see README
+
 mdb <- mfdb('examples')
 
 # Include as many columns as possible

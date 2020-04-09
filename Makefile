@@ -11,10 +11,10 @@ build:
 	R CMD build .
 
 check: build
-	LANGUAGE="en" R --vanilla --slave CMD check "$(TARBALL)"
+	LANGUAGE="en" MFDB_FORCE_AVAILABLE="y" R --vanilla --slave CMD check "$(TARBALL)"
 
 check-as-cran: build
-	R --vanilla --slave CMD check --as-cran "$(TARBALL)"
+	MFDB_FORCE_AVAILABLE="y" R --vanilla --slave CMD check --as-cran "$(TARBALL)"
 
 wincheck: build
 	# See https://win-builder.r-project.org/ for more information
@@ -24,7 +24,6 @@ test: install
 	for f in tests/test-*.R; do echo "=== $$f ============="; Rscript $$f || break; done
 
 inttest: install
-	Rscript -e 'devtools::run_examples(test = TRUE, run = FALSE, document = FALSE)'
 	for f in demo/inttest-*.R; do echo "=== $$f ============="; Rscript $$f || break; done
 
 gh-pages:
