@@ -19,11 +19,11 @@ mfdb <- function(case_study_name = "",
 
     if (identical(db_params$host, 'mfdb.rhi.hi.is')) {
         # Enforce user
-        if (!isTRUE(nzchar(db_params$user))) {
+        if (!isTRUE(nzchar(db_params$user)) && interactive()) {
             db_params$user <- readline("Username: ")
         }
         # Enforce password
-        if (!isTRUE(nzchar(db_params$password))) {
+        if (!isTRUE(nzchar(db_params$password)) && interactive()) {
             db_params$password <- getPass::getPass("Password: ")
         }
         # Enforce SSL, no point having lots of guesses
