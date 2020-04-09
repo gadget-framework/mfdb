@@ -1,7 +1,8 @@
+os: linux
+dist: xenial
 language: r
 r:
   - release
   - devel
 cache: packages
-sudo: false
 warnings_are_errors: false
