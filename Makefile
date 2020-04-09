@@ -7,6 +7,11 @@ all: test inttest check-as-cran
 install:
 	R CMD INSTALL --install-tests --html --example .
 
+# Some things aren't installed by "make install", vignettes for example.
+# This is slower, but more accurate.
+full-install: build
+	R CMD INSTALL --install-tests --html --example "$(TARBALL)"
+
 build:
 	R CMD build .
 
