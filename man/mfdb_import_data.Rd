@@ -125,7 +125,7 @@ The \code{prey_data} should be a data.frame with the following columns:
 \value{NULL}
 
 \examples{
-if (mfdb(check_db_available = TRUE)) {  # NB: Requires a PostgreSQL installation, see README
+\dontrun{  # NB: Requires a PostgreSQL installation, see README
 
 mdb <- mfdb('examples-import-data')
 

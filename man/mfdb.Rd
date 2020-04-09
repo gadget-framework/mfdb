@@ -52,7 +52,7 @@
 \value{A 'mfdb' object representing the DB connection}
 
 \examples{
-if (mfdb(check_db_available = TRUE)) {# NB: Requires a PostgreSQL installation, see README
+\dontrun{# NB: Requires a PostgreSQL installation, see README
 
 # Connect to local DB, as the "examples" case study
 mdb <- mfdb('examples')
@@ -60,15 +60,10 @@ mdb <- mfdb('examples')
 # Disconnect from database
 mfdb_disconnect(mdb)
 
+# Connect to remote server, will prompt for username/password
+if (interactive()) {
+    mdb <- mfdb('examples', db_params = list(host = "mfdb.rhi.hi.is"))
 }
 
-\dontrun{
-# Connect to remote server
-mdb <- mfdb('examples', db_params = list(host = "mfdb.rhi.hi.is"))
-}
-
-\dontrun{
-# Destroy examples case study, and all metadata
-mfdb('examples', destroy_schema = TRUE)
 }
 }

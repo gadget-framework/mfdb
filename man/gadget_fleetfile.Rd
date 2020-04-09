@@ -66,7 +66,7 @@ A gadget_fleet_component object that can them be added to a fleetfile with
 }
 
 \examples{
-if (mfdb(check_db_available = TRUE)) {  # NB: Requires a PostgreSQL installation, see README
+\dontrun{  # NB: Requires a PostgreSQL installation, see README
 
     mdb <- mfdb('examples')
     gd <- gadget_directory(tempfile())

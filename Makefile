@@ -29,6 +29,7 @@ test: install
 	for f in tests/test-*.R; do echo "=== $$f ============="; Rscript $$f || break; done
 
 inttest: install
+	Rscript -e 'devtools::run_examples(test = TRUE, run = TRUE, document = FALSE)'
 	for f in demo/inttest-*.R; do echo "=== $$f ============="; Rscript $$f || break; done
 
 gh-pages:

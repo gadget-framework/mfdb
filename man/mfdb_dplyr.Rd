@@ -40,7 +40,7 @@ A dplyr table object, for you to do as you please.
 }
 
 \examples{
-if (mfdb(check_db_available = TRUE)) {  # NB: Requires a PostgreSQL installation, see README
+\dontrun{  # NB: Requires a PostgreSQL installation, see README
 
 mdb <- mfdb('examples')
 

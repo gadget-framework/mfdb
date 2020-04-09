@@ -35,11 +35,10 @@ By default nothing is shared between users.
 
 \value{NULL}
 
-\examples{\dontrun{
-if (mfdb(check_db_available = TRUE)) {  # NB: Requires a PostgreSQL installation, see README
+\examples{
+\dontrun{# NB: Requires a PostgreSQL installation, and creation of extra users
 
 mdb <- mfdb('examples')
 
-mfdb_share_with(mdb, 'paul') # Allow DB user paul to query the 'examples' case study data
-mfdb_share_with(mdb, 'mary') # Allow DB user mary to add data to the 'examples' case study data
-}}}
+mfdb_share_with(mdb, 'gelda') # Allow DB user gelda to query the 'examples' case study data
+}}

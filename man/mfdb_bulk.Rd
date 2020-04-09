@@ -38,7 +38,7 @@ content of \code{in_location}, a directory or tarball.
 \value{NULL}
 
 \examples{
-if (mfdb(check_db_available = TRUE)) {  # NB: Requires a PostgreSQL installation, see README
+\dontrun{  # NB: Requires a PostgreSQL installation, see README
 
 # Copy case study data from one case study to another
 mdb_out <- mfdb('examples')
