@@ -16,12 +16,11 @@ printf "${NEW_VERSION}" | grep -qE '[0-9]+\.[0-9]+-[0-9]+' || {
 # Set DESCRIPTION / changelog for release
 sed -i 's/^Version: .*/Version: '"${NEW_VERSION}"'/' DESCRIPTION
 sed -i 's/^Date: .*/Date: '"$(date +%Y-%m-%d)"'/' DESCRIPTION
-cat <<EOF ChangeLog > ChangeLog.n
-
-$(date +%Y-%m-%d): $(awk 'BEGIN { FS=": " } /^Maintainer:/ { print $2 }' DESCRIPTION)
-
-    Version ${NEW_VERSION}
-EOF
+echo "" > ChangeLog.n
+echo "$(date +%Y-%m-%d): $(awk 'BEGIN { FS=": " } /^Maintainer:/ { print $2 }' DESCRIPTION)" >> ChangeLog.n
+echo "" >> ChangeLog.n
+echo "    Version ${NEW_VERSION}"  >> ChangeLog.n
+cat ChangeLog >> ChangeLog.n
 mv ChangeLog.n ChangeLog
 git commit -m "Release version ${NEW_VERSION}" DESCRIPTION ChangeLog
 git tag -am "Release version ${NEW_VERSION}" "v${NEW_VERSION}"
