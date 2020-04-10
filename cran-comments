@@ -1,0 +1,98 @@
+# https://cran.r-project.org/submit.html
+
+==== 6.2-0
+
+Resubmission to address the following comments:
+
+On 2020-03-08 18:03, Martina Schmirl wrote:
+> Please do not write to the user filespace. If you
+> really have to write out something, use tempdir() if the user is not
+> asked and in examples.
+
+All examples now use tempfile()
+
+> Please add small files needed for the examples or vignette in the
+> inst/extdata subfolder of your package and use system.file() to get
+> the correct package path.
+> e.g. mfdb_import_data.Rd
+
+As a special case, the 'examples' schema will pre-load some test data, which is
+used by the examples.
+
+> \dontrun{} should only be used if the example really cannot be
+> executed (e.g. because of missing additional software, missing API
+> keys, ...) by the user. That's why wrapping examples in \dontrun{}
+> adds the comment ("# Not run:") as a warning for the user.
+> Does not seem necessary.
+> Please replace \dontrun with \donttest.
+
+All reworked, \dontrun{} only used where truly necessary and postfixed with explanations. See below
+
+> Please add \value to .Rd files regarding exported methods and explain
+> the functions results in the documentation.
+> If a function does not return a value, please document that too, e.g.
+> \value{None}.
+
+Also done.
+
+Tested on R-devel winbuilder, debian stable and ubuntu R 3.6.
+
+== Possibly mis-spelled words in DESCRIPTION:
+
+* MareFrame (3:8)
+
+The project that package was named after.
+
+* PostgreSQL (10:36)
+
+The database.
+
+== \dontrun{} usages:
+
+* \dontrun{# NB: Requires a PostgreSQL installation, see README
+
+The MFDB package manages a PostgreSQL schema, so many of the examples aren't
+useful without. These examples should be disabled on CRAN testing hosts.
+
+* \dontrun{# NB: Requires a PostgreSQL installation, and creation of extra users
+
+In addition, these examples require an additional user, to demonstrate
+permission-setting. These examples should be disabled on CRAN testing hosts.
+
+On 2020-04-09 18:01, Uwe Ligges wrote:
+> CRAN does not have PostgreSQL installed everywhere. Winbuilder has.
+> 
+> So we can go for \dontrun here.
+> 
+> Best,
+> Uwe Ligges
+
+== Links
+
+The source to build the package can be found here, along with the README:
+    
+  https://github.com/mareframe/mfdb/tree/v6.2-0
+
+Differences since the previous submission:
+
+  https://github.com/mareframe/mfdb/compare/v6.1-0...v6.2-0
+
+Built documentation can be found here:
+
+  http://mareframe.github.io/mfdb/
+
+CI test reports can be found here:
+
+  https://travis-ci.org/github/mareframe/mfdb/builds/673383365  
+
+==== 6.1-0
+
+New submission, check --as-cran'ed under Debian Stable, Windows R-devel, and winbuilder.
+
+The source to build the package can be found here, along with the README:
+    
+  https://github.com/mareframe/mfdb/tree/v6.1-0
+
+Built documentation can be found here:
+
+  http://mareframe.github.io/mfdb/
