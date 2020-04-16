@@ -107,29 +107,14 @@ Create a database called ``mf``.
 Installing
 ----------
 
-You can use devtools to install this directly:
+You can install from CRAN:
 
-    # install.packages("devtools")
-    devtools::install_github("mareframe/mfdb", ref = "6.x")
+    install.packages('mfdb')
 
-Or without:-
+Or use [remotes](https://cran.r-project.org/package=remotes) to install this directly:
 
-    # install.packages("downloader")
-    pkg_file <- tempfile()
-    downloader::download(url =
-        'https://github.com/mareframe/mfdb/archive/6.x.tar.gz',
-        mode = 'wb', destfile = pkg_file)
-    install.packages(pkg_file, repos = NULL, type = 'source')
-
-This should install and/or update dependencies, such as DBI and RPostgreSQL.
-
-Note that you may see the following error:
-
-    Error in get(Info[i, 1], envir = env) : 
-      lazy-load database '.../Rpackages/mfdb/R/mfdb.rdb' is corrupt
-
-This is R failing to re-load the package in an existing R session, however the
-package is installed. Restart your R session and everything should be fine.
+    # install.packages("remotes")
+    remotes::install_github("mareframe/mfdb")
 
 Using
 -----
