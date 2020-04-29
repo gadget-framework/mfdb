@@ -51,6 +51,7 @@ mfdb_send <- function(mdb, ..., result = "") {
         return(mdb$ret_recordset)
     }
 
+    mdb$logger$finest(query)
     res <- dbSendQuery(mdb$db, query)
 
     if (is.function(result)) {
