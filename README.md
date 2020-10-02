@@ -89,11 +89,11 @@ which keeps all the required R dependencies and PostgreSQL database in the local
 If you can use the binary RPostgreSQL packages, then you do not need to install
 anything else. See https://code.google.com/p/rpostgresql/w/list for more information.
 
-To install PostgreSQL, download the latest database installer from here:
+To install PostgreSQL, download version 9.5 of the database installer from here:
 
-http://www.enterprisedb.com/products-services-training/pgdownload#windows
+https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
 
-Find the psql shell in the start menu, and create both an ``mf`` database and user:
+Note that newer versions of posgres are not supported by the `RpostgreSQL` package. Find the psql shell (SQL shell) in the start menu, and create both an ``mf`` database and user:
 
     postgres=# CREATE USER mf PASSWORD 'mf';
     postgres=# CREATE DATABASE mf OWNER mf;
