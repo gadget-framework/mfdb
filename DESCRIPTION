@@ -16,9 +16,10 @@ Imports:
     logging (>= 0.7-103),
     DBI (>= 0.3.1),
     getPass (>= 0.1-1),
+    rlang (>= 0.4.0),
     RPostgreSQL (>= 0.4)
 Suggests:
     unittest (>= 1.2),
-    dplyr (>= 0.7.1),
+    dplyr (>= 0.8.3),
     dbplyr (>= 1.0.0)
 LazyData: true

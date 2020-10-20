@@ -37,6 +37,7 @@ export(mfdb_dplyr_division)
 export(mfdb_dplyr_sample)
 export(mfdb_dplyr_predator)
 export(mfdb_dplyr_prey)
+importFrom("rlang", ":=")
 
 # mfdb_helpers.R
 export(mfdb_concatenate_results)
