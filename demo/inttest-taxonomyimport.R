@@ -50,9 +50,24 @@ mfdb_import_sampling_type(mdb, data.frame(
     name = c("S1", "S2", "L"),
     description = c("Survey 1", "Survey 2", "Commercial Landings"),
     stringsAsFactors = FALSE))
-ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT * FROM sampling_type"), data.frame(
-    sampling_type_id = as.integer(c(1,3,4,2)),
-    name = c("S", "S1", "S2", "L"),
+ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT * FROM sampling_type ORDER BY name"), data.frame(
+    sampling_type_id = as.integer(c(2,1,3,4)),
+    name = c("L", "S", "S1", "S2"),
     t_group = as.character(NA),
-    description = c("Survey", "Survey 1", "Survey 2", "Commercial Landings"),
+    description = c("Commercial Landings", "Survey", "Survey 1", "Survey 2"),
     stringsAsFactors = FALSE)), "Updated sampling types")
+
+
+# Create some tows, then add a larger set. Make sure the regenerated IDs don't clash
+mfdb_import_tow_taxonomy(mdb, data.frame(
+    name = paste0("ta", 1:4),
+    description = paste0("Tow A", 1:4),
+    stringsAsFactors = TRUE))
+mfdb_import_tow_taxonomy(mdb, data.frame(
+    name = sprintf("tb%02d", 1:24),
+    description = sprintf("Tow B %02d", 1:24),
+    stringsAsFactors = TRUE))
+ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT tow_id, name FROM tow ORDER BY name"), data.frame(
+    tow_id = as.integer(c(1:4, 1:24 + 4)),  # NB: All IDs incremented
+    name = c(paste0("ta", 1:4), sprintf("tb%02d", 1:24)),
+    stringsAsFactors = FALSE)), "Imported 2 tow taxonomies")

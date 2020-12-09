@@ -51,11 +51,10 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
         # New rows should be inserted
         new_data <- data_in[data_in$name %in% setdiff(data_in$name, existing$name), ]
 
-        # If some ids appear in both new and existing, give them new IDs.
+        # If some ids appear in both new and existing, bump entire range up so we don't intersect
         overlapping_ids <- intersect(new_data[[id_col]], existing[[id_col]])
         if (length(overlapping_ids) > 0) {
-            new_data[match(overlapping_ids, new_data[[id_col]]), id_col] <-
-                seq(max(existing[[id_col]]) + 1, length.out = length(overlapping_ids))
+            new_data[[id_col]] <- max(existing[[id_col]]) + new_data[[id_col]]
         }
 
         mfdb_insert(mdb, table_name, new_data)
