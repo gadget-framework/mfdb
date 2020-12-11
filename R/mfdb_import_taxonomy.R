@@ -37,6 +37,8 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
 
     # Throw away rows which don't need updating
     if (nrow(existing) > 0) {
+        # NB: This won't work if an extra_col is float (say latitude), but
+        #     detecting this will probably use up just as much time as updating.
         data_in <- data_in[!(data_in$name %in% merge(
             existing[, c('name', extra_cols)],
             data_in[,  c('name', extra_cols)])$name), ]
