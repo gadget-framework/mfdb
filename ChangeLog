@@ -1,3 +1,4 @@
+    * Rollback transactions after user interrupts
     * Expose open_ended in intervals for gadget3
     * Renumber all taxonomy IDs if there's an overlap with existing ones (not just the overlapped range)
 

@@ -324,7 +324,16 @@ mfdb_transaction <- function(mdb, transaction) {
 
     mdb$logger$debug("Starting transaction...")
     dbSendQuery(mdb$db, "BEGIN TRANSACTION")
-    ret <- tryCatch(transaction, error = function (e) e)
+    ret <- tryCatch(transaction, interrupt = function (e) e, error = function (e) e)
+    if ("interrupt" %in% class(ret)) {
+        mdb$logger$warn("Interrupted, rolling back transaction...")
+        tryCatch(dbRollback(mdb$db), error = function (e) NULL)
+        # NB: I can't see a way to re-throw ret, signalCondition(ret) would
+        #     only work for another tryCatch block, not global handlers.
+        #     rlang::interrupt() can do this properly, but the subtle difference
+        #     doesn't seem worth the dependency.
+        stop("Interrupted")
+    }
     if ("error" %in% class(ret)) {
         mdb$logger$warn("Rolling back transaction...")
         tryCatch(dbRollback(mdb$db), error = function (e) NULL)
