@@ -54,8 +54,23 @@ ok_group("Can convert mfdb_step_intervals into lists", local({
             l10 = structure(call("seq", 10, 19), min = 10, max = 20),
             l20 = structure(call("seq", 20, 29), min = 20, max = 30),
             l30 = structure(call("seq", 30, 39), min = 30, max = 40),
-            l40 = structure(call("seq", 40, 49), min = 40, max = 50))),
-        "Being defined as open_ended=upper makes no difference to the structure of the group")
+            l40 = structure(call("seq", 40, 49), min = 40, max = 50, max_open_ended = TRUE))),
+        "open_ended=upper annotates top group, doesn't change max")
+
+    ok(ut_cmp_identical(
+        agg_summary(mdb, mfdb_step_interval('l', 10, from = 10, to = 50, open_ended = c('lower', 'upper')), 'c.len', 'len', data.frame(), 0),
+        list(
+            l10 = structure(call("seq", 10, 19), min = 10, max = 20, min_open_ended = TRUE),
+            l20 = structure(call("seq", 20, 29), min = 20, max = 30),
+            l30 = structure(call("seq", 30, 39), min = 30, max = 40),
+            l40 = structure(call("seq", 40, 49), min = 40, max = 50, max_open_ended = TRUE))),
+        "open_ended=lower annotates bottom group, doesn't change min")
+
+    ok(ut_cmp_identical(
+        agg_summary(mdb, mfdb_step_interval('l', 10, from = 10, to = 20, open_ended = c('lower', 'upper')), 'c.len', 'len', data.frame(), 0),
+        list(
+            l10 = structure(call("seq", 10, 19), min = 10, max = 20, min_open_ended = TRUE, max_open_ended = TRUE))),
+        "open_ended=lower/upper can be done on a single group")
 }, asNamespace('mfdb')))
 
 ok_group("Aggregates with close_ended mfdb_step_interval", local({

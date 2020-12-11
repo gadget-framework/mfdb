@@ -53,10 +53,16 @@ where_clause.mfdb_interval <- function(mdb, x, col, outputname, group_disabled =
 
 # Return a list of the form "group" = c("min", "max"), as required by gadget_file
 agg_summary.mfdb_interval <- function(mdb, x, col, outputname, data, sample_num) {
-    return(mapply(function (curVal, nextVal) {
+    out <- mapply(function (curVal, nextVal) {
         structure(
             call("seq", curVal, nextVal - 1),
             min = curVal,
             max = nextVal)
-    }, x[1:length(x) - 1], x[2:length(x)], SIMPLIFY = FALSE))
+    }, x[1:length(x) - 1], x[2:length(x)], SIMPLIFY = FALSE)
+
+    # Annotate top/bottom groups if they're open_ended
+    if ('lower' %in% attr(x, 'open_ended')) attr(out[[1]], 'min_open_ended') <- TRUE
+    if ('upper' %in% attr(x, 'open_ended')) attr(out[[length(out)]], 'max_open_ended') <- TRUE
+
+    return(out)
 }

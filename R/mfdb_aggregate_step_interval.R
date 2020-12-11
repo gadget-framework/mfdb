@@ -65,10 +65,14 @@ agg_summary.mfdb_step_interval <- function(mdb, x, col, outputname, data, sample
     names(out) <- paste0(x$prefix, out)
 
     # Expand this to have min/max values
-    return(mapply(function (curVal, nextVal) {
+    out <- mapply(function (curVal, nextVal) {
         structure(
             call("seq", curVal, nextVal - 1),
             min = curVal,
             max = nextVal)
-    }, out[1:length(out) - 1], out[2:length(out)], SIMPLIFY = FALSE))
+    }, out[1:length(out) - 1], out[2:length(out)], SIMPLIFY = FALSE)
+    if ('lower' %in% attr(x, 'open_ended')) attr(out[[1]], 'min_open_ended') <- TRUE
+    if ('upper' %in% attr(x, 'open_ended')) attr(out[[length(out)]], 'max_open_ended') <- TRUE
+
+    return(out)
 }

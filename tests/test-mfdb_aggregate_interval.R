@@ -31,6 +31,32 @@ ok_group("Elements are named by prefixes", local({
             l5  = structure(call("seq",  5, 14), min =  5, max = 15),
             l15 = structure(call("seq", 15, 24), min = 15, max = 25),
             l25 = structure(call("seq", 25, 29), min = 25, max = 30))))
+
+    ok(ut_cmp_identical(
+        agg_summary(mdb, mfdb_interval("l", c(5,15,25,30), open_ended = c('upper')), 'col', 'out', data.frame(), 0),
+        list(
+            l5  = structure(call("seq",  5, 14), min =  5, max = 15),
+            l15 = structure(call("seq", 15, 24), min = 15, max = 25),
+            l25 = structure(call("seq", 25, 29), min = 25, max = 30, max_open_ended = TRUE))), "agg_summary: open_ended=upper goes on final group")
+
+    ok(ut_cmp_identical(
+        agg_summary(mdb, mfdb_interval("l", c(5,15,25,30), open_ended = c('lower')), 'col', 'out', data.frame(), 0),
+        list(
+            l5  = structure(call("seq",  5, 14), min =  5, max = 15, min_open_ended = TRUE),
+            l15 = structure(call("seq", 15, 24), min = 15, max = 25),
+            l25 = structure(call("seq", 25, 29), min = 25, max = 30))), "agg_summary: open_ended=lower goes on first group")
+
+    ok(ut_cmp_identical(
+        agg_summary(mdb, mfdb_interval("l", c(5, 15), open_ended = c('lower', 'upper')), 'col', 'out', data.frame(), 0),
+        list(
+            l5  = structure(
+                call("seq",  5, 14),
+                min = 5,
+                max = 15,
+                min_open_ended = TRUE,
+                max_open_ended = TRUE))), "agg_summary: Can have both on a single group")
+
+
 }, asNamespace('mfdb')))
 
 ok_group("Can generate SQL", local({
