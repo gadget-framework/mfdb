@@ -65,6 +65,7 @@ mfdb_send <- function(mdb, ..., result = "") {
     }
 
     res <- dbSendQuery(mdb$db, query)
+    on.exit(dbClearResult(res))
 
     if (is.function(result)) {
         offset <- 0
@@ -72,17 +73,14 @@ mfdb_send <- function(mdb, ..., result = "") {
             result(DBI::dbFetch(res, n = 1000), offset)
             offset <- offset + 1000
         }
-        dbClearResult(res)
         return(invisible(NULL))
     }
     if (result == "rowcount") {
         out <- DBI::dbGetRowsAffected(res)
-        dbClearResult(res)
         return(out)
     }
     if (result == "rows") {
         out <- DBI::dbFetch(res)
-        dbClearResult(res)
         return(out)
     }
     return(res)
