@@ -315,7 +315,7 @@ ok_group("Unaggregated length / weight / age samples", {
             length = length_group)),
         list("0.0.0.0.0" = structure(
             data.frame(
-                year = c(1998, 1998, 1998),
+                year = as.integer(c(1998, 1998, 1998)),
                 step = c("1", "2", "2"),
                 area = c("divA", "divA", "divA"),
                 age = c("age2", "age1", "age2"),
