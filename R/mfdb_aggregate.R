@@ -99,8 +99,9 @@ where_clause.numeric <- function(mdb, x, col, outputname, group_disabled = FALSE
     }
 
     # No taxonomy
+    cast <- if (lookup == 'age') "::NUMERIC(10,5)" else ""
     return(paste0(
-        "(", col, " IN ",
+        "(", col, cast, " IN ",
         sql_quote(x[!is.na(x)], always_bracket = TRUE),
         if (NA %in% x) paste0(" OR ", col, " IS NULL"),
         ")"))

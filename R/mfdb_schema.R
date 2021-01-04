@@ -111,7 +111,7 @@ schema_from_0 <- function(mdb) {
         "month", "INT NOT NULL", "Month sample was undertaken",
         "areacell_id", "INT", "Areacell data relates to",
         "species_id", "BIGINT REFERENCES species(species_id)", "",
-        "age", "REAL", "Age (years)",
+        "age", "REAL", "Age (years)",  # TODO: Age should have been numeric, not REAL. Whoops.
         "sex_id", "INT REFERENCES sex(sex_id)", "Sex ID",
         "maturity_stage_id", "INT REFERENCES maturity_stage(maturity_stage_id)", "Maturity Stage ID",
 

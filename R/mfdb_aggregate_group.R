@@ -16,7 +16,8 @@ mfdb_group <- function (...) {
 pre_query.mfdb_group <- function(mdb, x, col) {
     group <- x
     lookup <- gsub('(.*\\.)|_id', '', col)
-    datatype <- ifelse(lookup == "species", "BIGINT", ifelse(lookup == "age", "REAL", "INT"))
+    # NB: NUMERIC precision is fairly arbitrary, small enough to hide rounding issues from REAL
+    datatype <- ifelse(lookup == "species", "BIGINT", ifelse(lookup == "age", "NUMERIC(10,5)", "INT"))
 
     # If the table already exists, nothing to do
     if (mfdb_table_exists(mdb, attr(x, 'table_name'))) {
@@ -105,7 +106,10 @@ from_clause.mfdb_group <- function(mdb, x, col, outputname, group_disabled = FAL
 }
 
 where_clause.mfdb_group <- function(mdb, x, col, outputname, group_disabled = FALSE) {
-    paste0(col, " = ", attr(x, 'table_name'), ".value")
+    lookup <- gsub('(.*\\.)|_id', '', col)
+
+    cast <- if (lookup == 'age') "::NUMERIC(10,5)" else ""
+    paste0(col, cast, " = ", attr(x, 'table_name'), ".value")
 }
 
 # Some default time groupings
