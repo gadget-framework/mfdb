@@ -109,14 +109,14 @@ ok_group("Temperature", {
     ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = mfdb_timestep_quarterly, area = area_group)),
         list("0.0.0" = structure(
             data.frame(
-                year = rep(c(1998, 1999), each = 4),
+                year = rep(c(1998L, 1999L), each = 4),
                 step = rep(c("1", "2", "3", "4"), times = 2),
                 area = rep("divA", times = 8),
                 mean = c(
                     mean(1:3), mean(4:6), mean(7:9), mean(10:12),
                     mean(25:27), mean(28:30), mean(31:33), mean(34:36)),
                 stringsAsFactors = FALSE),
-            year = as.list(structure(1998:2000, names = 1998:2000)),
+            year = as.list(structure(as.numeric(1998:2000), names = 1998:2000)),
             step = mfdb_timestep_quarterly,
             area = area_group,
             generator = "mfdb_survey_index_mean"))),
@@ -137,14 +137,14 @@ ok_group("Temperature", {
     ok(cmp(mfdb_temperature(mdb, list(year = c(1998, 1999, 2000), timestep = mfdb_timestep_quarterly, area = area_group)),
         list("0.0.0" = structure(
             data.frame(
-                year = rep(c(1998, 1999), each = 4),
+                year = rep(c(1998L, 1999L), each = 4),
                 step = rep(c("1", "2", "3", "4"), times = 2),
                 area = rep("divA", times = 8),
                 mean = c(
                     mean(12:14), mean(15:17), mean(18:20), mean(21:23),
                     mean(20:22), mean(23:25), mean(26:28), mean(29:31)),
                 stringsAsFactors = FALSE),
-            year = as.list(structure(1998:2000, names = 1998:2000)),
+            year = as.list(structure(as.numeric(1998:2000), names = 1998:2000)),
             step = mfdb_timestep_quarterly,
             area = area_group,
             generator = "mfdb_survey_index_mean"))),
