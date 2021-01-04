@@ -51,7 +51,19 @@ mfdb_send <- function(mdb, ..., result = "") {
         return(mdb$ret_recordset)
     }
 
+    # Log query, and optionally the explain plan, enable with mdb$explain_plan <- TRUE
     mdb$logger$finest(query)
+    if (isTRUE(mdb$explain_plan) && result == 'rows') {
+        writeLines("-----------------------------")
+        writeLines(query)
+        res <- dbSendQuery(mdb$db, paste("EXPLAIN ANALYSE", query))
+        while (!DBI::dbHasCompleted(res)) {
+            writeLines(DBI::dbFetch(res)[[1]])
+        }
+        writeLines("-----------------------------")
+        dbClearResult(res)
+    }
+
     res <- dbSendQuery(mdb$db, query)
 
     if (is.function(result)) {
