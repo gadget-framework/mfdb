@@ -484,18 +484,18 @@ mfdb_sample_grouping <- function (mdb,
                 NULL, collapse = "|| '.' ||"), "AS bssample"),
             gsub("AS ([a-zA-Z0-9_]+)$", "AS grp_\\1", clauses(group_cols, select_clause)),
             calc_cols,
-            NULL), collapse = ","),
-        " FROM ", paste(c(
+            NULL), collapse = "\n     , "),
+        "\n FROM ", paste(c(
             paste(c(core_table, "c", join_tables), collapse = " "),
             clauses(union(group_cols, filter_cols), from_clause),
             NULL), collapse = ","),
-        " WHERE ", paste(c(
+        "\n WHERE ", paste(c(
             "TRUE",
             clauses(union(group_cols, filter_cols), where_clause),
-            NULL), collapse = " AND "),
+            NULL), collapse = "\n   AND "),
         if (disable_group_by) c() else c(
-            " GROUP BY ", paste(c("bssample", paste0("grp_", group_cols)), collapse=",")),
-        " ORDER BY ", paste(c(
+            "\n GROUP BY ", paste(c("bssample", paste0("grp_", group_cols)), collapse=",")),
+        "\n ORDER BY ", paste(c(
             "bssample",
             if (length(group_cols) > 0) paste0("grp_", group_cols) else c(),
             NULL), collapse=","),
