@@ -4,25 +4,29 @@
 # )
 mfdb_group <- function (...) {
     group <- structure(list(...),
-            table_name = paste(
-                "temp",
-                paste0(sample(letters, 5, replace = TRUE), collapse=""),
-                sep = "_"),
             class = c("mfdb_group", "mfdb_aggregate"))
 
     invisible(group)
 }
 
 pre_query.mfdb_group <- function(mdb, x, col) {
-    group <- x
     lookup <- gsub('(.*\\.)|_id', '', col)
     # NB: NUMERIC precision is fairly arbitrary, small enough to hide rounding issues from REAL
     datatype <- ifelse(lookup == "species", "BIGINT", ifelse(lookup == "age", "NUMERIC(10,5)", "INT"))
 
     # If the table already exists, nothing to do
-    if (mfdb_table_exists(mdb, attr(x, 'table_name'))) {
-        return(invisible(NULL))
+    # TODO: This is kinda pointless, references to future group won't have a table_name set
+    if (!is.null(attr(x, 'table_name')) && mfdb_table_exists(mdb, attr(x, 'table_name'))) {
+        return(invisible(x))
     }
+
+    # Set table name
+    attr(x, 'table_name') <- paste(c(
+        "temp",
+        lookup,
+        paste0(sample(letters, 5, replace = TRUE), collapse=""),
+        attr(x, 'bs_name')), collapse = "_")
+    group <- x
 
     mfdb_send(mdb, paste(
             "CREATE",
@@ -94,7 +98,7 @@ pre_query.mfdb_group <- function(mdb, x, col) {
     # Index the lookup table to speed up queries
     mfdb_send(mdb, sql_create_index(attr(x, 'table_name'), c('value', 'name', 'sample')))
 
-    invisible(NULL)
+    invisible(group)
 }
 
 select_clause.mfdb_group <- function(mdb, x, col, outputname, group_disabled = FALSE) {
@@ -110,6 +114,12 @@ where_clause.mfdb_group <- function(mdb, x, col, outputname, group_disabled = FA
 
     cast <- if (lookup == 'age') "::NUMERIC(10,5)" else ""
     paste0(col, cast, " = ", attr(x, 'table_name'), ".value")
+}
+
+agg_summary.mfdb_group <- function(mdb, x, col, outputname, data, sample_num) {
+    out <- as.list(x)
+    attr(out, 'table_name') <- NULL
+    return(out)
 }
 
 # Some default time groupings
@@ -145,7 +155,7 @@ mfdb_bootstrap_group <- function (count, group, seed = NULL) {
 
     bs_group <- structure(
             lapply(1:count, function(i) { lapply(group, function (g) { if (length(g) == 1) g else sample(g, replace = TRUE) }) }),
-            table_name = paste0(attr(group, 'table_name'), "_bs", count, seed),
+            bs_name = paste0("bs", count, seed),
             class = c("mfdb_bootstrap_group", "mfdb_group", "mfdb_aggregate"))
 
     # Restore PRNG to how it was before
