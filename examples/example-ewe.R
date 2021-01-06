@@ -12,6 +12,9 @@ string_to_data.frame <- function (str) {
         stringsAsFactors = FALSE)
 }
 
+# Compare print(a) to output string in b
+cmp_printed_output <- function (a, b) ut_cmp_identical(paste(capture.output(print(a)), collapse = "\n"), gsub('^\n+|\n+$', '', b))
+
 # Empty database and reconnect
 if (exists("mdb")) mfdb_disconnect(mdb)
 mfdb('example_ewe', destroy_schema = TRUE)
@@ -171,12 +174,12 @@ stomach_name species digestion_stage weight
      F         CLL          1          19  
 "))
 
+###############################################################################
+# Separate out COD and HAD into 2 groups based on age
+
 # Configure functional groups
 start_year <- mfdb_group("2000" = 2000)
 grouping_area <- list(area = NULL)  # We don't care, give us the whole area
-grouping_cod_nogroup <- list(
-    species = 'COD',
-    age = mfdb_group(COD=1:100))
 grouping_cod <- list(
     predator_species = 'COD',
     species = 'COD',
@@ -193,8 +196,7 @@ grouping_vessel = list(
 grouping_prey = list(
     prey_species = mfdb_unaggregated())
 
-# Query data and group together
-#    mfdb_sample_totalweight(mdb, c('age'), c(grouping_area, grouping_cod_nogroup, grouping_tracer))[[1]],
+# NB: We group by age here, and this will define the group names
 survey_data <- mfdb_concatenate_results(
     mfdb_sample_totalweight(mdb, c('age'), c(grouping_area, grouping_cod, grouping_tracer))[[1]],
     mfdb_sample_totalweight(mdb, c('age'), c(grouping_area, grouping_had, grouping_tracer))[[1]])
@@ -215,7 +217,8 @@ rp <- mfdb_rpath_params(
     create_rpath_params = Rpath::create.rpath.params)
 print(rp)
 
-ok(ut_cmp_identical(paste(capture.output(print(rp)), collapse = "\n"), '$model
+ok(cmp_printed_output(rp, '
+$model
         Group Type Biomass PB QB EE ProdCons BioAcc Unassim DetInput Detritus     vA     vB     vC vA.disc vB.disc vC.disc
  1: COD.adult    1 4211.73 NA NA NA       NA     NA      NA       NA       NA 103039 114079  90171       0       0       0
  2:   COD.juv    1 6628.02 NA NA NA       NA     NA      NA       NA       NA 187281 175100 116601       0       0       0
@@ -270,4 +273,5 @@ $pedigree
 10:        vC       1  1  1    1  1  1  1
 
 attr(,"class")
-[1] "Rpath.params"'), "Built object matches expected output")
+[1] "Rpath.params"
+'), "Rpath model has stgroups for COD and HAD, breaking down into age groups")
