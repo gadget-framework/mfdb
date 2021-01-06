@@ -86,11 +86,7 @@ export(mfdb_share_with)
 export(mfdb_unaggregated)
 
 # ewe_model.R
-export(ewe_stanza_group)
-export(ewe_stanzas)
-export(ewe_model)
-export(ewe_diet)
-export(ewe_pedigree)
+export(mfdb_rpath_params)
 
 # gadget_areafile.R
 export(gadget_areafile)

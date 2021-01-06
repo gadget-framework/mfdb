@@ -1,6 +1,7 @@
 # Prototype EwE support, see bottom of file for usage
 library(mfdb)
-library(Matrix)
+library(unittest)
+library(Rpath)
 
 # Helper function: Turn a string into a data.frame
 string_to_data.frame <- function (str) {
@@ -175,15 +176,15 @@ start_year <- mfdb_group("2000" = 2000)
 grouping_area <- list(area = NULL)  # We don't care, give us the whole area
 grouping_cod_nogroup <- list(
     species = 'COD',
-    age = NULL)
+    age = mfdb_group(COD=1:100))
 grouping_cod <- list(
     predator_species = 'COD',
     species = 'COD',
-    age = mfdb_group(juv=1:4, adult=5:10))
+    age = mfdb_group(COD.juv=1:4, COD.adult=5:10))
 grouping_had <- list(
     predator_species = 'HAD',
     species = 'HAD',
-    age = mfdb_group(juv=1:2, adult=3:5))
+    age = mfdb_group(HAD.juv=1:2, HAD.adult=3:5))
 grouping_tracer = list(
     data_source = 'tracer_2000')  # Make sure we only fetch tracer data
 grouping_vessel = list(
@@ -193,69 +194,80 @@ grouping_prey = list(
     prey_species = mfdb_unaggregated())
 
 # Query data and group together
+#    mfdb_sample_totalweight(mdb, c('age'), c(grouping_area, grouping_cod_nogroup, grouping_tracer))[[1]],
 survey_data <- mfdb_concatenate_results(
-    mfdb_sample_totalweight(mdb, c('species', 'age'), c(grouping_area, grouping_cod_nogroup, grouping_tracer))[[1]],
-    mfdb_sample_totalweight(mdb, c('species', 'age'), c(grouping_area, grouping_cod, grouping_tracer))[[1]],
-    mfdb_sample_totalweight(mdb, c('species', 'age'), c(grouping_area, grouping_had, grouping_tracer))[[1]])
+    mfdb_sample_totalweight(mdb, c('age'), c(grouping_area, grouping_cod, grouping_tracer))[[1]],
+    mfdb_sample_totalweight(mdb, c('age'), c(grouping_area, grouping_had, grouping_tracer))[[1]])
 catch_data <- mfdb_concatenate_results(
-    mfdb_sample_totalweight(mdb, c('species', 'age', 'vessel'), c(grouping_area, grouping_cod, grouping_vessel))[[1]],
-    mfdb_sample_totalweight(mdb, c('species', 'age', 'vessel'), c(grouping_area, grouping_had, grouping_vessel))[[1]])
+    mfdb_sample_totalweight(mdb, c('age', 'vessel'), c(grouping_area, grouping_cod, grouping_vessel))[[1]],
+    mfdb_sample_totalweight(mdb, c('age', 'vessel'), c(grouping_area, grouping_had, grouping_vessel))[[1]])
 consumption_data <- mfdb_concatenate_results(
-    mfdb_stomach_preyweightratio(mdb, c('predator_species', 'age', 'prey_species'), c(grouping_area, grouping_cod, grouping_prey))[[1]],
-    mfdb_stomach_preyweightratio(mdb, c('predator_species', 'age', 'prey_species'), c(grouping_area, grouping_had, grouping_prey))[[1]])
+    mfdb_stomach_preyweightratio(mdb, c('age', 'prey_species'), c(grouping_area, grouping_cod, grouping_prey))[[1]],
+    mfdb_stomach_preyweightratio(mdb, c('age', 'prey_species'), c(grouping_area, grouping_had, grouping_prey))[[1]])
 area_data <- mfdb_area_size(mdb, grouping_area)[[1]]
 
-# Generate CSVs and print out each
-model_files <- list(
-    stanza_group = ewe_stanza_group(survey_data),
-    stanzas = ewe_stanzas(survey_data),
-    model = ewe_model(area_data, survey_data, catch_data),
-    diet = ewe_diet(consumption_data),
-    pedigree = ewe_pedigree(survey_data, catch_data))
+# Generate rpath object from queried data
+rp <- mfdb_rpath_params(
+    area_data,
+    survey_data,
+    catch_data,
+    consumption_data,
+    create_rpath_params = Rpath::create.rpath.params)
+print(rp)
 
-for (x in names(model_files)) {
-    cat("== ", x, " ==============\n")
-    print(model_files[[x]])
-}
+ok(ut_cmp_identical(paste(capture.output(print(rp)), collapse = "\n"), '$model
+        Group Type Biomass PB QB EE ProdCons BioAcc Unassim DetInput Detritus     vA     vB     vC vA.disc vB.disc vC.disc
+ 1: COD.adult    1 4211.73 NA NA NA       NA     NA      NA       NA       NA 103039 114079  90171       0       0       0
+ 2:   COD.juv    1 6628.02 NA NA NA       NA     NA      NA       NA       NA 187281 175100 116601       0       0       0
+ 3: HAD.adult    1 4499.76 NA NA NA       NA     NA      NA       NA       NA  38740  22796  33420       0       0       0
+ 4:   HAD.juv    1 1994.90 NA NA NA       NA     NA      NA       NA       NA  36666  53145  39671       0       0       0
+ 5:       CAP    1      NA NA NA NA       NA     NA      NA       NA       NA     NA     NA     NA       0       0       0
+ 6:       CLL    1      NA NA NA NA       NA     NA      NA       NA       NA     NA     NA     NA       0       0       0
+ 7:  Detritus    2      NA NA NA NA       NA     NA      NA        0       NA     NA     NA     NA       0       0       0
+ 8:        vA    3      NA NA NA NA       NA     NA      NA       NA       NA     NA     NA     NA      NA      NA      NA
+ 9:        vB    3      NA NA NA NA       NA     NA      NA       NA       NA     NA     NA     NA      NA      NA      NA
+10:        vC    3      NA NA NA NA       NA     NA      NA       NA       NA     NA     NA     NA      NA      NA      NA
 
-# Example output from script:-
-# ==  stanza_group  ==============
-#   StGroupNum Stanza_Group nstanzas VBGF_Ksp  VBGF_d Wmat RecPower
-# 1          1          COD        2       NA 0.66667   NA        1
-# 2          2          HAD        2       NA 0.66667   NA        1
-# ==  stanzas  ==============
-#      StGroupNum Stanza GroupNum     Group First Last  Z Leading
-# COD1          1      1        4 COD.adult     5   10 NA      NA
-# COD2          1      2        5   COD.juv     1    4 NA      NA
-# HAD1          2      1        6 HAD.adult     5   10 NA      NA
-# HAD2          2      2        7   HAD.juv     1    4 NA      NA
-# ==  model  ==============
-#        Group Type Biomass PB QB EE ProdCons BioAcc Unassim DetInput Detritus Discards      vA      vB      vC vA.disc vB.disc vC.disc
-# 1        COD    0 7862.71 NA NA NA       NA      0     0.2       NA        1        0    0.00    0.00    0.00       0       0       0
-# 2  COD.adult    0 3072.89 NA NA NA       NA      0     0.2       NA        1        0 1030.39 1140.79  901.71       0       0       0
-# 3    COD.juv    0 4789.82 NA NA NA       NA      0     0.2       NA        1        0 1872.81 1751.00 1166.01       0       0       0
-# 4  HAD.adult    0  949.56 NA NA NA       NA      0     0.2       NA        1        0  387.40  227.96  334.20       0       0       0
-# 5    HAD.juv    0 1294.82 NA NA NA       NA      0     0.2       NA        1        0  366.66  531.45  396.71       0       0       0
-# 6   Detritus    2      NA NA NA NA       NA      0     0.2        0        0        0    0.00    0.00    0.00       0       0       0
-# 7   Discards    2      NA NA NA NA       NA      0     0.2        0        0        0    0.00    0.00    0.00       0       0       0
-# 8         vA    3      NA NA NA NA       NA     NA      NA       NA        0        1      NA      NA      NA      NA      NA      NA
-# 9         vB    3      NA NA NA NA       NA     NA      NA       NA        0        1      NA      NA      NA      NA      NA      NA
-# 10        vC    3      NA NA NA NA       NA     NA      NA       NA        0        1      NA      NA      NA      NA      NA      NA
-# ==  diet  ==============
-#           CAP CLL COD.adult   COD.juv
-# CAP        NA  NA 0.3854749 0.6378378
-# CLL        NA  NA 0.6145251 0.3621622
-# COD.adult  NA  NA        NA        NA
-# COD.juv    NA  NA        NA        NA
-# ==  pedigree  ==============
-#        Group B PB QB Diet vA vB vC
-# 1        COD 1  1  1    1  1  1  1
-# 2  COD.adult 1  1  1    1  1  1  1
-# 3    COD.juv 1  1  1    1  1  1  1
-# 6   Detritus 1  1  1    1  1  1  1
-# 7   Discards 1  1  1    1  1  1  1
-# 4  HAD.adult 1  1  1    1  1  1  1
-# 5    HAD.juv 1  1  1    1  1  1  1
-# 8         vA 1  1  1    1  1  1  1
-# 9         vB 1  1  1    1  1  1  1
-# 10        vC 1  1  1    1  1  1  1
+$diet
+       Group COD.adult   COD.juv HAD.adult HAD.juv CAP CLL
+1: COD.adult        NA        NA        NA      NA  NA  NA
+2:   COD.juv        NA        NA        NA      NA  NA  NA
+3: HAD.adult        NA        NA        NA      NA  NA  NA
+4:   HAD.juv        NA        NA        NA      NA  NA  NA
+5:       CAP 0.3854749 0.6378378        NA      NA  NA  NA
+6:       CLL 0.6145251 0.3621622        NA      NA  NA  NA
+7:  Detritus        NA        NA        NA      NA  NA  NA
+8:    Import        NA        NA        NA      NA  NA  NA
+
+$stanzas
+$stanzas$NStanzaGroups
+[1] 2
+
+$stanzas$stgroups
+   StGroupNum StanzaGroup nstanzas VBGF_Ksp  VBGF_d Wmat BAB RecPower
+1:          1         COD        2       NA 0.66667   NA   0        1
+2:          2         HAD        2       NA 0.66667   NA   0        1
+
+$stanzas$stindiv
+   StGroupNum StanzaNum GroupNum     Group First Last  Z Leading
+1:          1         0        1 COD.adult    NA   NA NA      NA
+2:          1         0        2   COD.juv    NA   NA NA      NA
+3:          2         0        3 HAD.adult    NA   NA NA      NA
+4:          2         0        4   HAD.juv    NA   NA NA      NA
+
+
+$pedigree
+        Group Biomass PB QB Diet vA vB vC
+ 1: COD.adult       1  1  1    1  1  1  1
+ 2:   COD.juv       1  1  1    1  1  1  1
+ 3: HAD.adult       1  1  1    1  1  1  1
+ 4:   HAD.juv       1  1  1    1  1  1  1
+ 5:       CAP       1  1  1    1  1  1  1
+ 6:       CLL       1  1  1    1  1  1  1
+ 7:  Detritus       1  1  1    1  1  1  1
+ 8:        vA       1  1  1    1  1  1  1
+ 9:        vB       1  1  1    1  1  1  1
+10:        vC       1  1  1    1  1  1  1
+
+attr(,"class")
+[1] "Rpath.params"'), "Built object matches expected output")
