@@ -40,6 +40,13 @@ mfdb_rpath_params <- function (area_data,
         NULL))
     fleet_groups <- unique(catch_data[,'vessel'])
 
+    stgroups <- c(
+        to_stgroup(living_groups),
+        to_stgroup(primary_groups),
+        to_stgroup(detritus_groups),
+        rep(NA, length(fleet_groups)))  # No stanza groups for fisheries
+    # If there aren't any, Rpath expects a single NA
+    if (all(is.na(stgroups))) stgroups <- NA
     rp <- create_rpath_params(
         group = c(
             living_groups,
@@ -51,11 +58,7 @@ mfdb_rpath_params <- function (area_data,
             rep(1, length(primary_groups)),
             rep(2, length(detritus_groups)),
             rep(3, length(fleet_groups))),
-        stgroup = c(
-            to_stgroup(living_groups),
-            to_stgroup(primary_groups),
-            to_stgroup(detritus_groups),
-            rep(NA, length(fleet_groups))))  # No stanza groups for fisheries
+        stgroup = stgroups)
 
     # TODO: These are all really data.tables, and should be treated accordingly,
     #       but using both data.table and rlang in the same package appears to be

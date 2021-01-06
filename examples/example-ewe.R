@@ -275,3 +275,93 @@ $pedigree
 attr(,"class")
 [1] "Rpath.params"
 '), "Rpath model has stgroups for COD and HAD, breaking down into age groups")
+
+###############################################################################
+# Make a model without any groupings
+
+# Configure functional groups
+start_year <- mfdb_group("2000" = 2000)
+grouping_area <- list(area = NULL)  # We don't care, give us the whole area
+grouping_cod <- list(
+    predator_species = 'COD',
+    species = 'COD')
+grouping_had <- list(
+    predator_species = 'HAD',
+    species = 'HAD')
+grouping_tracer = list(
+    data_source = 'tracer_2000')  # Make sure we only fetch tracer data
+grouping_vessel = list(
+    vessel_type = c('1.RSH', '1.COM'),  # NB: This will skip tracer data (since it has no vessel type)
+    vessel = mfdb_unaggregated())
+grouping_prey = list(
+    prey_species = mfdb_unaggregated())
+
+# NB: We group by species here, and this will define the group names
+survey_data <- mfdb_concatenate_results(
+    mfdb_sample_totalweight(mdb, c('species'), c(grouping_area, grouping_cod, grouping_tracer))[[1]],
+    mfdb_sample_totalweight(mdb, c('species'), c(grouping_area, grouping_had, grouping_tracer))[[1]])
+catch_data <- mfdb_concatenate_results(
+    mfdb_sample_totalweight(mdb, c('species', 'vessel'), c(grouping_area, grouping_cod, grouping_vessel))[[1]],
+    mfdb_sample_totalweight(mdb, c('species', 'vessel'), c(grouping_area, grouping_had, grouping_vessel))[[1]])
+consumption_data <- mfdb_concatenate_results(
+    mfdb_stomach_preyweightratio(mdb, c('predator_species', 'prey_species'), c(grouping_area, grouping_cod, grouping_prey))[[1]],
+    mfdb_stomach_preyweightratio(mdb, c('predator_species', 'prey_species'), c(grouping_area, grouping_had, grouping_prey))[[1]])
+area_data <- mfdb_area_size(mdb, grouping_area)[[1]]
+
+# Generate rpath object from queried data
+rp <- mfdb_rpath_params(
+    area_data,
+    survey_data,
+    catch_data,
+    consumption_data,
+    create_rpath_params = Rpath::create.rpath.params)
+print(rp)
+
+ok(cmp_printed_output(rp, '
+$model
+      Group Type  Biomass PB QB EE ProdCons BioAcc Unassim DetInput Detritus     vA     vB     vC vA.disc vB.disc vC.disc
+1:      COD    1 10839.80 NA NA NA       NA     NA      NA       NA       NA 290320 289179 206772       0       0       0
+2:      HAD    1  6963.26 NA NA NA       NA     NA      NA       NA       NA  75406  75941  73091       0       0       0
+3:      CAP    1       NA NA NA NA       NA     NA      NA       NA       NA     NA     NA     NA       0       0       0
+4:      CLL    1       NA NA NA NA       NA     NA      NA       NA       NA     NA     NA     NA       0       0       0
+5: Detritus    2       NA NA NA NA       NA     NA      NA        0       NA     NA     NA     NA       0       0       0
+6:       vA    3       NA NA NA NA       NA     NA      NA       NA       NA     NA     NA     NA      NA      NA      NA
+7:       vB    3       NA NA NA NA       NA     NA      NA       NA       NA     NA     NA     NA      NA      NA      NA
+8:       vC    3       NA NA NA NA       NA     NA      NA       NA       NA     NA     NA     NA      NA      NA      NA
+
+$diet
+      Group       COD HAD CAP CLL
+1:      COD        NA  NA  NA  NA
+2:      HAD        NA  NA  NA  NA
+3:      CAP 0.5137363  NA  NA  NA
+4:      CLL 0.4862637  NA  NA  NA
+5: Detritus        NA  NA  NA  NA
+6:   Import        NA  NA  NA  NA
+
+$stanzas
+$stanzas$NStanzaGroups
+[1] 0
+
+$stanzas$stgroups
+   StGroupNum StanzaGroup nstanzas VBGF_Ksp VBGF_d Wmat RecPower
+1:         NA          NA       NA       NA     NA   NA       NA
+
+$stanzas$stindiv
+   StGroupNum StanzaNum GroupNum Group First Last  Z Leading
+1:         NA        NA       NA    NA    NA   NA NA      NA
+
+
+$pedigree
+      Group Biomass PB QB Diet vA vB vC
+1:      COD       1  1  1    1  1  1  1
+2:      HAD       1  1  1    1  1  1  1
+3:      CAP       1  1  1    1  1  1  1
+4:      CLL       1  1  1    1  1  1  1
+5: Detritus       1  1  1    1  1  1  1
+6:       vA       1  1  1    1  1  1  1
+7:       vB       1  1  1    1  1  1  1
+8:       vC       1  1  1    1  1  1  1
+
+attr(,"class")
+[1] "Rpath.params"
+'), "Rpath model has no stgroups, not relevant for this model")
