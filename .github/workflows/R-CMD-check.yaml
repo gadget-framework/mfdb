@@ -3,12 +3,16 @@
 on:
   push:
     branches:
-      - main
-      - master
+      - 5.x
+      - 6.x
+      - 7.x
+      - 8.x
   pull_request:
     branches:
-      - main
-      - master
+      - 5.x
+      - 6.x
+      - 7.x
+      - 8.x
 
 name: R-CMD-check
 
