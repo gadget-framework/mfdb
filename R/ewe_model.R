@@ -12,7 +12,7 @@ mfdb_rpath_params <- function (area_data,
     df_to_rpath_groups <- function(df, ignore_cols = c()) {
         ignore_re <- paste(c(
             '^year$', '^step$', '^area$',
-            '^vessel$',
+            '^vessel$', '^gear$',
             '^prey_species$',
             '^total_weight$', '^ratio$',
             ignore_cols), collapse = '|')
