@@ -42,8 +42,11 @@ ok_group("Predefined timestep groups", {
     ok(cmp(mfdb_timestep_quarterly[[4]], 10:12), "mfdb_timestep_quarterly")
 })
 
+table_content <- data.frame(sample = 0, name = c('a', 'a', 'a'), value = 1:3)
 mdb <- fake_mdb(save_temp_tables = TRUE)
-mdb$ret_rows <- data.frame(count = 0)
+mdb$ret_rows <- list(
+    "SELECT sample, name, value FROM temp_" = table_content,
+    "FROM information_schema.tables" = data.frame(count = 0))
 g <- NULL
 
 ok_group("Aggregates with mfdb_group", local({
@@ -53,7 +56,9 @@ ok_group("Aggregates with mfdb_group", local({
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (0,'a','1'),(0,'a','two'),(0,'a','3'),(0,'b','88')"),
         paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
+    ok("mfdb_smallset" %in% class(pre_query(mdb, g, "col")), "Converted to an mfdb_smallset")
     ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
     ok(cmp(select_clause(mdb, g, "col", "out"), paste0(attr(g, 'table_name'), ".name AS out")), "Select clause")
     ok(cmp(from_clause(mdb, g, "col", "out"), attr(g, 'table_name')), "From clause")
@@ -65,6 +70,7 @@ ok_group("Aggregates with mfdb_group", local({
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (0,'a1',1),(0,'a1',2),(0,'a1',3),(0,'badger',88),(0,'badger',21),(0,'a3',99)"),
         paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
     ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
     ok(cmp(select_clause(mdb, g, "col", "out"), paste0(attr(g, 'table_name'), ".name AS out")), "Select clause")
@@ -72,14 +78,46 @@ ok_group("Aggregates with mfdb_group", local({
     ok(cmp(where_clause(mdb, g, "col", "out"), paste0("col = ", attr(g, 'table_name'), ".value")), "Where clause")
 }, asNamespace('mfdb')))
 
-mdb$ret_rows <- data.frame(count = 1)
+ok_group("Large group aggregates don't attempt smallset", local({
+    g <<- mfdb_group(a = c(1,"two",3), b = 1:100)
+    ok(cmp(capture.output(pre_query(mdb, g, "col")), c(
+        paste0("SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('", attr(g, 'table_name'), "')"),
+        paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
+        paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (0,'a','1'),(0,'a','two'),(0,'a','3'),", paste0("(0,'b','", 1:100,"')", collapse=",")),
+        paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        NULL)), "Created temporary table")
+    ok(!("mfdb_smallset" %in% class(pre_query(mdb, g, "col"))), "Not a a mfdb_smallset")
+    ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
+    ok(cmp(select_clause(mdb, g, "col", "out"), paste0(attr(g, 'table_name'), ".name AS out")), "Select clause")
+    ok(cmp(from_clause(mdb, g, "col", "out"), attr(g, 'table_name')), "From clause")
+    ok(cmp(where_clause(mdb, g, "col", "out"), paste0("col = ", attr(g, 'table_name'), ".value")), "Where clause")
+
+    g <<- mfdb_group(a1 = c(1,2,3), badger = c(88, 21), a3 = c(99))
+    ok(cmp(capture.output(pre_query(mdb, g, "col")), c(
+        paste0("SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('", attr(g, 'table_name'), "')"),
+        paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
+        paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (0,'a1',1),(0,'a1',2),(0,'a1',3),(0,'badger',88),(0,'badger',21),(0,'a3',99)"),
+        paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
+        NULL)), "Created temporary table")
+    ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
+    ok(cmp(select_clause(mdb, g, "col", "out"), paste0(attr(g, 'table_name'), ".name AS out")), "Select clause")
+    ok(cmp(from_clause(mdb, g, "col", "out"), attr(g, 'table_name')), "From clause")
+    ok(cmp(where_clause(mdb, g, "col", "out"), paste0("col = ", attr(g, 'table_name'), ".value")), "Where clause")
+}, asNamespace('mfdb')))
+
+mdb$ret_rows <- list(
+    "SELECT sample, name, value FROM temp_" = data.frame(),
+    "FROM information_schema.tables" = data.frame(count = 1))
 ok_group("Aggregates with mfdb_group that's already been created", local({
     g <<- mfdb_group(a = c(1,"two",3), b = c(88))
     ok(cmp(capture.output(pre_query(mdb, g, "col")), c(
         paste0("SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('", attr(g, 'table_name'), "')"),
         NULL)), "Don't recreate temporary table")
 }, asNamespace('mfdb')))
-mdb$ret_rows <- data.frame(count = 0)
+mdb$ret_rows <- list(
+    "SELECT sample, name, value FROM temp_" = data.frame(),
+    "FROM information_schema.tables" = data.frame(count = 0))
 
 ok_group("Aggregates with mfdb_bootstrap_group", local({
     g <<- mfdb_bootstrap_group(2, mfdb_group(camels = c(44), aardvarks = c(88)))
@@ -88,6 +126,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (1,'camels',44),(1,'aardvarks',88),(2,'camels',44),(2,'aardvarks',88)"),
         paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
     ok(cmp(sample_clause(mdb, g, "col", "out"), paste0(attr(g, 'table_name'), ".sample")), "Sample clause")
     ok(cmp(select_clause(mdb, g, "col", "out"), paste0(attr(g, 'table_name'), ".name AS out")), "Select clause")
@@ -108,6 +147,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (1,'g1',55),(1,'g1',55),(1,'g2',88),(1,'g2',88),(2,'g1',44),(2,'g1',44),(2,'g2',99),(2,'g2',88)"),
         paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
     ok(cmp(sample_clause(mdb, g, "col", "out"), paste0(attr(g, 'table_name'), ".sample")), "Sample clause")
     ok(cmp(select_clause(mdb, g, "col", "out"), paste0(attr(g, 'table_name'), ".name AS out")), "Select clause")
@@ -129,6 +169,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (1,'g1',44),(1,'g1',55),(1,'g2',99),(1,'g2',99),(2,'g1',44),(2,'g1',55),(2,'g2',99),(2,'g2',99)"),
         paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
 
     g <<- mfdb_bootstrap_group(2, mfdb_group(g1 = c(44, 55), g2 = c(88, 99)), seed = 203785)
@@ -137,6 +178,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (1,'g1',55),(1,'g1',55),(1,'g2',99),(1,'g2',99),(2,'g1',44),(2,'g1',44),(2,'g2',88),(2,'g2',99)"),
         paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
     ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = "0.1"), 1), list(
         g1 = c(55, 55),
@@ -157,6 +199,7 @@ ok_group("Aggregates with mfdb_group areas", local({
         paste0("INSERT INTO ", attr(g, 'table_name'), " SELECT 0 AS sample, 'a' AS name, areacell_id AS value FROM division WHERE division IN ('1','2','3')"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " SELECT 0 AS sample, 'b' AS name, areacell_id AS value FROM division WHERE division IN ('88','89')"),
         paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
 }, asNamespace('mfdb')))
 

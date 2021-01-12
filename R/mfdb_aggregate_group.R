@@ -94,6 +94,16 @@ pre_query.mfdb_group <- function(mdb, x, col) {
     # Index the lookup table to speed up queries
     mfdb_send(mdb, sql_create_index(attr(x, 'table_name'), c('value', 'name', 'sample')))
 
+    # Fetch lookup content, can we represent this as a smallset? If so, convert
+    if (length(unlist(x)) < 40) {
+        lookup_content <- mfdb_fetch(mdb, paste0("SELECT sample, name, value FROM ", attr(x, 'table_name')))
+        if (ncol(lookup_content) > 0 && anyDuplicated(lookup_content[,'value']) == 0) {
+            class(x) <- c("mfdb_smallset", class(x))
+            attr(x, 'lookup_content') <- lookup_content
+            return(invisible(x))
+        }
+    }
+
     invisible(NULL)
 }
 
@@ -112,6 +122,8 @@ where_clause.mfdb_group <- function(mdb, x, col, outputname, group_disabled = FA
     paste0(col, cast, " = ", attr(x, 'table_name'), ".value")
 }
 
+##### mfdb_group helpers
+
 # Some default time groupings
 mfdb_timestep_yearly <- mfdb_group('1' = 1:12)
 mfdb_timestep_biannually <- mfdb_group('1' = 1:6, '2' = 7:12)
@@ -127,6 +139,52 @@ mfdb_group_numbered <- function (prefix, ...) {
 
     do.call(mfdb_group, items)
 }
+
+##### mfdb_smallset: mfdb_group implementation that inlines the group data into the query
+
+pre_query.mfdb_smallset <- function(mdb, x, col) {
+    # No need to do anything, pre_query.mfdb_group already added the lookup_content
+}
+
+select_clause.mfdb_smallset <- function(mdb, x, col, outputname, group_disabled = FALSE) {
+    lookup <- gsub('(.*\\.)|_id', '', col)
+    cast <- if (lookup == 'age') "::NUMERIC(10,5)" else ""
+
+    groups <- names(sort(table(attr(x, 'lookup_content')$name)))
+    if (length(groups) == 1) {
+        # If the where clause matches, then it's in this group
+        return(paste0(sql_quote(groups[[1]]), " AS ", outputname))
+    }
+    return(paste(c(
+        "CASE",
+        vapply(head(groups, -1), function (g) {
+            paste0(
+                " WHEN ", col, cast,
+                " IN ", sql_quote(attr(x, 'lookup_content')[attr(x, 'lookup_content')$name == g, 'value'], always_bracket = TRUE),
+                " THEN ", sql_quote(g))
+        }, character(1)),
+        " ELSE ", sql_quote(tail(groups, 1)), " END AS ", outputname), collapse = ""))
+}
+
+from_clause.mfdb_smallset <- function(mdb, x, col, outputname, group_disabled = FALSE) {
+    # No need to add temporary table to query, it's embedded into it
+    c()
+}
+
+where_clause.mfdb_smallset <- function(mdb, x, col, outputname, group_disabled = FALSE) {
+    lookup <- gsub('(.*\\.)|_id', '', col)
+    cast <- if (lookup == 'age') "::NUMERIC(10,5)" else ""
+
+    return(paste0(col, cast, " IN ", sql_quote(attr(x, 'lookup_content')[,'value'], always_bracket = TRUE)))
+}
+
+agg_summary.mfdb_smallset <- function(mdb, x, col, outputname, data, sample_num) {
+    attr(x, 'lookup_content') <- NULL
+    class(x) <- class(x)[!(class(x) %in% 'mfdb_smallset')]
+    return(x)
+}
+
+##### mfdb_bootstrap_group: Extends mfdb_group by offering random sampling from within
 
 mfdb_bootstrap_group <- function (count, group, seed = NULL) {
     if (!('mfdb_group' %in% class(group))) {

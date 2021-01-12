@@ -475,6 +475,8 @@ mfdb_sample_grouping <- function (mdb,
     # Call pre-query for all groups
     for (col in union(group_cols, filter_cols)) {
         x <- pre_query(mdb, params[[col]], col_defs[[col]])
+        # Replace group if a new one was given
+        if (!is.null(x)) params[[col]] <- x
     }
 
     out <- mfdb_fetch(mdb,
