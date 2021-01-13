@@ -1,6 +1,7 @@
 (unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
 
     Version 7.0-0
+    * Switch to requiring RPostgres as the default DBI driver
 
     Schema changes:
 

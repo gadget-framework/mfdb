@@ -8,7 +8,7 @@ mfdb <- function(case_study_name = "",
 
     # Try a selection of host strings until we connect to something
     db_params <- as.list(db_params)
-    db_defaults <- list(dbname = "mf", drv = PostgreSQL())
+    db_defaults <- list(dbname = "mf", drv = RPostgres::Postgres())
     db_guesses <- list(
         list(host = "/tmp"),
         list(host = "/var/tmp"),

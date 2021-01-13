@@ -29,12 +29,12 @@ This work is based on it's predecessor, [DST^2](http://www.hafro.is/dst2/).
 Prerequisites
 -------------
 
-Besides R, you will also need RPostgreSQL set up to access the database, and
+Besides R, you will also need RPostgres set up to access the database, and
 PostgreSQL installed if you want to run the database locally too.
 
 ### Linux (Debian / Ubuntu)
 
-Installation of RPostgreSQL will happen automatically, however you need some
+Installation of RPostgres will happen automatically, however you need some
 PostgreSQL libraries before it will work:
 
     apt-get install libpq-dev
@@ -60,7 +60,7 @@ which keeps all the required R dependencies and PostgreSQL database in the local
 
 ### Linux (Redhat / Fedora)
 
-Installation of RPostgreSQL will happen automatically, however you need some
+Installation of RPostgres will happen automatically, however you need some
 PostgreSQL libraries before it will work:
 
     yum install postgresql-devel
@@ -86,14 +86,11 @@ which keeps all the required R dependencies and PostgreSQL database in the local
 
 ### Microsoft Windows
 
-If you can use the binary RPostgreSQL packages, then you do not need to install
-anything else. See https://code.google.com/p/rpostgresql/w/list for more information.
-
 To install PostgreSQL, download version 9.5 of the database installer from here:
 
 https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
 
-Note that newer versions of posgres are not supported by the `RpostgreSQL` package. Find the psql shell (SQL shell) in the start menu, and create both an ``mf`` database and user:
+Find the psql shell (SQL shell) in the start menu, and create both an ``mf`` database and user:
 
     postgres=# CREATE USER mf PASSWORD 'mf';
     postgres=# CREATE DATABASE mf OWNER mf;

@@ -17,7 +17,7 @@ Imports:
     DBI (>= 0.3.1),
     getPass (>= 0.1-1),
     rlang (>= 0.4.0),
-    RPostgreSQL (>= 0.4)
+    RPostgres (>= 1.3.0)
 Suggests:
     unittest (>= 1.2),
     dplyr (>= 0.8.3),

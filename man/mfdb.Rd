@@ -27,7 +27,7 @@
         Extra parameters to supply to \code{DBI::dbConnect}. By default it will
         search for a "mf" database locally, but you can override any of the parameters,
         in particular \code{host}, \code{dbname}, \code{user}, \code{password}.
-        See \code{methods?RPostgreSQL::dbConnect} for more information.
+        See \code{?RPostgres::Postgres} for more information.
     }
     \item{destroy_schema}{
         Optional boolean. If true, all mfdb tables will be destroyed when

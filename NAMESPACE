@@ -27,7 +27,6 @@ export(mfdb_step_interval)
 
 # mfdb.R
 importFrom(DBI, dbConnect, dbDisconnect, dbDriver, dbSendQuery, dbFetch, dbGetQuery, dbCommit, dbRollback, dbGetRowsAffected, dbClearResult, dbWriteTable, dbBegin)
-importFrom(RPostgreSQL, PostgreSQL)
 export(mfdb)
 export(mfdb_disconnect)
 
