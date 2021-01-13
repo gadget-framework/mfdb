@@ -410,6 +410,12 @@ schema_from_5 <- function(mdb) {
 }
 
 schema_from_6 <- function(mdb) {
+    mdb$logger$info("Upgrading schema from version 6")
+
+    mfdb_send(mdb, "UPDATE mfdb_schema SET version = 7")
+}
+
+schema_from_7 <- function(mdb) {
     mdb$logger$info("Schema up-to-date")
 }
 

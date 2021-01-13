@@ -129,7 +129,7 @@ mfdb <- function(case_study_name = "",
             mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
 
             # Create new schema, to known state
-            mfdb_update_schema(mdb, target_version = 6)
+            mfdb_update_schema(mdb, target_version = 7)
 
             # Copy data from old tables
             mfdb4_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type", "tow", "vessel")
