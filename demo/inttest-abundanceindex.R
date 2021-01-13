@@ -22,7 +22,7 @@ mfdb('inttest-abundanceindex', db_params = db_params, destroy_schema = TRUE)
 mdb <- mfdb('inttest-abundanceindex', db_params = db_params, save_temp_tables = FALSE)
 ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE species_id = 9999999999")[1,] == 
   mfdb::species[mfdb::species$name == 'TBX', c('name', 'description')]), "Entry for 9999999999 matches package")
-ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM species")[1,1], nrow(mfdb::species)), "Species has right number of entries")
+ok(cmp(as.integer(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM species")[1,1]), nrow(mfdb::species)), "Species has right number of entries")
 
 ok_group("Using a survey_index as measure of abundance", {
     # Set-up areas/divisions

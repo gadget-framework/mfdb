@@ -141,10 +141,10 @@ mfdb_import_division <- function (mdb, data_in) {
     }
 
     mfdb_transaction(mdb, {
-        dbSendQuery(mdb$db, paste0(
+        mfdb_send(mdb,
             "DELETE FROM division",
             " WHERE division IN ", sql_quote(unique(data_in$division), always_bracket = TRUE),
-            ""))
+            "")
         res <- mfdb_insert(mdb, 'division', data_in)
     })
 }

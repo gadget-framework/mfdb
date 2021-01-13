@@ -90,7 +90,6 @@ mfdb <- function(case_study_name = "",
         if (schema_count == 0) {
             mdb$logger$info(paste0("Schema ", mdb$schema, " does not exist. Doing nothing"))
         } else {
-            mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
             mfdb_destroy_schema(mdb)
             mdb$logger$info(paste0("Schema ", mdb$schema, " removed, connect again to repopulate DB."))
         }
@@ -108,25 +107,33 @@ mfdb <- function(case_study_name = "",
         mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
     } else {
         logger$info(paste0("No schema, creating ", mdb$schema))
-        mfdb_send(mdb, "CREATE SCHEMA ", mdb$schema)
+        mfdb_transaction(mdb, {
+            mfdb_send(mdb, "CREATE SCHEMA ", mdb$schema)
+        })
         mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
 
         # If schema didn't exist before, see if there's data to be had in the old public tables
-        res <- tryCatch(
-            mfdb_fetch(mdb,
+        if (mfdb_table_exists(mdb, 'case_study', schema_name = 'public')) {
+            res <- mfdb_fetch(mdb,
                 "SELECT case_study_id",
                 " FROM public.case_study",
-                " WHERE name = ", sql_quote(case_study_name)),
-            error = function(e) c())
+                " WHERE name = ", sql_quote(case_study_name))
+        } else {
+            res <- c()
+        }
         if (length(res) == 1) {
             logger$info(paste0("Copying data from ", case_study_name))
             # A case study exists by this ID
             old_case_study_id <- res[1,1]
 
             # Upgrade the old database to a known state
-            mfdb_send(mdb, "SET search_path TO public, pg_temp")
-            mfdb_update_schema(mdb, target_version = 4)
-            mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
+            mdb_public <- structure(list(
+                logger = mdb$logger,
+                save_temp_tables = mdb$save_temp_tables,
+                state = mdb$state,
+                schema = "public",
+                db = mdb$db), class = "mfdb")
+            mfdb_update_schema(mdb_public, target_version = 4)
 
             # Create new schema, to known state
             mfdb_update_schema(mdb, target_version = 7)

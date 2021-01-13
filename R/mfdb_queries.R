@@ -313,7 +313,7 @@ mfdb_stomach_preymeanweight <- function (mdb, cols, params) {
     # Merge data frames together, return with ratio of present / total
     mapply(function (w, wo) {
         merged <- merge(w, wo)
-        merged$mean_weight <- merged$weight_total / merged$predator_count
+        merged$mean_weight <- merged$weight_total / as.numeric(merged$predator_count)
         do.call(structure, c(
             list(merged[, c("year", "step", "area", cols, "predator_count", "mean_weight"), drop = FALSE]),
             attributes(w)[c("year", "step", "area", cols, "generator")],
