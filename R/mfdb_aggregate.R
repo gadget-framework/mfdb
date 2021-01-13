@@ -86,14 +86,17 @@ where_clause.numeric <- function(mdb, x, col, outputname, group_disabled = FALSE
     if (!is.vector(x)) return("")
 
     # Look up in taxonomy
+    # NB: ANY((SELECT ARRAY( ... ))::INTEGER[]) forces Postgres to precompute the nested query,
+    # which will ~always be an improvment for the relatively small amounts of data we're joining with
+    # https://stackoverflow.com/questions/14987321/postgresql-in-operator-with-subquery-poor-performance
     if (lookup %in% mfdb_taxonomy_tables) {
         return(paste0(
-            "(", col, " IN ",
+            "(", col, " = ANY((SELECT ARRAY",
             "(SELECT ", lookup, "_id FROM ", lookup, " WHERE name IN ",
             sql_quote(x[!is.na(x)], always_bracket = TRUE),
             " OR t_group IN ",
             sql_quote(x[!is.na(x)], always_bracket = TRUE),
-            ")",
+            "))::", (if (lookup == 'species') 'BIGINT' else 'INTEGER') , "[])",
             if (NA %in% x) paste0(" OR ", col, " IS NULL"),
             ")"))
     }
