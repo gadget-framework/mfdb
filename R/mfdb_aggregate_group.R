@@ -97,7 +97,7 @@ pre_query.mfdb_group <- function(mdb, x, col) {
     # Fetch lookup content, can we represent this as a smallset? If so, convert
     if (length(unlist(x)) < 40) {
         lookup_content <- mfdb_fetch(mdb, paste0("SELECT sample, name, value FROM ", attr(x, 'table_name')))
-        if (ncol(lookup_content) > 0 && anyDuplicated(lookup_content[,'value']) == 0) {
+        if (ncol(lookup_content) > 0 && nrow(lookup_content) > 0 && anyDuplicated(lookup_content[,'value']) == 0) {
             class(x) <- c("mfdb_smallset", class(x))
             attr(x, 'lookup_content') <- lookup_content
             return(invisible(x))
