@@ -1,3 +1,4 @@
+    * Inline small mfdb_groups to queries, improving performance
     * Rewrite Rpath support to use Rpath::create.rpath.params
     * Rollback transactions after user interrupts
     * Expose open_ended in intervals for gadget3
