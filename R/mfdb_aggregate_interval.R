@@ -23,7 +23,9 @@ mfdb_interval <- function (prefix, vect, open_ended = FALSE) {
 col_cast <- function (col) {
     lookup <- gsub('(.*\\.)|_id', '', col)
     # NB: Not exhaustive, but main thing to avoid is comparing REAL to NUMERIC types
-    ifelse(lookup == "species", "::BIGINT", ifelse(lookup == "year", "::INT", "::REAL"))
+    ifelse(lookup == "species", "::BIGINT", 
+        ifelse(lookup == "year", "::INT",
+            ifelse(lookup == "year", "::NUMERIC(10,5)", "::REAL")))
 }
 
 # Generate CASE statement to pick correct group for value

@@ -16,7 +16,6 @@ mfdb_group <- function (...) {
 pre_query.mfdb_group <- function(mdb, x, col) {
     group <- x
     lookup <- gsub('(.*\\.)|_id', '', col)
-    # NB: NUMERIC precision is fairly arbitrary, small enough to hide rounding issues from REAL
     datatype <- ifelse(lookup == "species", "BIGINT", ifelse(lookup == "age", "NUMERIC(10,5)", "INT"))
 
     # If the table already exists, nothing to do
@@ -118,8 +117,7 @@ from_clause.mfdb_group <- function(mdb, x, col, outputname, group_disabled = FAL
 where_clause.mfdb_group <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     lookup <- gsub('(.*\\.)|_id', '', col)
 
-    cast <- if (lookup == 'age') "::NUMERIC(10,5)" else ""
-    paste0(col, cast, " = ", attr(x, 'table_name'), ".value")
+    paste0(col, " = ", attr(x, 'table_name'), ".value")
 }
 
 ##### mfdb_group helpers
@@ -148,7 +146,6 @@ pre_query.mfdb_smallset <- function(mdb, x, col) {
 
 select_clause.mfdb_smallset <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     lookup <- gsub('(.*\\.)|_id', '', col)
-    cast <- if (lookup == 'age') "::NUMERIC(10,5)" else ""
 
     groups <- names(sort(table(attr(x, 'lookup_content')$name)))
     if (length(groups) == 1) {
@@ -159,7 +156,7 @@ select_clause.mfdb_smallset <- function(mdb, x, col, outputname, group_disabled 
         "CASE",
         vapply(head(groups, -1), function (g) {
             paste0(
-                " WHEN ", col, cast,
+                " WHEN ", col,
                 " IN ", sql_quote(attr(x, 'lookup_content')[attr(x, 'lookup_content')$name == g, 'value'], always_bracket = TRUE),
                 " THEN ", sql_quote(g))
         }, character(1)),
@@ -173,9 +170,8 @@ from_clause.mfdb_smallset <- function(mdb, x, col, outputname, group_disabled = 
 
 where_clause.mfdb_smallset <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     lookup <- gsub('(.*\\.)|_id', '', col)
-    cast <- if (lookup == 'age') "::NUMERIC(10,5)" else ""
 
-    return(paste0(col, cast, " IN ", sql_quote(attr(x, 'lookup_content')[,'value'], always_bracket = TRUE)))
+    return(paste0(col, " IN ", sql_quote(attr(x, 'lookup_content')[,'value'], always_bracket = TRUE)))
 }
 
 agg_summary.mfdb_smallset <- function(mdb, x, col, outputname, data, sample_num) {

@@ -124,7 +124,7 @@ schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
         "month", "INT NOT NULL", "Month sample was undertaken",
         "areacell_id", "INT", "Areacell data relates to",
         "species_id", "BIGINT REFERENCES species(species_id)", "",
-        "age", "REAL", "Age (years)",  # TODO: Age should have been numeric, not REAL. Whoops.
+        "age", "NUMERIC(10,5)", "Age (years)",
         "sex_id", "INT REFERENCES sex(sex_id)", "Sex ID",
         "maturity_stage_id", "INT REFERENCES maturity_stage(maturity_stage_id)", "Maturity Stage ID",
 
@@ -155,7 +155,7 @@ schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
 
         "stomach_name", "VARCHAR(128) NOT NULL", "Stomach identifier",
         "species_id", "BIGINT REFERENCES species(species_id)", "",
-        "age", "REAL", "Age (years)",
+        "age", "NUMERIC(10,5)", "Age (years)",
         "sex_id", "INT REFERENCES sex(sex_id)", "Sex ID",
         "maturity_stage_id", "INT REFERENCES maturity_stage(maturity_stage_id)", "Maturity Stage ID",
         "stomach_state_id", "INT REFERENCES stomach_state(stomach_state_id)", "Status of stomach when caught",
@@ -411,6 +411,9 @@ schema_from_5 <- function(mdb) mfdb_transaction(mdb, {
 
 schema_from_6 <- function(mdb) {
     mdb$logger$info("Upgrading schema from version 6")
+
+    mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN age TYPE NUMERIC(10,5)")
+    mfdb_send(mdb, "ALTER TABLE predator ALTER COLUMN age TYPE NUMERIC(10,5)")
 
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 7")
 }
