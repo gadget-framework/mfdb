@@ -53,15 +53,6 @@ mfdb_update_schema <- function(
     }
 }
 
-# Generate foreign key definition for each table given
-fk <- function (...) {
-    tbls <- c(...)[c(...) %in% c(mfdb_taxonomy_tables)]
-    c(
-        if (length(tbls) > 0) paste0("FOREIGN KEY(", tbls, "_id) REFERENCES ", tbls, "(", tbls, "_id)"),
-        NULL
-    )
-}
-
 # Create all tables required for schema
 schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
     mfdb_create_table(mdb, "mfdb_schema", "Table to keep track of schema version", cols = c(
@@ -73,39 +64,35 @@ schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
 
     mfdb_create_table(mdb, "survey_index", "Indices used to modify surveys", cols = c(
         "survey_index_id", "SERIAL PRIMARY KEY", "",
-        "data_source_id", "INT", "",
-        "index_type_id", "INT", "",
+        "data_source_id", "INT REFERENCES data_source(data_source_id)", "",
+        "index_type_id", "INT REFERENCES index_type(index_type_id)", "",
 
-        "areacell_id", "INT", "Areacell data relates to",
+        "areacell_id", "INT REFERENCES areacell(areacell_id)", "Areacell data relates to",
         "year", "INT NOT NULL", "Year sample was taken",
         "month", "INT NOT NULL", "Month sample was taken",
         "value", "REAL NOT NULL", "Value at this point in time"
-    ), keys = c(
-        fk('data_source', 'index_type', 'areacell')
     ))
 
     mfdb_create_table(mdb, "division", "Grouping of area cells into divisions", cols = c(
         "division_id", "SERIAL PRIMARY KEY", "",
 
         "division", "VARCHAR(10) NOT NULL", "",
-        "areacell_id", "INT", "Contained areacell"
-    ), keys = c(
-        "FOREIGN KEY(areacell_id) REFERENCES areacell(areacell_id)"
+        "areacell_id", "INT REFERENCES areacell(areacell_id)", "Contained areacell"
     ))
 
     mfdb_create_table(mdb, "sample", "Samples within a survey", cols = c(
         "sample_id", "SERIAL PRIMARY KEY", "",
-        "data_source_id", "INT", "",
+        "data_source_id", "INT REFERENCES data_source(data_source_id)", "",
 
         "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
-        "vessel_id", "INT", "Vessel used",
-        "tow_id", "INT", "Tow used",
-        "sampling_type_id", "INT", "Sampling type",
+        "vessel_id", "INT REFERENCES vessel(vessel_id)", "Vessel used",
+        "tow_id", "INT REFERENCES tow(tow_id)", "Tow used",
+        "sampling_type_id", "INT REFERENCES sampling_type(sampling_type_id)", "Sampling type",
 
         "year", "INT NOT NULL", "Year sample was undertaken",
-        "month", "INT NOT NULL", "Month sample was undertaken",
-        "areacell_id", "INT", "Areacell data relates to",
+        "month", "INT NOT NULL CHECK(month BETWEEN 1 AND 12)", "Month sample was undertaken",
+        "areacell_id", "INT REFERENCES areacell(areacell_id)", "Areacell data relates to",
         "species_id", "BIGINT REFERENCES species(species_id)", "",
         "age", "NUMERIC(10,5)", "Age (years)",
         "sex_id", "INT REFERENCES sex(sex_id)", "Sex ID",
@@ -117,24 +104,21 @@ schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
         "weight", "REAL", "Weight of fish / mean weight of all fish",
         "weight_var", "REAL", "Weight variance of all fish (given aggregated data)",
         "count", "REAL DEFAULT 1", "Number of fish meeting this criteria"
-    ), keys = c(
-        "CHECK(month BETWEEN 1 AND 12)",
-        fk('data_source', 'areacell', 'vessel', 'tow', 'sampling_type')
     ))
 
     mfdb_create_table(mdb, "predator", "Predators in predator/prey sample", cols = c(
         "predator_id", "SERIAL PRIMARY KEY", "",
-        "data_source_id", "INT NOT NULL", "",
+        "data_source_id", "INT REFERENCES data_source(data_source_id) NOT NULL", "",
 
         "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
-        "vessel_id", "INT", "Vessel used",
-        "tow_id", "INT", "Tow used",
-        "sampling_type_id", "INT", "Sampling type",
+        "vessel_id", "INT REFERENCES vessel(vessel_id)", "Vessel used",
+        "tow_id", "INT REFERENCES tow(tow_id)", "Tow used",
+        "sampling_type_id", "INT REFERENCES sampling_type(sampling_type_id)", "Sampling type",
 
         "year", "INT NOT NULL", "Year sample was undertaken",
-        "month", "INT NOT NULL", "Month sample was undertaken",
-        "areacell_id", "INT", "Areacell data relates to",
+        "month", "INT NOT NULL CHECK(month BETWEEN 1 AND 12)", "Month sample was undertaken",
+        "areacell_id", "INT REFERENCES areacell(areacell_id)", "Areacell data relates to",
 
         "stomach_name", "VARCHAR(128) NOT NULL", "Stomach identifier",
         "species_id", "BIGINT REFERENCES species(species_id)", "",
@@ -146,9 +130,6 @@ schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
         "length", "REAL", "Length of predator",
         "weight", "REAL", "Weight of predator",
         NULL
-    ), keys = c(
-        "CHECK(month BETWEEN 1 AND 12)",
-        fk('data_source', 'areacell', 'vessel', 'tow', 'sampling_type')
     ))
 
     mfdb_create_table(mdb, "prey", "Prey in predator/prey sample", cols = c(
@@ -162,7 +143,6 @@ schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
         "weight", "REAL", "Weight of prey / mean weight of all prey",
         "count", "INT DEFAULT 1", "Number of prey meeting this criteria",
         NULL
-    ), keys = c(
     ))
 })
 mfdb_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', 'prey')
