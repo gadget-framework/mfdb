@@ -165,22 +165,32 @@ schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
     ), keys = c(
     ))
 })
-mfdb_taxonomy_tables <- c(
-    "case_study", "institute", "gear", "vessel_type", "market_category", "sex", "maturity_stage", "species", "stomach_state", "digestion_stage",
-    "areacell", "sampling_type", "data_source", "index_type", "tow", "vessel")
 mfdb_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', 'prey')
 
+mfdb_taxonomy_col_default <- c(
+            "description", "VARCHAR(1024)", "Long description",
+            NULL)
 mfdb_taxonomy_cols <- list(
+    institute = mfdb_taxonomy_col_default,
+    gear = c(
+            "description", "VARCHAR(1024)", "Long description",
+            "mesh_size", "REAL", "Mesh size (mm)",
+            "mesh_size_min", "REAL", "Minimum mesh size (mm)",
+            "mesh_size_max", "REAL", "Maximum mesh size (mm)",
+            NULL),
+    vessel_type = mfdb_taxonomy_col_default,
+    market_category = mfdb_taxonomy_col_default,
+    sex = mfdb_taxonomy_col_default,
+    maturity_stage = mfdb_taxonomy_col_default,
+    species = mfdb_taxonomy_col_default,
     areacell = c(
             "size", "REAL", "Size of areacell",
             NULL),
-    vessel = c(
-            "vessel_type_id", "INT", "Vessel type used",
-            "full_name", "TEXT", "Full name of vessel",
-            "length", "REAL", "Vessel length (m)",
-            "power", "REAL", "Vessel engine power (KW)",
-            "tonnage", "REAL", "Vessel gross tonnage",
-            NULL),
+    stomach_state = mfdb_taxonomy_col_default,
+    digestion_stage = mfdb_taxonomy_col_default,
+    sampling_type = mfdb_taxonomy_col_default,
+    data_source = mfdb_taxonomy_col_default,
+    index_type = mfdb_taxonomy_col_default,
     tow = c(
             "latitude", "REAL", "Latutide of sample",
             "longitude", "REAL", "Longitude of sample",
@@ -191,27 +201,18 @@ mfdb_taxonomy_cols <- list(
             "length", "REAL", "Tow length (m)",
             "duration", "REAL", "Tow duration (hours)",
             NULL),
-    gear = c(
-            "description", "VARCHAR(1024)", "Long description",
-            "mesh_size", "REAL", "Mesh size (mm)",
-            "mesh_size_min", "REAL", "Minimum mesh size (mm)",
-            "mesh_size_max", "REAL", "Maximum mesh size (mm)",
-            # other gear specific
-            # information (number of hooks/lines, vertical opening, length
-            # of wire, etc..). Sadly the best documentation I have in mind for
-            # this stuff is all in Icelandic, I'll see if I manage to find
-            # anything detailed in English on this.
+    vessel = c(
+            "vessel_type_id", "INT", "Vessel type used",
+            "full_name", "TEXT", "Full name of vessel",
+            "length", "REAL", "Vessel length (m)",
+            "power", "REAL", "Vessel engine power (KW)",
+            "tonnage", "REAL", "Vessel gross tonnage",
             NULL),
-    null = c()
-)
-mfdb_taxonomy_col_default <- c(
-            "description", "VARCHAR(1024)", "Long description",
-            NULL)
+    case_study = mfdb_taxonomy_col_default)
+mfdb_taxonomy_tables <- names(mfdb_taxonomy_cols)
+
 mfdb_get_taxonomy_extra_cols <- function (table_name, create_detail = FALSE) {
     extra_cols <- mfdb_taxonomy_cols[[table_name]]
-    if (is.null(extra_cols)) {
-        extra_cols <- mfdb_taxonomy_col_default
-    }
     if (!create_detail) {
         # Filter so we just get the column name
         extra_cols <- extra_cols[seq(1, length(extra_cols), 3)]
