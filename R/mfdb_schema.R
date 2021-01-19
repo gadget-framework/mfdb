@@ -62,7 +62,16 @@ schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
     # Create all required taxonomy tables
     for (t in c(mfdb_taxonomy_tables)) mfdb_create_taxonomy_table(mdb, t)
 
-    mfdb_create_table(mdb, "survey_index", "Indices used to modify surveys", cols = c(
+    for (t in names(mfdb_measurement_table_defs)) {
+        str(mfdb_measurement_table_defs[[t]])
+        mfdb_create_table(mdb, t,
+            mfdb_measurement_table_defs[[t]][[1]],
+            cols = mfdb_measurement_table_defs[[t]][['cols']])
+    }
+})
+
+mfdb_measurement_table_defs <- list(
+    survey_index = list("Indices used to modify surveys", cols = c(
         "survey_index_id", "SERIAL PRIMARY KEY", "",
         "data_source_id", "INT REFERENCES data_source(data_source_id)", "",
         "index_type_id", "INT REFERENCES index_type(index_type_id)", "",
@@ -71,16 +80,14 @@ schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
         "year", "INT NOT NULL", "Year sample was taken",
         "month", "INT NOT NULL", "Month sample was taken",
         "value", "REAL NOT NULL", "Value at this point in time"
-    ))
-
-    mfdb_create_table(mdb, "division", "Grouping of area cells into divisions", cols = c(
+    )),
+    division = list("Grouping of area cells into divisions", cols = c(
         "division_id", "SERIAL PRIMARY KEY", "",
 
         "division", "VARCHAR(10) NOT NULL", "",
         "areacell_id", "INT REFERENCES areacell(areacell_id)", "Contained areacell"
-    ))
-
-    mfdb_create_table(mdb, "sample", "Samples within a survey", cols = c(
+    )),
+    sample = list("Samples within a survey", cols = c(
         "sample_id", "SERIAL PRIMARY KEY", "",
         "data_source_id", "INT REFERENCES data_source(data_source_id)", "",
 
@@ -104,9 +111,8 @@ schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
         "weight", "REAL", "Weight of fish / mean weight of all fish",
         "weight_var", "REAL", "Weight variance of all fish (given aggregated data)",
         "count", "REAL DEFAULT 1", "Number of fish meeting this criteria"
-    ))
-
-    mfdb_create_table(mdb, "predator", "Predators in predator/prey sample", cols = c(
+    )),
+    predator = list("Predators in predator/prey sample", cols = c(
         "predator_id", "SERIAL PRIMARY KEY", "",
         "data_source_id", "INT REFERENCES data_source(data_source_id) NOT NULL", "",
 
@@ -130,9 +136,8 @@ schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
         "length", "REAL", "Length of predator",
         "weight", "REAL", "Weight of predator",
         NULL
-    ))
-
-    mfdb_create_table(mdb, "prey", "Prey in predator/prey sample", cols = c(
+    )),
+    prey = list("Prey in predator/prey sample", cols = c(
         "prey_id", "SERIAL PRIMARY KEY", "",
         "predator_id", "INT NOT NULL REFERENCES predator(predator_id)", "The stomach this sample was found in",
 
@@ -143,9 +148,8 @@ schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
         "weight", "REAL", "Weight of prey / mean weight of all prey",
         "count", "INT DEFAULT 1", "Number of prey meeting this criteria",
         NULL
-    ))
-})
-mfdb_measurement_tables <- c('survey_index', 'division', 'sample', 'predator', 'prey')
+    )))
+mfdb_measurement_tables <- names(mfdb_measurement_table_defs)
 
 mfdb_taxonomy_col_default <- c(
             "description", "VARCHAR(1024)", "Long description",
