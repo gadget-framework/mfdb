@@ -13,8 +13,8 @@ col_defs_for <- function (table_name, prefix = "c") {
     # Find column definitions, turn into matrix for easy access
     if (table_name %in% names(mfdb_measurement_table_defs)) {
         col_defs <- mfdb_measurement_table_defs[[table_name]]$cols
-    } else if (table_name %in% names(mfdb_taxonomy_cols)) {
-        col_defs <- mfdb_taxonomy_cols[[table_name]]
+    } else if (table_name %in% names(mfdb_taxonomy_table_defs)) {
+        col_defs <- mfdb_taxonomy_table_defs[[table_name]]$cols
     } else {
         stop("Unknown table ", table_name)
     }

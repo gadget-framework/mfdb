@@ -154,28 +154,28 @@ mfdb_measurement_tables <- names(mfdb_measurement_table_defs)
 mfdb_taxonomy_col_default <- c(
             "description", "VARCHAR(1024)", "Long description",
             NULL)
-mfdb_taxonomy_cols <- list(
-    institute = mfdb_taxonomy_col_default,
-    gear = c(
+mfdb_taxonomy_table_defs <- list(
+    institute = list("Institute (mfdb::institute)", cols = mfdb_taxonomy_col_default),
+    gear = list("Gear used for sample", cols = c(
             "description", "VARCHAR(1024)", "Long description",
             "mesh_size", "REAL", "Mesh size (mm)",
             "mesh_size_min", "REAL", "Minimum mesh size (mm)",
             "mesh_size_max", "REAL", "Maximum mesh size (mm)",
-            NULL),
-    vessel_type = mfdb_taxonomy_col_default,
-    market_category = mfdb_taxonomy_col_default,
-    sex = mfdb_taxonomy_col_default,
-    maturity_stage = mfdb_taxonomy_col_default,
-    species = mfdb_taxonomy_col_default,
-    areacell = c(
+            NULL)),
+    vessel_type = list("Vessel type (mfdb::vessel_type)", cols = mfdb_taxonomy_col_default),
+    market_category = list("Market category", cols = mfdb_taxonomy_col_default),
+    sex = list("M/F/X/N/U (mfdb::sex)", cols = mfdb_taxonomy_col_default),
+    maturity_stage = list("1..5 (mfdb::maturity_stage)", cols = mfdb_taxonomy_col_default),
+    species = list("Species (mfdb::species)", cols = mfdb_taxonomy_col_default),
+    areacell = list("Areacell", cols = c(
             "size", "REAL", "Size of areacell",
-            NULL),
-    stomach_state = mfdb_taxonomy_col_default,
-    digestion_stage = mfdb_taxonomy_col_default,
-    sampling_type = mfdb_taxonomy_col_default,
-    data_source = mfdb_taxonomy_col_default,
-    index_type = mfdb_taxonomy_col_default,
-    tow = c(
+            NULL)),
+    stomach_state = list("1..5 (mfdb::stomach_state)", cols = mfdb_taxonomy_col_default),
+    digestion_stage = list("1..5 (mfdb::digestion_stage)", cols = mfdb_taxonomy_col_default),
+    sampling_type = list("Sampling type (e.g. 'RESearch')", cols = mfdb_taxonomy_col_default),
+    data_source = list("Data source for sample", cols = mfdb_taxonomy_col_default),
+    index_type = list("Abundance index type (e.g. acoustic)", cols = mfdb_taxonomy_col_default),
+    tow = list("Tow sample is part of", cols = c(
             "latitude", "REAL", "Latutide of sample",
             "longitude", "REAL", "Longitude of sample",
             "end_latitude", "REAL", "Latutide of sample end",
@@ -184,19 +184,19 @@ mfdb_taxonomy_cols <- list(
             "depth", "REAL", "Tow depth (m)",
             "length", "REAL", "Tow length (m)",
             "duration", "REAL", "Tow duration (hours)",
-            NULL),
-    vessel = c(
+            NULL)),
+    vessel = list("Vessel performing sample", cols = c(
             "vessel_type_id", "INT", "Vessel type used",
             "full_name", "TEXT", "Full name of vessel",
             "length", "REAL", "Vessel length (m)",
             "power", "REAL", "Vessel engine power (KW)",
             "tonnage", "REAL", "Vessel gross tonnage",
-            NULL),
-    case_study = mfdb_taxonomy_col_default)
-mfdb_taxonomy_tables <- names(mfdb_taxonomy_cols)
+            NULL)),
+    case_study = list("Case study data is part of", cols = mfdb_taxonomy_col_default))
+mfdb_taxonomy_tables <- names(mfdb_taxonomy_table_defs)
 
 mfdb_get_taxonomy_extra_cols <- function (table_name, create_detail = FALSE) {
-    extra_cols <- mfdb_taxonomy_cols[[table_name]]
+    extra_cols <- mfdb_taxonomy_table_defs[[table_name]]$cols
     if (!create_detail) {
         # Filter so we just get the column name
         extra_cols <- extra_cols[seq(1, length(extra_cols), 3)]
