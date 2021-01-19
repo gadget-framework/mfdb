@@ -1,20 +1,43 @@
-# Generate a list of col_defs for a given taxonomy table
-col_defs_for <- function (table_name, prefix = table_name) {
-    table_def <- list(paste0("c.", table_name, "_id"))
-    names(table_def) <- table_name
+# Generate col_defs for a table and all it's foreign keys
+col_defs_for <- function (table_name, prefix = "c") {
+    # Add prefix only when it's not "c"
+    add_prefix <- function(prefix, x) {
+        if (prefix == "c") return(x)
 
-    extra_cols <- mfdb_get_taxonomy_extra_cols(table_name)
-    table_col_defs <- paste0(prefix, ".", extra_cols)
-    names(table_col_defs) <- gsub("_id$", "", paste0(table_name, "_", extra_cols))
+        out <- paste(prefix, x, sep = "_")
+        # Don't want to call the column vessel_vessel_type_id
+        out <- gsub(paste0("^", prefix, "_", prefix), prefix, out)
+        return(out)
+    }
 
-    # Don't want to call the column vessel_vessel_type_id
-    names(table_col_defs) <- gsub(
-        paste0(table_name, "_", table_name),
-        table_name,
-        names(table_col_defs)
-    )
+    # Find column definitions, turn into matrix for easy access
+    if (table_name %in% names(mfdb_measurement_table_defs)) {
+        col_defs <- mfdb_measurement_table_defs[[table_name]]$cols
+    } else if (table_name %in% names(mfdb_taxonomy_cols)) {
+        col_defs <- mfdb_taxonomy_cols[[table_name]]
+    } else {
+        stop("Unknown table ", table_name)
+    }
+    col_defs <- t(matrix(col_defs, nrow = 3))
 
-    c(table_def, table_col_defs)
+    # Don't care about primary keys or description
+    col_defs <- col_defs[!grepl("PRIMARY KEY", col_defs[,2]),,drop = F]
+    col_defs <- col_defs[col_defs[,1] != 'description',,drop = F]
+    if (nrow(col_defs) == 0) return(character(0))  # Nothing to do
+
+    # Build list of all tables and their columns
+    out <- c(
+        # Recurse over foreign key relationships, one list entry for each
+        lapply(
+            gsub("_id$", "", col_defs[grepl("REFERENCES", col_defs[,2]), 1]),
+            function (x) col_defs_for(x, prefix = x)),
+        # Build keys for this table
+        list(structure(
+            paste(prefix, col_defs[,1], sep = "."),
+            names = add_prefix(prefix, gsub("_id$", "", col_defs[,1])))))
+
+    # Flatten list of vectors
+    return(do.call(c, out))
 }
 
 # Return area, size
@@ -414,16 +437,7 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
 mfdb_sample_grouping <- function (mdb,
         params = list(),
         group_cols = c("year", "timestep", "area", "age"),
-        col_defs = c(
-            list(data_source = "c.data_source_id"),
-            list(year = "c.year", step = "c.month", area = "c.areacell_id", age = "c.age"),
-            list(maturity_stage = "c.maturity_stage_id", length = "c.length"),
-            list(institute = "c.institute_id"),
-            list(sampling_type = "c.sampling_type_id", species ="c.species_id", sex = "c.sex_id"),
-            col_defs_for('gear'),
-            col_defs_for('vessel'),
-            col_defs_for('tow'),
-        NULL),
+        col_defs = c(step = "c.month", area = "c.areacell_id", col_defs_for('sample')),
         calc_cols = c(),
         core_table = "sample",
         # join_tables: JOIN statements to attach to the main table
@@ -456,18 +470,17 @@ mfdb_sample_grouping <- function (mdb,
 
     # All group_cols should be valid
     for (col in group_cols) {
-        if (is.null(col_defs[[col]])) {
+        if (!(col %in% names(col_defs))) {
             stop("Unknown column ", col)
         }
     }
 
     # If we need any taxonomy table, join them
-    for (sub_tbl in c('gear', 'vessel', 'tow')) {
-        if (length(grep(paste0("^", sub_tbl, "\\."), col_defs[c(names(params), group_cols)])) > 0) {
-            join_tables = c(paste0(
-                "JOIN ", sub_tbl, " ON c.", sub_tbl, "_id = ", sub_tbl, ".", sub_tbl, "_id"), join_tables)
-        }
-    }
+    sub_tbls <- gsub("\\..*", "", unlist(col_defs[c(names(params), group_cols)]))  # Pick out table names from columns
+    sub_tbls <- intersect(unique(sub_tbls), mfdb_taxonomy_tables)  # Filter by what's a valid taxonomy table
+    if (length(sub_tbls) > 0) join_tables <- c(
+        paste0("JOIN ", sub_tbls, " ON c.", sub_tbls, "_id = ", sub_tbls, ".", sub_tbls, "_id"),
+        join_tables)
 
     # Pick out any extra params we can make use of, ignore rest
     filter_cols <- intersect(names(params), names(col_defs))
