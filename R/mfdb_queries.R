@@ -1,13 +1,21 @@
 # Generate col_defs for a table and all it's foreign keys
-col_defs_for <- function (table_name, prefix = "c") {
-    # Add prefix only when it's not "c"
-    add_prefix <- function(prefix, x) {
-        if (prefix == "c") return(x)
+col_defs_for <- function (table_name, prefix = "", referencing_col = NULL) {
+    # Add prefix only when it's not ""
+    to_external_name <- function(x) {
+        # External names don't mention id
+        x <- gsub("_id$", "", x)
+        if (prefix == "") return(x)
 
         out <- paste(prefix, x, sep = "_")
         # Don't want to call the column vessel_vessel_type_id
         out <- gsub(paste0("^", prefix, "_", prefix), prefix, out)
         return(out)
+    }
+    # Extract foreign key table from definition
+    foreign_key <- function (x) {
+        m <- regexec("REFERENCES (\\w+)\\((\\w+)\\)", x)
+        m <- regmatches(x, m)[[1]]
+        list(table = m[2], column = m[3])
     }
 
     # Find column definitions, turn into matrix for easy access
@@ -25,18 +33,30 @@ col_defs_for <- function (table_name, prefix = "c") {
     col_defs <- col_defs[col_defs[,1] != 'description',,drop = F]
     if (nrow(col_defs) == 0) return(character(0))  # Nothing to do
 
+    # Generate SQL that will join appropriately
+    join_sql <- if (is.null(referencing_col)) NULL else paste0(
+        "JOIN ", table_name, " AS ", prefix,
+        " ON ", referencing_col, " = ", prefix, ".", table_name, "_id",
+        "")
+    sql_prefix <- if (prefix == "") "c" else prefix
+
     # Build list of all tables and their columns
     out <- c(
         # Recurse over foreign key relationships, one list entry for each
-        lapply(
-            gsub("_id$", "", col_defs[grepl("REFERENCES", col_defs[,2]), 1]),
-            function (x) col_defs_for(x, prefix = x)),
+        lapply(grep("REFERENCES", col_defs[,2]), function (i) {
+            col_defs_for(
+                foreign_key(col_defs[i,2])$table,
+                prefix = paste0(prefix, if(prefix != "") "_", gsub("_id$", "", col_defs[i,1])),
+                referencing_col = paste(sql_prefix, col_defs[i,1], sep = "."))
+        }),
         # Build keys for this table
         list(structure(
-            paste(prefix, col_defs[,1], sep = "."),
-            names = add_prefix(prefix, gsub("_id$", "", col_defs[,1])))))
+            lapply(  # i.e turn paste(...) into a list, adding join_sql as we go
+                paste(sql_prefix, col_defs[,1], sep = "."),
+                function (x) structure(x, join_sql = join_sql)),
+            names = to_external_name(col_defs[,1]))))
 
-    # Flatten list of vectors
+    # Flatten list of lists
     return(do.call(c, out))
 }
 
@@ -437,7 +457,7 @@ mfdb_stomach_presenceratio <- function (mdb, cols, params) {
 mfdb_sample_grouping <- function (mdb,
         params = list(),
         group_cols = c("year", "timestep", "area", "age"),
-        col_defs = c(step = "c.month", area = "c.areacell_id", col_defs_for('sample')),
+        col_defs = c(list(step = "c.month", area = "c.areacell_id"), col_defs_for('sample')),
         calc_cols = c(),
         core_table = "sample",
         # join_tables: JOIN statements to attach to the main table
@@ -475,12 +495,11 @@ mfdb_sample_grouping <- function (mdb,
         }
     }
 
-    # If we need any taxonomy table, join them
-    sub_tbls <- gsub("\\..*", "", unlist(col_defs[c(names(params), group_cols)]))  # Pick out table names from columns
-    sub_tbls <- intersect(unique(sub_tbls), mfdb_taxonomy_tables)  # Filter by what's a valid taxonomy table
-    if (length(sub_tbls) > 0) join_tables <- c(
-        paste0("JOIN ", sub_tbls, " ON c.", sub_tbls, "_id = ", sub_tbls, ".", sub_tbls, "_id"),
-        join_tables)
+    # If we need any joins for selected columns, add them
+    extra_joins <- unique(unlist(lapply(
+        col_defs[c(names(params), group_cols)],
+        function(x) attr(x, "join_sql"))))
+    if (!is.null(extra_joins)) join_tables <- c(extra_joins, join_tables)
 
     # Pick out any extra params we can make use of, ignore rest
     filter_cols <- intersect(names(params), names(col_defs))
