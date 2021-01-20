@@ -491,7 +491,7 @@ mfdb_sample_grouping <- function (mdb,
     # All group_cols should be valid
     for (col in group_cols) {
         if (!(col %in% names(col_defs))) {
-            stop("Unknown column ", col)
+            stop("Unknown column ", col, "\nAvailable columns: ", paste(names(col_defs), collapse = ", "))
         }
     }
 
