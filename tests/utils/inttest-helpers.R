@@ -16,3 +16,5 @@ db_connection <- function() {
 #   running command 'timedatectl' had status 1
 # https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17421
 suppressWarnings(Sys.timezone())
+
+# logging::setLevel("FINEST")
