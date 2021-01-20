@@ -28,8 +28,10 @@ wincheck: build
 test: install
 	for f in tests/test-*.R; do echo "=== $$f ============="; Rscript $$f || break; done
 
-inttest: install test
+examples: install
 	Rscript -e 'devtools::run_examples(test = TRUE, run = TRUE, document = FALSE)'
+
+inttest: install test examples
 	for f in demo/inttest-*.R; do echo "=== $$f ============="; Rscript $$f || break; done
 
 gh-pages:
@@ -45,4 +47,4 @@ gh-pages:
 	[ -n "$(GH_COMMIT)" ] && ( cd docs/ && git add -A . && git commit -m "Docs for $(shell git rev-parse --short HEAD)" ) || true
 	[ -d docs ] && rm -r docs
 
-.PHONY: all install build check check-as-cran wincheck inttest
+.PHONY: all install build check check-as-cran wincheck examples inttest
