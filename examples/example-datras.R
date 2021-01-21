@@ -212,8 +212,6 @@ predators <- stomachs[!duplicated(stomachs$ICES_StomachID), ]
 # Work out a map from prey species we can uniquely identify to short names, map rest to NA
 species_map <- mfdb_find_species(levels(stomachs$Prey_Species_Name))['name',]
 species_map <- vapply(species_map, function (names) if(length(names) == 1) names else as.character(NA), "")
-str(species_map)
-stop('erk')
 
 # Import this into DB
 mfdb_import_stomach(mdb,
