@@ -185,7 +185,7 @@ mfdb_taxonomy_table_defs <- list(
             "duration", "REAL", "Tow duration (hours)",
             NULL)),
     vessel = list("Vessel performing sample", cols = c(
-            "vessel_type_id", "INT", "Vessel type used",
+            "vessel_type_id", "INT REFERENCES vessel_type(vessel_type_id)", "Vessel type used",
             "full_name", "TEXT", "Full name of vessel",
             "length", "REAL", "Vessel length (m)",
             "power", "REAL", "Vessel engine power (KW)",
