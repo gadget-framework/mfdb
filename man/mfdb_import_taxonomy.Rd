@@ -4,7 +4,9 @@
 \alias{mfdb_import_sampling_type}
 \alias{mfdb_import_cs_taxonomy}
 \alias{mfdb_import_gear_taxonomy}
+\alias{mfdb_import_port_taxonomy}
 \alias{mfdb_import_tow_taxonomy}
+\alias{mfdb_import_trip_taxonomy}
 \alias{mfdb_import_vessel_taxonomy}
 \alias{mfdb_import_species_taxonomy}
 \alias{mfdb_empty_taxonomy}
@@ -18,7 +20,9 @@
     mfdb_import_area(mdb, data_in)
     mfdb_import_division(mdb, data_in)
     mfdb_import_sampling_type(mdb, data_in)
+    mfdb_import_port_taxonomy(mdb, data_in)
     mfdb_import_tow_taxonomy(mdb,  data_in)
+    mfdb_import_trip_taxonomy(mdb, data_in)
     mfdb_import_vessel_taxonomy(mdb,  data_in)
 
     mfdb_empty_taxonomy(mdb, taxonomy_name)
@@ -93,6 +97,29 @@ above, you can also specify:
     \item{longitude}{Optional.}
     \item{depth}{Optional. Depth in meters}
     \item{length}{Optional. Length in meters}
+}
+
+\code{mfdb_import_port_taxonomy} imports names of ports that trips can
+start/finish at. As well as id/name, you can provide:
+
+\describe{
+    \item{latitude}{Optional. Latitutde as real number}
+    \item{longitude}{Optional. Latitutde as real number}
+    \item{institute}{Optional. Institute (from institute taxonomy, could be country) responsible for port}
+}
+
+\code{mfdb_import_trip_taxonomy} imports names of trips that samples can be
+labelled part of. As well as id/name, you can provide:
+
+\describe{
+    \item{latitude}{Optional. Latitutde as real number}
+    \item{longitude}{Optional. Latitutde as real number}
+    \item{start_date}{Optional. Start date-time, as \code{YYYY-MM-DD} or \code{YYYY-MM-DD HH:MM:SS}}
+    \item{end_date}{Optional. End date-time, as \code{YYYY-MM-DD} or \code{YYYY-MM-DD HH:MM:SS}}
+    \item{crew}{Optional. Number of crew on-board}
+    \item{oil_consumption}{Optional. Total oil consumption for trip}
+    \item{start_port}{Optional. Name of port (from port taxonomy) trip started}
+    \item{end_port}{Optional. Name of port (from port taxonomy) trip finished}
 }
 
 \code{mfdb_import_sampling_type} imports sampling types so that you can then use

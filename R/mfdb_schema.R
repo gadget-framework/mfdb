@@ -93,6 +93,7 @@ mfdb_measurement_table_defs <- list(
         "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
         "vessel_id", "INT REFERENCES vessel(vessel_id)", "Vessel used",
+        "trip_id", "INT REFERENCES trip(trip_id)", "Part of trip",
         "tow_id", "INT REFERENCES tow(tow_id)", "Tow used",
         "sampling_type_id", "INT REFERENCES sampling_type(sampling_type_id)", "Sampling type",
 
@@ -118,6 +119,7 @@ mfdb_measurement_table_defs <- list(
         "institute_id", "INT REFERENCES institute(institute_id)", "Institute that undertook survey",
         "gear_id", "INT REFERENCES gear(gear_id)", "Gear used",
         "vessel_id", "INT REFERENCES vessel(vessel_id)", "Vessel used",
+        "trip_id", "INT REFERENCES trip(trip_id)", "Part of trip",
         "tow_id", "INT REFERENCES tow(tow_id)", "Tow used",
         "sampling_type_id", "INT REFERENCES sampling_type(sampling_type_id)", "Sampling type",
 
@@ -174,6 +176,19 @@ mfdb_taxonomy_table_defs <- list(
     sampling_type = list("Sampling type (e.g. 'RESearch')", cols = mfdb_taxonomy_col_default),
     data_source = list("Data source for sample", cols = mfdb_taxonomy_col_default),
     index_type = list("Abundance index type (e.g. acoustic)", cols = mfdb_taxonomy_col_default),
+    port = list("Port", cols = c(
+        "latitude", "REAL", "Latitude",
+        "longitude", "REAL", "Longitude",
+        "institute_id", "INT REFERENCES institute(institute_id)", "Institute (or country) responsible for port",
+        NULL)),
+    trip = list("", cols = c(
+        "start_date", "TIMESTAMP", "Date/time trip started",
+        "end_date", "TIMESTAMP", "Date/time trip ended",
+        "crew", "INTEGER", "Number of staff on-board",
+        "oil_consumption", "REAL", "Amount of oil consumed as part of trip",
+        "start_port_id", "INT REFERENCES port(port_id)", "Starting port",
+        "end_port_id", "INT REFERENCES port(port_id)", "Finishing port",
+        NULL)),
     tow = list("Tow sample is part of", cols = c(
             "latitude", "REAL", "Latutide of sample",
             "longitude", "REAL", "Longitude of sample",

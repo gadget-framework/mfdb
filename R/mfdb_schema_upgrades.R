@@ -248,6 +248,14 @@ schema_from_6 <- function(mdb) {
     mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN age TYPE NUMERIC(10,5)")
     mfdb_send(mdb, "ALTER TABLE predator ALTER COLUMN age TYPE NUMERIC(10,5)")
 
+    # Add port & trip taxonomies
+    for (t in c(
+        'port',
+        'trip',
+        NULL)) mfdb_create_taxonomy_table(mdb, t)
+    mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN trip_id INT REFERENCES trip(trip_id)")
+    mfdb_send(mdb, "ALTER TABLE predator ADD COLUMN trip_id INT REFERENCES trip(trip_id)")
+
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 7")
 }
 

@@ -95,6 +95,7 @@ year    month   areacell        species sampling_type length  age     weight
         areacell = rep(c("45G01", "45G02", "45G03"), times = 4),
         sampling_type = rep(c('comm', 'res'), each = 6),
         data_source = c("ds2000"),
+        trip = as.character(NA),
         tow = as.character(NA),
         vessel = as.character(NA),
         stringsAsFactors = FALSE)), "All taxonomy tables")

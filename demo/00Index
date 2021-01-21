@@ -18,4 +18,5 @@ inttest-stockfile		Excrcise stockfile generation
 inttest-stomach			Excerise predator / prey relationship stomach data
 inttest-tibble			Exercise data import via. tibbles
 inttest-towdata			Excerise storing / grouping by tow information
+inttest-tripdata		Excerise storing / grouping by trip
 inttest-vessel			Excerise storing / grouping by vessel information

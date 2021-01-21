@@ -114,6 +114,8 @@ mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
 mfdb_import_area <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'areacell', data_in)
 mfdb_import_sampling_type <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'sampling_type', data_in)
 mfdb_import_tow_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'tow', data_in)
+mfdb_import_port_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'port', data_in)
+mfdb_import_trip_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'trip', data_in)
 mfdb_import_vessel_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'vessel', data_in)
 mfdb_import_species_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'species', data_in)
 mfdb_import_gear_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'gear', data_in)

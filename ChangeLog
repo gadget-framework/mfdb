@@ -5,6 +5,8 @@
 
     Schema changes:
     * Age now stored as NUMERIC
+    * Add trip taxonomy
+    * Add port taxonomy, used by trip for start/end points
 
 (unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
 
