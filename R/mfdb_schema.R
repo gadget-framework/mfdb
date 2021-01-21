@@ -63,7 +63,6 @@ schema_create_tables <- function (mdb) mfdb_transaction(mdb, {
     for (t in c(mfdb_taxonomy_tables)) mfdb_create_taxonomy_table(mdb, t)
 
     for (t in names(mfdb_measurement_table_defs)) {
-        str(mfdb_measurement_table_defs[[t]])
         mfdb_create_table(mdb, t,
             mfdb_measurement_table_defs[[t]][[1]],
             cols = mfdb_measurement_table_defs[[t]][['cols']])
