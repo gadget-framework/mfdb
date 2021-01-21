@@ -15,7 +15,7 @@ mfdb_group <- function (...) {
 
 pre_query.mfdb_group <- function(mdb, x, col) {
     group <- x
-    lookup <- gsub('(.*\\.)|_id', '', col)
+    lookup <- if (!is.null(attr(col, 'lookup'))) attr(col, 'lookup') else gsub('(.*\\.)|_id', '', col)
     datatype <- ifelse(lookup == "species", "BIGINT", ifelse(lookup == "age", "NUMERIC(10,5)", "INT"))
 
     # If the table already exists, nothing to do
@@ -115,7 +115,7 @@ from_clause.mfdb_group <- function(mdb, x, col, outputname, group_disabled = FAL
 }
 
 where_clause.mfdb_group <- function(mdb, x, col, outputname, group_disabled = FALSE) {
-    lookup <- gsub('(.*\\.)|_id', '', col)
+    lookup <- if (!is.null(attr(col, 'lookup'))) attr(col, 'lookup') else gsub('(.*\\.)|_id', '', col)
 
     paste0(col, " = ", attr(x, 'table_name'), ".value")
 }
@@ -145,7 +145,7 @@ pre_query.mfdb_smallset <- function(mdb, x, col) {
 }
 
 select_clause.mfdb_smallset <- function(mdb, x, col, outputname, group_disabled = FALSE) {
-    lookup <- gsub('(.*\\.)|_id', '', col)
+    lookup <- if (!is.null(attr(col, 'lookup'))) attr(col, 'lookup') else gsub('(.*\\.)|_id', '', col)
 
     groups <- names(sort(table(attr(x, 'lookup_content')$name)))
     if (length(groups) == 1) {
@@ -169,7 +169,7 @@ from_clause.mfdb_smallset <- function(mdb, x, col, outputname, group_disabled = 
 }
 
 where_clause.mfdb_smallset <- function(mdb, x, col, outputname, group_disabled = FALSE) {
-    lookup <- gsub('(.*\\.)|_id', '', col)
+    lookup <- if (!is.null(attr(col, 'lookup'))) attr(col, 'lookup') else gsub('(.*\\.)|_id', '', col)
 
     return(paste0(col, " IN ", sql_quote(attr(x, 'lookup_content')[,'value'], always_bracket = TRUE)))
 }

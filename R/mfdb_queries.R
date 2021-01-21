@@ -1,3 +1,10 @@
+# Extract foreign key table from definition
+col_def_get_foreign_key <- function (x) {
+    m <- regexec("REFERENCES (\\w+)\\((\\w+)\\)", x)
+    m <- regmatches(x, m)[[1]]
+    if (length(m) == 0) list(table = NULL, column = NULL) else list(table = m[2], column = m[3])
+}
+
 # Generate col_defs for a table and all it's foreign keys
 col_defs_for <- function (table_name, prefix = "", referencing_col = NULL) {
     # Add prefix only when it's not ""
@@ -10,12 +17,6 @@ col_defs_for <- function (table_name, prefix = "", referencing_col = NULL) {
         # Don't want to call the column vessel_vessel_type_id
         out <- gsub(paste0("^", prefix, "_", prefix), prefix, out)
         return(out)
-    }
-    # Extract foreign key table from definition
-    foreign_key <- function (x) {
-        m <- regexec("REFERENCES (\\w+)\\((\\w+)\\)", x)
-        m <- regmatches(x, m)[[1]]
-        list(table = m[2], column = m[3])
     }
 
     # Find column definitions, turn into matrix for easy access
@@ -45,15 +46,18 @@ col_defs_for <- function (table_name, prefix = "", referencing_col = NULL) {
         # Recurse over foreign key relationships, one list entry for each
         lapply(grep("REFERENCES", col_defs[,2]), function (i) {
             col_defs_for(
-                foreign_key(col_defs[i,2])$table,
+                col_def_get_foreign_key(col_defs[i,2])$table,
                 prefix = paste0(prefix, if(prefix != "") "_", gsub("_id$", "", col_defs[i,1])),
                 referencing_col = paste(sql_prefix, col_defs[i,1], sep = "."))
         }),
         # Build keys for this table
         list(structure(
             lapply(  # i.e turn paste(...) into a list, adding join_sql as we go
-                paste(sql_prefix, col_defs[,1], sep = "."),
-                function (x) structure(x, join_sql = join_sql)),
+                seq_len(nrow(col_defs)),
+                function (i) structure(
+                    paste(sql_prefix, col_defs[i,1], sep = "."),
+                    lookup = col_def_get_foreign_key(col_defs[i,2])$table,
+                    join_sql = join_sql)),
             names = to_external_name(col_defs[,1]))))
 
     # Flatten list of lists

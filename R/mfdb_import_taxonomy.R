@@ -79,10 +79,13 @@ mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
             "' should be one of ", paste(mfdb_taxonomy_tables, collapse = ", "))
     }
 
-    extra_cols <- mfdb_get_taxonomy_extra_cols(taxonomy_name)
+    col_defs <- mfdb_taxonomy_table_defs[[taxonomy_name]]$cols
+    col_defs <- t(matrix(col_defs, nrow = 3))
+    extra_cols <- col_defs[,1]
     sanitized_extra_data <- lapply(extra_cols, function (col) {
         if (grepl("_id$", col)) {
-            return(sanitise_col(mdb, data_in, gsub("_id$", "", col), lookup = gsub("_id$", "", col), default = c(NA)))
+            lookup_tbl <- col_def_get_foreign_key(col_defs[col_defs[,1] == col, 2])
+            return(sanitise_col(mdb, data_in, gsub("_id$", "", col), lookup = lookup_tbl$table, default = c(NA)))
         }
         return(sanitise_col(mdb, data_in, col, default = c(NA)))
     })

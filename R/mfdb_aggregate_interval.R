@@ -21,7 +21,7 @@ mfdb_interval <- function (prefix, vect, open_ended = FALSE) {
 
 # Cast value to something that matches column
 col_cast <- function (col) {
-    lookup <- gsub('(.*\\.)|_id', '', col)
+    lookup <- if (!is.null(attr(col, 'lookup'))) attr(col, 'lookup') else gsub('(.*\\.)|_id', '', col)
     # NB: Not exhaustive, but main thing to avoid is comparing REAL to NUMERIC types
     ifelse(lookup == "species", "::BIGINT", 
         ifelse(lookup == "year", "::INT",

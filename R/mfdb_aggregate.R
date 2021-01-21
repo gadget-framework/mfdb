@@ -35,7 +35,7 @@ agg_summary.mfdb_aggregate <- function(mdb, x, col, outputname, data, sample_num
 pre_query.NULL <- pre_query.mfdb_aggregate
 sample_clause.NULL <- sample_clause.mfdb_aggregate
 select_clause.NULL <- function(mdb, x, col, outputname, group_disabled = FALSE) {
-    lookup <- gsub('(.*\\.)|_id', '', col)
+    lookup <- if (!is.null(attr(col, 'lookup'))) attr(col, 'lookup') else gsub('(.*\\.)|_id', '', col)
 
     if (lookup %in% mfdb_taxonomy_tables) {
         return(paste0("'all' AS ", outputname))
@@ -50,7 +50,7 @@ select_clause.NULL <- function(mdb, x, col, outputname, group_disabled = FALSE) 
 from_clause.NULL <- from_clause.mfdb_aggregate
 where_clause.NULL <- function(mdb, x, col, outputname, group_disabled = FALSE) c()
 agg_summary.NULL <- function(mdb, x, col, outputname, data, sample_num) {
-    lookup <- gsub('(.*\\.)|_id', '', col)
+    lookup <- if (!is.null(attr(col, 'lookup'))) attr(col, 'lookup') else gsub('(.*\\.)|_id', '', col)
 
     if (lookup %in% mfdb_taxonomy_tables) {
         return(list(all = mfdb_fetch(mdb, "SELECT name FROM ", lookup)$name))
@@ -66,7 +66,7 @@ agg_summary.NULL <- function(mdb, x, col, outputname, data, sample_num) {
 pre_query.numeric <- pre_query.mfdb_aggregate
 sample_clause.numeric <- sample_clause.mfdb_aggregate
 select_clause.numeric <- function(mdb, x, col, outputname, group_disabled = FALSE) {
-    lookup <- gsub('(.*\\.)|_id', '', col)
+    lookup <- if (!is.null(attr(col, 'lookup'))) attr(col, 'lookup') else gsub('(.*\\.)|_id', '', col)
 
     # Look up in taxonomy
     if (lookup %in% mfdb_taxonomy_tables) {
@@ -81,7 +81,7 @@ select_clause.numeric <- function(mdb, x, col, outputname, group_disabled = FALS
 }
 from_clause.numeric <- from_clause.mfdb_aggregate
 where_clause.numeric <- function(mdb, x, col, outputname, group_disabled = FALSE) {
-    lookup <- gsub('(.*\\.)|_id', '', col)
+    lookup <- if (!is.null(attr(col, 'lookup'))) attr(col, 'lookup') else gsub('(.*\\.)|_id', '', col)
 
     if (!is.vector(x)) return("")
 
