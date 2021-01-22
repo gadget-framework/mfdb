@@ -29,6 +29,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
         vessel_id = sanitise_col(mdb, data_in, 'vessel', lookup = 'vessel', default = c(NA)),
         trip_id = sanitise_col(mdb, data_in, 'trip', lookup = 'trip', default = c(NA)),
         tow_id = sanitise_col(mdb, data_in, 'tow', lookup = 'tow', default = c(NA)),
+        population_id = sanitise_col(mdb, data_in, 'population', lookup = 'population', default = c(NA)),
         sampling_type_id = sanitise_col(mdb, data_in, 'sampling_type', lookup = 'sampling_type', default = c(NA)),
         year = sanitise_col(mdb, data_in, 'year'),
         month = sanitise_col(mdb, data_in, 'month', test = function (x) x %in% 1:12),

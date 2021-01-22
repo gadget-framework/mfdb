@@ -256,6 +256,10 @@ schema_from_6 <- function(mdb) {
     mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN trip_id INT REFERENCES trip(trip_id)")
     mfdb_send(mdb, "ALTER TABLE predator ADD COLUMN trip_id INT REFERENCES trip(trip_id)")
 
+    # Add population taxonomy
+    for (t in c('population')) mfdb_create_taxonomy_table(mdb, t)
+    mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN population_id INT REFERENCES population(population_id)")
+
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 7")
 }
 

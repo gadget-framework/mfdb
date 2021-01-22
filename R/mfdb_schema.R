@@ -104,6 +104,7 @@ mfdb_measurement_table_defs <- list(
         "age", "NUMERIC(10,5)", "Age (years)",
         "sex_id", "INT REFERENCES sex(sex_id)", "Sex ID",
         "maturity_stage_id", "INT REFERENCES maturity_stage(maturity_stage_id)", "Maturity Stage ID",
+        "population_id", "INT REFERENCES population(population_id)", "Population sample is part of",
 
         "length", "REAL", "Length of fish / mean length of all fish",
         "length_var", "REAL", "Length variance of all fish (given aggregated data)",
@@ -174,6 +175,7 @@ mfdb_taxonomy_table_defs <- list(
     stomach_state = list("1..5 (mfdb::stomach_state)", cols = mfdb_taxonomy_col_default),
     digestion_stage = list("1..5 (mfdb::digestion_stage)", cols = mfdb_taxonomy_col_default),
     sampling_type = list("Sampling type (e.g. 'RESearch')", cols = mfdb_taxonomy_col_default),
+    population = list("Population (i.e. stock groupings)", cols = mfdb_taxonomy_col_default),
     data_source = list("Data source for sample", cols = mfdb_taxonomy_col_default),
     index_type = list("Abundance index type (e.g. acoustic)", cols = mfdb_taxonomy_col_default),
     port = list("Port", cols = c(

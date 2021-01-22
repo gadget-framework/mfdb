@@ -7,6 +7,7 @@
     * Age now stored as NUMERIC
     * Add trip taxonomy
     * Add port taxonomy, used by trip for start/end points
+    * Add population taxonomy, for stock groupings
 
 (unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
 

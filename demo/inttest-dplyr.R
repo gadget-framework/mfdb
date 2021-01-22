@@ -94,6 +94,7 @@ year    month   areacell        species sampling_type length  age     weight
         species = rep(c('COD', 'HAD'), each = 3, times = 2),
         areacell = rep(c("45G01", "45G02", "45G03"), times = 4),
         sampling_type = rep(c('comm', 'res'), each = 6),
+        population = as.character(NA),
         data_source = c("ds2000"),
         trip = as.character(NA),
         tow = as.character(NA),
