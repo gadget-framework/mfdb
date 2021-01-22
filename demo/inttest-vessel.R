@@ -26,15 +26,13 @@ ok_group("Vessel metadata example", {
     gd <- gadget_directory(tempfile())
 
     # Set up the vessels we use in this example
-    mfdb_import_vessel_taxonomy(mdb, data.frame(
-        name = c('A', 'B', 'C', 'D'),
-        full_name = c('Alfred', 'Bertie', 'Claire', 'Daisy'),
-        vessel_type = c('1.RSH', '1.COM', '1.COM', '1.FRZ'),
-        length = c(15, 18, 20, 24),
-        power = c(50, 100, 150, 900),
-        tonnage = c(900, 800, 700, 600),
-        stringsAsFactors = FALSE
-    ))
+    mfdb_import_vessel_taxonomy(mdb, table_string("
+name full_name vessel_type length power tonnage
+   A    Alfred       1.RSH     15    50     900
+   B    Bertie       1.COM     18   100     800
+   C    Claire       1.COM     20   150     700
+   D     Daisy       1.FRZ     24   900     600
+    "))
 
     # Import a survey for the data we are interested in
     mfdb_import_survey(mdb, data_source = "cod2000",
