@@ -96,12 +96,13 @@ agg_summary <- function(...) {
 }
 
 # Parse a string into a data.frame
-table_string <- function (str) {
+table_string <- function (str, ...) {
     read.table(
         textConnection(str),
         blank.lines.skip = TRUE,
         header = TRUE,
-        stringsAsFactors = FALSE)
+        stringsAsFactors = FALSE,
+        ...)
 }
 
 # Shuffle the rows of a data.frame
