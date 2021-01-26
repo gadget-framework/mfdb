@@ -121,7 +121,7 @@ mfdb <- function(case_study_name = "",
         } else {
             res <- c()
         }
-        if (length(res) == 1) {
+        if (length(res) > 0 && nrow(res) > 0) {
             logger$info(paste0("Copying data from ", case_study_name))
             # A case study exists by this ID
             old_case_study_id <- res[1,1]
