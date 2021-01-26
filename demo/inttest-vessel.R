@@ -26,17 +26,21 @@ ok_group("Vessel metadata example", {
     gd <- gadget_directory(tempfile())
 
     # Set up the vessels we use in this example
-    mfdb_import_vessel_taxonomy(mdb, table_string("
-name full_name vessel_type length power tonnage
-   A    Alfred       1.RSH     15    50     900
-   B    Bertie       1.COM     18   100     800
-   C    Claire       1.COM     20   150     700
-   D     Daisy       1.FRZ     24   900     600
-    "))
+    mfdb_import_vessel_taxonomy(mdb, table_string('
+name 	full_name		vessel_type	length	power	tonnage
+   A    "Arni Fridriksson"	1.RSH		70	50	900
+   B    "Bjarni Saemundsson"	1.RSH		56	100	800
+   C    "Cefas Endeavour"	1.RSH		65.50   150	700
+   D    "Dallaporta"		1.RSH		24	900	600
+   S	"Commercial vessel 1a"	2.COM		10	50	900
+   T	"Commercial vessel 1b"	2.COM		30	50	900
+   U	"Commercial vessel 2a"	2.COM		50	50	900
+   V	"Commercial vessel 2b"	2.COM		70	50	900
+    '))
 
     # Import a survey for the data we are interested in
-    mfdb_import_survey(mdb, data_source = "cod2000",
-        table_string("
+    mfdb_import_survey(mdb, data_source = "x",
+        table_string('
 year    month   areacell        species vessel  length  age     weight
 2000    1       45G01           COD     A           21      2       210
 2000    1       45G02           COD     A           34      3       220
@@ -50,24 +54,35 @@ year    month   areacell        species vessel  length  age     weight
 2000    1       45G01           COD     D           12      1       320
 2000    1       45G02           COD     D           44      1       330
 2000    1       45G03           COD     D           14      2       430
-        "))
+
+2000    1       45G01           COD     S           47      2       383
+2000    1       45G02           COD     S           68      3       114
+2000    1       45G03           COD     S           15      3       101
+2000    1       45G01           COD     T           92      1       251
+2000    1       45G02           COD     T           85      1       289
+2000    1       45G03           COD     T           64      2       322
+2000    1       45G01           COD     U           28      2       140
+2000    1       45G02           COD     U           87      3       170
+2000    1       45G03           COD     U           63      3       197
+2000    1       45G01           COD     V           61      1       160
+2000    1       45G02           COD     V           45      1       201
+2000    1       45G03           COD     V           32      2       313
+        '))
 
     # Group the data by vessel length
-    agg_data <- mfdb_sample_meanlength(mdb, c('vessel_length'), list(
+    agg_data <- mfdb_sample_meanlength(mdb, c('vessel_type', 'vessel_length'), list(
         step = mfdb_timestep_yearly,
-        vessel_length = mfdb_interval('veslen', c(0, 10, 20, 50)),
+        vessel_type = mfdb_unaggregated(),
+        vessel_length = mfdb_interval('veslen', c(0, 10, 20, 50, 100)),
         null = NULL))
-    ok(cmp(unattr(agg_data[[1]]), data.frame(
-        year = c('all'),
-        step = c('1'),
-        area = c('all'),
-        vessel_length = c('veslen10', 'veslen20'),
-        number = c(6, 6),
-        mean = c(
-            mean(c(21, 34, 34, 62, 53, 54)),
-            mean(c(28, 34, 24, 12, 44, 14)),
-        NULL),
-        stringsAsFactors = FALSE)), "Grouped by vessel_length")
+    ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+year step area vessel_type vessel_length number     mean
+ all  "1"  all       1.RSH      veslen20      3 23.33333
+ all  "1"  all       1.RSH      veslen50      9 38.22222
+ all  "1"  all       2.COM      veslen10      3 43.33333
+ all  "1"  all       2.COM      veslen20      3 80.33333
+ all  "1"  all       2.COM      veslen50      6 52.66667
+        ', colClasses = c(NA, "character", NA, NA, NA, "numeric", NA)), tolerance = 1e-7), "Grouped by vessel_type, vessel_length")
 
     # Group the data by vessel type and area
     agg_data <- mfdb_sample_meanlength(mdb, c('vessel_type'), list(
@@ -75,19 +90,11 @@ year    month   areacell        species vessel  length  age     weight
         area = mfdb_group(x = 'divA', y = 'divB'),
         vessel_type = mfdb_group(RSH = '1.RSH', COM = '1.COM'),
         null = NULL))
-    ok(cmp(unattr(agg_data[[1]]), data.frame(
-        year = c('all'),
-        step = c('1'),
-        area = c('x', 'x', 'y', 'y'),
-        vessel_type = c('COM', 'RSH', 'COM', 'RSH'),
-        number = c(4, 2, 2, 1),
-        mean = c(
-            mean(c(62, 53, 28, 34)),
-            mean(c(21, 34)),
-            mean(c(54, 24)),
-            mean(c(34)),
-        NULL),
-        stringsAsFactors = FALSE)), "Grouped by vessel_name, area")
+    ok(cmp(unattr(agg_data[[1]]), table_string('
+year step area vessel_type number mean
+ all  "1"    x         RSH      8 36.0
+ all  "1"    y         RSH      4 31.5
+        ', colClasses = c(NA, "character", NA, NA, "numeric", NA))), "Grouped by vessel_type/area")
 
     # Show each vessel separately, with full name, power, tonnage
     agg_data <- mfdb_sample_meanlength(mdb, c('vessel', 'vessel_full_name', 'vessel_power', 'vessel_tonnage'), list(
@@ -97,20 +104,15 @@ year    month   areacell        species vessel  length  age     weight
         vessel_power = mfdb_unaggregated(),
         vessel_tonnage = mfdb_unaggregated(),
         null = NULL))
-    ok(cmp(unattr(agg_data[[1]]), data.frame(
-        year = c('all'),
-        step = c('1'),
-        area = c('all'),
-        vessel = c('A', 'B', 'C', 'D'),
-        vessel_full_name = c('Alfred', 'Bertie', 'Claire', 'Daisy'),
-        vessel_power = c(50, 100, 150, 900),
-        vessel_tonnage = c(900, 800, 700, 600),
-        number = c(3, 3, 3, 3),
-        mean = c(
-            mean(c(21, 34, 34)),
-            mean(c(62, 53, 54)),
-            mean(c(28, 34, 24)),
-            mean(c(12, 44, 14)),
-        NULL),
-        stringsAsFactors = FALSE)), "Grouped by vessel_length")
+    ok(cmp(unattr(agg_data[[1]]), table_string('
+year step area vessel      vessel_full_name vessel_power vessel_tonnage number     mean
+ all    1  all      A     "Arni Fridriksson"           50            900      3 29.66667
+ all    1  all      B   "Bjarni Saemundsson"          100            800      3 56.33333
+ all    1  all      C      "Cefas Endeavour"          150            700      3 28.66667
+ all    1  all      D           "Dallaporta"          900            600      3 23.33333
+ all    1  all      S "Commercial vessel 1a"           50            900      3 43.33333
+ all    1  all      T "Commercial vessel 1b"           50            900      3 80.33333
+ all    1  all      U "Commercial vessel 2a"           50            900      3 59.33333
+ all    1  all      V "Commercial vessel 2b"           50            900      3 46.00000
+        ', colClasses = c(NA, "character", NA, NA, NA, "numeric", "numeric", "numeric", NA))), "Dissaggregated vessels")
 })
