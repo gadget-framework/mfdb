@@ -260,6 +260,10 @@ schema_from_6 <- function(mdb) {
     for (t in c('population')) mfdb_create_taxonomy_table(mdb, t)
     mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN population_id INT REFERENCES population(population_id)")
 
+    # Add vessel_owner taxonomy
+    for (t in c('vessel_owner')) mfdb_create_taxonomy_table(mdb, t)
+    mfdb_send(mdb, "ALTER TABLE vessel ADD COLUMN vessel_owner_id INT REFERENCES vessel_owner(vessel_owner_id)")
+
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 7")
 }
 

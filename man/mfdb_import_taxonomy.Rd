@@ -9,6 +9,7 @@
 \alias{mfdb_import_tow_taxonomy}
 \alias{mfdb_import_trip_taxonomy}
 \alias{mfdb_import_vessel_taxonomy}
+\alias{mfdb_import_vessel_owner_taxonomy}
 \alias{mfdb_import_species_taxonomy}
 \alias{mfdb_empty_taxonomy}
 
@@ -26,6 +27,7 @@
     mfdb_import_tow_taxonomy(mdb,  data_in)
     mfdb_import_trip_taxonomy(mdb, data_in)
     mfdb_import_vessel_taxonomy(mdb,  data_in)
+    mfdb_import_vessel_owner_taxonomy(mdb,  data_in)
 
     mfdb_empty_taxonomy(mdb, taxonomy_name)
 
@@ -88,9 +90,18 @@ also specify:
     \item{length}{Optional. The length of the vessel in meters}
     \item{power}{Optional. The vessel's engine power in KW}
     \item{tonnage}{Optional. The vessel's gross tonnage}
+    \item{vessel_owner}{Optional. The short name of the vessel owner (see \code{mfdb_import_vessel_owner_taxonomy})}
 }
 
-\code{mfdb_import_vessel_taxonomy} imports names of vessels into the
+\code{mfdb_import_vessel_owner_taxonomy} imports names of vessels owners into a
+taxonomy table, to be used when importing vessels. As well as name/t_group, you
+can also specify:
+
+\describe{
+    \item{full_name}{Optional. The full name of the owning organisation}
+}
+
+\code{mfdb_import_tow_taxonomy} imports names of vessels into the
 taxonomy table, so they can be used when importing samples. As well as the
 above, you can also specify:
 

@@ -165,6 +165,9 @@ mfdb_taxonomy_table_defs <- list(
             "mesh_size_max", "REAL", "Maximum mesh size (mm)",
             NULL)),
     vessel_type = list("Vessel type (mfdb::vessel_type)", cols = mfdb_taxonomy_col_default),
+    vessel_owner = list("Vessel owner", cols = c(
+        "full_name", "TEXT", "Full name of vessel owner",
+        NULL)),
     market_category = list("Market category", cols = mfdb_taxonomy_col_default),
     sex = list("M/F/X/N/U (mfdb::sex)", cols = mfdb_taxonomy_col_default),
     maturity_stage = list("1..5 (mfdb::maturity_stage)", cols = mfdb_taxonomy_col_default),
@@ -203,6 +206,7 @@ mfdb_taxonomy_table_defs <- list(
             NULL)),
     vessel = list("Vessel performing sample", cols = c(
             "vessel_type_id", "INT REFERENCES vessel_type(vessel_type_id)", "Vessel type used",
+            "vessel_owner_id", "INT REFERENCES vessel_owner(vessel_owner_id)", "Vessel owner",
             "full_name", "TEXT", "Full name of vessel",
             "length", "REAL", "Vessel length (m)",
             "power", "REAL", "Vessel engine power (KW)",

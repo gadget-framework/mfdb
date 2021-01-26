@@ -118,6 +118,7 @@ mfdb_import_population_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonom
 mfdb_import_port_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'port', data_in)
 mfdb_import_trip_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'trip', data_in)
 mfdb_import_vessel_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'vessel', data_in)
+mfdb_import_vessel_owner_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'vessel_owner', data_in)
 mfdb_import_species_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'species', data_in)
 mfdb_import_gear_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'gear', data_in)
 

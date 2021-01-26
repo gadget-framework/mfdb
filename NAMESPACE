@@ -59,6 +59,7 @@ export(mfdb_import_population_taxonomy)
 export(mfdb_import_port_taxonomy)
 export(mfdb_import_trip_taxonomy)
 export(mfdb_import_vessel_taxonomy)
+export(mfdb_import_vessel_owner_taxonomy)
 export(mfdb_import_species_taxonomy)
 export(mfdb_empty_taxonomy)
 

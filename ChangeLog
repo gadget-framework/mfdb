@@ -8,6 +8,7 @@
     * Add trip taxonomy
     * Add port taxonomy, used by trip for start/end points
     * Add population taxonomy, for stock groupings
+    * Add vessel_owner taxonomy
 
 (unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
 

@@ -25,17 +25,30 @@ ok_group("Vessel metadata example", {
     # Create a temporary gadget directory
     gd <- gadget_directory(tempfile())
 
+    mfdb_import_vessel_owner_taxonomy(mdb, table_string('
+name	full_name							t_group
+ISL	"Iceland"							ISL
+GBR	"Great Britain"							GBR
+ITA	"Italy"								ITA
+MFRI	"Marine and Freshwater Research Institute (Iceland)"		ISL
+CEFAS	"Centre for Environment, Fisheries and Aquaculture Science"	GBR
+CNR-IAMC	"Consiglio Nazionale delle Ricerche"			ITA
+COMM	"Combined commercial fisheries"					COMM
+COMM1	"Commercial fishery 1"						COMM
+COMM2	"Commercial fishery 2"						COMM
+    '))
+
     # Set up the vessels we use in this example
     mfdb_import_vessel_taxonomy(mdb, table_string('
-name 	full_name		vessel_type	length	power	tonnage
-   A    "Arni Fridriksson"	1.RSH		70	50	900
-   B    "Bjarni Saemundsson"	1.RSH		56	100	800
-   C    "Cefas Endeavour"	1.RSH		65.50   150	700
-   D    "Dallaporta"		1.RSH		24	900	600
-   S	"Commercial vessel 1a"	2.COM		10	50	900
-   T	"Commercial vessel 1b"	2.COM		30	50	900
-   U	"Commercial vessel 2a"	2.COM		50	50	900
-   V	"Commercial vessel 2b"	2.COM		70	50	900
+name 	full_name		vessel_type	vessel_owner	length	power	tonnage
+   A    "Arni Fridriksson"	1.RSH		MFRI		70	50	900
+   B    "Bjarni Saemundsson"	1.RSH		MFRI		56	100	800
+   C    "Cefas Endeavour"	1.RSH		CEFAS		65.50   150	700
+   D    "Dallaporta"		1.RSH		CNR-IAMC	24	900	600
+   S	"Commercial vessel 1a"	2.COM		COMM1		10	50	900
+   T	"Commercial vessel 1b"	2.COM		COMM1		30	50	900
+   U	"Commercial vessel 2a"	2.COM		COMM2		50	50	900
+   V	"Commercial vessel 2b"	2.COM		COMM2		70	50	900
     '))
 
     # Import a survey for the data we are interested in
@@ -115,4 +128,18 @@ year step area vessel      vessel_full_name vessel_power vessel_tonnage number  
  all    1  all      U "Commercial vessel 2a"           50            900      3 59.33333
  all    1  all      V "Commercial vessel 2b"           50            900      3 46.00000
         ', colClasses = c(NA, "character", NA, NA, NA, "numeric", "numeric", "numeric", NA))), "Dissaggregated vessels")
+
+    # Can group vessels by owner, which aggregates multiple vessels together
+    agg_data <- mfdb_sample_meanlength(mdb, c('vessel_owner'), list(
+        step = mfdb_timestep_yearly,
+        vessel_owner = mfdb_unaggregated(),
+        null = NULL))
+    ok(cmp(unattr(agg_data[[1]]), table_string('
+year step area vessel_owner number     mean
+ all    1  all        CEFAS      3 28.66667
+ all    1  all     CNR-IAMC      3 23.33333
+ all    1  all        COMM1      6 61.83333
+ all    1  all        COMM2      6 52.66667
+ all    1  all         MFRI      6 43.00000
+        ', colClasses = c(NA, "character", NA, NA, "numeric", NA))), "Vessels grouped by owner")
 })
