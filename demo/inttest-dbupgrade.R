@@ -58,3 +58,20 @@ ok(cmp_error(
 
 # Drop public schema so we don't import this data later
 mdb <- mfdb('public', db_params = db_params, destroy_schema = TRUE)
+
+# Rebuild a version 5 schema and upgrade it
+system(paste(
+    'echo "DROP SCHEMA test_5x CASCADE" | psql',
+    ' --host=', db_params$host,
+    ' --dbname=', db_params$dbname,
+    sep="", collapse=""))
+system(paste(
+    'pg_restore',
+    ' --host=', db_params$host,
+    ' --dbname=', db_params$dbname,
+    ' tests/utils/schema_5.x.dump',
+    sep="", collapse=""))
+mdb <- mfdb('test_5x', db_params = db_params)
+ok(cmp(
+    mfdb:::mfdb_fetch(mdb, "SELECT MAX(version) FROM mfdb_schema")[1,1],
+    as.integer(gsub("\\..*", "", packageVersion("mfdb")))), "Database now at latest release")
