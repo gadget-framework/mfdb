@@ -264,6 +264,16 @@ schema_from_6 <- function(mdb) {
     for (t in c('vessel_owner')) mfdb_create_taxonomy_table(mdb, t)
     mfdb_send(mdb, "ALTER TABLE vessel ADD COLUMN vessel_owner_id INT REFERENCES vessel_owner(vessel_owner_id)")
 
+    # Add liver/gonad/stomach weight columns as well as overall weight
+    mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN liver_weight REAL")
+    mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN liver_weight_var REAL")
+    mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN gonad_weight REAL")
+    mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN gonad_weight_var REAL")
+    mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN stomach_weight REAL")
+    mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN stomach_weight_var REAL")
+    mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN gutted_weight REAL")
+    mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN gutted_weight_var REAL")
+
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 7")
 }
 

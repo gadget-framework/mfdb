@@ -183,42 +183,70 @@ mfdb_sample_meanlength_stddev <- function (mdb, cols, params, scale_index = NULL
     out
 }
 
+# Helper to translate measurements argument
+measurements_to_sql <- function (measurements) {
+    measurement_cols <- c(
+        overall = 'weight',
+        liver = 'liver_weight',
+        gonad = 'gonad_weight',
+        stomach = 'stomach_weight')
+
+    if (!all(measurements %in% names(measurement_cols))) {
+        stop("Measurement values should be one of ",
+            paste(names(measurement_cols), collapse = ","),
+            " not: ",
+            paste(measurements, collapse = ","))
+    }
+    return(measurement_cols[measurements])
+}
+
 # Return year,step,area, ... , total (weight)
-mfdb_sample_totalweight <- function (mdb, cols, params) {
+mfdb_sample_totalweight <- function (mdb, cols, params, measurements = c('overall')) {
+    col_sql <- measurements_to_sql(measurements)
+    col_totallabel <- paste0('total_', col_sql)
+
     out <- mfdb_sample_grouping(mdb,
         core_table = "sample",
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            paste0("SUM(CASE WHEN count IS NULL THEN weight ELSE weight * count END) AS total_weight"),
+            paste0("SUM(CASE WHEN count IS NULL THEN ", col_sql, " ELSE ", col_sql, " * count END) AS ", col_totallabel),
             NULL),
         params = params)
     out
 }
 
 # Return year,step,area,age,number (# of samples),mean (weight)
-mfdb_sample_meanweight <- function (mdb, cols, params, scale_index = NULL) {
+mfdb_sample_meanweight <- function (mdb, cols, params, scale_index = NULL, measurements = c('overall')) {
+    col_sql <- measurements_to_sql(measurements)
+    col_meanlabel <- ifelse(col_sql == 'weight', 'mean', paste0('mean_', col_sql))
+
     abundance <- abundance_core_table(mdb, scale_index)
     out <- mfdb_sample_grouping(mdb,
         core_table = abundance[[1]],
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(c.weight::numeric, (", abundance[[2]], ")::numeric) AS mean"),
+            paste0("WEIGHTED_MEAN(c.", col_sql, "::numeric, (", abundance[[2]], ")::numeric) AS ", col_meanlabel),
             NULL),
         params = params)
     out
 }
 
 # Return year,step,area,age,number (# of samples),mean (weight), stddev (weight)
-mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL) {
+mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL, measurements = c('overall')) {
+    col_sql <- measurements_to_sql(measurements)
+    col_meanlabel <- ifelse(col_sql == 'weight', 'mean', paste0('mean_', col_sql))
+    col_stddevlabel <- ifelse(col_sql == 'weight', 'stddev', paste0('stddev_', col_sql))
+
     abundance <- abundance_core_table(mdb, scale_index)
     out <- mfdb_sample_grouping(mdb,
         core_table = abundance[[1]],
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(c.weight::numeric, (", abundance[[2]], ")::numeric) AS mean"),
-            paste0("WEIGHTED_STDDEV(c.weight::numeric, (", abundance[[2]], ")::numeric) AS stddev"), # TODO: Should take weight_var into account
+            paste0("WEIGHTED_MEAN(c.", col_sql, "::numeric, (", abundance[[2]], ")::numeric) AS ", col_meanlabel),
+            paste0("WEIGHTED_STDDEV(c.", col_sql, "::numeric, (", abundance[[2]], ")::numeric) AS ", col_stddevlabel),
+            # TODO: Should take weight_var into account
             NULL),
         params = params)
     out

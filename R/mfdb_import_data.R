@@ -43,6 +43,12 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
         length_min = sanitise_col(mdb, data_in, 'length_min', default = c(NA)),
         weight = sanitise_col(mdb, data_in, weight_col, default = c(NA)),
         weight_var = sanitise_col(mdb, data_in, 'weight_var', default = c(NA)),
+        liver_weight = sanitise_col(mdb, data_in, 'liver_weight', default = c(NA)),
+        liver_weight_var = sanitise_col(mdb, data_in, 'liver_weight_var', default = c(NA)),
+        gonad_weight = sanitise_col(mdb, data_in, 'gonad_weight', default = c(NA)),
+        gonad_weight_var = sanitise_col(mdb, data_in, 'gonad_weight_var', default = c(NA)),
+        stomach_weight = sanitise_col(mdb, data_in, 'stomach_weight', default = c(NA)),
+        stomach_weight_var = sanitise_col(mdb, data_in, 'stomach_weight_var', default = c(NA)),
         count = sanitise_col(mdb, data_in, 'count', default = count_default))
 
 

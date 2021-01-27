@@ -111,6 +111,16 @@ mfdb_measurement_table_defs <- list(
         "length_min", "INT", "Minimum theoretical value in this group",
         "weight", "REAL", "Weight of fish / mean weight of all fish",
         "weight_var", "REAL", "Weight variance of all fish (given aggregated data)",
+
+        "liver_weight", "REAL", "(mean) Weight of fish liver",
+        "liver_weight_var", "REAL", "(mean) Weight variance of fish liver (given aggregated data)",
+        "gonad_weight", "REAL", "(mean) Weight of fish gonads",
+        "gonad_weight_var", "REAL", "(mean) Weight variance of fish gonads (given aggregated data)",
+        "stomach_weight", "REAL", "(mean) Weight of fish stomach",
+        "stomach_weight_var", "REAL", "(mean) Weight variance of fish stomach (given aggregated data)",
+        "gutted_weight", "REAL", "(mean) Gutted weight of fish",
+        "gutted_weight_var", "REAL", "(mean) Gutted weight variance of fish (given aggregated data)",
+
         "count", "REAL DEFAULT 1", "Number of fish meeting this criteria"
     )),
     predator = list("Predators in predator/prey sample", cols = c(

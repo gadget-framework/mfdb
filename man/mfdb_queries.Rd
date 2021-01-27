@@ -31,9 +31,11 @@ mfdb_survey_index_total(mdb, cols, params)
 mfdb_sample_count(mdb, cols, params, scale_index = NULL)
 mfdb_sample_meanlength(mdb, cols, params, scale_index = NULL)
 mfdb_sample_meanlength_stddev(mdb, cols, params, scale_index = NULL)
-mfdb_sample_totalweight(mdb, cols, params)
-mfdb_sample_meanweight(mdb, cols, params, scale_index = NULL)
-mfdb_sample_meanweight_stddev(mdb, cols, params, scale_index = NULL)
+mfdb_sample_totalweight(mdb, cols, params, measurements = c('overall'))
+mfdb_sample_meanweight(mdb, cols, params, scale_index = NULL,
+                       measurements = c('overall'))
+mfdb_sample_meanweight_stddev(mdb, cols, params, scale_index = NULL,
+                              measurements = c('overall'))
 mfdb_sample_rawdata(mdb, cols, params, scale_index = NULL)
 mfdb_sample_scaled(mdb, cols, params, abundance_scale = NULL, scale = 'tow_length')
 mfdb_stomach_preycount(mdb, cols, params)
@@ -50,6 +52,7 @@ mfdb_stomach_presenceratio(mdb, cols, params)
     \item{scale_index}{Optional. survey_index used to scale results before aggregation, either "tow_length" or from \link{mfdb_import_survey_index}}
     \item{abundance_scale}{Optional. Same as \code{scale_index}}
     \item{scale}{Optional. A scale to apply to the resulting values, e.g. 'tow_length'}
+    \item{measurements}{Optional, default 'overall'. A vector of measurement names to use, one of overall, liver, gonad, stomach}
 }
 
 \details{

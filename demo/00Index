@@ -21,3 +21,4 @@ inttest-tibble			Exercise data import via. tibbles
 inttest-towdata			Excerise storing / grouping by tow information
 inttest-tripdata		Excerise storing / grouping by trip
 inttest-vessel			Excerise storing / grouping by vessel information
+inttest-weightmeasurements	Storing weights other than overall weight

@@ -64,6 +64,12 @@ areacells. The \code{data_in} should be a data.frame with the following columns:
     \item{weight}{Optional, default \code{c(NA)}. Weight of sample / mean weight of all samples}
     \item{weight_var}{Optional, default \code{c(NA)}. Sample variance, if data is already aggregated}
     \item{weight_total}{Optional, default \code{c(NA)}. Total weight of all samples, can be used with count = NA to represent an unknown number of samples}
+    \item{liver_weight}{Optional, default \code{c(NA)}. Weight of sample / mean liver weight of all samples}
+    \item{liver_weight_var}{Optional, default \code{c(NA)}. Sample variance, if data is already aggregated}
+    \item{gonad_weight}{Optional, default \code{c(NA)}. Weight of sample / mean gonad weight of all samples}
+    \item{gonad_weight_var}{Optional, default \code{c(NA)}. Sample variance, if data is already aggregated}
+    \item{stomach_weight}{Optional, default \code{c(NA)}. Weight of sample / mean stomach weight of all samples}
+    \item{stomach_weight_var}{Optional, default \code{c(NA)}. Sample variance, if data is already aggregated}
     \item{count}{Optional, default \code{c(1)}. Number of samples this row represents (i.e. if the data is aggregated)}
 }
 
