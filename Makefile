@@ -29,7 +29,11 @@ test: install
 	for f in tests/test-*.R; do echo "=== $$f ============="; Rscript $$f || break; done
 
 examples: install
-	Rscript -e 'devtools::run_examples(test = TRUE, run = TRUE, document = FALSE)'
+	# NB: devtools::run_examples isn't loading mfdb data properly, so rebuild examples DB first
+	Rscript -e 'library(mfdb) ; tryCatch(mfdb("examples", destroy_schema = TRUE), error = function (x) x) ; mfdb("examples")'
+	Rscript -e 'library(mfdb) ; tryCatch(mfdb("examples-copy", destroy_schema = TRUE), error = function (x) x) ; mfdb("examples-copy")'
+	Rscript -e 'library(mfdb) ; tryCatch(mfdb("examples-import-data", destroy_schema = TRUE), error = function (x) x) ; mfdb("examples-import-data")'
+	Rscript -e 'devtools::run_examples(run_donttest = TRUE, run_dontrun = TRUE, document = FALSE)'
 
 inttest: install test examples
 	for f in demo/inttest-*.R; do echo "=== $$f ============="; Rscript $$f || break; done
