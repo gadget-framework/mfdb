@@ -274,6 +274,14 @@ schema_from_6 <- function(mdb) {
     mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN gutted_weight REAL")
     mfdb_send(mdb, "ALTER TABLE sample ADD COLUMN gutted_weight_var REAL")
 
+    # Add extra detail to tow taxonomy
+    for (t in c('bait_type', 'net_type')) mfdb_create_taxonomy_table(mdb, t)
+    mfdb_send(mdb, "ALTER TABLE tow ADD COLUMN hook_count INT")
+    mfdb_send(mdb, "ALTER TABLE tow ADD COLUMN bait_type_id INT REFERENCES bait_type(bait_type_id)")
+    mfdb_send(mdb, "ALTER TABLE tow ADD COLUMN net_count INT")
+    mfdb_send(mdb, "ALTER TABLE tow ADD COLUMN net_type_id INT REFERENCES net_type(net_type_id)")
+    mfdb_send(mdb, "ALTER TABLE tow ADD COLUMN mesh_size REAL")
+
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 7")
 }
 

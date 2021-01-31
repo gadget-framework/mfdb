@@ -10,6 +10,7 @@
     * Add population taxonomy, for stock groupings
     * Add vessel_owner taxonomy
     * Add liver/gonad/stomach weight columns as well as overall weight
+    * Add bait_type/net_type/hook_count/net_count/mesh_size to tow table
 
 (unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
 

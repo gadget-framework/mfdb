@@ -168,6 +168,8 @@ mfdb_taxonomy_col_default <- c(
             NULL)
 mfdb_taxonomy_table_defs <- list(
     institute = list("Institute (mfdb::institute)", cols = mfdb_taxonomy_col_default),
+    bait_type = list("Bait type", cols = mfdb_taxonomy_col_default),
+    net_type =  list("Net type", cols = mfdb_taxonomy_col_default),
     gear = list("Gear used for sample", cols = c(
             "description", "VARCHAR(1024)", "Long description",
             "mesh_size", "REAL", "Mesh size (mm)",
@@ -213,6 +215,11 @@ mfdb_taxonomy_table_defs <- list(
             "depth", "REAL", "Tow depth (m)",
             "length", "REAL", "Tow length (m)",
             "duration", "REAL", "Tow duration (hours)",
+            "hook_count", "INT", "Hook count (e.g. for long lines)",
+            "bait_type_id", "INT REFERENCES bait_type(bait_type_id)", "Bait type used (e.g. for long lines)",
+            "net_count", "INT", "Number of nets used (e.g. for gillnets)",
+            "net_type_id", "INT REFERENCES net_type(net_type_id)", "Net type used (e.g. for gillnets)",
+            "mesh_size", "REAL", "Mesh size (mm) (e.g. for gillnets)",
             NULL)),
     vessel = list("Vessel performing sample", cols = c(
             "vessel_type_id", "INT REFERENCES vessel_type(vessel_type_id)", "Vessel type used",

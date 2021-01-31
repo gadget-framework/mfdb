@@ -113,7 +113,9 @@ mfdb_import_cs_taxonomy <- function(mdb, taxonomy_name, data_in) {
 }
 mfdb_import_area <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'areacell', data_in)
 mfdb_import_sampling_type <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'sampling_type', data_in)
+mfdb_import_bait_type_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'bait_type', data_in)
 mfdb_import_tow_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'tow', data_in)
+mfdb_import_net_type_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'net_type', data_in)
 mfdb_import_population_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'population', data_in)
 mfdb_import_port_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'port', data_in)
 mfdb_import_trip_taxonomy <- function(mdb, data_in) mfdb_import_cs_taxonomy(mdb, 'trip', data_in)

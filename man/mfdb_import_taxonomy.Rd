@@ -2,11 +2,13 @@
 \alias{mfdb_import_area}
 \alias{mfdb_import_division}
 \alias{mfdb_import_sampling_type}
+\alias{mfdb_import_bait_type_taxonomy}
 \alias{mfdb_import_cs_taxonomy}
 \alias{mfdb_import_gear_taxonomy}
 \alias{mfdb_import_population_taxonomy}
 \alias{mfdb_import_port_taxonomy}
 \alias{mfdb_import_tow_taxonomy}
+\alias{mfdb_import_net_type_taxonomy}
 \alias{mfdb_import_trip_taxonomy}
 \alias{mfdb_import_vessel_taxonomy}
 \alias{mfdb_import_vessel_owner_taxonomy}
@@ -22,9 +24,11 @@
     mfdb_import_area(mdb, data_in)
     mfdb_import_division(mdb, data_in)
     mfdb_import_sampling_type(mdb, data_in)
+    mfdb_import_bait_type_taxonomy(mdb, data_in)
     mfdb_import_population_taxonomy(mdb, data_in)
     mfdb_import_port_taxonomy(mdb, data_in)
     mfdb_import_tow_taxonomy(mdb,  data_in)
+    mfdb_import_net_type_taxonomy(mdb, data_in)
     mfdb_import_trip_taxonomy(mdb, data_in)
     mfdb_import_vessel_taxonomy(mdb,  data_in)
     mfdb_import_vessel_owner_taxonomy(mdb,  data_in)
