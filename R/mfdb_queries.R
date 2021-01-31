@@ -73,6 +73,18 @@ mfdb_area_size <- function (mdb, params) {
         col_defs = list(area = "c.areacell_id"),
         params = params)
 }
+# Return area, size, mean_depth
+mfdb_area_size_depth <- function (mdb, params) {
+    mfdb_sample_grouping(mdb,
+        group_cols = c("area"),
+        calc_cols = c(
+            "SUM(c.size) AS size",
+            "WEIGHTED_MEAN(c.depth::numeric, c.size::numeric) AS mean_depth",
+            NULL),
+        core_table = "areacell",
+        col_defs = list(area = "c.areacell_id"),
+        params = params)
+}
 
 # Return year, step, area, temperature (mean)
 mfdb_temperature <- function (mdb, params = list()) {

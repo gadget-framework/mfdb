@@ -282,6 +282,9 @@ schema_from_6 <- function(mdb) {
     mfdb_send(mdb, "ALTER TABLE tow ADD COLUMN net_type_id INT REFERENCES net_type(net_type_id)")
     mfdb_send(mdb, "ALTER TABLE tow ADD COLUMN mesh_size REAL")
 
+    # Add depth to areacell
+    mfdb_send(mdb, "ALTER TABLE areacell ADD COLUMN depth REAL")
+
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 7")
 }
 

@@ -186,6 +186,7 @@ mfdb_taxonomy_table_defs <- list(
     species = list("Species (mfdb::species)", cols = mfdb_taxonomy_col_default),
     areacell = list("Areacell", cols = c(
             "size", "REAL", "Size of areacell",
+            "depth", "REAL", "Depth of areacell",
             NULL)),
     stomach_state = list("1..5 (mfdb::stomach_state)", cols = mfdb_taxonomy_col_default),
     digestion_stage = list("1..5 (mfdb::digestion_stage)", cols = mfdb_taxonomy_col_default),

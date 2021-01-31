@@ -1,5 +1,6 @@
 \name{mfdb_queries}
 \alias{mfdb_area_size}
+\alias{mfdb_area_size_depth}
 \alias{mfdb_temperature}
 \alias{mfdb_survey_index_mean}
 \alias{mfdb_survey_index_total}
@@ -25,6 +26,7 @@
 
 \usage{
 mfdb_area_size(mdb, params)
+mfdb_area_size_depth(mdb, params)
 mfdb_temperature(mdb, params)
 mfdb_survey_index_mean(mdb, cols, params)
 mfdb_survey_index_total(mdb, cols, params)
@@ -128,6 +130,9 @@ to scale counts by the tow length.
     \describe{
         \item{mfdb_area_size}{
             Returns area, (total area) size
+        }
+        \item{mfdb_area_size_depth}{
+            Returns area, (total area) size, mean depth, weighted by area size
         }
         \item{mfdb_temperature}{
             Returns year, step, area, (mean) temperature

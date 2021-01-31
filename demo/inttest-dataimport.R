@@ -23,7 +23,12 @@ ok_group("Areacell/divisions", {
     ok(cmp_error(mfdb_import_division(mdb, list(divA = c('45G01', '45G02', '45G03'))), 'areacell vocabulary'), "Areacell not populated yet")
 
     # So define some, so it should work
-    mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5.1, 5.2, 5.3)))
+    mfdb_import_area(mdb, table_string('
+id  name size
+ 1 45G01  5.1
+ 2 45G02  5.2
+ 3 45G03  5.3
+    '))
     mfdb_import_division(mdb, list(divA = c('45G01', '45G02', '45G03')))
     ok(cmp(as.integer(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM division")[1,1]), 3), "Inserted 3 rows into division")
 
@@ -69,15 +74,15 @@ ok_group("Areacell/divisions", {
             generator = "mfdb_area_size"))),
         "Get new combined size after updating area sizes")
 
-    # Can import areas and divisions at the same time
+    # Can import areas and divisions at the same time, and give them depths
     mfdb_import_area(mdb, table_string("
-id	name	size	division
-10	a10	1001	div10
-11	a11	1003	div10
-12	a12	1005	div10
-13	a20	2002	div20
-14	a21	2004	div20
-15	a22	2008	div20
+id	name	size	division	depth
+10	a10	1001	div10		42
+11	a11	1003	div10		86
+12	a12	1005	div10		76
+13	a20	2002	div20		44
+14	a21	2004	div20		27
+15	a22	2008	div20		94
     "))
     ok(cmp(mfdb_area_size(mdb, list(area = mfdb_group(g1 = c('div10'), g2 = c('div20'), g3 = c('div10', 'div20'))))[[1]][,c('area', 'size')],
         table_string("
@@ -86,6 +91,21 @@ g1	3009
 g2	6014
 g3	9023
         ")), "Inserted divisions at the same time as areas")
+
+    # Can query depths as well as size
+    agg_data <- mfdb_area_size_depth(mdb, list(
+        area = mfdb_group(g1 = c('div10'), g2 = c('div20'), g3 = c('div10', 'div20'))))
+    ok(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
+        area = c('g1', 'g2', 'g3'),
+        size = c(
+            1001 + 1003 + 1005,
+            2002 + 2004 + 2008,
+            1001 + 1003 + 1005 + 2002 + 2004 + 2008),
+        mean_depth = c(
+            weighted.mean(c(42, 86, 76), c(1001, 1003, 1005)),
+            weighted.mean(c(44, 27, 94), c(2002, 2004, 2008)),
+            weighted.mean(c(42, 86, 76, 44, 27, 94), c(1001, 1003, 1005, 2002, 2004, 2008))),
+            stringsAsFactors = FALSE)), "Depth and size query, depth is mean")
 })
 
 ok_group("Temperature", {

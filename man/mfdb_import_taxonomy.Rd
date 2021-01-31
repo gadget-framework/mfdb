@@ -82,6 +82,7 @@ Beyond the above, you can also provide the following:
 
 \describe{
     \item{size}{The size of the areacell}
+    \item{depth}{The depth of the areacell}
     \item{division}{The name of the division this areacell is part of}
 }
 

@@ -67,6 +67,7 @@ export(mfdb_empty_taxonomy)
 
 # mfdb_queries.R
 export(mfdb_area_size)
+export(mfdb_area_size_depth)
 export(mfdb_temperature)
 export(mfdb_survey_index_mean)
 export(mfdb_survey_index_total)
