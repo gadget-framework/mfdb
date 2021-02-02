@@ -14,22 +14,27 @@ source('tests/utils/inttest-helpers.R')
 # Empty database
 if (exists("mdb")) mfdb_disconnect(mdb)
 
+# Create a connection to gather DB args
+mdb <- mfdb('inttest-dbupgrade', db_params = db_params)
+db_args <- mdb$db_args
+mfdb_disconnect(mdb)
+
 # Rebuild the version 2 schema
 mdb <- mfdb('Test', db_params = db_params, destroy_schema = TRUE)
 system(paste(
     'echo "DROP SCHEMA public CASCADE" | psql',
-    ' --host=', db_params$host,
-    ' --dbname=', db_params$dbname,
+    ' --host=', db_args$host,
+    ' --dbname=', db_args$dbname,
     sep="", collapse=""))
 system(paste(
     'echo "DROP SCHEMA test CASCADE" | psql',
-    ' --host=', db_params$host,
-    ' --dbname=', db_params$dbname,
+    ' --host=', db_args$host,
+    ' --dbname=', db_args$dbname,
     sep="", collapse=""))
 system(paste(
     'psql',
-    ' --host=', db_params$host,
-    ' --dbname=', db_params$dbname,
+    ' --host=', db_args$host,
+    ' --dbname=', db_args$dbname,
     ' --file=tests/utils/schema_2.x.sql',
     sep="", collapse=""))
 
@@ -62,13 +67,13 @@ mdb <- mfdb('public', db_params = db_params, destroy_schema = TRUE)
 # Rebuild a version 5 schema and upgrade it
 system(paste(
     'echo "DROP SCHEMA test_5x CASCADE" | psql',
-    ' --host=', db_params$host,
-    ' --dbname=', db_params$dbname,
+    ' --host=', db_args$host,
+    ' --dbname=', db_args$dbname,
     sep="", collapse=""))
 system(paste(
     'pg_restore',
-    ' --host=', db_params$host,
-    ' --dbname=', db_params$dbname,
+    ' --host=', db_args$host,
+    ' --dbname=', db_args$dbname,
     ' tests/utils/schema_5.x.dump',
     sep="", collapse=""))
 mdb <- mfdb('test_5x', db_params = db_params)

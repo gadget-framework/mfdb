@@ -36,7 +36,7 @@ examples: install
 	Rscript -e 'devtools::run_examples(run_donttest = TRUE, run_dontrun = TRUE, document = FALSE)'
 
 inttest: install test examples
-	for f in demo/inttest-*.R; do echo "=== $$f ============="; Rscript $$f || break; done
+	for f in demo/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME=mf_inttest Rscript $$f || break; done
 
 gh-pages:
         # To start:

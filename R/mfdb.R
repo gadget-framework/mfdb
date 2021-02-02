@@ -17,6 +17,14 @@ mfdb <- function(case_study_name = "",
         list(host = "localhost", user = "mf", password = "mf"),
         list(host = "/tmp/pg_mfdb"))
 
+    # Override db_params with MFDB_USER / MFDB_PORT / .. env vars if available
+    for (p in c('user', 'host', 'port', 'password', 'dbname')) {
+        env_name <- paste0("MFDB_", toupper(p))
+        if (nzchar(Sys.getenv(env_name))) {
+            db_params[[p]] <- Sys.getenv(env_name)
+        }
+    }
+
     if (identical(db_params$host, 'mfdb.rhi.hi.is')) {
         # Enforce user
         if (!isTRUE(nzchar(db_params$user)) && interactive()) {
@@ -71,6 +79,7 @@ mfdb <- function(case_study_name = "",
             save_temp_tables = save_temp_tables,
             state = new.env(),
             schema = if (nzchar(case_study_name)) gsub('\\W', '_', tolower(case_study_name)) else "public",
+            db_args = db_combined,
             db = db_connection), class = "mfdb")
     schema_count <- mfdb_fetch(mdb,
         "SELECT COUNT(*)",

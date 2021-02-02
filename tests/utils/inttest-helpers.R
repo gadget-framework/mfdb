@@ -1,11 +1,4 @@
-library(DBI)
-library(RPostgres)
-
-db_params <- list(dbname = "mf_inttest")
-
-db_connection <- function() {
-    do.call(dbConnect, c(list(drv = Postgres()), db_params))
-}
+db_params <- list()
 
 # NB: Sys.timezone() will produce spurious warnings on first call depending on environment:
 # > Sys.timezone()

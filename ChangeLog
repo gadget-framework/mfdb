@@ -2,6 +2,7 @@
 
     Version 7.0-0
     * Switch to requiring RPostgres as the default DBI driver
+    * Allow DB params to be supplied with MFDB_* environment variables
 
     Schema changes:
     * Age now stored as NUMERIC
