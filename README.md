@@ -117,7 +117,7 @@ Using
 -----
 
 For an introduction to the package, read the ``package?mfdb`` help file in R.
-[This is also available online](http://mareframe.github.io/).
+[This is also available online](https://gadget-framework.github.io/mfdb).
 
 There are a selection of example scripts in the ``demo/`` folder. The
 ``example-*`` scripts show the full process of importing data from specified
@@ -140,7 +140,7 @@ To run all tests (unit tests, integration, examples and check-as-cran), use
 Models using MFDB
 -----------------
 
-* https://github.com/fishvice/gadget-models
+* https://github.com/gadget-framework/gadget-models
 
 Acknowledgements
 ----------------
