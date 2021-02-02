@@ -1,0 +1,92 @@
+# Based on:-
+# * https://ropenscilabs.github.io/actions_sandbox/websites-using-pkgdown-bookdown-and-blogdown.html#action-to-deploy-a-bookdown-site
+# * https://github.com/peaceiris/actions-gh-pages
+# Before running, we need an ACTIONS_DEPLOY_KEY:-
+# * https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-create-ssh-deploy-key
+on:
+  push:
+     branches:
+       - wip-7.x
+
+name: Render documentation
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+
+    services:
+      # https://docs.github.com/en/actions/guides/creating-postgresql-service-containers
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: pgpw
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-pandoc@v1
+
+      - name: Create mf database
+        run: echo -ne "CREATE DATABASE mf; CREATE DATABASE mf_inttest; CREATE USER gelda WITH PASSWORD 'adleg';" | psql -d postgresql://postgres@localhost/postgres
+        env:
+          PGPASSWORD: pgpw
+
+      #####
+
+      - name: devtools dependencies
+        run: sudo apt-get install -y libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev
+
+      - name: Install build-docs prerequisites
+        run: install.packages(c("pkgdown", "devtools"))
+        shell: Rscript {0}
+
+      - name: Install package
+        run: devtools::install(dependencies = TRUE, upgrade = "always")
+        shell: Rscript {0}
+
+      - name: Run examples
+        run: devtools::run_examples(run_donttest = TRUE, run_dontrun = TRUE, document = FALSE)
+        shell: Rscript {0}
+        env:
+          MFDB_HOST: localhost
+          MFDB_USER: postgres
+          MFDB_PASSWORD: pgpw
+        
+      - name: Render R Documentation
+        run: Rscript -e "pkgdown::build_site()"
+
+      #####
+
+      - name: Install Java/JDBC for schemaspy
+        run: sudo apt install default-jre-headless libpostgresql-jdbc-java graphviz
+
+      - name: Fetch schemaspy
+        run: wget -O /tmp/schemaspy.jar https://github.com/schemaspy/schemaspy/releases/download/v6.1.0/schemaspy-6.1.0.jar
+
+      - name: Render Schema documentation
+        run: |
+          java -jar /tmp/schemaspy.jar -dp /usr/share/java/postgresql.jar \
+            -t pgsql -host localhost -u postgres -p pgpw \
+            -db mf -s examples -o docs/schema
+
+      #####
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: current_branch
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          # NB: We publish to gh-pages-7.x, on major upgrade change the gh-pages branch
+          publish_branch: gh-pages-${{ steps.current_branch.outputs.branch }}
+          publish_dir: ./docs
