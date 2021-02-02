@@ -1,30 +1,62 @@
-# Excerise storing / grouping by tow metadata
-#
-# ok and ok_group are there so we can run this code and verify it is correct,
-# and not needed every-day use.
-#
-# NB: if you want to run this, you must be using mfdb-workspace, also be warned
-# any data stored in your database will be destroyed.
+---
+title: "Storing & grouping by tow metadata"
+output:
+  html_document:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Tow metadata}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r, message=FALSE, echo=FALSE}
+logging::setLevel('WARN')
 library(unittest)
 library(mfdb)
-source('tests/utils/helpers.R')
-source('tests/utils/inttest-helpers.R')
 
 # Empty database & rebuild
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('inttest-towdata', db_params = db_params, destroy_schema = TRUE)
-mdb <- mfdb('inttest-towdata', db_params = db_params, save_temp_tables = TRUE) # TODO:
+mfdb('vignette-towdata', destroy_schema = TRUE)
 
-# Set-up areas/divisions
-mfdb_import_area(mdb, data.frame(
-    name = c('45G01', '45G02', '45G03'),
-    division = c('divA', 'divA', 'divB'),
-    size = c(10,200,400)))
+# Remove our attributes from a dataframe - only used for testing
+unattr <- function (obj) {
+    attributes(obj) <- attributes(obj)[c('names', 'row.names', 'class')]
+    obj
+}
+```
 
-# Create a temporary gadget directory
-gd <- gadget_directory(tempfile())
+The following examples use the following table_string helper to succintly
+define tables:
 
-# Set up the tows we use in this example
+```{r}
+# Convert a string into a data.frame
+table_string <- function (text, ...) read.table(
+    text = text,
+    blank.lines.skip = TRUE,
+    header = TRUE,
+    stringsAsFactors = FALSE,
+    ...)
+```
+
+Firstly, connect to a database and set up some areas/divisions:
+
+```{r}
+mdb <- mfdb('inttest-towdata')
+mfdb_import_area(mdb, table_string('
+name  division size
+45G01     divA   10
+45G02     divA  200
+45G03     divB  400
+'))
+```
+
+## Importing Data
+
+Before any measurements assoicated with a tow can be imported, we need to
+define the tows that they will be associated with, and attributes such as
+length:
+
+```{r}
 mfdb_import_tow_taxonomy(mdb, table_string('
 name latitude longitude  depth length
    A     64.1    -23.15  98.82     10
@@ -32,9 +64,14 @@ name latitude longitude  depth length
    C     64.9    -13.55 140.91     20
    D     66.2    -18.55 122.61     20
 '))
+```
 
-# Import a survey for the data we are interested in
-mfdb_import_survey(mdb, data_source = "cod2000",
+For other possible columns, see ``?mfdb_import_tow_taxonomy``.
+
+Now tows are defined, we can import data that uses these definitions:
+
+```{r}
+mfdb_import_survey(mdb, data_source = "tow_example_a",
     table_string("
 year    month   areacell        species tow  length  age     weight
 2000    1       45G01           COD     A    21      2       210
@@ -50,24 +87,40 @@ year    month   areacell        species tow  length  age     weight
 2000    1       45G02           COD     D    44      1       330
 2000    1       45G03           COD     D    14      2       430
     "))
+```
 
-# Import bait types
+## Importing Data: Longlines
+
+``mfdb_import_tow_taxonomy`` also allows us to import *bait_type* and
+*hook_count*, useful when importing data from longline fisheries.
+
+As with other taxonomy tables, we have to first define bait types before we can
+use them:
+
+```{r}
 mfdb_import_bait_type_taxonomy(mdb, table_string('
 name	description
 b1	"Bait type 1"
 b2	"Bait type 2"
 b3	"Bait type 3"
 '))
+```
 
-# Add more detailed information for long lines
+...and then use ``mfdb_import_tow_taxonomy`` as before. Since the names don't
+overlap with the previous call, the old tow definitions won't be removed:
+
+```{r}
 mfdb_import_tow_taxonomy(mdb, table_string('
 name latitude longitude  length hook_count bait_type
  llA     63.4    -20.18	     11         30       b1
  llB     63.4    -20.18      12         30       b2
  llC     63.4    -20.18      13         30       b3
 '))
+```
 
-# Import long line catch data for the above tows
+Finally, import some data using these definitions:
+
+```{r}
 mfdb_import_survey(mdb, data_source = 'longline', table_string('
 year    month   areacell        species tow  length	age	weight
 2000	1	45G01		COD	llA	12	15	236
@@ -80,14 +133,27 @@ year    month   areacell        species tow  length	age	weight
 2000	1	45G01		COD	llC	94	9	342
 2000	1	45G01		COD	llC	71	12	375
     '))
+```
 
+## Importing Data: Gillnets
+
+``mfdb_import_tow_taxonomy`` also allows us to import *net_count*, *net_type*
+and *mesh_size*, useful when importing data from Gillnet fisheries.
+
+Again, we need to define net types first:
+
+```{r}
 mfdb_import_net_type_taxonomy(mdb, table_string('
 name	description
 black	Black
 orange	Orange
 white	White
 '))
+```
 
+...define the tows:
+
+```{r}
 # Add more detailed information for gillnets
 mfdb_import_tow_taxonomy(mdb, table_string('
 name latitude longitude  length net_count net_type mesh_size
@@ -95,8 +161,11 @@ name latitude longitude  length net_count net_type mesh_size
  gnB     63.4    -20.18      22         2  orange        7
  gnC     63.4    -20.18      23         2  white         8
 '))
+```
 
-# Import gillnet catch data for the above tows
+...and import some data using these definitions:
+
+```{r}
 mfdb_import_survey(mdb, data_source = 'gillnet', table_string('
 year    month   areacell        species tow  length	age	weight
 2000	1	45G01		COD	gnA	34	10	314
@@ -109,13 +178,24 @@ year    month   areacell        species tow  length	age	weight
 2000	1	45G01		COD	gnC	79	6	373
 2000	1	45G01		COD	gnC	57	5	186
     '))
+```
 
-# Group the data by tow depth
+## Querying data
+
+We can now use the ``mfdb_sample_*`` functions to select this data back out
+again. We can group and filter by any of the tow attributes. For instance, to
+group/filter by ``tow_depth``:
+
+```{r}
 agg_data <- mfdb_sample_meanlength(mdb, c('tow_depth'), list(
     step = mfdb_timestep_yearly,
     tow_depth = mfdb_interval('depth', c(0, 50, 100, 150)),
     null = NULL))
-ok(cmp(unattr(agg_data[[1]]), data.frame(
+agg_data
+```
+```{r, message=FALSE, echo=FALSE}
+# Test expected output
+stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
     year = c('all'),
     step = c('1'),
     area = c('all'),
@@ -126,8 +206,13 @@ ok(cmp(unattr(agg_data[[1]]), data.frame(
         mean(c(28, 34, 24, 12, 44, 14)),
         mean(c(21, 34, 34)),
     NULL),
-    stringsAsFactors = FALSE)), "Grouped by tow_depth")
+    stringsAsFactors = FALSE)))
+```
 
+Any of the other tow attributes are available with a "tow_" prefix. For
+example, we can show metadata per tow by using ``mfdb_unaggregated``:
+
+```{r}
 # Show all tow data unaggregated
 agg_data <- mfdb_sample_meanlength(mdb, c('tow', 'tow_latitude', 'tow_longitude', 'tow_depth', 'tow_length'), list(
     step = mfdb_timestep_yearly,
@@ -138,7 +223,10 @@ agg_data <- mfdb_sample_meanlength(mdb, c('tow', 'tow_latitude', 'tow_longitude'
     tow_depth = mfdb_unaggregated(),
     tow_length = mfdb_unaggregated(),
     null = NULL))
-ok(cmp(unattr(agg_data[[1]]), data.frame(
+agg_data
+```
+```{r, message=FALSE, echo=FALSE}
+stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
     year = c('all'),
     step = c('1'),
     area = c('divB'),
@@ -149,14 +237,22 @@ ok(cmp(unattr(agg_data[[1]]), data.frame(
     tow_length = c(10, 10, 20, 20),
     number = c(1, 1, 1, 1),
     mean = c(34, 54, 24, 14),
-    stringsAsFactors = FALSE)), "Shows all detail of tows")
+    stringsAsFactors = FALSE)))
+```
 
-# Tow length can also be used to scale samples
+As well as using tow attributes to group/filter, we can use the tow to scale
+the output of the query. For example, the following scales mean length by tow
+length, for each tow:
+
+```{r}
 agg_data <- mfdb_sample_meanlength(mdb, c('tow'), list(
     step = mfdb_timestep_yearly,
     tow = mfdb_unaggregated(),
     null = NULL), scale_index = 'tow_length')
-ok(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
+agg_data
+```
+```{r, message=FALSE, echo=FALSE}
+stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
     year = c('all'),
     step = c('1'),
     area = c('all'),
@@ -184,14 +280,20 @@ ok(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
         weighted.mean(c(13, 15, 52), c(1/12, 1/12, 1/12)),
         weighted.mean(c(85, 94, 71), c(1/13, 1/13, 1/13)),
         NULL),
-    stringsAsFactors = FALSE), tolerance = 1e-5), "Grouped by tow name, scaled by tow length")
+    stringsAsFactors = FALSE), tolerance = 1e-5))
+```
 
-# Scale data by tow_length
+...or scale by tow length whilst grouping by depth:
+
+```{r}
 agg_data <- mfdb_sample_scaled(mdb, c('tow_depth'), list(
     step = mfdb_timestep_yearly,
     tow_depth = mfdb_interval('depth', c(0, 50, 100, 150)),
     null = NULL), scale = 'tow_length')
-ok(cmp(unattr(agg_data[[1]]), data.frame(
+agg_data
+```
+```{r, message=FALSE, echo=FALSE}
+stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
     year = c('all'),
     step = c('1'),
     area = c('all'),
@@ -206,25 +308,39 @@ ok(cmp(unattr(agg_data[[1]]), data.frame(
         mean(c(28, 34, 24, 12, 44, 14)) / sum(20, 20, 20, 20, 20, 20), # C+D
         mean(c(21, 34, 34)) / sum(10, 10, 10),  # A
     NULL),
-    stringsAsFactors = FALSE)), "Grouped by tow_depth")
+    stringsAsFactors = FALSE)))
+```
 
+An example of grouping by ``tow_bait_type``:
+
+```{r}
 agg_data <- mfdb_sample_count(mdb, c('tow_bait_type'), list(
     tow_bait_type = mfdb_unaggregated()))
-ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+agg_data
+```
+```{r, message=FALSE, echo=FALSE}
+stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area tow_bait_type number
  all  all  all            b1      3
  all  all  all            b2      3
  all  all  all            b3      3
  all  all  all            NA     21
-    ')), "Can group by tow_bait_type")
+    ')))
+```
 
+And finally ``tow_net_type``:
 
+```{r}
 agg_data <- mfdb_sample_count(mdb, c('tow_net_type'), list(
     tow_net_type = mfdb_unaggregated()))
-ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+agg_data
+```
+```{r, message=FALSE, echo=FALSE}
+stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area tow_net_type number
  all  all  all        black      3
  all  all  all       orange      3
  all  all  all        white      3
  all  all  all           NA     21
-    ')), "Can group by tow_net_type")
+    ')))
+```

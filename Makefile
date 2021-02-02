@@ -35,7 +35,7 @@ examples: install
 	Rscript -e 'library(mfdb) ; tryCatch(mfdb("examples-import-data", destroy_schema = TRUE), error = function (x) x)'
 	Rscript -e 'devtools::run_examples(run_donttest = TRUE, run_dontrun = TRUE, document = FALSE)'
 
-inttest: install test examples
+inttest: install test examples build-docs
 	for f in demo/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME=mf_inttest Rscript $$f || break; done
 
 build-docs:
