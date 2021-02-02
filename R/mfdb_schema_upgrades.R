@@ -287,6 +287,9 @@ schema_from_6 <- function(mdb) {
     # Add depth to areacell
     mfdb_send(mdb, "ALTER TABLE areacell ADD COLUMN depth REAL")
 
+    # Change schema.count from REAL to DOUBLE
+    mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN count TYPE DOUBLE PRECISION")
+
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 7")
 }
 

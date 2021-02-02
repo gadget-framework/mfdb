@@ -121,7 +121,7 @@ mfdb_measurement_table_defs <- list(
         "gutted_weight", "REAL", "(mean) Gutted weight of fish",
         "gutted_weight_var", "REAL", "(mean) Gutted weight variance of fish (given aggregated data)",
 
-        "count", "REAL DEFAULT 1", "Number of fish meeting this criteria"
+        "count", "DOUBLE PRECISION DEFAULT 1", "Number of fish meeting this criteria"
     )),
     predator = list("Predators in predator/prey sample", cols = c(
         "predator_id", "SERIAL PRIMARY KEY", "",

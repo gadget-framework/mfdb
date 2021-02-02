@@ -13,6 +13,7 @@
     * Add liver/gonad/stomach weight columns as well as overall weight
     * Add bait_type/net_type/hook_count/net_count/mesh_size to tow table
     * Add depth to areacell table
+    * Change schema.count from REAL to DOUBLE
 
 (unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
 
