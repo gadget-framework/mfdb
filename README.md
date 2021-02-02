@@ -126,6 +126,8 @@ model files. The ``inttest-*`` scripts demonstrate other aspects, and also
 function as tests to ensure that the library works correctly (thus the ``ok()``
 function calls).
 
+Finally, there is [documentation on the database schema](https://gadget-framework.github.io/mfdb/schema).
+
 Development
 -----------
 
