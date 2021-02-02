@@ -3,12 +3,14 @@ schema_from_0 <- function(mdb) {
     mdb$logger$info("Creating schema from scratch")
     schema_create_tables(mdb)
 
-    # Populate tables with package-provided data
-    for (t in mfdb_taxonomy_tables) {
-        if (exists(t, where = as.environment("package:mfdb"))) {
-            mfdb_import_taxonomy(mdb, t, get(t, pos = as.environment("package:mfdb")))
-        }
-    }
+    # Load all taxonomy table data in the package
+    # NB: Calling mfdb::x directly doesn't work within examples, need to explicitly load
+    init_data <- new.env(parent = emptyenv())
+    suppressWarnings(do.call(utils::data, c(  # Not all have init data, suppress not-found warnings
+        as.list(mfdb_taxonomy_tables),
+        list(package = 'mfdb', envir = init_data))))
+    for (t in ls(init_data)) mfdb_import_taxonomy(mdb, t, init_data[[t]])
+
     mfdb_import_cs_taxonomy(mdb, "index_type", data.frame(
         id = c(99999),
         name = 'temperature',
