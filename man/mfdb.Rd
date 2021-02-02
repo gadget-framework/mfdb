@@ -28,6 +28,10 @@
         search for a "mf" database locally, but you can override any of the parameters,
         in particular \code{host}, \code{dbname}, \code{user}, \code{password}.
         See \code{methods?RPostgreSQL::dbConnect} for more information.
+
+        \var{db_params} can also be supplied by environment variable, for example
+        if a \code{MFDB_DBNAME} environment variable is set then it will be used
+        instead of any \code{dbname} supplied here.
     }
     \item{destroy_schema}{
         Optional boolean. If true, all mfdb tables will be destroyed when
