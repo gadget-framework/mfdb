@@ -5,6 +5,7 @@
 ^.bash_history
 ^do-release\.sh$
 ^cran-comments$
+^docs$
 
 ^examples$
 ^example-datras-data$

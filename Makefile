@@ -38,17 +38,8 @@ examples: install
 inttest: install test examples
 	for f in demo/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME=mf_inttest Rscript $$f || break; done
 
-gh-pages:
-        # To start:
-        # sh /usr/share/doc/git/contrib/workdir/git-new-workdir . docs master
-        # git -C docs checkout --orphan gh-pages
-        # git -C docs rm -rf .
-        # (build & commit)
+build-docs:
 	[ -d docs ] && rm -r docs || true
-	sh /usr/share/doc/git/contrib/workdir/git-new-workdir . docs gh-pages
 	echo 'pkgdown::build_site()' | R --vanilla
-	cd docs/ && git diff
-	[ -n "$(GH_COMMIT)" ] && ( cd docs/ && git add -A . && git commit -m "Docs for $(shell git rev-parse --short HEAD)" ) || true
-	[ -d docs ] && rm -r docs
 
-.PHONY: all install build check check-as-cran wincheck examples inttest
+.PHONY: all install build check check-as-cran wincheck examples inttest build-docs
