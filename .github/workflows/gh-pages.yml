@@ -60,7 +60,12 @@ jobs:
           MFDB_PASSWORD: pgpw
         
       - name: Render R Documentation
-        run: Rscript -e "pkgdown::build_site()"
+        run: pkgdown::build_site()
+        shell: Rscript {0}
+        env:
+          MFDB_HOST: localhost
+          MFDB_USER: postgres
+          MFDB_PASSWORD: pgpw
 
       #####
 
