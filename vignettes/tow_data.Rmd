@@ -16,7 +16,7 @@ library(mfdb)
 
 # Empty database & rebuild
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('vignette-towdata', destroy_schema = TRUE)
+mfdb('vignette-tow_data', destroy_schema = TRUE)
 
 # Remove our attributes from a dataframe - only used for testing
 unattr <- function (obj) {
@@ -41,7 +41,7 @@ table_string <- function (text, ...) read.table(
 Firstly, connect to a database and set up some areas/divisions:
 
 ```{r}
-mdb <- mfdb('inttest-towdata')
+mdb <- mfdb('vignette-tow_data')
 mfdb_import_area(mdb, table_string('
 name  division size
 45G01     divA   10
