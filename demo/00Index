@@ -18,6 +18,5 @@ inttest-sharing			Exercise DB schema permission management
 inttest-stockfile		Excrcise stockfile generation
 inttest-stomach			Excerise predator / prey relationship stomach data
 inttest-tibble			Exercise data import via. tibbles
-inttest-tripdata		Excerise storing / grouping by trip
 inttest-vessel			Excerise storing / grouping by vessel information
 inttest-weightmeasurements	Storing weights other than overall weight

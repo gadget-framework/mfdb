@@ -1,29 +1,65 @@
-# Excerise storing / grouping by tow metadata
-#
-# ok and ok_group are there so we can run this code and verify it is correct,
-# and not needed every-day use.
-#
-# NB: if you want to run this, you must be using mfdb-workspace, also be warned
-# any data stored in your database will be destroyed.
+
+---
+title: "Storing & grouping by vessel trips"
+output:
+  html_document:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Trip metadata}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r, message=FALSE, echo=FALSE}
+logging::setLevel('WARN')
 library(unittest)
 library(mfdb)
-source('tests/utils/helpers.R')
-source('tests/utils/inttest-helpers.R')
-# logging::setLevel('FINEST')
 
 # Empty database & rebuild
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('inttest-tripdata', db_params = db_params, destroy_schema = TRUE)
-mdb <- mfdb('inttest-tripdata', db_params = db_params)
+mfdb('vignette-trip', destroy_schema = TRUE)
 
-# Set-up areas/divisions
-mfdb_import_area(mdb, data.frame(
-    name = c('45G01', '45G02', '45G03'),
-    division = c('divA', 'divA', 'divB'),
-    size = c(10,200,400)))
+# Remove our attributes from a dataframe - only used for testing
+unattr <- function (obj) {
+    attributes(obj) <- attributes(obj)[c('names', 'row.names', 'class')]
+    obj
+}
+```
 
-# Set up some ports
-# TODO: Pre-populate? Would probably need a BIGINT for everything tho'
+Samples can be assigned to a *trip*, which provides a way of including
+socioeconomic data into MFDB.
+
+The following examples use the following table_string helper to succintly
+define tables:
+
+```{r}
+# Convert a string into a data.frame
+table_string <- function (text, ...) read.table(
+    text = text,
+    blank.lines.skip = TRUE,
+    header = TRUE,
+    stringsAsFactors = FALSE,
+    ...)
+```
+
+Then connect to a database and set up some areas/divisions:
+
+```{r}
+mdb <- mfdb('vignette-trip')
+mfdb_import_area(mdb, table_string('
+name  division size
+45G01     divA   10
+45G02     divA  200
+45G03     divB  400
+'))
+```
+
+## Importing data
+
+Trips can have a *start_port* and *end_port* associated with them, before we
+can do this we need to define any ports we use. We do this with ``mfdb_import_port_taxonomy``:
+
+```{r}
 mfdb_import_port_taxonomy(mdb, table_string('
 name 	description 	institute 	latitude longitude
 ISHFF 	Hafnarfjordur 	ISL 		64.04	21.57
@@ -33,8 +69,11 @@ ISREK 	Reykjavik 	ISL 		64.09	21.55
 ISSEJ 	Seydisfjordur 	ISL 		65.15	13.55
 ISKJF 	Skerjafjordur 	ISL 		64.07	21.54
 '))
+```
 
-# Set up some trips
+We can now define trips that use these ports:
+
+```{r}
 mfdb_import_trip_taxonomy(mdb, table_string('
 name 	start_date	end_date	crew	oil_consumption	start_port	end_port
 T1	2019-01-21	2019-02-11	4	3000		ISKEF		ISREK
@@ -42,8 +81,12 @@ T2	2019-01-24	2019-02-14	5	9000		ISKEF		ISSEJ
 T3	2019-04-21	2019-05-11	4	3000		ISREK		ISKEF
 T4	2019-04-24	2019-05-14	5	9000		ISSEJ		ISKEF
 '))
+```
 
-# Set up the tows we use in this example
+There is no formal link between trips and tows, so you can link a sample to a
+tow without recording trips. But we can create tows and vessels to use:
+
+```{r}
 mfdb_import_tow_taxonomy(mdb, table_string('
 name latitude longitude  depth length
  T1a     64.1    -23.15  98.82     10
@@ -55,14 +98,19 @@ name latitude longitude  depth length
  T4a     64.1    -23.15  98.82     10
  T4b     64.1    -23.15  98.82     10
 '))
+```
 
+```{r}
 mfdb_import_vessel_taxonomy(mdb, table_string('
 name full_name
 V1	"Vessel 1"
 V2	"Vessel 2"
 '))
+```
 
-# Import survey data relating to trips
+And finally import data that is associated to a vessel/trip/tow:
+
+```{r}
 mfdb_import_survey(mdb, data_source = "cod2000",
 table_string("
 year    month   areacell   species vessel trip tow  length  count
@@ -94,23 +142,45 @@ year    month   areacell   species vessel trip tow  length  count
 2019    5       45G02      COD     V2     T4   T4b    20      175
 2019    5       45G02      COD     V2     T4   T4b    30      299
 "))
+```
 
-ok(ut_cmp_equal(
-    unattr(mfdb_sample_count(mdb, c('trip_start_date', 'length'), list(
-        trip_start_date = '2019-01-21',
-        length = mfdb_unaggregated()))[[1]]),
-    table_string('
+## Querying data
+
+We can now use the ``mfdb_sample_*`` functions to select this data back out
+again. 
+
+
+We can group and filter by any of the trip attributes. For instance, to
+group/filter by ``trip_start_date``:
+
+```{r}
+agg_data <- mfdb_sample_count(mdb, c('trip_start_date', 'length'), list(
+    trip_start_date = '2019-01-21',
+    length = mfdb_unaggregated()))
+agg_data
+```
+```{r, message=FALSE, echo=FALSE}
+stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area trip_start_date length number
  all  all  all      2019-01-21     10    598
  all  all  all      2019-01-21     20    598
  all  all  all      2019-01-21     30    284
-    ')), "Summed T1a and T1b, since they have a matching start date")
+    ')))
+```
 
-ok(ut_cmp_equal(
-    unattr(mfdb_sample_count(mdb, c('trip_start_port', 'length'), list(
-        trip_start_port = mfdb_group(KEF = 'ISKEF', other = c('ISREK', 'ISSEJ')),
-        length = mfdb_unaggregated()))[[1]]),
-    table_string('
+Note that we've summed T1a and T1b, since their start date matches.
+
+We can use ``mfdb_group``() to aggregate several ports, for instance:
+
+```{r}
+agg_data <- mfdb_sample_count(mdb, c('trip_start_port', 'length'), list(
+    trip_start_port = mfdb_group(KEF = 'ISKEF', other = c('ISREK', 'ISSEJ')),
+    length = mfdb_unaggregated()))
+agg_data
+```
+```{r, message=FALSE, echo=FALSE}
+# Translated trip_start_port in and out of attributes
+stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area trip_start_port length number
  all  all  all             KEF     10   1202
  all  all  all             KEF     20    842
@@ -118,5 +188,5 @@ year step area trip_start_port length number
  all  all  all           other     10   1372
  all  all  all           other     20   1023
  all  all  all           other     30    925
-    ')), "Translated trip_start_port in and out of attributes")
-
+    ')))
+```
