@@ -1,0 +1,130 @@
+---
+title: "Storing & grouping other weight measurements"
+output:
+  html_document:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Additional weight measurements}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r, message=FALSE, echo=FALSE}
+logging::setLevel('WARN')
+library(unittest)
+library(mfdb)
+
+# Empty database & rebuild
+if (exists("mdb")) mfdb_disconnect(mdb)
+mfdb('vignette-weightmeasurements', destroy_schema = TRUE)
+
+# Remove our attributes from a dataframe - only used for testing
+unattr <- function (obj) {
+    attributes(obj) <- attributes(obj)[c('names', 'row.names', 'class')]
+    obj
+}
+```
+
+The following examples use the following table_string helper to succintly
+define tables:
+
+```{r}
+# Convert a string into a data.frame
+table_string <- function (text, ...) read.table(
+    text = text,
+    blank.lines.skip = TRUE,
+    header = TRUE,
+    stringsAsFactors = FALSE,
+    ...)
+```
+
+Firstly, connect to a database and set up some areas/divisions:
+
+```{r}
+mdb <- mfdb('vignette-weightmeasurements')
+mfdb_import_area(mdb, table_string('
+name  division size
+45G01     divA   10
+45G02     divA  200
+45G03     divB  400
+'))
+```
+
+## Importing data
+
+Normally when using ``mfdb_import_survey`` you supply ``count``, ``length``,
+``weight`` columns. But other lenghts can also be supplied:
+
+```{r}
+mfdb_import_survey(mdb, data_source = "x",
+    table_string('
+year    month   areacell        species length  age     weight	liver_weight	gonad_weight	stomach_weight
+2000    1       45G01           COD     21      2       210	93		82		72
+2000    1       45G02           COD     34      3       220	28		93		99
+2000    1       45G03           COD     44      4       230	93		85		72
+    '))
+```
+
+## Querying data
+
+To get any additional weights back when querying, you need to supply
+measurements, for example:
+
+```{r}
+agg_data <- mfdb_sample_totalweight(mdb, c('age'), list(
+    age = mfdb_unaggregated(),
+    null = NULL), measurements = c('overall', 'liver', 'gonad', 'stomach'))
+agg_data
+```
+```{r, message=FALSE, echo=FALSE}
+stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+year step area age total_weight total_liver_weight total_gonad_weight total_stomach_weight
+ all  all  all   2          210                 93                 82                   72
+ all  all  all   3          220                 28                 93                   99
+ all  all  all   4          230                 93                 85                   72
+    ')))
+```
+
+Single measurements are also possible:
+
+```{r}
+agg_data <- mfdb_sample_totalweight(mdb, c('age'), list(
+    age = mfdb_unaggregated(),
+    null = NULL), measurements = c('stomach'))
+agg_data
+```
+```{r, message=FALSE, echo=FALSE}
+stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+year step area age total_stomach_weight
+ all  all  all   2                   72
+ all  all  all   3                   99
+ all  all  all   4                   72
+    ')))
+```
+
+We can also use ``mfdb_sample_meanweight`` to aggregate:
+
+```{r}
+agg_data <- mfdb_sample_meanweight(mdb, c('age'), list(
+    null = NULL), measurements = c('liver', 'stomach'))
+agg_data
+```
+```{r, message=FALSE, echo=FALSE}
+stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+year step area age number mean_liver_weight mean_stomach_weight
+ all  all  all all      3          71.33333                  81
+    '), tolerance = 1e-7))
+```
+
+As well as ``mfdb_sample_meanweight_stddev``:
+
+```{r}
+agg_data <- mfdb_sample_meanweight_stddev(mdb, c('age'), list(
+    null = NULL), measurements = c('overall', 'gonad'))
+agg_data
+```
+```{r, message=FALSE, echo=FALSE}
+stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+year step area age number mean mean_gonad_weight stddev stddev_gonad_weight
+ all  all  all all      3  220          86.66667     10            5.686241
+    '), tolerance = 1e-7))

@@ -18,4 +18,3 @@ inttest-stockfile		Excrcise stockfile generation
 inttest-stomach			Excerise predator / prey relationship stomach data
 inttest-tibble			Exercise data import via. tibbles
 inttest-vessel			Excerise storing / grouping by vessel information
-inttest-weightmeasurements	Storing weights other than overall weight
