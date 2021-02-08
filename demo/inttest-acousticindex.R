@@ -135,6 +135,65 @@ ok_group("Generating an acoustic index likelihood component", {
             sum(c( 3: 1)), sum(c(15:13))),
         stringsAsFactors = FALSE)), "Got averaged readings")
 
+    # Can scale by area_size
+    agg_data <- mfdb_survey_index_mean(mdb, cols = c(), list(
+            index_type = 'acoustic',
+            year = 1998,
+            area = area_group,
+            timestep = mfdb_timestep_quarterly), scale_index = 'area_size')
+    ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+year step area   mean
+# weighted.mean(c(12,11,10, 24,23,22), c(rep(10, 3), rep(200, 3)))
+1998    1 divA 22.42857
+# weighted.mean(c(9,8,7, 21,20,19), c(rep(10, 3), rep(200, 3)))
+1998    2 divA 19.42857
+1998    3 divA 16.42857
+1998    4 divA 13.42857
+    ', colClasses = c(NA, 'character', NA, NA)), tolerance = 1e-7), "Index scaled by area size (mean)")
+    agg_data <- mfdb_survey_index_total(mdb, cols = c(), list(
+            index_type = 'acoustic',
+            year = 1998,
+            area = area_group,
+            timestep = mfdb_timestep_quarterly), scale_index = 'area_size')
+    ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+year step area total
+# sum(c(c(12,11,10) * 10, c(24,23,22) * 200))
+1998    1 divA 14130
+# sum(c(c(9,8,7) * 10, c(21,20,19) * 200))
+1998    2 divA 12240
+1998    3 divA 10350
+1998    4 divA 8460
+    ', colClasses = c(NA, 'character', NA, NA))), "Index scaled by area size (total)")
+
+    # Can scale by another index
+    # NB: The fact that effort is only available for G02 restricts what data is returned
+    agg_data <- mfdb_survey_index_total(mdb, cols = c(), list(
+            index_type = 'acoustic',
+            year = 1998,
+            area = area_group,
+            timestep = mfdb_timestep_quarterly), scale_index = 'effort')
+    ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+year step area total
+# 24 * 94 + 23 * 93 + 22 * 92
+1998    1 divA  6419
+# 21 * 91 + 20 * 29 + 19 * 99
+1998    2 divA  4372
+1998    3 divA  3527
+1998    4 divA  1938
+    ', colClasses = c(NA, 'character', NA, NA))), "Index scaled by effort")
+    agg_data <- mfdb_survey_index_mean(mdb, cols = c(), list(
+            index_type = 'effort',
+            year = 1998,
+            area = area_group,
+            timestep = mfdb_timestep_quarterly), scale_index = 'acoustic')
+    ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+year step area mean
+# weighted.mean(c(94, 93, 92), c(24, 23, 22))
+1998    1 divA  93.02899
+1998    2 divA  72.86667
+1998    3 divA  69.15686
+1998    4 divA  46.14286
+    ', colClasses = c(NA, 'character', NA, NA)), tolerance = 1e-7), "Index scaled by acoustic")
 })
 
 ok_group("Can remove survey_index", {

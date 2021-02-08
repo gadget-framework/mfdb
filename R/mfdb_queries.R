@@ -91,14 +91,45 @@ mfdb_temperature <- function (mdb, params = list()) {
     mfdb_survey_index_mean(mdb, c(), c(list(index_type = 'temperature'), params))
 }
 
+abundance_survey_index_table <- function (mdb, scale_index) {
+    if (is.null(scale_index)) {
+        return(c("survey_index", 1))
+    } else if (scale_index == 'tow_length') {
+        stop("A survey index isn't associated with a tow")
+    } else if (scale_index == 'area_size') {
+        return(c(
+            "(SELECT si.*, a.size area_size FROM survey_index si, areacell a WHERE si.areacell_id = a.areacell_id)",
+            "c.area_size"))
+    } else {
+        return(c(paste0(
+            "(SELECT sam.*, AVG(si.value) abundance",
+            " FROM survey_index sam, survey_index si",
+            " WHERE si.index_type_id = ",
+                "(SELECT index_type_id",
+                " FROM index_type",
+                " WHERE name = ", sql_quote(scale_index),
+                ")",
+            " AND sam.areacell_id = si.areacell_id",
+            " AND sam.year = si.year",
+            " AND sam.month = si.month",
+            " GROUP BY 1",
+            ")"), "c.abundance"))
+    }
+}
+
 # Return year, step, area, mean value
-mfdb_survey_index_mean <- function (mdb, cols, params) {
+mfdb_survey_index_mean <- function (mdb, cols, params, scale_index = NULL) {
     if (!('index_type' %in% names(params))) {
         stop("Need to supply 'index_type' in params. Querying all indicies makes little sense")
     }
+    abundance <- abundance_survey_index_table(mdb, scale_index)
     mfdb_sample_grouping(mdb,
         group_cols = c("year", "timestep", "area", cols),
-        calc_cols = c("AVG(c.value) AS mean"),
+        calc_cols = c(
+            if (abundance[[2]] == 1)
+                paste0("AVG(c.value) AS mean")
+            else
+                paste0("WEIGHTED_MEAN(c.value::numeric, (", abundance[[2]], ")::numeric) AS mean")),
         col_defs = list(
             data_source = 'c.data_source_id',
             index_type = "c.index_type_id",
@@ -106,18 +137,23 @@ mfdb_survey_index_mean <- function (mdb, cols, params) {
             area = "c.areacell_id",
             year = "c.year",
             step = "c.month"),
-        core_table = "survey_index",
+        core_table = abundance[[1]],
         params = params)
 }
 
 # Return year, step, area, total value
-mfdb_survey_index_total <- function (mdb, cols, params) {
+mfdb_survey_index_total <- function (mdb, cols, params, scale_index = NULL) {
     if (!('index_type' %in% names(params))) {
         stop("Need to supply 'index_type' in params. Querying all indicies makes little sense")
     }
+    abundance <- abundance_survey_index_table(mdb, scale_index)
     mfdb_sample_grouping(mdb,
         group_cols = c("year", "timestep", "area", cols),
-        calc_cols = c("SUM(c.value) AS total"),
+        calc_cols = c(
+            if (abundance[[2]] == 1)
+                paste0("SUM(c.value) AS total")
+            else
+                paste0("SUM(c.value * ", abundance[[2]], ") AS total")),
         col_defs = list(
             data_source = 'c.data_source_id',
             index_type = "c.index_type_id",
@@ -125,7 +161,7 @@ mfdb_survey_index_total <- function (mdb, cols, params) {
             area = "c.areacell_id",
             year = "c.year",
             step = "c.month"),
-        core_table = "survey_index",
+        core_table = abundance[[1]],
         params = params)
 }
 
