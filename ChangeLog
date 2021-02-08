@@ -1,6 +1,7 @@
 (unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
 
     Version 7.0-0
+    * Add 'area_size' as a possible scale_index value
     * Switch to requiring RPostgres as the default DBI driver
     * Allow DB params to be supplied with MFDB_* environment variables
 

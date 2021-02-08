@@ -234,6 +234,38 @@ ok_group("Using a survey_index as measure of abundance", {
                     weighted.mean(c(231, 231, 232, 232), c(1*avg(2,52), 2*avg(3,53), 1*14, 2*15)),
                     NULL),
                 stringsAsFactors = FALSE)), "Took mean of multiple index values")
+
+    # Can also use area_size to scale values
+    agg_data <- mfdb_sample_meanlength(mdb, c('length'), list(
+        year = 1998,
+        area = mfdb_group(divA = "divA", divB = "divB"),
+        timestep = mfdb_timestep_quarterly,
+        length = length_group), scale_index = 'area_size')
+    ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+year step area length number     mean
+# number = 2 * 10 + 2 * 200, mean = weighted.mean(c(111,112), c(2 * 10, 2 * 200))
+1998    1 divA len100    420 111.9524
+1998    1 divA len200     10 251.0000
+# number = sum(2 * 10, 1 * 200, 2 * 200), mean = weighted.mean(c(331,352,332), c(2 * 10, 1 * 200, 2 * 200))
+1998    1 divA len300    620 338.4194
+1998    1 divB len200   1200 226.3333
+1998    1 divB len300    800 333.0000
+1998    2 divA len100     10 111.0000
+1998    2 divA len200    820 229.5366
+1998    2 divA len300     10 341.0000
+1998    2 divB len100    800 133.0000
+1998    2 divB len300    800 328.0000
+1998    3 divA len100    210 133.3810
+1998    3 divA len200    420 261.9524
+1998    3 divA len300    210 360.5238
+1998    3 divB len100    400 163.0000
+1998    3 divB len200    400 233.0000
+1998    3 divB len300    800 363.0000
+1998    4 divA len100    420 121.9524
+1998    4 divA len200    630 231.9524
+1998    4 divB len100    400 133.0000
+1998    4 divB len300   1600 328.0000
+    ', colClasses = c(NA, 'character', NA, NA, NA, NA)), tolerance = 1e-6), "Each area scaled by area size")
 })
 
 ok_group("Missing values in a survey_index", {

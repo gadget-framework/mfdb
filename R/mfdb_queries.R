@@ -136,6 +136,10 @@ abundance_core_table <- function (mdb, scale_index) {
         return(c(
             "(SELECT sam.*, t.length tow_length FROM sample sam, tow t WHERE sam.tow_id = t.tow_id)",
             "c.count / c.tow_length"))
+    } else if (scale_index == 'area_size') {
+        return(c(
+            "(SELECT sam.*, a.size area_size FROM sample sam, areacell a WHERE sam.areacell_id = a.areacell_id)",
+            "c.count * c.area_size"))
     } else {
         return(c(paste0(
             "(SELECT sam.*, AVG(si.value) abundance",

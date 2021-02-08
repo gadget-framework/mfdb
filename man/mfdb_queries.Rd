@@ -51,7 +51,7 @@ mfdb_stomach_presenceratio(mdb, cols, params)
     \item{mdb}{An object created by \code{mfdb}()}
     \item{cols}{Any additonal columns to group by, see details.}
     \item{params}{A list of parameters, see details.}
-    \item{scale_index}{Optional. survey_index used to scale results before aggregation, either "tow_length" or from \link{mfdb_import_survey_index}}
+    \item{scale_index}{Optional. survey_index used to scale results before aggregation, either "tow_length", "area_size" or from \link{mfdb_import_survey_index}}
     \item{abundance_scale}{Optional. Same as \code{scale_index}}
     \item{scale}{Optional. A scale to apply to the resulting values, e.g. 'tow_length'}
     \item{measurements}{Optional, default 'overall'. A vector of measurement names to use, one of overall, liver, gonad, stomach}
