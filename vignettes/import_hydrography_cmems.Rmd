@@ -133,7 +133,7 @@ write.table(sf::st_drop_geometry(hydroVar), file = 'hydroVar.txt')
 
 # Import bottom temperature into mfdb
 
-As a temporary solution the hydrographic data are stored in the _length_ field for biological survey data so that they could be retrieved as a weighted mean over any spatial aggregation using the area of the ICES rectangle as a weighting variable.
+Import ICES rectangles and import the hydrographic data as a survey index. Then we can retrieve the hydrographic data as a weighted mean using ICES rectangle as a weighting variable:
 
 ```{r eval=TRUE}
 mdb <- mfdb('vignette-hydro-cmems')
@@ -149,13 +149,8 @@ sub.split <- as.list(as.character(ices.rect.sea$ICESNAME))
 names(sub.split) <- as.character(ices.rect.sea$ICESNAME)
 mfdb_import_division(mdb, sub.split)
 
-mfdb_import_sampling_type(mdb, data.frame(
-    name = "RES",
-    description = "Research",
-    stringsAsFactors = FALSE))
-
 # import area size as index for later use
-mfdb_import_cs_taxonomy(mdb, "index_type", data.frame(name="ices_rect"))
+mfdb_import_cs_taxonomy(mdb, "index_type", data.frame(name=c("ices_rect", "bottom_temp")))
 mfdb_import_survey_index(mdb,
                          data_source="area_ices_rect",
                          data.frame(index_type = "ices_rect",
@@ -165,25 +160,25 @@ mfdb_import_survey_index(mdb,
                                         value      = as.numeric(hydroVar$areaSea_km2)))
 
 # import avg bottom temperature by month and ICES rect (under the 'length' field)
-mfdb_import_survey(mdb,
+mfdb_import_survey_index(mdb,
                    data_source="bottom_temp_CMEMS",
                    data.frame(year       = hydroVar$year,
                               month      = hydroVar$month,
                               areacell   = as.character(hydroVar$rect),
-                              length     = hydroVar$sob,
-                              sampling_type = 'RES',
+                              value     = hydroVar$sob,
+                              index_type = "bottom_temp",
                               stringsAsFactors = TRUE))
 
 # extract mean bottom temperature by quarter and area (weighted mean using rectangle area)
-dat <- mfdb_sample_meanlength(mdb, NULL, list(
+dat <- mfdb_survey_index_mean(mdb, c(), list(
                                        ## area = mfdb_unaggregated(),
                                        area = mfdb_group('a1'=c('42G7','42G8','42G9','43G7','43G8','43G9'),
                                                          'a2'=c('44G7','44G8','44G9','45G7','45G8','45G9')),
                                        timestep = mfdb_timestep_quarterly,
                                        year = 2018,
-                                       sampling_type = 'RES',
+                                       index_type = "bottom_temp",
                                        data_source = 'bottom_temp_CMEMS'),
-                              scale_index = 'ices_rect')[[1]]
+                              scale_index = 'area_size')[[1]]
 dat <- dat[,c('year', 'step', 'area', 'mean')]
 dat
 ```
