@@ -144,10 +144,8 @@ hydroVar <- read.table('hydroVar.txt')
 # import ICES rectangles
 mfdb_import_area(mdb, data.frame(
     name = as.character(ices.rect.sea$ICESNAME),
+    division = as.character(ices.rect.sea$ICESNAME),
     size = ices.rect.sea$areaSea_km2))
-sub.split <- as.list(as.character(ices.rect.sea$ICESNAME))
-names(sub.split) <- as.character(ices.rect.sea$ICESNAME)
-mfdb_import_division(mdb, sub.split)
 
 # import area size as index for later use
 mfdb_import_cs_taxonomy(mdb, "index_type", data.frame(name=c("ices_rect", "bottom_temp")))
