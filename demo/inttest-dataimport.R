@@ -54,6 +54,19 @@ id  name size
             generator = "mfdb_area_size"))),
         "Can combine divA & B and get combined size")
 
+    # Can also query areacell directly
+    mfdb_import_division(mdb, list('45G02' = '45G02'))  # NB: To make sure if an entry is both an areacell and division we don't double up
+    area_group_ac <- mfdb_group(divA = c("divA"), "45G02" = "45G02", "45G03" = "45G03", "23" = c("45G02", "45G03"))
+    ok(cmp(mfdb_area_size(mdb, list(area = area_group_ac)),
+        list("0" = structure(
+            data.frame(
+                area = c("23", "45G02", "45G03", "divA"),
+                size = c(5.2 + 5.3, 5.2, 5.3, 5.1 + 5.2 + 5.3),
+                stringsAsFactors = FALSE),
+            area = area_group_ac,
+            generator = "mfdb_area_size"))),
+        "Can query areacell as well as division")
+
     # And a different report for mdb2
     area_group <- mfdb_group(divA = c("divA"), divAll = c("divA", "divB", "divC", "divD"))
     ok(cmp(mfdb_area_size(mdb2, list(area = area_group)),

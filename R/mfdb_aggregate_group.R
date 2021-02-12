@@ -42,12 +42,13 @@ pre_query.mfdb_group <- function(mdb, x, col) {
             values <- set[,'value']
             while(length(values) > 0) {
                 quoted_values <- sql_quote(unique(values), always_bracket = TRUE, always_quote = TRUE)
+                # Add potential values from both division and areacell
                 mfdb_send(mdb,
                     "INSERT INTO ", attr(x, 'table_name'),
                     " SELECT ", sql_quote(set[1, 'sample']), " AS sample",
                     ", ", sql_quote(set[1, 'name']), " AS name",
                     ", ", lookup, "_id AS value",
-                    " FROM division",
+                    " FROM (SELECT division, areacell_id FROM division UNION SELECT name, areacell_id FROM areacell) divac",
                     " WHERE division IN ", quoted_values)
                 values <- values[duplicated(values)]
             }

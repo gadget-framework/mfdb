@@ -5,6 +5,7 @@
     * Add 'area_size' as a possible scale_index value
     * Switch to requiring RPostgres as the default DBI driver
     * Allow DB params to be supplied with MFDB_* environment variables
+    * Don't require divisions to be made when querying by areacell
 
     Schema changes:
     * Age now stored as NUMERIC

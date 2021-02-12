@@ -196,8 +196,8 @@ ok_group("Aggregates with mfdb_group areas", local({
     ok(cmp(capture.output(pre_query(mdb, g, "c.areacell_id")), c(
         paste0("SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('", attr(g, 'table_name'), "')"),
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
-        paste0("INSERT INTO ", attr(g, 'table_name'), " SELECT 0 AS sample, 'a' AS name, areacell_id AS value FROM division WHERE division IN ('1','2','3')"),
-        paste0("INSERT INTO ", attr(g, 'table_name'), " SELECT 0 AS sample, 'b' AS name, areacell_id AS value FROM division WHERE division IN ('88','89')"),
+        paste0("INSERT INTO ", attr(g, 'table_name'), " SELECT 0 AS sample, 'a' AS name, areacell_id AS value FROM (SELECT division, areacell_id FROM division UNION SELECT name, areacell_id FROM areacell) divac WHERE division IN ('1','2','3')"),
+        paste0("INSERT INTO ", attr(g, 'table_name'), " SELECT 0 AS sample, 'b' AS name, areacell_id AS value FROM (SELECT division, areacell_id FROM division UNION SELECT name, areacell_id FROM areacell) divac WHERE division IN ('88','89')"),
         paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
         paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
