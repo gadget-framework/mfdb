@@ -26,7 +26,7 @@ wincheck: build
 	curl --no-epsv -# -T "$(TARBALL)" ftp://win-builder.r-project.org/R-devel/
 
 test: install
-	for f in tests/test-*.R; do echo "=== $$f ============="; Rscript $$f || break; done
+	for f in tests/test-*.R; do echo "=== $$f ============="; Rscript $$f || exit 1; done
 
 examples: install
 	# Destroy schemas first to have clear environment
@@ -36,7 +36,7 @@ examples: install
 	Rscript -e 'devtools::run_examples(run_donttest = TRUE, run_dontrun = TRUE, document = FALSE)'
 
 inttest: install test examples build-docs
-	for f in demo/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME=mf_inttest Rscript $$f || break; done
+	for f in demo/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME=mf_inttest Rscript $$f || exit 1; done
 
 build-docs:
 	[ -d docs ] && rm -r docs || true
