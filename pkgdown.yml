@@ -1,0 +1,11 @@
+pandoc: 2.7.3
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  import_hydrography_cmems: import_hydrography_cmems.html
+  population: population.html
+  tow_data: tow_data.html
+  trip: trip.html
+  weightmeasurements: weightmeasurements.html
+last_built: 2021-02-23T10:42Z
+

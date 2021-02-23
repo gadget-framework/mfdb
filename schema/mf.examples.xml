@@ -1,0 +1,673 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<database name="mf" schema="examples" type="PostgreSQL - 13.2 (Debian 13.2-1.pgdg100+1)">
+   <sequences>
+      <sequence increment="1" name="data_source_data_source_id_seq" startValue="1"/>
+      <sequence increment="1" name="division_division_id_seq" startValue="1"/>
+      <sequence increment="1" name="predator_predator_id_seq" startValue="1"/>
+      <sequence increment="1" name="prey_prey_id_seq" startValue="1"/>
+      <sequence increment="1" name="sample_sample_id_seq" startValue="1"/>
+      <sequence increment="1" name="survey_index_survey_index_id_seq" startValue="1"/>
+   </sequences>
+   <tables>
+      <table name="areacell" numRows="3" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="areacell_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="areacell_id" foreignKey="division_areacell_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="division"/>
+            <child column="areacell_id" foreignKey="predator_areacell_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="predator"/>
+            <child column="areacell_id" foreignKey="sample_areacell_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sample"/>
+            <child column="areacell_id" foreignKey="survey_index_areacell_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="survey_index"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="areacell_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="areacell"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="areacell_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="areacell"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="3" name="size" nullable="true" remarks="Size of areacell" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="4" name="depth" nullable="true" remarks="Depth of areacell" size="8" type="float4" typeCode="7"/>
+         <primaryKey column="areacell_id" sequenceNumberInPK="1"/>
+         <index name="areacell_pkey" unique="true">
+            <column ascending="true" name="areacell_id"/>
+         </index>
+         <index name="areacell_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="areacell_name_check"/>
+      </table>
+      <table name="bait_type" numRows="0" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="bait_type_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="bait_type_id" foreignKey="tow_bait_type_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="tow"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="bait_type_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="bait_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="bait_type_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="bait_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="bait_type_id" sequenceNumberInPK="1"/>
+         <index name="bait_type_pkey" unique="true">
+            <column ascending="true" name="bait_type_id"/>
+         </index>
+         <index name="bait_type_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="bait_type_name_check"/>
+      </table>
+      <table name="case_study" numRows="12" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="case_study_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="case_study_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="case_study"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="case_study_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="case_study"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="case_study_id" sequenceNumberInPK="1"/>
+         <index name="case_study_pkey" unique="true">
+            <column ascending="true" name="case_study_id"/>
+         </index>
+         <index name="case_study_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="case_study_name_check"/>
+      </table>
+      <table name="data_source" numRows="2" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('examples.data_source_data_source_id_seq'::regclass)" digits="0" id="0" name="data_source_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="serial" typeCode="4">
+            <child column="data_source_id" foreignKey="predator_data_source_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="predator"/>
+            <child column="data_source_id" foreignKey="sample_data_source_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sample"/>
+            <child column="data_source_id" foreignKey="survey_index_data_source_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="survey_index"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="data_source_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="data_source"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="data_source_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="data_source"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="data_source_id" sequenceNumberInPK="1"/>
+         <index name="data_source_pkey" unique="true">
+            <column ascending="true" name="data_source_id"/>
+         </index>
+         <index name="data_source_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="data_source_name_check"/>
+      </table>
+      <table name="digestion_stage" numRows="5" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="digestion_stage_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="digestion_stage_id" foreignKey="prey_digestion_stage_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="prey"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="digestion_stage_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="digestion_stage"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="digestion_stage_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="digestion_stage"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="digestion_stage_id" sequenceNumberInPK="1"/>
+         <index name="digestion_stage_pkey" unique="true">
+            <column ascending="true" name="digestion_stage_id"/>
+         </index>
+         <index name="digestion_stage_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="digestion_stage_name_check"/>
+      </table>
+      <table name="division" numRows="4" remarks="Grouping of area cells into divisions" schema="examples" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('examples.division_division_id_seq'::regclass)" digits="0" id="0" name="division_id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="division" nullable="false" remarks="" size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="areacell_id" nullable="true" remarks="Contained areacell" size="10" type="int4" typeCode="4">
+            <parent column="areacell_id" foreignKey="division_areacell_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="areacell"/>
+         </column>
+         <primaryKey column="division_id" sequenceNumberInPK="1"/>
+         <index name="division_pkey" unique="true">
+            <column ascending="true" name="division_id"/>
+         </index>
+      </table>
+      <table name="gear" numRows="147" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="gear_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="gear_id" foreignKey="predator_gear_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="predator"/>
+            <child column="gear_id" foreignKey="sample_gear_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sample"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="gear_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="gear"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="gear_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="gear"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="4" name="mesh_size" nullable="true" remarks="Mesh size (mm)" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="5" name="mesh_size_min" nullable="true" remarks="Minimum mesh size (mm)" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="6" name="mesh_size_max" nullable="true" remarks="Maximum mesh size (mm)" size="8" type="float4" typeCode="7"/>
+         <primaryKey column="gear_id" sequenceNumberInPK="1"/>
+         <index name="gear_pkey" unique="true">
+            <column ascending="true" name="gear_id"/>
+         </index>
+         <index name="gear_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="gear_name_check"/>
+      </table>
+      <table name="index_type" numRows="1" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="index_type_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="index_type_id" foreignKey="survey_index_index_type_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="survey_index"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="index_type_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="index_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="index_type_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="index_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="index_type_id" sequenceNumberInPK="1"/>
+         <index name="index_type_pkey" unique="true">
+            <column ascending="true" name="index_type_id"/>
+         </index>
+         <index name="index_type_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="index_type_name_check"/>
+      </table>
+      <table name="institute" numRows="41" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="institute_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="institute_id" foreignKey="port_institute_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="port"/>
+            <child column="institute_id" foreignKey="predator_institute_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="predator"/>
+            <child column="institute_id" foreignKey="sample_institute_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sample"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="institute_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="institute"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="institute_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="institute"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="institute_id" sequenceNumberInPK="1"/>
+         <index name="institute_pkey" unique="true">
+            <column ascending="true" name="institute_id"/>
+         </index>
+         <index name="institute_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="institute_name_check"/>
+      </table>
+      <table name="market_category" numRows="0" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="market_category_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="market_category_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="market_category"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="market_category_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="market_category"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="market_category_id" sequenceNumberInPK="1"/>
+         <index name="market_category_pkey" unique="true">
+            <column ascending="true" name="market_category_id"/>
+         </index>
+         <index name="market_category_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="market_category_name_check"/>
+      </table>
+      <table name="maturity_stage" numRows="5" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="maturity_stage_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="maturity_stage_id" foreignKey="predator_maturity_stage_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="predator"/>
+            <child column="maturity_stage_id" foreignKey="sample_maturity_stage_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sample"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="maturity_stage_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="maturity_stage"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="maturity_stage_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="maturity_stage"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="maturity_stage_id" sequenceNumberInPK="1"/>
+         <index name="maturity_stage_pkey" unique="true">
+            <column ascending="true" name="maturity_stage_id"/>
+         </index>
+         <index name="maturity_stage_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="maturity_stage_name_check"/>
+      </table>
+      <table name="mfdb_schema" numRows="1" remarks="Table to keep track of schema version" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="version" nullable="false" remarks="Version of MFDB schema" size="10" type="int4" typeCode="4"/>
+      </table>
+      <table name="net_type" numRows="0" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="net_type_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="net_type_id" foreignKey="tow_net_type_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="tow"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="net_type_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="net_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="net_type_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="net_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="net_type_id" sequenceNumberInPK="1"/>
+         <index name="net_type_pkey" unique="true">
+            <column ascending="true" name="net_type_id"/>
+         </index>
+         <index name="net_type_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="net_type_name_check"/>
+      </table>
+      <table name="population" numRows="0" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="population_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="population_id" foreignKey="sample_population_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sample"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="population_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="population"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="population_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="population"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="population_id" sequenceNumberInPK="1"/>
+         <index name="population_pkey" unique="true">
+            <column ascending="true" name="population_id"/>
+         </index>
+         <index name="population_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="population_name_check"/>
+      </table>
+      <table name="port" numRows="0" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="port_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="end_port_id" foreignKey="trip_end_port_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="trip"/>
+            <child column="start_port_id" foreignKey="trip_start_port_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="trip"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="port_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="port"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="port_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="port"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="3" name="latitude" nullable="true" remarks="Latitude" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="4" name="longitude" nullable="true" remarks="Longitude" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="institute_id" nullable="true" remarks="Institute (or country) responsible for port" size="10" type="int4" typeCode="4">
+            <parent column="institute_id" foreignKey="port_institute_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="institute"/>
+         </column>
+         <primaryKey column="port_id" sequenceNumberInPK="1"/>
+         <index name="port_pkey" unique="true">
+            <column ascending="true" name="port_id"/>
+         </index>
+         <index name="port_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="port_name_check"/>
+      </table>
+      <table name="predator" numRows="0" remarks="Predators in predator/prey sample" schema="examples" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('examples.predator_predator_id_seq'::regclass)" digits="0" id="0" name="predator_id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="predator_id" foreignKey="prey_predator_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="prey"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="data_source_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="data_source_id" foreignKey="predator_data_source_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="data_source"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="institute_id" nullable="true" remarks="Institute that undertook survey" size="10" type="int4" typeCode="4">
+            <parent column="institute_id" foreignKey="predator_institute_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="institute"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="gear_id" nullable="true" remarks="Gear used" size="10" type="int4" typeCode="4">
+            <parent column="gear_id" foreignKey="predator_gear_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="gear"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="vessel_id" nullable="true" remarks="Vessel used" size="10" type="int4" typeCode="4">
+            <parent column="vessel_id" foreignKey="predator_vessel_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="vessel"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="trip_id" nullable="true" remarks="Part of trip" size="10" type="int4" typeCode="4">
+            <parent column="trip_id" foreignKey="predator_trip_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="trip"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="tow_id" nullable="true" remarks="Tow used" size="10" type="int4" typeCode="4">
+            <parent column="tow_id" foreignKey="predator_tow_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="tow"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="sampling_type_id" nullable="true" remarks="Sampling type" size="10" type="int4" typeCode="4">
+            <parent column="sampling_type_id" foreignKey="predator_sampling_type_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sampling_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="year" nullable="false" remarks="Year sample was undertaken" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="month" nullable="false" remarks="Month sample was undertaken" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="areacell_id" nullable="true" remarks="Areacell data relates to" size="10" type="int4" typeCode="4">
+            <parent column="areacell_id" foreignKey="predator_areacell_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="areacell"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="stomach_name" nullable="false" remarks="Stomach identifier" size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="species_id" nullable="true" remarks="" size="19" type="int8" typeCode="-5">
+            <parent column="species_id" foreignKey="predator_species_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="species"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="5" id="13" name="age" nullable="true" remarks="Age (years)" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="sex_id" nullable="true" remarks="Sex ID" size="10" type="int4" typeCode="4">
+            <parent column="sex_id" foreignKey="predator_sex_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sex"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="maturity_stage_id" nullable="true" remarks="Maturity Stage ID" size="10" type="int4" typeCode="4">
+            <parent column="maturity_stage_id" foreignKey="predator_maturity_stage_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="maturity_stage"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="stomach_state_id" nullable="true" remarks="Status of stomach when caught" size="10" type="int4" typeCode="4">
+            <parent column="stomach_state_id" foreignKey="predator_stomach_state_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="stomach_state"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="17" name="length" nullable="true" remarks="Length of predator" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="18" name="weight" nullable="true" remarks="Weight of predator" size="8" type="float4" typeCode="7"/>
+         <primaryKey column="predator_id" sequenceNumberInPK="1"/>
+         <index name="predator_pkey" unique="true">
+            <column ascending="true" name="predator_id"/>
+         </index>
+         <checkConstraint constraint="(((month &gt;= 1) AND (month &lt;= 12)))" name="predator_month_check"/>
+      </table>
+      <table name="prey" numRows="0" remarks="Prey in predator/prey sample" schema="examples" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('examples.prey_prey_id_seq'::regclass)" digits="0" id="0" name="prey_id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="predator_id" nullable="false" remarks="The stomach this sample was found in" size="10" type="int4" typeCode="4">
+            <parent column="predator_id" foreignKey="prey_predator_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="predator"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="species_id" nullable="true" remarks="" size="19" type="int8" typeCode="-5">
+            <parent column="species_id" foreignKey="prey_species_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="species"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="digestion_stage_id" nullable="true" remarks="Digestion stage" size="10" type="int4" typeCode="4">
+            <parent column="digestion_stage_id" foreignKey="prey_digestion_stage_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="digestion_stage"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="4" name="length" nullable="true" remarks="Length of prey / mean length of all prey" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="5" name="weight" nullable="true" remarks="Weight of prey / mean weight of all prey" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="6" name="count" nullable="true" remarks="Number of prey meeting this criteria" size="10" type="int4" typeCode="4"/>
+         <primaryKey column="prey_id" sequenceNumberInPK="1"/>
+         <index name="prey_pkey" unique="true">
+            <column ascending="true" name="prey_id"/>
+         </index>
+      </table>
+      <table name="sample" numRows="12" remarks="Samples within a survey" schema="examples" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('examples.sample_sample_id_seq'::regclass)" digits="0" id="0" name="sample_id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="data_source_id" nullable="true" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="data_source_id" foreignKey="sample_data_source_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="data_source"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="institute_id" nullable="true" remarks="Institute that undertook survey" size="10" type="int4" typeCode="4">
+            <parent column="institute_id" foreignKey="sample_institute_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="institute"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="gear_id" nullable="true" remarks="Gear used" size="10" type="int4" typeCode="4">
+            <parent column="gear_id" foreignKey="sample_gear_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="gear"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="vessel_id" nullable="true" remarks="Vessel used" size="10" type="int4" typeCode="4">
+            <parent column="vessel_id" foreignKey="sample_vessel_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="vessel"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="trip_id" nullable="true" remarks="Part of trip" size="10" type="int4" typeCode="4">
+            <parent column="trip_id" foreignKey="sample_trip_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="trip"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="tow_id" nullable="true" remarks="Tow used" size="10" type="int4" typeCode="4">
+            <parent column="tow_id" foreignKey="sample_tow_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="tow"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="sampling_type_id" nullable="true" remarks="Sampling type" size="10" type="int4" typeCode="4">
+            <parent column="sampling_type_id" foreignKey="sample_sampling_type_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sampling_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="year" nullable="false" remarks="Year sample was undertaken" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="month" nullable="false" remarks="Month sample was undertaken" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="areacell_id" nullable="true" remarks="Areacell data relates to" size="10" type="int4" typeCode="4">
+            <parent column="areacell_id" foreignKey="sample_areacell_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="areacell"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="species_id" nullable="true" remarks="" size="19" type="int8" typeCode="-5">
+            <parent column="species_id" foreignKey="sample_species_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="species"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="5" id="12" name="age" nullable="true" remarks="Age (years)" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="sex_id" nullable="true" remarks="Sex ID" size="10" type="int4" typeCode="4">
+            <parent column="sex_id" foreignKey="sample_sex_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sex"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="maturity_stage_id" nullable="true" remarks="Maturity Stage ID" size="10" type="int4" typeCode="4">
+            <parent column="maturity_stage_id" foreignKey="sample_maturity_stage_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="maturity_stage"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="population_id" nullable="true" remarks="Population sample is part of" size="10" type="int4" typeCode="4">
+            <parent column="population_id" foreignKey="sample_population_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="population"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="16" name="length" nullable="true" remarks="Length of fish / mean length of all fish" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="17" name="length_var" nullable="true" remarks="Length variance of all fish (given aggregated data)" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="length_min" nullable="true" remarks="Minimum theoretical value in this group" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="19" name="weight" nullable="true" remarks="Weight of fish / mean weight of all fish" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="20" name="weight_var" nullable="true" remarks="Weight variance of all fish (given aggregated data)" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="21" name="liver_weight" nullable="true" remarks="(mean) Weight of fish liver" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="22" name="liver_weight_var" nullable="true" remarks="(mean) Weight variance of fish liver (given aggregated data)" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="23" name="gonad_weight" nullable="true" remarks="(mean) Weight of fish gonads" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="24" name="gonad_weight_var" nullable="true" remarks="(mean) Weight variance of fish gonads (given aggregated data)" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="25" name="stomach_weight" nullable="true" remarks="(mean) Weight of fish stomach" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="26" name="stomach_weight_var" nullable="true" remarks="(mean) Weight variance of fish stomach (given aggregated data)" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="27" name="gutted_weight" nullable="true" remarks="(mean) Gutted weight of fish" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="28" name="gutted_weight_var" nullable="true" remarks="(mean) Gutted weight variance of fish (given aggregated data)" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="1" digits="17" id="29" name="count" nullable="true" remarks="Number of fish meeting this criteria" size="17" type="float8" typeCode="8"/>
+         <primaryKey column="sample_id" sequenceNumberInPK="1"/>
+         <index name="sample_pkey" unique="true">
+            <column ascending="true" name="sample_id"/>
+         </index>
+         <checkConstraint constraint="(((month &gt;= 1) AND (month &lt;= 12)))" name="sample_month_check"/>
+      </table>
+      <table name="sampling_type" numRows="0" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="sampling_type_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="sampling_type_id" foreignKey="predator_sampling_type_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="predator"/>
+            <child column="sampling_type_id" foreignKey="sample_sampling_type_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sample"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="sampling_type_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sampling_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="sampling_type_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sampling_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="sampling_type_id" sequenceNumberInPK="1"/>
+         <index name="sampling_type_pkey" unique="true">
+            <column ascending="true" name="sampling_type_id"/>
+         </index>
+         <index name="sampling_type_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="sampling_type_name_check"/>
+      </table>
+      <table name="sex" numRows="5" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="sex_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="sex_id" foreignKey="predator_sex_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="predator"/>
+            <child column="sex_id" foreignKey="sample_sex_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sample"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="sex_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sex"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="sex_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sex"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="sex_id" sequenceNumberInPK="1"/>
+         <index name="sex_pkey" unique="true">
+            <column ascending="true" name="sex_id"/>
+         </index>
+         <index name="sex_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="sex_name_check"/>
+      </table>
+      <table name="species" numRows="1483" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="species_id" nullable="false" remarks="Numeric ID for this entry" size="19" type="int8" typeCode="-5">
+            <child column="species_id" foreignKey="predator_species_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="predator"/>
+            <child column="species_id" foreignKey="prey_species_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="prey"/>
+            <child column="species_id" foreignKey="sample_species_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sample"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="species_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="species"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="species_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="species"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="species_id" sequenceNumberInPK="1"/>
+         <index name="species_pkey" unique="true">
+            <column ascending="true" name="species_id"/>
+         </index>
+         <index name="species_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="species_name_check"/>
+      </table>
+      <table name="stomach_state" numRows="6" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="stomach_state_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="stomach_state_id" foreignKey="predator_stomach_state_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="predator"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="stomach_state_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="stomach_state"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="stomach_state_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="stomach_state"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="stomach_state_id" sequenceNumberInPK="1"/>
+         <index name="stomach_state_pkey" unique="true">
+            <column ascending="true" name="stomach_state_id"/>
+         </index>
+         <index name="stomach_state_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="stomach_state_name_check"/>
+      </table>
+      <table name="survey_index" numRows="24" remarks="Indices used to modify surveys" schema="examples" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('examples.survey_index_survey_index_id_seq'::regclass)" digits="0" id="0" name="survey_index_id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="data_source_id" nullable="true" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="data_source_id" foreignKey="survey_index_data_source_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="data_source"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="index_type_id" nullable="true" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="index_type_id" foreignKey="survey_index_index_type_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="index_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="areacell_id" nullable="true" remarks="Areacell data relates to" size="10" type="int4" typeCode="4">
+            <parent column="areacell_id" foreignKey="survey_index_areacell_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="areacell"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="year" nullable="false" remarks="Year sample was taken" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="month" nullable="false" remarks="Month sample was taken" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="6" name="value" nullable="false" remarks="Value at this point in time" size="8" type="float4" typeCode="7"/>
+         <primaryKey column="survey_index_id" sequenceNumberInPK="1"/>
+         <index name="survey_index_pkey" unique="true">
+            <column ascending="true" name="survey_index_id"/>
+         </index>
+      </table>
+      <table name="tow" numRows="0" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="tow_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="tow_id" foreignKey="predator_tow_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="predator"/>
+            <child column="tow_id" foreignKey="sample_tow_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sample"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="tow_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="tow"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="tow_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="tow"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="3" name="latitude" nullable="true" remarks="Latutide of sample" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="4" name="longitude" nullable="true" remarks="Longitude of sample" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="5" name="end_latitude" nullable="true" remarks="Latutide of sample end" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="6" name="end_longitude" nullable="true" remarks="Longitude of sample end" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="start" nullable="true" remarks="Time tow started" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="8" name="depth" nullable="true" remarks="Tow depth (m)" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="9" name="length" nullable="true" remarks="Tow length (m)" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="10" name="duration" nullable="true" remarks="Tow duration (hours)" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="hook_count" nullable="true" remarks="Hook count (e.g. for long lines)" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="bait_type_id" nullable="true" remarks="Bait type used (e.g. for long lines)" size="10" type="int4" typeCode="4">
+            <parent column="bait_type_id" foreignKey="tow_bait_type_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="bait_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="net_count" nullable="true" remarks="Number of nets used (e.g. for gillnets)" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="net_type_id" nullable="true" remarks="Net type used (e.g. for gillnets)" size="10" type="int4" typeCode="4">
+            <parent column="net_type_id" foreignKey="tow_net_type_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="net_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="15" name="mesh_size" nullable="true" remarks="Mesh size (mm) (e.g. for gillnets)" size="8" type="float4" typeCode="7"/>
+         <primaryKey column="tow_id" sequenceNumberInPK="1"/>
+         <index name="tow_pkey" unique="true">
+            <column ascending="true" name="tow_id"/>
+         </index>
+         <index name="tow_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="tow_name_check"/>
+      </table>
+      <table name="trip" numRows="0" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="trip_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="trip_id" foreignKey="predator_trip_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="predator"/>
+            <child column="trip_id" foreignKey="sample_trip_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sample"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="trip_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="trip"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="trip_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="trip"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="start_date" nullable="true" remarks="Date/time trip started" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="end_date" nullable="true" remarks="Date/time trip ended" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="crew" nullable="true" remarks="Number of staff on-board" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="6" name="oil_consumption" nullable="true" remarks="Amount of oil consumed as part of trip" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="start_port_id" nullable="true" remarks="Starting port" size="10" type="int4" typeCode="4">
+            <parent column="port_id" foreignKey="trip_start_port_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="port"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="end_port_id" nullable="true" remarks="Finishing port" size="10" type="int4" typeCode="4">
+            <parent column="port_id" foreignKey="trip_end_port_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="port"/>
+         </column>
+         <primaryKey column="trip_id" sequenceNumberInPK="1"/>
+         <index name="trip_pkey" unique="true">
+            <column ascending="true" name="trip_id"/>
+         </index>
+         <index name="trip_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="trip_name_check"/>
+      </table>
+      <table name="vessel" numRows="2" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="vessel_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="vessel_id" foreignKey="predator_vessel_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="predator"/>
+            <child column="vessel_id" foreignKey="sample_vessel_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="sample"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="vessel_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="vessel"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="vessel_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="vessel"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="vessel_type_id" nullable="true" remarks="Vessel type used" size="10" type="int4" typeCode="4">
+            <parent column="vessel_type_id" foreignKey="vessel_vessel_type_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="vessel_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="vessel_owner_id" nullable="true" remarks="Vessel owner" size="10" type="int4" typeCode="4">
+            <parent column="vessel_owner_id" foreignKey="vessel_vessel_owner_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="vessel_owner"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="full_name" nullable="true" remarks="Full name of vessel" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="6" name="length" nullable="true" remarks="Vessel length (m)" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="7" name="power" nullable="true" remarks="Vessel engine power (KW)" size="8" type="float4" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="null" digits="8" id="8" name="tonnage" nullable="true" remarks="Vessel gross tonnage" size="8" type="float4" typeCode="7"/>
+         <primaryKey column="vessel_id" sequenceNumberInPK="1"/>
+         <index name="vessel_pkey" unique="true">
+            <column ascending="true" name="vessel_id"/>
+         </index>
+         <index name="vessel_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="vessel_name_check"/>
+      </table>
+      <table name="vessel_owner" numRows="0" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="vessel_owner_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="vessel_owner_id" foreignKey="vessel_vessel_owner_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="vessel"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="vessel_owner_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="vessel_owner"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="vessel_owner_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="vessel_owner"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="full_name" nullable="true" remarks="Full name of vessel owner" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="vessel_owner_id" sequenceNumberInPK="1"/>
+         <index name="vessel_owner_pkey" unique="true">
+            <column ascending="true" name="vessel_owner_id"/>
+         </index>
+         <index name="vessel_owner_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="vessel_owner_name_check"/>
+      </table>
+      <table name="vessel_type" numRows="21" remarks="" schema="examples" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="vessel_type_id" nullable="false" remarks="Numeric ID for this entry" size="10" type="int4" typeCode="4">
+            <child column="vessel_type_id" foreignKey="vessel_vessel_type_id_fkey" implied="false" onDeleteCascade="false" schema="examples" table="vessel"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Short name used in data files / output data (in ltree notation)" size="1024" type="varchar" typeCode="12">
+            <child column="t_group" foreignKey="vessel_type_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="vessel_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="t_group" nullable="true" remarks="Value grouping (short name)" size="1024" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="vessel_type_t_group_fkey" implied="false" onDeleteCascade="false" schema="examples" table="vessel_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="true" remarks="Long description" size="1024" type="varchar" typeCode="12"/>
+         <primaryKey column="vessel_type_id" sequenceNumberInPK="1"/>
+         <index name="vessel_type_pkey" unique="true">
+            <column ascending="true" name="vessel_type_id"/>
+         </index>
+         <index name="vessel_type_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+         <checkConstraint constraint="(((name)::text ~ '^[A-Za-z0-9_.\-]+$'::text))" name="vessel_type_name_check"/>
+      </table>
+   </tables>
+</database>
