@@ -1,4 +1,5 @@
-(unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
+
+2021-02-23: Jamie Lentin <lentinj@shuttlethread.com>
 
     Version 7.0-0
     * Add scale_index to mfdb_survey_index_mean & mfdb_survey_index_total
