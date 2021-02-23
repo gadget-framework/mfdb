@@ -9,7 +9,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-```{r, message=FALSE, echo=FALSE}
+```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 logging::setLevel('WARN')
 library(unittest)
 library(mfdb)
@@ -40,7 +40,7 @@ table_string <- function (text, ...) read.table(
 
 Firstly, connect to a database and set up some areas/divisions:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 mdb <- mfdb('vignette-population')
 mfdb_import_area(mdb, table_string('
 name  division size
@@ -57,7 +57,7 @@ derived from other MFDB data.
 
 As with other metadata, we have to import valid values before using:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 mfdb_import_population_taxonomy(mdb, table_string('
 name 	description 				t_group
 ns	"Northern Shrimp"			ns
@@ -75,7 +75,7 @@ samples from ``ns``, ``ns_s`, ``ns_a``, ``ns_i``.
 
 Now we can import data that uses these groupings:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 mfdb_import_survey(mdb, data_source = "x",
 table_string("
 year    month   areacell   species population length  count
@@ -96,13 +96,13 @@ We can now use the ``mfdb_sample_*`` functions to select this data back out
 again. We can group and filter by any of the tow attributes. We can query for
 individual fjords as well as the whole group:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 agg_data <- mfdb_sample_count(mdb, c('population', 'length'), list(
         population = mfdb_group(ns_s = 'ns_s', ns = 'ns'),
         length = mfdb_unaggregated()))
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE}
+```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 # Can get aggregate ns group as well as ns_s
 stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area population length number

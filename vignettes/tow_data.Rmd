@@ -9,7 +9,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-```{r, message=FALSE, echo=FALSE}
+```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 logging::setLevel('WARN')
 library(unittest)
 library(mfdb)
@@ -40,7 +40,7 @@ table_string <- function (text, ...) read.table(
 
 Firstly, connect to a database and set up some areas/divisions:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 mdb <- mfdb('vignette-tow_data')
 mfdb_import_area(mdb, table_string('
 name  division size
@@ -56,7 +56,7 @@ Before any measurements assoicated with a tow can be imported, we need to
 define the tows that they will be associated with, and attributes such as
 length:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 mfdb_import_tow_taxonomy(mdb, table_string('
 name latitude longitude  depth length
    A     64.1    -23.15  98.82     10
@@ -70,7 +70,7 @@ For other possible columns, see ``?mfdb_import_tow_taxonomy``.
 
 Now tows are defined, we can import data that uses these definitions:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 mfdb_import_survey(mdb, data_source = "tow_example_a",
     table_string("
 year    month   areacell        species tow  length  age     weight
@@ -97,7 +97,7 @@ year    month   areacell        species tow  length  age     weight
 As with other taxonomy tables, we have to first define bait types before we can
 use them:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 mfdb_import_bait_type_taxonomy(mdb, table_string('
 name	description
 b1	"Bait type 1"
@@ -109,7 +109,7 @@ b3	"Bait type 3"
 ...and then use ``mfdb_import_tow_taxonomy`` as before. Since the names don't
 overlap with the previous call, the old tow definitions won't be removed:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 mfdb_import_tow_taxonomy(mdb, table_string('
 name latitude longitude  length hook_count bait_type
  llA     63.4    -20.18	     11         30       b1
@@ -120,7 +120,7 @@ name latitude longitude  length hook_count bait_type
 
 Finally, import some data using these definitions:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 mfdb_import_survey(mdb, data_source = 'longline', table_string('
 year    month   areacell        species tow  length	age	weight
 2000	1	45G01		COD	llA	12	15	236
@@ -142,7 +142,7 @@ and *mesh_size*, useful when importing data from Gillnet fisheries.
 
 Again, we need to define net types first:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 mfdb_import_net_type_taxonomy(mdb, table_string('
 name	description
 black	Black
@@ -153,7 +153,7 @@ white	White
 
 ...define the tows:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 # Add more detailed information for gillnets
 mfdb_import_tow_taxonomy(mdb, table_string('
 name latitude longitude  length net_count net_type mesh_size
@@ -165,7 +165,7 @@ name latitude longitude  length net_count net_type mesh_size
 
 ...and import some data using these definitions:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 mfdb_import_survey(mdb, data_source = 'gillnet', table_string('
 year    month   areacell        species tow  length	age	weight
 2000	1	45G01		COD	gnA	34	10	314
@@ -186,14 +186,14 @@ We can now use the ``mfdb_sample_*`` functions to select this data back out
 again. We can group and filter by any of the tow attributes. For instance, to
 group/filter by ``tow_depth``:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 agg_data <- mfdb_sample_meanlength(mdb, c('tow_depth'), list(
     step = mfdb_timestep_yearly,
     tow_depth = mfdb_interval('depth', c(0, 50, 100, 150)),
     null = NULL))
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE}
+```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 # Test expected output
 stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
     year = c('all'),
@@ -212,7 +212,7 @@ stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
 Any of the other tow attributes are available with a "tow_" prefix. For
 example, we can show metadata per tow by using ``mfdb_unaggregated``:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 # Show all tow data unaggregated
 agg_data <- mfdb_sample_meanlength(mdb, c('tow', 'tow_latitude', 'tow_longitude', 'tow_depth', 'tow_length'), list(
     step = mfdb_timestep_yearly,
@@ -225,7 +225,7 @@ agg_data <- mfdb_sample_meanlength(mdb, c('tow', 'tow_latitude', 'tow_longitude'
     null = NULL))
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE}
+```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
     year = c('all'),
     step = c('1'),
@@ -244,14 +244,14 @@ As well as using tow attributes to group/filter, we can use the tow to scale
 the output of the query. For example, the following scales mean length by tow
 length, for each tow:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 agg_data <- mfdb_sample_meanlength(mdb, c('tow'), list(
     step = mfdb_timestep_yearly,
     tow = mfdb_unaggregated(),
     null = NULL), scale_index = 'tow_length')
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE}
+```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
     year = c('all'),
     step = c('1'),
@@ -285,14 +285,14 @@ stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
 
 ...or scale by tow length whilst grouping by depth:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 agg_data <- mfdb_sample_scaled(mdb, c('tow_depth'), list(
     step = mfdb_timestep_yearly,
     tow_depth = mfdb_interval('depth', c(0, 50, 100, 150)),
     null = NULL), scale = 'tow_length')
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE}
+```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
     year = c('all'),
     step = c('1'),
@@ -313,12 +313,12 @@ stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
 
 An example of grouping by ``tow_bait_type``:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 agg_data <- mfdb_sample_count(mdb, c('tow_bait_type'), list(
     tow_bait_type = mfdb_unaggregated()))
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE}
+```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area tow_bait_type number
  all  all  all            b1      3
@@ -330,12 +330,12 @@ year step area tow_bait_type number
 
 And finally ``tow_net_type``:
 
-```{r}
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
 agg_data <- mfdb_sample_count(mdb, c('tow_net_type'), list(
     tow_net_type = mfdb_unaggregated()))
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE}
+```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area tow_net_type number
  all  all  all        black      3
