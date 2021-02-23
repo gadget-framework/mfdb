@@ -6,7 +6,8 @@
 on:
   push:
      branches:
-       - wip-7.x
+      - '[0-9]+.x'
+      - 'wip-[0-9]+.x'
 
 name: Render documentation
 
