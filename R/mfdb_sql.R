@@ -362,7 +362,7 @@ mfdb_transaction <- function(mdb, transaction) {
             stop(e)
         }
     })
-    mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
+    if (mfdb_is_postgres(mdb)) mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
     ret <- tryCatch(transaction, interrupt = function (e) e, error = function (e) e)
     if ("interrupt" %in% class(ret)) {
         mdb$logger$warn("Interrupted, rolling back transaction...")
