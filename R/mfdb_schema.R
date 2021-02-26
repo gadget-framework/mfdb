@@ -263,6 +263,7 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
 
 # Create any required functions, if they don't already exist
 mfdb_update_functions <- function(mdb) {
+   if (!mfdb_is_postgres(mdb)) return()  # Meaningless for !postgres
    mfdb_create_aggregate(mdb, "WEIGHTED_MEAN",
        input_type = c("numeric", "numeric"), # value, weight
        state_type = "numeric[2]",
