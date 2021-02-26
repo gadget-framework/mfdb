@@ -24,6 +24,17 @@ sql_create_index <- function(table, cols) {
    paste0(c("CREATE INDEX ON ", table, " (", paste0(cols, collapse = ","), ")"), collapse = "")
 }
 
+# Return pg / sqlite or NULL
+mfdb_db_backend <- function(mdb) {
+    drv_package <- attr(mdb$db_args$drv@class, 'package')
+
+    if (drv_package %in% c('RPostgres', 'RPostgreSQL')) return('pg')
+    if (drv_package %in% c('RSQLite')) return('sqlite')
+    return(NULL)
+}
+mfdb_is_postgres <- function (mdb) mfdb_db_backend(mdb) == 'pg'
+mfdb_is_sqlite <- function (mdb) mfdb_db_backend(mdb) == 'sqlite'
+
 # Concatenate queries together and send to database
 mfdb_send <- function(mdb, ..., result = "") {
     query <- paste0(c(...), collapse = "")
