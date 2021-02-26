@@ -27,7 +27,7 @@ mfdb_update_schema <- function(
     while (TRUE) {
         # Find out existing schema version, if it's what we want return
         if (mfdb_table_exists(mdb, 'mfdb_schema')) {
-            res <- mfdb_fetch(mdb, "SELECT MAX(version) FROM ", mdb$schema, ".mfdb_schema")
+            res <- mfdb_fetch(mdb, "SELECT MAX(version) FROM mfdb_schema")
             schema_version <- ifelse(nrow(res) == 0, 0, res[1, 1])
         } else {
             schema_version <- 0
