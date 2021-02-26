@@ -280,16 +280,19 @@ mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
 
     mfdb_send(mdb,
         if (nzchar(desc)) paste0("-- ", desc, "\n", collapse = ""),
-        "CREATE TABLE ", mdb$schema, ".", name, " (\n",
+        "CREATE TABLE ", (if (mfdb_is_postgres(mdb)) paste0(mdb$schema, ".", name) else name), " (\n",
         vapply(1:ncol(items), row_to_string, ""),
         ")")
-    if (nzchar(desc)) mfdb_send(mdb,
-        "COMMENT ON TABLE ", name,
-        " IS ", sql_quote(desc))
-    for (i in 1:ncol(items)) {
-        if (nzchar(items[3,i])) mfdb_send(mdb,
-            "COMMENT ON COLUMN ", name, ".", items[1,i],
-            " IS ", sql_quote(items[3,i]))
+
+    if (mfdb_is_postgres(mdb)) {
+        if (nzchar(desc)) mfdb_send(mdb,
+            "COMMENT ON TABLE ", name,
+            " IS ", sql_quote(desc))
+        for (i in 1:ncol(items)) {
+            if (nzchar(items[3,i])) mfdb_send(mdb,
+                "COMMENT ON COLUMN ", name, ".", items[1,i],
+                " IS ", sql_quote(items[3,i]))
+        }
     }
 }
 
