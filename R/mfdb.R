@@ -215,12 +215,20 @@ mfdb <- function(case_study_name = "",
 # Create indexes if not already there
 mfdb_finish_import <- function(mdb) {
     if (!exists('index_created', where = mdb$state)) {
-        tables <- mfdb_fetch(mdb,
-            "SELECT table_name",
-            " FROM information_schema.tables",
-            " WHERE (table_schema IN ", sql_quote(mdb$schema, always_bracket = TRUE),
-            " OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema()))",
-            "")[, c(1)]
+        if (mfdb_is_postgres(mdb)) {
+            tables <- mfdb_fetch(mdb,
+                "SELECT table_name",
+                " FROM information_schema.tables",
+                " WHERE (table_schema IN ", sql_quote(mdb$schema, always_bracket = TRUE),
+                " OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema()))",
+                "")[, c(1)]
+        } else {
+            tables <- mfdb_fetch(mdb, "
+                SELECT name
+                  FROM sqlite_schema
+                 WHERE type = 'table'
+                ")[, c(1)]
+        }
         for (t in tables) mfdb_send(mdb, "ANALYZE ", t)
         assign('index_created', TRUE, pos = mdb$state)
     }
