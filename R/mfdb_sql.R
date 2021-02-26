@@ -248,12 +248,19 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
 
 # Do the given tables already exist?
 mfdb_table_exists <- function(mdb, table_name, schema_name = mdb$schema) {
-    mfdb_fetch(mdb,
+    if (mfdb_is_postgres(mdb)) return(mfdb_fetch(mdb,
         "SELECT COUNT(*)",
         " FROM information_schema.tables",
         " WHERE (table_schema IN ", sql_quote(schema_name, always_bracket = TRUE),
         " OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema()))",
-        " AND table_name IN ", sql_quote(table_name, always_bracket = TRUE))[, c(1)] > 0
+        " AND table_name IN ", sql_quote(table_name, always_bracket = TRUE))[, c(1)] > 0)
+    if (mfdb_is_sqlite(mdb)) return(mfdb_fetch(mdb, "
+        SELECT COUNT(*)
+          FROM sqlite_schema
+         WHERE type = 'table'
+           AND name IN ", sql_quote(table_name, always_bracket = TRUE), "
+        ")[, c(1)] > 0)
+    stop("Unknown DB type")
 }
 
 mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
