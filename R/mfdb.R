@@ -182,6 +182,7 @@ mfdb <- function(case_study_name = "",
             }
         }
     } else if (mfdb_is_sqlite(mdb)) {
+        RSQLite::initRegExp(mdb$db)
         # A sqlite database doesn't have separate schema
         if (destroy_schema) {
             stop('TODO: Delete all tables')
