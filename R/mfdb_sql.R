@@ -24,13 +24,14 @@ sql_create_index <- function(table, cols) {
    paste0(c("CREATE INDEX ON ", table, " (", paste0(cols, collapse = ","), ")"), collapse = "")
 }
 
-# Return pg / sqlite or NULL
+# Return dbnull / pg / sqlite or unknown
 mfdb_db_backend <- function(mdb) {
-    drv_package <- attr(mdb$db_args$drv@class, 'package')
+    if (class(mdb$db) == 'dbNull') return('dbnull')
 
+    drv_package <- attr(class(mdb$db_args$drv), 'package')
     if (drv_package %in% c('RPostgres', 'RPostgreSQL')) return('pg')
     if (drv_package %in% c('RSQLite')) return('sqlite')
-    return(NULL)
+    return('unknown')
 }
 mfdb_is_postgres <- function (mdb) mfdb_db_backend(mdb) == 'pg'
 mfdb_is_sqlite <- function (mdb) mfdb_db_backend(mdb) == 'sqlite'
@@ -248,7 +249,7 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
 
 # Do the given tables already exist?
 mfdb_table_exists <- function(mdb, table_name, schema_name = mdb$schema) {
-    if (mfdb_is_postgres(mdb)) return(mfdb_fetch(mdb,
+    if (mfdb_is_postgres(mdb) || class(mdb$db) == 'dbNull') return(mfdb_fetch(mdb,
         "SELECT COUNT(*)",
         " FROM information_schema.tables",
         " WHERE (table_schema IN ", sql_quote(schema_name, always_bracket = TRUE),
