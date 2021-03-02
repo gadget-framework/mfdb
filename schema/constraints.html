@@ -800,24 +800,6 @@
                                         <td><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>Restrict delete</span></td>
                                     </tr>
                                     <tr>
-                                        <td>maturity_stage_t_group_fkey</td>
-                                        <td>
-                                            <table border='0' cellspacing='0' cellpadding='0'>
-                                                <tr>
-                                                    <td><a href='tables/maturity_stage.html'>maturity_stage</a><span>.t_group</span></td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                        <td>
-                                            <table border='0' cellspacing='0' cellpadding='0'>
-                                                <tr>
-                                                    <td><a href='tables/maturity_stage.html'>maturity_stage</a><span>.name</span></td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                        <td><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>Restrict delete</span></td>
-                                    </tr>
-                                    <tr>
                                         <td>sample_sampling_type_id_fkey</td>
                                         <td>
                                             <table border='0' cellspacing='0' cellpadding='0'>
@@ -1028,6 +1010,24 @@
                                             <table border='0' cellspacing='0' cellpadding='0'>
                                                 <tr>
                                                     <td><a href='tables/maturity_stage.html'>maturity_stage</a><span>.maturity_stage_id</span></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>Restrict delete</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>maturity_stage_t_group_fkey</td>
+                                        <td>
+                                            <table border='0' cellspacing='0' cellpadding='0'>
+                                                <tr>
+                                                    <td><a href='tables/maturity_stage.html'>maturity_stage</a><span>.t_group</span></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td>
+                                            <table border='0' cellspacing='0' cellpadding='0'>
+                                                <tr>
+                                                    <td><a href='tables/maturity_stage.html'>maturity_stage</a><span>.name</span></td>
                                                 </tr>
                                             </table>
                                         </td>
@@ -1281,14 +1281,14 @@
                                         <td>(((name)::text ~ &#39;^[A-Za-z0-9_.\-]+$&#39;::text))</td>
                                     </tr>
                                     <tr>
-                                        <td><a href='tables/maturity_stage.html'>maturity_stage</a></td>
-                                        <td>maturity_stage_name_check</td>
-                                        <td>(((name)::text ~ &#39;^[A-Za-z0-9_.\-]+$&#39;::text))</td>
-                                    </tr>
-                                    <tr>
                                         <td><a href='tables/sample.html'>sample</a></td>
                                         <td>sample_month_check</td>
                                         <td>(((month &gt;= 1) AND (month &lt;= 12)))</td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href='tables/maturity_stage.html'>maturity_stage</a></td>
+                                        <td>maturity_stage_name_check</td>
+                                        <td>(((name)::text ~ &#39;^[A-Za-z0-9_.\-]+$&#39;::text))</td>
                                     </tr>
                                     <tr>
                                         <td><a href='tables/vessel_owner.html'>vessel_owner</a></td>
