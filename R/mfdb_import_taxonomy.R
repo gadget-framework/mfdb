@@ -55,7 +55,9 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
 
         # If some ids appear in both new and existing, bump entire range up so we don't intersect
         overlapping_ids <- intersect(new_data[[id_col]], existing[[id_col]])
+        mdb$logger$debug(paste0("new_data & existing overlap by ", length(overlapping_ids), " entries"))
         if (length(overlapping_ids) > 0) {
+            mdb$logger$debug(paste0("upping new IDs by ", max(existing[[id_col]])))
             new_data[[id_col]] <- max(existing[[id_col]]) + new_data[[id_col]]
         }
 
