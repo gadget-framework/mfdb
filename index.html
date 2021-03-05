@@ -85,9 +85,9 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="mareframe-db-access-package" class="section level1">
+<div id="mfdb-data-management-for-fisheries-model-creation" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#mareframe-db-access-package" class="anchor"></a>MareFrame DB Access package</h1></div>
+<a href="#mfdb-data-management-for-fisheries-model-creation" class="anchor"></a>MFDB: Data management for fisheries model creation</h1></div>
 
 <p>This package enables automated processing of fisheries data into suitable forms for running ecosystem models against it, e.g. <a href="http://www.hafro.is/gadget/">GADGET</a>.</p>
 <p>This package contains several distinct sets of functions:</p>
@@ -100,7 +100,7 @@
 <p>Using this, you can install PostgreSQL locally and have a script automating the process of:</p>
 <ol>
 <li>Importing data from your sources</li>
-<li>Uploading into your local MareFrame database</li>
+<li>Uploading into your local MFDB database</li>
 <li>Sampling / grouping this data</li>
 <li>Producing set of GADGET model files ready to be run by GADGET</li>
 </ol>
@@ -126,7 +126,6 @@
 <span id="cb3-5"><a href="#cb3-5"></a><span class="op">$</span><span class="st"> </span>psql</span>
 <span id="cb3-6"><a href="#cb3-6"></a>postgres=<span class="co"># CREATE USER lentinj;</span></span>
 <span id="cb3-7"><a href="#cb3-7"></a>postgres=<span class="co"># CREATE DATABASE mf OWNER lentinj;</span></span></code></pre></div>
-<p>If you don’t want to use a system-wide database, then investigate <a href="https://github.com/mareframe/mfdb-workspace" class="uri">https://github.com/mareframe/mfdb-workspace</a> which keeps all the required R dependencies and PostgreSQL database in the local directory.</p>
 </div>
 <div id="linux-redhat--fedora" class="section level3">
 <h3 class="hasAnchor">
@@ -144,7 +143,6 @@
 <span id="cb6-5"><a href="#cb6-5"></a><span class="op">$</span><span class="st"> </span>psql</span>
 <span id="cb6-6"><a href="#cb6-6"></a>postgres=<span class="co"># CREATE USER lentinj</span></span>
 <span id="cb6-7"><a href="#cb6-7"></a>postgres=<span class="co"># CREATE DATABASE mf OWNER lentinj;</span></span></code></pre></div>
-<p>If you don’t want to use a system-wide database, then investigate <a href="https://github.com/mareframe/mfdb-workspace" class="uri">https://github.com/mareframe/mfdb-workspace</a> which keeps all the required R dependencies and PostgreSQL database in the local directory.</p>
 </div>
 <div id="microsoft-windows" class="section level3">
 <h3 class="hasAnchor">
@@ -169,7 +167,7 @@
 <div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">install.packages</span>(<span class="st">'mfdb'</span>)</span></code></pre></div>
 <p>Or use <a href="https://cran.r-project.org/package=remotes">remotes</a> to install this directly:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># install.packages("remotes")</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">"mareframe/mfdb"</span>)</span></code></pre></div>
+<span id="cb9-2"><a href="#cb9-2"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">"gadget-framework/mfdb"</span>)</span></code></pre></div>
 </div>
 <div id="using" class="section level2">
 <h2 class="hasAnchor">
@@ -228,7 +226,7 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/mareframe/mfdb/actions"><img src="https://github.com/mareframe/mfdb/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/gadget-framework/mfdb/actions"><img src="https://github.com/gadget-framework/mfdb/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
 </ul>
 </div>
 </div>
