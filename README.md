@@ -1,7 +1,7 @@
-MareFrame DB Access package
-===========================
+MFDB: Data management for fisheries model creation
+==================================================
 
-[![R-CMD-check](https://github.com/mareframe/mfdb/workflows/R-CMD-check/badge.svg)](https://github.com/mareframe/mfdb/actions)
+[![R-CMD-check](https://github.com/gadget-framework/mfdb/workflows/R-CMD-check/badge.svg)](https://github.com/gadget-framework/mfdb/actions)
 
 This package enables automated processing of fisheries data into suitable forms
 for running ecosystem models against it, e.g. [GADGET](http://www.hafro.is/gadget/).
@@ -17,7 +17,7 @@ Using this, you can install PostgreSQL locally and have a script automating the
 process of:
 
 1. Importing data from your sources
-2. Uploading into your local MareFrame database
+2. Uploading into your local MFDB database
 3. Sampling / grouping this data
 4. Producing set of GADGET model files ready to be run by GADGET
 
@@ -55,9 +55,6 @@ Now, create an ``mf`` database that the user on your computer owns:
     postgres=# CREATE USER lentinj;
     postgres=# CREATE DATABASE mf OWNER lentinj;
 
-If you don't want to use a system-wide database, then investigate https://github.com/mareframe/mfdb-workspace
-which keeps all the required R dependencies and PostgreSQL database in the local directory.
-
 ### Linux (Redhat / Fedora)
 
 Installation of RPostgreSQL will happen automatically, however you need some
@@ -80,9 +77,6 @@ Now, create an ``mf`` database that the user on your computer owns:
     $ psql
     postgres=# CREATE USER lentinj
     postgres=# CREATE DATABASE mf OWNER lentinj;
-
-If you don't want to use a system-wide database, then investigate https://github.com/mareframe/mfdb-workspace
-which keeps all the required R dependencies and PostgreSQL database in the local directory.
 
 ### Microsoft Windows
 
@@ -114,13 +108,13 @@ You can install from CRAN:
 Or use [remotes](https://cran.r-project.org/package=remotes) to install this directly:
 
     # install.packages("remotes")
-    remotes::install_github("mareframe/mfdb")
+    remotes::install_github("gadget-framework/mfdb")
 
 Using
 -----
 
 For an introduction to the package, read the ``package?mfdb`` help file in R.
-[This is also available online](http://mareframe.github.io/).
+[This is also available online](http://gadget-framework.github.io/mfdb).
 
 There are a selection of example scripts in the ``demo/`` folder. The
 ``example-*`` scripts show the full process of importing data from specified
