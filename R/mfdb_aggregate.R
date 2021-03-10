@@ -91,12 +91,12 @@ where_clause.numeric <- function(mdb, x, col, outputname, group_disabled = FALSE
     # https://stackoverflow.com/questions/14987321/postgresql-in-operator-with-subquery-poor-performance
     if (lookup %in% mfdb_taxonomy_tables) {
         return(paste0(
-            "(", col, " = ANY((SELECT ARRAY",
+            "(", col, (if (mfdb_is_postgres(mdb)) " = ANY((SELECT ARRAY" else " IN "),
             "(SELECT ", lookup, "_id FROM ", lookup, " WHERE name IN ",
             sql_quote(x[!is.na(x)], always_bracket = TRUE),
             " OR t_group IN ",
             sql_quote(x[!is.na(x)], always_bracket = TRUE),
-            "))::", (if (lookup == 'species') 'BIGINT' else 'INTEGER') , "[])",
+            (if (mfdb_is_postgres(mdb)) paste0("))::", (if (lookup == 'species') 'BIGINT' else 'INTEGER') , "[])") else ")"),
             if (NA %in% x) paste0(" OR ", col, " IS NULL"),
             ")"))
     }
