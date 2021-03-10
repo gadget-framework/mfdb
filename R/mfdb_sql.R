@@ -21,7 +21,8 @@ sql_quote <- function(v, always_bracket = FALSE, always_quote = FALSE, brackets 
 sql_vquote <- Vectorize(sql_quote)
 
 sql_create_index <- function(table, cols) {
-   paste0(c("CREATE INDEX ON ", table, " (", paste0(cols, collapse = ","), ")"), collapse = "")
+   index_name <- paste(c("idx", table, cols), collapse = "_")
+   paste0(c("CREATE INDEX ", index_name, " ON ", table, " (", paste0(cols, collapse = ","), ")"), collapse = "")
 }
 
 # Return dbnull / pg / sqlite or unknown
