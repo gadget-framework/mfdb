@@ -53,7 +53,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
 
 
     # Likely to be pretty big, so pre-load data into a temporary table
-    temp_tbl <- mfdb_bulk_copy(mdb, 'sample', survey_sample, function (temp_tbl) {
+    mfdb_bulk_copy(mdb, 'sample', survey_sample, function (temp_tbl) {
         mfdb_transaction(mdb, mfdb_disable_constraints(mdb, 'sample', {
             # Remove data_source and re-insert
             data_source_id <- get_data_source_id(mdb, data_source)
@@ -228,7 +228,8 @@ sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL,
         # Fetch corresponding id for each level
         new_levels <- mfdb_fetch(mdb,
             "SELECT name, ", lookup, "_id FROM ", lookup, " AS id",
-            " WHERE name IN ", sql_quote(levels(col), always_bracket = TRUE),
+            # NB: If we're looking for too many levels, just get them all
+            (if (length(levels(col)) < 100) paste0(" WHERE name IN ", sql_quote(levels(col), always_bracket = TRUE)) else ""),
             "")
         if(nrow(new_levels) == 0) {
             stop("None of the input data matches ", lookup, " vocabulary")

@@ -254,7 +254,6 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
         NULL
     ), keys = c(
         paste0(c("PRIMARY KEY(", key_col, ")"), collapse = ""),
-        paste0("CHECK(name ", ifelse(mfdb_is_postgres(mdb), "~", "REGEXP"), " '^([A-Za-z0-9_.]|-)+$')"),
         paste0("UNIQUE(name)"),
         paste0("FOREIGN KEY (t_group) REFERENCES ", table_name, "(name)"),
         NULL

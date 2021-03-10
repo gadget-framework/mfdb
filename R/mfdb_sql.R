@@ -194,12 +194,8 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
     })
     temp_tbl <- paste(c('pg_temp', temp_tbl), collapse = ".")
 
-    res <- tryCatch(fn(temp_tbl), error = function (e) {
-        tryCatch(mfdb_send(mdb, "DROP TABLE ", temp_tbl), error = function (e) NULL)
-        stop(e)
-    })
-    mfdb_send(mdb, "DROP TABLE ", temp_tbl)
-    res
+    on.exit(mfdb_send(mdb, "DROP TABLE ", temp_tbl), add = TRUE)
+    fn(temp_tbl)
 }
 
 # Temporarily remove constraints from a table, assumes it's been wrapped in a transaction
