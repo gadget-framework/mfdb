@@ -53,7 +53,7 @@ mfdb_import_survey <- function (mdb, data_in, data_source = 'default_sample') {
 
 
     # Likely to be pretty big, so pre-load data into a temporary table
-    temp_tbl <- mfdb_bulk_copy(mdb, 'sample', survey_sample, function (temp_tbl) {
+    mfdb_bulk_copy(mdb, 'sample', survey_sample, function (temp_tbl) {
         mfdb_transaction(mdb, mfdb_disable_constraints(mdb, 'sample', {
             # Remove data_source and re-insert
             data_source_id <- get_data_source_id(mdb, data_source)
