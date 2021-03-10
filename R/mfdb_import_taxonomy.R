@@ -29,7 +29,7 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
         }
     }
 
-    mfdb_transaction(mdb, mfdb_bulk_copy(mdb, table_name, data_in, function (temp_tbl) {
+    mfdb_bulk_copy(mdb, table_name, data_in, function (temp_tbl) mfdb_transaction(mdb, {
         # Remove rows where nothing changed, if we remove all of them, exit.
         # NB: This won't work if an extra_col is float (e.g. latitude), but should only be an optimisation
         matching_rows <- mfdb_send(mdb, "DELETE FROM ", temp_tbl, " WHERE ", id_col, " IN (",
