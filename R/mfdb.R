@@ -142,6 +142,7 @@ mfdb <- function(case_study_name = "",
                     save_temp_tables = mdb$save_temp_tables,
                     state = mdb$state,
                     schema = "public",
+                    db_args = db_combined,
                     db = mdb$db), class = "mfdb")
                 mfdb_update_schema(mdb_public, target_version = 4)
 
