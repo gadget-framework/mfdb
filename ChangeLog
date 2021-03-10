@@ -1,3 +1,5 @@
+    * Use bulk_copy to speed up large taxonomy imports
+
     Schema changes:
     * Remove taxonomy name restrictions
 
