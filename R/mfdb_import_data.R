@@ -228,7 +228,8 @@ sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL,
         # Fetch corresponding id for each level
         new_levels <- mfdb_fetch(mdb,
             "SELECT name, ", lookup, "_id FROM ", lookup, " AS id",
-            " WHERE name IN ", sql_quote(levels(col), always_bracket = TRUE),
+            # NB: If we're looking for too many levels, just get them all
+            (if (length(levels(col)) < 100) paste0(" WHERE name IN ", sql_quote(levels(col), always_bracket = TRUE)) else ""),
             "")
         if(nrow(new_levels) == 0) {
             stop("None of the input data matches ", lookup, " vocabulary")
