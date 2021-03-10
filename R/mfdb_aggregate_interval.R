@@ -20,12 +20,18 @@ mfdb_interval <- function (prefix, vect, open_ended = FALSE) {
 }
 
 # Cast value to something that matches column
-col_cast <- function (col) {
+col_cast <- function (col, value) {
     lookup <- if (!is.null(attr(col, 'lookup'))) attr(col, 'lookup') else gsub('(.*\\.)|_id', '', col)
     # NB: Not exhaustive, but main thing to avoid is comparing REAL to NUMERIC types
-    ifelse(lookup == "species", "::BIGINT", 
-        ifelse(lookup == "year", "::INT",
-            ifelse(lookup == "year", "::NUMERIC(10,5)", "::REAL")))
+    if (lookup == "species") {
+        paste0("CAST(", value, " AS BIGINT)")
+    } else if (lookup == "year") {
+        paste0("CAST(", value, " AS INT)")
+    } else if (lookup == "age") {
+        paste0("CAST(", value, " AS NUMERIC(10, 5))")
+    } else {
+        paste0("CAST(", value, " AS REAL)")
+    }
 }
 
 # Generate CASE statement to pick correct group for value
@@ -39,7 +45,7 @@ select_clause.mfdb_interval <- function(mdb, x, col, outputname, group_disabled 
 
     paste("CASE",
         paste("WHEN",
-            col, "<", paste0(sorted, col_cast(col)), "THEN",
+            col, "<", col_cast(col, sorted), "THEN",
             vapply(names(sorted), sql_quote, ""), collapse = " "),
         "ELSE", sql_quote(tail(names(sorted), 1)),  # If upper is open ended, remainder is bunged in with final group
         "END AS", outputname)
@@ -48,8 +54,8 @@ select_clause.mfdb_interval <- function(mdb, x, col, outputname, group_disabled 
 # Ensure value is within range specified
 where_clause.mfdb_interval <- function(mdb, x, col, outputname, group_disabled = FALSE) {
     c(
-        if (!('lower' %in% attr(x, 'open_ended'))) paste(col, ">=", paste0(sql_quote(min(x)), col_cast(col))),
-        if (!('upper' %in% attr(x, 'open_ended'))) paste(col, "<", paste0(sql_quote(max(x)), col_cast(col))),
+        if (!('lower' %in% attr(x, 'open_ended'))) paste(col, ">=", col_cast(col, sql_quote(min(x)))),
+        if (!('upper' %in% attr(x, 'open_ended'))) paste(col, "<", col_cast(col, sql_quote(max(x)))),
         NULL)
 }
 

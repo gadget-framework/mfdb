@@ -79,7 +79,7 @@ mfdb_area_size_depth <- function (mdb, params) {
         group_cols = c("area"),
         calc_cols = c(
             "SUM(c.size) AS size",
-            "WEIGHTED_MEAN(c.depth::numeric, c.size::numeric) AS mean_depth",
+            "WEIGHTED_MEAN(CAST(c.depth AS numeric), CAST(c.size AS numeric)) AS mean_depth",
             NULL),
         core_table = "areacell",
         col_defs = list(area = "c.areacell_id"),
@@ -129,7 +129,7 @@ mfdb_survey_index_mean <- function (mdb, cols, params, scale_index = NULL) {
             if (abundance[[2]] == 1)
                 paste0("AVG(c.value) AS mean")
             else
-                paste0("WEIGHTED_MEAN(c.value::numeric, (", abundance[[2]], ")::numeric) AS mean")),
+                paste0("WEIGHTED_MEAN(CAST(c.value AS numeric), CAST(", abundance[[2]], " AS numeric)) AS mean")),
         col_defs = list(
             data_source = 'c.data_source_id',
             index_type = "c.index_type_id",
@@ -213,7 +213,7 @@ mfdb_sample_meanlength <- function (mdb, cols, params, scale_index = NULL) {
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(c.length::numeric, (", abundance[[2]], ")::numeric) AS mean"),
+            paste0("WEIGHTED_MEAN(CAST(c.length AS numeric), CAST(", abundance[[2]], " AS numeric)) AS mean"),
             NULL),
         params = params)
     out
@@ -228,8 +228,8 @@ mfdb_sample_meanlength_stddev <- function (mdb, cols, params, scale_index = NULL
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(c.length::numeric, (", abundance[[2]], ")::numeric) AS mean"),
-            paste0("WEIGHTED_STDDEV(c.length::numeric, (", abundance[[2]], ")::numeric) AS stddev"), # TODO: Should take length_var into account
+            paste0("WEIGHTED_MEAN(CAST(c.length AS numeric), CAST(", abundance[[2]], " AS numeric)) AS mean"),
+            paste0("WEIGHTED_STDDEV(CAST(c.length AS numeric), CAST(", abundance[[2]], " AS numeric)) AS stddev"), # TODO: Should take length_var into account
             NULL),
         params = params)
     out
@@ -278,7 +278,7 @@ mfdb_sample_meanweight <- function (mdb, cols, params, scale_index = NULL, measu
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(c.", col_sql, "::numeric, (", abundance[[2]], ")::numeric) AS ", col_meanlabel),
+            paste0("WEIGHTED_MEAN(CAST(c.", col_sql, " AS numeric), CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel),
             NULL),
         params = params)
     out
@@ -296,8 +296,8 @@ mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(c.", col_sql, "::numeric, (", abundance[[2]], ")::numeric) AS ", col_meanlabel),
-            paste0("WEIGHTED_STDDEV(c.", col_sql, "::numeric, (", abundance[[2]], ")::numeric) AS ", col_stddevlabel),
+            paste0("WEIGHTED_MEAN(CAST(c.", col_sql, " AS numeric), CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel),
+            paste0("WEIGHTED_STDDEV(CAST(c.", col_sql, " AS numeric), CAST(", abundance[[2]], " AS numeric)) AS ", col_stddevlabel),
             # TODO: Should take weight_var into account
             NULL),
         params = params)
@@ -334,7 +334,7 @@ mfdb_sample_scaled <- function (mdb, cols, params, abundance_scale = NULL, scale
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") * ", scale_fn, " AS number"),
-            paste0("WEIGHTED_MEAN(c.length::numeric, (", abundance[[2]], ")::numeric) * ", scale_fn, " AS mean_weight"),
+            paste0("WEIGHTED_MEAN(CAST(c.length AS numeric), CAST(", abundance[[2]], " AS numeric)) * ", scale_fn, " AS mean_weight"),
             NULL),
         params = params)
 }
@@ -391,7 +391,7 @@ mfdb_stomach_preymeanlength <- function (mdb, cols, params) {
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(COALESCE(prey.count, 0)) AS number"),
-            paste0("WEIGHTED_MEAN(prey.length::numeric, COALESCE(prey.count, 0)::numeric) AS mean_length"),
+            paste0("WEIGHTED_MEAN(CAST(prey.length AS numeric), CAST(COALESCE(prey.count, 0) AS numeric)) AS mean_length"),
             NULL),
         params = params)
 }
@@ -426,7 +426,7 @@ mfdb_stomach_preymeanweight <- function (mdb, cols, params) {
         col_defs = as.list(c(pred_col_defs, prey_col_defs)),
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            paste0("SUM(prey.weight::numeric * COALESCE(prey.count, 1)) AS weight_total"),
+            paste0("SUM(CAST(prey.weight AS numeric) * COALESCE(prey.count, 1)) AS weight_total"),
             NULL),
         params = params)
 
@@ -459,7 +459,7 @@ mfdb_stomach_preyweightratio <- function (mdb, cols, params) {
         col_defs = as.list(c(pred_col_defs)),
         group_cols = c("year", "timestep", "area", intersect(cols, names(pred_col_defs))),
         calc_cols = c(
-            "SUM(prey.weight::numeric * COALESCE(prey.count, 1)) AS weight_total",
+            "SUM(CAST(prey.weight AS numeric) * COALESCE(prey.count, 1)) AS weight_total",
             NULL),
         params = params)
 
@@ -472,7 +472,7 @@ mfdb_stomach_preyweightratio <- function (mdb, cols, params) {
         col_defs = as.list(c(pred_col_defs, prey_col_defs)),
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            "SUM(prey.weight::numeric * COALESCE(prey.count, 1)) AS weight_present",
+            "SUM(CAST(prey.weight AS numeric) * COALESCE(prey.count, 1)) AS weight_present",
             NULL),
         params = params)
 
