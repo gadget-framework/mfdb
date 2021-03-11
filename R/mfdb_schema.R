@@ -45,7 +45,7 @@ mfdb_update_schema <- function(
                 "Call mfdb('", mdb$schema, "', destroy_schema = TRUE) first.",
                 "Warning: This *will destroy* any existing data"))
             })
-        fn(mdb)
+        fn(mdb, target_version)
 
         # NB: Do this afterwards so we at least run the "up-to-date" step
         if (schema_version == target_version) {

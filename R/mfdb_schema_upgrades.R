@@ -1,5 +1,5 @@
 # Create MFDB schema from scratch, or print commands
-schema_from_0 <- function(mdb) {
+schema_from_0 <- function(mdb, target_version) {
     mdb$logger$info("Creating schema from scratch")
     schema_create_tables(mdb)
 
@@ -18,7 +18,7 @@ schema_from_0 <- function(mdb) {
 }
 
 # Functions that upgrade an existing schema version x to x+1
-schema_from_2 <- function(mdb) mfdb_transaction(mdb, {
+schema_from_2 <- function(mdb, target_version) mfdb_transaction(mdb, {
     mdb$logger$info("Upgrading schema from version 2")
     mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN count DROP NOT NULL")
     mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN count TYPE REAL")
@@ -70,7 +70,7 @@ schema_from_2 <- function(mdb) mfdb_transaction(mdb, {
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 3")
 })
 
-schema_from_3 <- function(mdb) mfdb_transaction(mdb, {
+schema_from_3 <- function(mdb, target_version) mfdb_transaction(mdb, {
     mdb$logger$info("Upgrading schema from version 3")
     mfdb_send(mdb, "ALTER TABLE prey ALTER COLUMN count DROP NOT NULL")
 
@@ -222,11 +222,11 @@ schema_from_3 <- function(mdb) mfdb_transaction(mdb, {
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 4")
 })
 
-schema_from_4 <- function(mdb) {
-    stop("Cannot upgrade directly from 4-->5, need to recreate in separate schema")
+schema_from_4 <- function(mdb, target_version) {
+    if (target_version > 4) stop("Cannot upgrade directly from 4-->5, need to recreate in separate schema")
 }
 
-schema_from_5 <- function(mdb) mfdb_transaction(mdb, {
+schema_from_5 <- function(mdb, target_version) mfdb_transaction(mdb, {
     mdb$logger$info("Upgrading schema from version 5")
 
     mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN age TYPE REAL")
@@ -244,7 +244,7 @@ schema_from_5 <- function(mdb) mfdb_transaction(mdb, {
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 6")
 })
 
-schema_from_6 <- function(mdb) {
+schema_from_6 <- function(mdb, target_version) {
     mdb$logger$info("Upgrading schema from version 6")
 
     mfdb_send(mdb, "ALTER TABLE sample ALTER COLUMN age TYPE NUMERIC(10,5)")
@@ -304,7 +304,7 @@ schema_from_6 <- function(mdb) {
     mfdb_send(mdb, "UPDATE mfdb_schema SET version = 7")
 }
 
-schema_from_7 <- function(mdb) {
+schema_from_7 <- function(mdb, target_version) {
     # Remove taxonomy name restrictions (late addtiton, can be removed by 7.1)
     for (t in names(mfdb_taxonomy_table_defs)) {
         mfdb_send(mdb, paste0('
