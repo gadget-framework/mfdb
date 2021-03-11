@@ -349,7 +349,7 @@
          </column>
          <column autoUpdated="false" defaultValue="null" digits="8" id="4" name="length" nullable="true" remarks="Length of prey / mean length of all prey" size="8" type="float4" typeCode="7"/>
          <column autoUpdated="false" defaultValue="null" digits="8" id="5" name="weight" nullable="true" remarks="Weight of prey / mean weight of all prey" size="8" type="float4" typeCode="7"/>
-         <column autoUpdated="false" defaultValue="1" digits="0" id="6" name="count" nullable="true" remarks="Number of prey meeting this criteria" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="1" digits="17" id="6" name="count" nullable="true" remarks="Number of prey meeting this criteria" size="17" type="float8" typeCode="8"/>
          <primaryKey column="prey_id" sequenceNumberInPK="1"/>
          <index name="prey_pkey" unique="true">
             <column ascending="true" name="prey_id"/>
