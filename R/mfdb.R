@@ -145,7 +145,9 @@ mfdb <- function(case_study_name = "",
             mfdb_update_schema(mdb_public, target_version = 4)
 
             # Create new schema, to known state
-            mfdb_update_schema(mdb, target_version = 7)
+            # NB: This should be target_version = 5, but we don't know how to
+            # create one from scratch any more, and ancient history regardless.
+            mfdb_update_schema(mdb)
 
             # Copy data from old tables
             mfdb4_cs_taxonomy <- c("areacell", "sampling_type", "data_source", "index_type", "tow", "vessel")
