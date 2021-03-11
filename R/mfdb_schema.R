@@ -33,10 +33,6 @@ mfdb_update_schema <- function(
             schema_version <- 0
         }
 
-        if (schema_version == target_version) {
-            break
-        }
-
         if (schema_version > target_version) {
             stop("Cannot downgrade schema from ", schema_version, " to ", target_version)
         }
@@ -50,6 +46,11 @@ mfdb_update_schema <- function(
                 "Warning: This *will destroy* any existing data"))
             })
         fn(mdb)
+
+        # NB: Do this afterwards so we at least run the "up-to-date" step
+        if (schema_version == target_version) {
+            break
+        }
     }
 }
 
