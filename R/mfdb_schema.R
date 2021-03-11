@@ -158,7 +158,7 @@ mfdb_measurement_table_defs <- list(
 
         "length", "REAL", "Length of prey / mean length of all prey",
         "weight", "REAL", "Weight of prey / mean weight of all prey",
-        "count", "INT DEFAULT 1", "Number of prey meeting this criteria",
+        "count", "DOUBLE PRECISION DEFAULT 1", "Number of prey meeting this criteria",
         NULL
     )))
 mfdb_measurement_tables <- names(mfdb_measurement_table_defs)

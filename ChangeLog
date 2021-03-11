@@ -2,6 +2,7 @@
 
     Schema changes:
     * Remove taxonomy name restrictions
+    * Change prey.count from INT to DOUBLE
 
 2021-02-23: Jamie Lentin <lentinj@shuttlethread.com>
 
