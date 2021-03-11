@@ -25,7 +25,7 @@ col_cast <- function (col) {
     # NB: Not exhaustive, but main thing to avoid is comparing REAL to NUMERIC types
     ifelse(lookup == "species", "::BIGINT", 
         ifelse(lookup == "year", "::INT",
-            ifelse(lookup == "year", "::NUMERIC(10,5)", "::REAL")))
+            ifelse(lookup == "age", "::NUMERIC(10,5)", "::REAL")))
 }
 
 # Generate CASE statement to pick correct group for value
