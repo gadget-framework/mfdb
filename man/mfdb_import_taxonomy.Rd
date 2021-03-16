@@ -57,7 +57,8 @@ Beyond this, all functions accept the following columns:
 \describe{
     \item{id}{Optional. A numeric ID to use internally, defaults to 1..n}
     \item{name}{Required. A vector of short names to use in data, e.g. "SEA"}
-    \item{t_group}{Optional. A vector of the that groups together a set of values}
+    \item{t_group}{Optional. A vector of the that groups together a set of values. 
+                   Must be composed of values in \code{name}}
 }
 
 Note that the database doesn't use your short names internally. This means you can
