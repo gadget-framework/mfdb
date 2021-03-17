@@ -26,6 +26,7 @@
 
 (unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
 
+    * Preserve precision when calculating total weight
     * Inline small mfdb_groups to queries, improving performance
     * Rewrite Rpath support to use Rpath::create.rpath.params
     * Rollback transactions after user interrupts
