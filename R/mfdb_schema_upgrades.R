@@ -305,16 +305,18 @@ schema_from_6 <- function(mdb, target_version) {
 }
 
 schema_from_7 <- function(mdb, target_version) {
-    # Remove taxonomy name restrictions (late addtiton, can be removed by 7.1)
-    for (t in names(mfdb_taxonomy_table_defs)) {
-        mfdb_send(mdb, paste0('
-            ALTER TABLE ', t, '
-            DROP CONSTRAINT IF EXISTS ', t, '_name_check;'))
-    }
+    # TODO: Better way of triggering these?
+    if (FALSE) {
+        # Remove taxonomy name restrictions (late addtiton, can be removed by 7.1)
+        for (t in names(mfdb_taxonomy_table_defs)) {
+            mfdb_send(mdb, paste0('
+                ALTER TABLE ', t, '
+                DROP CONSTRAINT IF EXISTS ', t, '_name_check;'))
+        }
 
-    # Change prey.count from INT to DOUBLE (late addtiton, can be removed by 7.1)
-    mfdb_send(mdb, "ALTER TABLE prey ALTER COLUMN count TYPE DOUBLE PRECISION")
+        # Change prey.count from INT to DOUBLE (late addtiton, can be removed by 7.1)
+        mfdb_send(mdb, "ALTER TABLE prey ALTER COLUMN count TYPE DOUBLE PRECISION")
+    }
 
     mdb$logger$info("Schema up-to-date")
 }
-
