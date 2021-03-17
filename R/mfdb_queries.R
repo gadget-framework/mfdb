@@ -142,7 +142,7 @@ mfdb_sample_totalweight <- function (mdb, cols, params) {
         core_table = "sample",
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            paste0("SUM(CASE WHEN count IS NULL THEN weight ELSE weight * count END) AS total_weight"),
+            paste0("SUM(CAST(CASE WHEN count IS NULL THEN weight ELSE weight * count END AS DOUBLE PRECISION)) AS total_weight"),
             NULL),
         params = params)
     out

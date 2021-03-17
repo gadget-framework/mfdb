@@ -1,3 +1,4 @@
+    * Preserve precision when calculating total weight
     * Allow DB params to be supplied with MFDB_* environment variables
     * Inline small mfdb_groups to queries, improving performance
     * Rewrite Rpath support to use Rpath::create.rpath.params
