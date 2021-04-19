@@ -260,34 +260,5 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
     ))
 }
 
-# Create any required functions, if they don't already exist
-mfdb_update_functions <- function(mdb) {
-   if (!mfdb_is_postgres(mdb)) return()  # Meaningless for !postgres
-   mfdb_create_aggregate(mdb, "WEIGHTED_MEAN",
-       input_type = c("numeric", "numeric"), # value, weight
-       state_type = "numeric[2]",
-       init_cond = "{0,0}",  # Total, count
-       accum_body = "$$ SELECT CASE WHEN $2 IS NULL THEN $1 ELSE ARRAY [
-         $1[1] + $2 * $3,
-         $1[2] + $3
-       ] END $$ LANGUAGE 'sql'",
-       final_body = "$$ SELECT CASE WHEN $1[2] = 0 THEN NULL ELSE $1[1] / $1[2] END $$ LANGUAGE 'sql'",
-   )
-
-    # See (2) in http://www.derivations.org/stdev.pdf
-    mfdb_create_aggregate(mdb, "WEIGHTED_STDDEV",
-       input_type = c("numeric", "numeric"), # value, weight
-       state_type = "numeric[3]", # total, sum, sqsum
-       init_cond = "{0,0,0,0}",
-       accum_body = "$$ SELECT CASE WHEN $2 IS NULL THEN $1 ELSE ARRAY [
-         $1[1] + $3,             -- total += weight
-         $1[2] + $3 * $2,        -- sum += weight * value
-         $1[3] + $3 * POW($2,2)  -- sqsum += weight * value**2
-       ] END $$ LANGUAGE 'sql'",
-       return_type = "double precision",
-       final_body = "$$ SELECT CASE WHEN $1[1] < 2 THEN NULL ELSE |/ ( (1/($1[1] - 1)) * ($1[3] - POW($1[2], 2) / $1[1]) ) END $$ LANGUAGE 'sql'")
-   mdb$logger$info("Creating indexes")
-}
-
 # Return the major version of the package
 package_major_version <- function () gsub("\\..*", "", packageVersion("mfdb"))

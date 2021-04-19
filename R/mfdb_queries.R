@@ -79,7 +79,8 @@ mfdb_area_size_depth <- function (mdb, params) {
         group_cols = c("area"),
         calc_cols = c(
             "SUM(c.size) AS size",
-            "WEIGHTED_MEAN(CAST(c.depth AS numeric), CAST(c.size AS numeric)) AS mean_depth",
+            paste0("SUM(CAST(c.depth AS numeric) * CAST(c.size AS numeric)) AS mean_depth__sum"),
+            paste0("SUM(CAST(c.size AS numeric)) AS mean_depth__count"),
             NULL),
         core_table = "areacell",
         col_defs = list(area = "c.areacell_id"),
@@ -128,8 +129,9 @@ mfdb_survey_index_mean <- function (mdb, cols, params, scale_index = NULL) {
         calc_cols = c(
             if (abundance[[2]] == 1)
                 paste0("AVG(c.value) AS mean")
-            else
-                paste0("WEIGHTED_MEAN(CAST(c.value AS numeric), CAST(", abundance[[2]], " AS numeric)) AS mean")),
+            else c(
+                paste0("SUM(CAST(c.value AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS mean__sum"),
+                paste0("SUM(CAST(", abundance[[2]], " AS numeric)) AS mean__count"))),
         col_defs = list(
             data_source = 'c.data_source_id',
             index_type = "c.index_type_id",
@@ -213,7 +215,8 @@ mfdb_sample_meanlength <- function (mdb, cols, params, scale_index = NULL) {
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(CAST(c.length AS numeric), CAST(", abundance[[2]], " AS numeric)) AS mean"),
+            paste0("SUM(CAST(c.length AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS mean__sum"),
+            paste0("SUM(CAST(", abundance[[2]], " AS numeric)) AS mean__count"),
             NULL),
         params = params)
     out
@@ -228,8 +231,9 @@ mfdb_sample_meanlength_stddev <- function (mdb, cols, params, scale_index = NULL
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(CAST(c.length AS numeric), CAST(", abundance[[2]], " AS numeric)) AS mean"),
-            paste0("WEIGHTED_STDDEV(CAST(c.length AS numeric), CAST(", abundance[[2]], " AS numeric)) AS stddev"), # TODO: Should take length_var into account
+            paste0("SUM(CAST(c.length AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS mean__sum"),
+            paste0("SUM(CAST(", abundance[[2]], " AS numeric)) AS mean__count"),
+            paste0("SUM(CAST(c.length AS numeric) * CAST(c.length AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS mean__sqsum"),   # TODO: Should take length_var into account
             NULL),
         params = params)
     out
@@ -278,7 +282,8 @@ mfdb_sample_meanweight <- function (mdb, cols, params, scale_index = NULL, measu
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(CAST(c.", col_sql, " AS numeric), CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel),
+            paste0("SUM(CAST(c.", col_sql, " AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel, "__sum"),
+            paste0("SUM(CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel, "__count"),
             NULL),
         params = params)
     out
@@ -288,7 +293,6 @@ mfdb_sample_meanweight <- function (mdb, cols, params, scale_index = NULL, measu
 mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL, measurements = c('overall')) {
     col_sql <- measurements_to_sql(measurements)
     col_meanlabel <- ifelse(col_sql == 'weight', 'mean', paste0('mean_', col_sql))
-    col_stddevlabel <- ifelse(col_sql == 'weight', 'stddev', paste0('stddev_', col_sql))
 
     abundance <- abundance_core_table(mdb, scale_index)
     out <- mfdb_sample_grouping(mdb,
@@ -296,9 +300,10 @@ mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("WEIGHTED_MEAN(CAST(c.", col_sql, " AS numeric), CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel),
-            paste0("WEIGHTED_STDDEV(CAST(c.", col_sql, " AS numeric), CAST(", abundance[[2]], " AS numeric)) AS ", col_stddevlabel),
-            # TODO: Should take weight_var into account
+            paste0("SUM(CAST(c.", col_sql, " AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel, "__sum"),
+            paste0("SUM(CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel, "__count"),
+            paste0("SUM(CAST(c.", col_sql, " AS numeric) * CAST(c.", col_sql, " AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel, "__sqsum"),
+            # TODO: Should take length_var into account
             NULL),
         params = params)
     out
@@ -334,7 +339,8 @@ mfdb_sample_scaled <- function (mdb, cols, params, abundance_scale = NULL, scale
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") * ", scale_fn, " AS number"),
-            paste0("WEIGHTED_MEAN(CAST(c.length AS numeric), CAST(", abundance[[2]], " AS numeric)) * ", scale_fn, " AS mean_weight"),
+            paste0("SUM(CAST(c.length AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS mean_weight__sum"),
+            paste0("SUM(CAST(", abundance[[2]], " AS numeric)) AS mean_weight__count"),
             NULL),
         params = params)
 }
@@ -391,7 +397,8 @@ mfdb_stomach_preymeanlength <- function (mdb, cols, params) {
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(COALESCE(prey.count, 0)) AS number"),
-            paste0("WEIGHTED_MEAN(CAST(prey.length AS numeric), CAST(COALESCE(prey.count, 0) AS numeric)) AS mean_length"),
+            paste0("SUM(CAST(prey.length AS numeric) * CAST(COALESCE(prey.count, 0) AS numeric)) AS mean_length__sum"),
+            paste0("SUM(CAST(COALESCE(prey.count, 0) AS numeric)) AS mean_length__count"),
             NULL),
         params = params)
 }
@@ -638,6 +645,30 @@ mfdb_sample_grouping <- function (mdb,
         out <- data.frame(bssample = denormalised)
     }
 
+    calc_col_names <- gsub(".*\\s+AS\\s+(\\w+)", "\\1", calc_cols)
+    if (any(grepl('__sum$', names(out)))) {
+        # Finalise the weighted mean / stddev
+        colname_sum <- names(out)[grepl('__sum$', names(out))]
+        colname_count <- names(out)[grepl('__count$', names(out))]
+        colname_sqsum <- names(out)[grepl('__sqsum$', names(out))]
+        colname_base <- gsub('__sum$', '', colname_sum)
+
+        calc_col_names <- c(calc_col_names, colname_base)
+        out[colname_base] <- out[,colname_sum] / out[,colname_count]
+        if (length(colname_sqsum) > 0) {
+            # Generate stddev col if sqsum is also available
+            colname_base <- gsub('mean', 'stddev', colname_base)
+            calc_col_names <- c(calc_col_names, colname_base)
+            out[colname_base] <- ifelse(
+                out[,colname_count] < 2,
+                NA,
+                sqrt((out[,colname_sqsum] - out[,colname_sum]**2 / out[,colname_count]) / (out[,colname_count] - 1)))
+        }
+
+        calc_col_names <- calc_col_names[!grepl('__', calc_col_names)]
+        out <- out[!grepl('__', names(out))]
+    }
+
     # Break data up by sample and annotate each with the value for group_cols
     lapply(split(out, list(out$bssample)), function (sample) {
         if (identical(names(sample), c('bssample'))) {
@@ -648,7 +679,7 @@ mfdb_sample_grouping <- function (mdb,
             # Select our final output columns
             subset <- sample[,c(
                 group_cols,
-                gsub(".*\\s+AS\\s+(\\w+)", "\\1", calc_cols),
+                calc_col_names,
                 NULL), drop = FALSE]
             rownames(subset) <- NULL
             sample_num <- as.integer(strsplit(as.character(sample$bssample[[1]]), "\\.")[[1]])

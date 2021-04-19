@@ -195,15 +195,6 @@ mfdb <- function(case_study_name = "",
 
     # Now we've done any data fetching, make sure our schema is up-to-date.
     mfdb_update_schema(mdb)
-    tryCatch({
-        mfdb_update_functions(mdb)
-    }, error = function (e) {
-        if (grepl('ERROR:\\s+permission denied', e$message)) {
-            TRUE
-        } else {
-            stop(e)
-        }
-    })
 
     if (mdb$schema == 'examples') {
         # Add data used in examples
