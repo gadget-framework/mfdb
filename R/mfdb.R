@@ -186,7 +186,7 @@ mfdb <- function(case_study_name = "",
         RSQLite::initRegExp(mdb$db)
         # A sqlite database doesn't have separate schema
         if (destroy_schema) {
-            stop('TODO: Delete all tables')
+            if (mdb$db_args$dbname != ':memory:') stop('TODO: Delete all tables')
             mdb$logger$info(paste0("Schema ", mdb$schema, " removed, connect again to repopulate DB."))
             dbDisconnect(mdb$db)
             return(invisible(NULL))
