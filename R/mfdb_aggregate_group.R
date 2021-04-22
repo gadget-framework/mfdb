@@ -54,11 +54,23 @@ pre_query.mfdb_group <- function(mdb, x, col) {
             }
         }
     } else if (lookup %in% mfdb_taxonomy_tables) {
-        mismatches <- mfdb_fetch(mdb,
-            "SELECT d.name",
-            " FROM UNNEST(ARRAY", sql_quote(unique(unlist(x)), always_bracket = TRUE, brackets = "[]"), ") AS d",
-            " LEFT OUTER JOIN ", lookup, " x ON d.name = x.name",
-            " WHERE x.name IS NULL")
+        if (mfdb_is_postgres(mdb)) {
+            mismatches <- mfdb_fetch(mdb,
+                "SELECT d.name",
+                " FROM UNNEST(ARRAY", sql_quote(unique(unlist(x)), always_bracket = TRUE, brackets = "[]"), ") AS d",
+                " LEFT OUTER JOIN ", lookup, " x ON d.name = x.name",
+                " WHERE x.name IS NULL")
+        } else {
+            # No UNNEST(ARRAY()), use a temporary table
+            mfdb_send(mdb, "CREATE TEMPORARY TABLE aggregate_group_newnames (name VARCHAR(1024) NOT NULL);")
+            mfdb_insert(mdb, "aggregate_group_newnames", data.frame(name = unique(unlist(x)), stringsAsFactors = FALSE))
+            mismatches <- mfdb_fetch(mdb,
+                "SELECT d.name",
+                " FROM aggregate_group_newnames AS d",
+                " LEFT OUTER JOIN ", lookup, " x ON d.name = x.name",
+                " WHERE x.name IS NULL")
+            mfdb_send(mdb, "DROP TABLE aggregate_group_newnames")
+        }
         if (nrow(mismatches) > 0) {
             stop("Input data has items that don't match ", lookup, " vocabulary: ",
                 paste(head(mismatches[,1], n = 50), collapse = ","),
