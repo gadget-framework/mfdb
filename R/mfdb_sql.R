@@ -266,12 +266,21 @@ mfdb_table_exists <- function(mdb, table_name, schema_name = mdb$schema) {
         " WHERE (table_schema IN ", sql_quote(schema_name, always_bracket = TRUE),
         " OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema()))",
         " AND table_name IN ", sql_quote(table_name, always_bracket = TRUE))[, c(1)] > 0)
-    if (mfdb_is_sqlite(mdb)) return(mfdb_fetch(mdb, "
-        SELECT COUNT(*)
-          FROM sqlite_schema
-         WHERE type = 'table'
-           AND name IN ", sql_quote(table_name, always_bracket = TRUE), "
-        ")[, c(1)] > 0)
+    if (mfdb_is_sqlite(mdb)) {
+        if(mfdb_fetch(mdb, "
+            SELECT COUNT(*)
+              FROM sqlite_schema
+             WHERE type = 'table'
+               AND name IN ", sql_quote(table_name, always_bracket = TRUE), "
+            ")[, c(1)] > 0) return(TRUE)
+        if(mfdb_fetch(mdb, "
+            SELECT COUNT(*)
+              FROM temp.sqlite_schema
+             WHERE type = 'table'
+               AND name IN ", sql_quote(table_name, always_bracket = TRUE), "
+            ")[, c(1)] > 0) return(TRUE)
+        return(FALSE)
+    }
     stop("Unknown DB type")
 }
 
