@@ -175,29 +175,32 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
     }
 
     # Fetch table definition from DB, so we can recreate for temporary table
-    cols <- mfdb_fetch(mdb, "SELECT column_name, data_type",
-        " FROM information_schema.columns",
-        " WHERE table_schema = ", sql_quote(mdb$schema),
-        " AND table_name = ", sql_quote(target_table),
-        NULL
-    )
-    rownames(cols) <- cols$column_name
-    if (nrow(cols) == 0) stop("Didn't find table ", target_table)
+    if (mfdb_is_postgres(mdb) || class(mdb$db) == 'dbNull') {
+        cols <- mfdb_fetch(mdb, "SELECT column_name, data_type",
+            " FROM information_schema.columns",
+            " WHERE table_schema = ", sql_quote(mdb$schema),
+            " AND table_name = ", sql_quote(target_table),
+            NULL)
+        if (nrow(cols) == 0) stop("Didn't find table ", target_table)
+        cols <- structure(cols$data_type, names = cols$column_name)
+    } else if (mfdb_is_sqlite(mdb)) {
+        cols <- mfdb_fetch(mdb, "PRAGMA table_info(", target_table, ")")
+        cols <- structure(cols$type, names = cols$name)
+    } else stop("Unknown DB type")
 
     mdb$logger$debug("Writing rows to temporary table")
-
     tryCatch({
-        mfdb_send(mdb, "SET CLIENT_ENCODING TO 'LATIN1'") # Not sure.
-        mfdb_send(mdb, "SET search_path TO pg_temp")
+        if (mfdb_is_postgres(mdb)) mfdb_send(mdb, "SET CLIENT_ENCODING TO 'LATIN1'") # Not sure.
+        if (mfdb_is_postgres(mdb)) mfdb_send(mdb, "SET search_path TO pg_temp")
         if (mfdb_table_exists(mdb, temp_tbl)) mfdb_send(mdb, "DROP TABLE ", temp_tbl)
 
         dbWriteTable(mdb$db, temp_tbl, data_in, row.names = FALSE,
-            field.types = structure(cols[names(data_in), 'data_type'], names = names(data_in)))
+            field.types = structure(cols[names(data_in)], names = names(data_in)))
     }, finally = {
-        mfdb_send(mdb, "SET CLIENT_ENCODING TO 'UTF8'")
-        mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
+        if (mfdb_is_postgres(mdb)) mfdb_send(mdb, "SET CLIENT_ENCODING TO 'UTF8'")
+        if (mfdb_is_postgres(mdb)) mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
     })
-    temp_tbl <- paste(c('pg_temp', temp_tbl), collapse = ".")
+    if (mfdb_is_postgres(mdb)) temp_tbl <- paste(c('pg_temp', temp_tbl), collapse = ".")
 
     on.exit(mfdb_send(mdb, "DROP TABLE ", temp_tbl), add = TRUE)
     fn(temp_tbl)
@@ -206,6 +209,13 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
 # Temporarily remove constraints from a table, assumes it's been wrapped in a transaction
 # NB: This *has* to be called within mfdb_transaction()
 mfdb_disable_constraints <- function(mdb, table_name, code_block) {
+    # If SQLite, use it's syntax instead
+    if (mfdb_is_sqlite(mdb)) {
+        mfdb_send(mdb, "PRAGMA ignore_check_constraints = 1")
+        on.exit(mfdb_send(mdb, "PRAGMA ignore_check_constraints = 0"), add = TRUE)
+        return(code_block)
+    }
+
     # If we're not the owner of these tables, just execute code_block
     owner <- mfdb_fetch(mdb,
         "SELECT COUNT(*)",
