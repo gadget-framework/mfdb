@@ -285,6 +285,12 @@ mfdb_table_exists <- function(mdb, table_name, schema_name = mdb$schema) {
 }
 
 mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
+    fix_autoinc_col <- function (s) {
+        # Autoinc cols are SERIAL in postgres, INTEGER PRIMARY KEY in SQLite
+        if (!mfdb_is_sqlite(mdb)) return(s)
+        gsub("SERIAL", "INTEGER", s)
+    }
+
     items <- matrix(c(
         cols,
         unlist(lapply(keys, function (k) c(k, "", "")))
@@ -293,7 +299,7 @@ mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
     row_to_string <- function (i) {
         paste0("    ",
             items[1,i],
-            (if (nzchar(items[2,i])) paste("\t", items[2,i])),
+            (if (nzchar(items[2,i])) paste("\t", fix_autoinc_col(items[2,i]))),
             (if (i == ncol(items)) "" else ","),
             (if (nzchar(items[3,i])) paste("\t--", items[3,i])),
             "\n")
