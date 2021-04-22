@@ -104,14 +104,18 @@ mfdb_fetch <- function(mdb, ...) mfdb_send(mdb, ..., result = "rows")
 mfdb_insert <- function(mdb, table_name, data_in, returning = "", extra = c()) {
     insert_row <- function (r) {
         if (class(mdb$db) == 'dbNull') mdb$ret_rowcount <- mdb$ret_rows <- if (is.null(nrow(r))) 1 else nrow(r)
-        mfdb_send(mdb, "INSERT INTO ", paste(table_name, collapse = ""),
+        out <- mfdb_send(mdb, "INSERT INTO ", paste(table_name, collapse = ""),
             " (", paste(c(names(r), names(extra)), collapse=","), ") VALUES ",
             if (is.null(nrow(r)))
                 sql_quote(c(r, extra), always_bracket = TRUE)
             else
                 paste0(vapply(seq_len(nrow(r)), function (i) { sql_quote(c(r[i,], extra), always_bracket = TRUE) }, ""), collapse = ","),
-            (if (nzchar(returning)) paste0(c(" RETURNING ", returning), collapse = "") else ""),
-            result = ifelse(nzchar(returning), "rows", "rowcount"))
+            (if (!mfdb_is_sqlite(mdb) && nzchar(returning)) paste0(c(" RETURNING ", returning), collapse = "") else ""),
+            result = ifelse(!mfdb_is_sqlite(mdb) && nzchar(returning), "rows", "rowcount"))
+        if (mfdb_is_sqlite(mdb) && nzchar(returning)) {
+            out <- mfdb_fetch(mdb, "SELECT ", returning, " FROM ", table_name, " WHERE ROWID = LAST_INSERT_ROWID()")
+        }
+        out
     }
     if (!is.data.frame(data_in)) {
         # Insert single row
