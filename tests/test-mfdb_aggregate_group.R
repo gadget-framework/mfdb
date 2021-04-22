@@ -55,7 +55,7 @@ ok_group("Aggregates with mfdb_group", local({
         paste0("SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('", attr(g, 'table_name'), "')"),
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (0,'a','1'),(0,'a','two'),(0,'a','3'),(0,'b','88')"),
-        paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("CREATE INDEX idx_", attr(g, 'table_name') ,"_value_name_sample ON ", attr(g, 'table_name'), " (value,name,sample)"),
         paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
     ok("mfdb_smallset" %in% class(pre_query(mdb, g, "col")), "Converted to an mfdb_smallset")
@@ -69,7 +69,7 @@ ok_group("Aggregates with mfdb_group", local({
         paste0("SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('", attr(g, 'table_name'), "')"),
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (0,'a1',1),(0,'a1',2),(0,'a1',3),(0,'badger',88),(0,'badger',21),(0,'a3',99)"),
-        paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("CREATE INDEX idx_", attr(g, 'table_name') ,"_value_name_sample ON ", attr(g, 'table_name'), " (value,name,sample)"),
         paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
     ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
@@ -84,7 +84,7 @@ ok_group("Large group aggregates don't attempt smallset", local({
         paste0("SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('", attr(g, 'table_name'), "')"),
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (0,'a','1'),(0,'a','two'),(0,'a','3'),", paste0("(0,'b','", 1:100,"')", collapse=",")),
-        paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("CREATE INDEX idx_", attr(g, 'table_name') ,"_value_name_sample ON ", attr(g, 'table_name'), " (value,name,sample)"),
         NULL)), "Created temporary table")
     ok(!("mfdb_smallset" %in% class(pre_query(mdb, g, "col"))), "Not a a mfdb_smallset")
     ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
@@ -97,7 +97,7 @@ ok_group("Large group aggregates don't attempt smallset", local({
         paste0("SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('", attr(g, 'table_name'), "')"),
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (0,'a1',1),(0,'a1',2),(0,'a1',3),(0,'badger',88),(0,'badger',21),(0,'a3',99)"),
-        paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("CREATE INDEX idx_", attr(g, 'table_name') ,"_value_name_sample ON ", attr(g, 'table_name'), " (value,name,sample)"),
         paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
     ok(cmp(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
@@ -125,7 +125,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         paste0("SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('", attr(g, 'table_name'), "')"),
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (1,'camels',44),(1,'aardvarks',88),(2,'camels',44),(2,'aardvarks',88)"),
-        paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("CREATE INDEX idx_", attr(g, 'table_name') ,"_value_name_sample ON ", attr(g, 'table_name'), " (value,name,sample)"),
         paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
     ok(cmp(sample_clause(mdb, g, "col", "out"), paste0(attr(g, 'table_name'), ".sample")), "Sample clause")
@@ -146,7 +146,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         paste0("SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('", attr(g, 'table_name'), "')"),
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (1,'g1',55),(1,'g1',55),(1,'g2',88),(1,'g2',88),(2,'g1',44),(2,'g1',44),(2,'g2',99),(2,'g2',88)"),
-        paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("CREATE INDEX idx_", attr(g, 'table_name') ,"_value_name_sample ON ", attr(g, 'table_name'), " (value,name,sample)"),
         paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
     ok(cmp(sample_clause(mdb, g, "col", "out"), paste0(attr(g, 'table_name'), ".sample")), "Sample clause")
@@ -168,7 +168,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         paste0("SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('", attr(g, 'table_name'), "')"),
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (1,'g1',44),(1,'g1',55),(1,'g2',99),(1,'g2',99),(2,'g1',44),(2,'g1',55),(2,'g2',99),(2,'g2',99)"),
-        paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("CREATE INDEX idx_", attr(g, 'table_name') ,"_value_name_sample ON ", attr(g, 'table_name'), " (value,name,sample)"),
         paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
 
@@ -177,7 +177,7 @@ ok_group("Aggregates with mfdb_bootstrap_group", local({
         paste0("SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema IN ('fake_schema') OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema())) AND table_name IN ('", attr(g, 'table_name'), "')"),
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " (sample,name,value) VALUES (1,'g1',55),(1,'g1',55),(1,'g2',99),(1,'g2',99),(2,'g1',44),(2,'g1',44),(2,'g2',88),(2,'g2',99)"),
-        paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("CREATE INDEX idx_", attr(g, 'table_name') ,"_value_name_sample ON ", attr(g, 'table_name'), " (value,name,sample)"),
         paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
     ok(cmp(agg_summary(mdb, g, 'col', 'out', data.frame(bssample = "0.1"), 1), list(
@@ -198,7 +198,7 @@ ok_group("Aggregates with mfdb_group areas", local({
         paste0("CREATE  TABLE ", attr(g, 'table_name'), " (sample INT DEFAULT 1 NOT NULL, name VARCHAR(10), value  INT )"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " SELECT 0 AS sample, 'a' AS name, areacell_id AS value FROM (SELECT division, areacell_id FROM division UNION SELECT name, areacell_id FROM areacell) divac WHERE division IN ('1','2','3')"),
         paste0("INSERT INTO ", attr(g, 'table_name'), " SELECT 0 AS sample, 'b' AS name, areacell_id AS value FROM (SELECT division, areacell_id FROM division UNION SELECT name, areacell_id FROM areacell) divac WHERE division IN ('88','89')"),
-        paste0("CREATE INDEX ON ", attr(g, 'table_name'), " (value,name,sample)"),
+        paste0("CREATE INDEX idx_", attr(g, 'table_name') ,"_value_name_sample ON ", attr(g, 'table_name'), " (value,name,sample)"),
         paste0("SELECT sample, name, value FROM ", attr(g, 'table_name')),
         NULL)), "Created temporary table")
 }, asNamespace('mfdb')))

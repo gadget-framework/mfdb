@@ -27,8 +27,8 @@ ok_group("sql_quote", {
 
 ok_group("sql_create_index", {
     ci <- mfdb:::sql_create_index
-    ok(cmp(ci("tbl", "col"), "CREATE INDEX ON tbl (col)"))
-    ok(cmp(ci("tbl", c("A", "B")), "CREATE INDEX ON tbl (A,B)"))
+    ok(cmp(ci("tbl", "col"), "CREATE INDEX idx_tbl_col ON tbl (col)"))
+    ok(cmp(ci("tbl", c("A", "B")), "CREATE INDEX idx_tbl_A_B ON tbl (A,B)"))
 })
 
 ok_group("mfdb_insert", {
