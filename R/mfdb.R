@@ -184,6 +184,8 @@ mfdb <- function(case_study_name = "",
         }
     } else if (mfdb_is_sqlite(mdb)) {
         RSQLite::initRegExp(mdb$db)
+        mfdb_send(mdb, "PRAGMA foreign_keys = ON;")
+
         # A sqlite database doesn't have separate schema
         if (destroy_schema) {
             if (mdb$db_args$dbname != ':memory:') stop('TODO: Delete all tables')

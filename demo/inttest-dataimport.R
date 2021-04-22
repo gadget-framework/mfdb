@@ -201,7 +201,7 @@ ok_group("Species", {
             age =    c(  1),
             length = c( 10),
             weight = c(100)))
-    ok(cmp_error(mfdb_empty_taxonomy(mdb, 'species'), 'delete on table "species"'), "Can't empty taxonony when it's used")
+    ok(cmp_error(mfdb_empty_taxonomy(mdb, 'species'), 'delete on table "species"|constraint failed'), "Can't empty taxonony when it's used")
 
     # Can after emptying
     mfdb_import_survey(mdb,
