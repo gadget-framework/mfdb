@@ -78,7 +78,7 @@ ok_group("Aggregates with close_ended mfdb_step_interval", local({
     ok(ut_cmp_identical(capture.output(pre_query(NULL, g, "col")), c(
         "NULL")), "Nothing happened pre_query")
     ok(ut_cmp_identical(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
-    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "'l' || (greatest(floor(col)::integer, 0) / 10) * 10 AS out"), "Select clause")
+    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "'l' || CAST((GREATEST(CAST(floor(col) AS integer), 0) / 10) * 10 AS VARCHAR) AS out"), "Select clause")
     ok(ut_cmp_identical(from_clause(mdb, g, "col", "out"), c()), "From clause")
     ok(ut_cmp_identical(where_clause(mdb, g, "col", "out"), "col >= 0"), "Where clause")
 
@@ -86,7 +86,7 @@ ok_group("Aggregates with close_ended mfdb_step_interval", local({
     ok(ut_cmp_identical(capture.output(pre_query(NULL, g, "col")), c(
         "NULL")), "Nothing happened pre_query")
     ok(ut_cmp_identical(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
-    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "'l' || (least(greatest(floor(col)::integer, 10), 85) / 5) * 5 AS out"), "Select clause")
+    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "'l' || CAST((LEAST(GREATEST(CAST(floor(col) AS integer), 10), 85) / 5) * 5 AS VARCHAR) AS out"), "Select clause")
     ok(ut_cmp_identical(from_clause(mdb, g, "col", "out"), c()), "From clause")
     ok(ut_cmp_identical(where_clause(mdb, g, "col", "out"), c("col >= 10", "col < 90")), "Where clause")
 }, asNamespace('mfdb')))
@@ -96,7 +96,7 @@ ok_group("Aggregates with open_ended mfdb_step_interval", local({
     ok(ut_cmp_identical(capture.output(pre_query(NULL, g, "col")), c(
         "NULL")), "Nothing happened pre_query")
     ok(ut_cmp_identical(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
-    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "'l' || (greatest(floor(col)::integer, 0) / 10) * 10 AS out"), "Select clause")
+    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "'l' || CAST((GREATEST(CAST(floor(col) AS integer), 0) / 10) * 10 AS VARCHAR) AS out"), "Select clause")
     ok(ut_cmp_identical(from_clause(mdb, g, "col", "out"), c()), "From clause")
     ok(ut_cmp_identical(where_clause(mdb, g, "col", "out"), "col >= 0"), "Where clause")
 
@@ -104,7 +104,7 @@ ok_group("Aggregates with open_ended mfdb_step_interval", local({
     ok(ut_cmp_identical(capture.output(pre_query(NULL, g, "col")), c(
         "NULL")), "Nothing happened pre_query")
     ok(ut_cmp_identical(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
-    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "'l' || (least(greatest(floor(col)::integer, 10), 85) / 5) * 5 AS out"), "Select clause")
+    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "'l' || CAST((LEAST(GREATEST(CAST(floor(col) AS integer), 10), 85) / 5) * 5 AS VARCHAR) AS out"), "Select clause")
     ok(ut_cmp_identical(from_clause(mdb, g, "col", "out"), c()), "From clause")
     ok(ut_cmp_identical(where_clause(mdb, g, "col", "out"), c("col >= 10")), "Where clause")
 

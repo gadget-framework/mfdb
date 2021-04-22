@@ -62,16 +62,16 @@ ok_group("Elements are named by prefixes", local({
 ok_group("Can generate SQL", local({
     ok(ut_cmp_identical(
             select_clause(mdb, mfdb_interval("l", c(10,20,30)), "col", "outname"),
-            "CASE WHEN col < 20::REAL THEN 'l10' WHEN col < 30::REAL THEN 'l20' ELSE 'l20' END AS outname"),
+            "CASE WHEN col < CAST(20 AS REAL) THEN 'l10' WHEN col < CAST(30 AS REAL) THEN 'l20' ELSE 'l20' END AS outname"),
         "Generated select clause")
 
     ok(ut_cmp_identical(
             where_clause(mdb, mfdb_interval("l", c(10,20,25,30)), "col", "out"),
-            c("col >= 10::REAL", "col < 30::REAL")),
+            c("col >= CAST(10 AS REAL)", "col < CAST(30 AS REAL)")),
         "Generated where clause")
     ok(ut_cmp_identical(
             where_clause(mdb, mfdb_interval("l", c(25,50)), "col", "out"),
-            c("col >= 25::REAL", "col < 50::REAL")),
+            c("col >= CAST(25 AS REAL)", "col < CAST(50 AS REAL)")),
         "Generated where clause")
 }, asNamespace('mfdb')))
 
@@ -80,17 +80,17 @@ ok_group("Aggregates with open_ended mfdb_interval", local({
     ok(ut_cmp_identical(capture.output(pre_query(NULL, g, "out")), c(
         "NULL")), "Nothing happened pre_query")
     ok(ut_cmp_identical(sample_clause(mdb, g, "col", "out"), "0"), "Sample clause")
-    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "CASE WHEN col < 20::REAL THEN 'l10' WHEN col < 100::REAL THEN 'l20' ELSE 'l20' END AS out"), "Select clause")
+    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "CASE WHEN col < CAST(20 AS REAL) THEN 'l10' WHEN col < CAST(100 AS REAL) THEN 'l20' ELSE 'l20' END AS out"), "Select clause")
     ok(ut_cmp_identical(from_clause(mdb, g, "col", "out"), c()), "From clause")
-    ok(ut_cmp_identical(where_clause(mdb, g, "col", "out"), "col >= 10::REAL"), "Where clause")
+    ok(ut_cmp_identical(where_clause(mdb, g, "col", "out"), "col >= CAST(10 AS REAL)"), "Where clause")
 
     g <<- mfdb_interval('l', c(10, 20, 100), open_ended = c('upper'))
-    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "CASE WHEN col < 20::REAL THEN 'l10' WHEN col < 100::REAL THEN 'l20' ELSE 'l20' END AS out"), "Select clause c('upper')")
+    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "CASE WHEN col < CAST(20 AS REAL) THEN 'l10' WHEN col < CAST(100 AS REAL) THEN 'l20' ELSE 'l20' END AS out"), "Select clause c('upper')")
 
     g <<- mfdb_interval('l', c(10, 20, 100), open_ended = c('lower'))
-    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "CASE WHEN col < 20::REAL THEN 'l10' WHEN col < 100::REAL THEN 'l20' ELSE 'l20' END AS out"), "Select clause c('lower')")
+    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "CASE WHEN col < CAST(20 AS REAL) THEN 'l10' WHEN col < CAST(100 AS REAL) THEN 'l20' ELSE 'l20' END AS out"), "Select clause c('lower')")
 
     g <<- mfdb_interval('l', c(10, 20, 100), open_ended = c('lower', 'upper'))
-    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "CASE WHEN col < 20::REAL THEN 'l10' WHEN col < 100::REAL THEN 'l20' ELSE 'l20' END AS out"), "Select clause c('lower', 'upper')")
+    ok(ut_cmp_identical(select_clause(mdb, g, "col", "out"), "CASE WHEN col < CAST(20 AS REAL) THEN 'l10' WHEN col < CAST(100 AS REAL) THEN 'l20' ELSE 'l20' END AS out"), "Select clause c('lower', 'upper')")
 
 }, asNamespace('mfdb')))
