@@ -66,13 +66,14 @@ agg_data <- mfdb_sample_count(mdb, c("vessel"), params = list(
     step = mfdb_timestep_biannually,
     area = area_group,
     vessel = vessel_group))
-ok(cmp(agg_data[[1]], structure(
+agg_data[[1]]$number <- as.numeric(agg_data[[1]]$number)  # NB: SQLite returns logical, postgres numeric
+ok(ut_cmp_equal(agg_data[[1]], structure(
     data.frame(
         year = as.integer(2000),
         step = c("1", "1", "2", "2"),
         area = c('divA'),
         vessel = c('1.COM', '2.COM', '1.COM', '2.COM'),
-        number = c(NA, NA, NA, NA, 99)[1:4],  # NB: Create a numeric empty vector
+        number = as.numeric(c(NA, NA, NA, NA)),
         stringsAsFactors = FALSE),
     year = list("2000" = 2000),
     step = mfdb_timestep_biannually,
