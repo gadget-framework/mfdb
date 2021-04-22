@@ -158,20 +158,25 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
         if (nrow(predator_data) == 0 || nrow(prey_data) == 0) return()
 
         # Insert predator data, returning all IDs
-        res <- mfdb_bulk_copy(mdb, 'predator', predator_data, function (temp_predator) {
+        mfdb_bulk_copy(mdb, 'predator', predator_data, function (temp_predator) {
             mfdb_fetch(mdb,
                 "INSERT INTO predator",
                 " (", paste(names(predator_data), collapse=","), ", data_source_id)",
                 " SELECT ", paste(names(predator_data), collapse=","), ", ", sql_quote(data_source_id),
                 " FROM ", temp_predator,
-                " RETURNING predator_id",
                 NULL)
         })
 
-        # Map predator names to database IDs
-        new_levels <- structure(
-            res$predator_id,
-            names = as.character(predator_data$stomach_name))[levels(prey_data$predator_id)]
+        # Map stomach names to database IDs
+        id_name_map <- mfdb_fetch(mdb,
+            "SELECT predator_id, stomach_name",
+            " FROM predator",
+            " WHERE data_source_id = ", sql_quote(data_source_id),
+            "")
+        id_name_map <- structure(id_name_map[,1], names = id_name_map[,2])
+
+        # Convert prey_data$predator_id from factor of stomach names to proper predator_ids.
+        new_levels <- id_name_map[levels(prey_data$predator_id)]
         if (any(is.na(new_levels))) {
             stop("Prey data mentions stomachs not in predator data: ",
                 paste(levels(prey_data$predator_id)[is.na(new_levels)], collapse = ","))
