@@ -339,7 +339,7 @@ mfdb_sample_scaled <- function (mdb, cols, params, abundance_scale = NULL, scale
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") * ", scale_fn, " AS number"),
-            paste0("SUM(CAST(c.length AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS mean_weight__sum"),
+            paste0("SUM(CAST(c.length AS numeric) * CAST(", abundance[[2]], " AS numeric)) * ", scale_fn, " AS mean_weight__sum"),
             paste0("SUM(CAST(", abundance[[2]], " AS numeric)) AS mean_weight__count"),
             NULL),
         params = params)
