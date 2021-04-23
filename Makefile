@@ -37,6 +37,7 @@ examples: install
 
 inttest: install test examples build-docs
 	for f in inttests/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME="mf_inttest" Rscript $$f || exit 1; done
+	for f in inttests/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME=":memory:" Rscript $$f || exit 1; done
 	for f in demo/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME="mf_inttest" Rscript $$f || exit 1; done
 	for f in demo/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME=":memory:" Rscript $$f || exit 1; done
 
