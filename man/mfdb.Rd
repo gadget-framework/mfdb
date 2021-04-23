@@ -8,7 +8,7 @@
 }
 
 \usage{
-    mfdb(case_study_name,
+    mfdb(schema_name,
          db_params = list(),
          destroy_schema = FALSE,
          check_db_available = FALSE,
@@ -17,7 +17,7 @@
     mfdb_disconnect(mdb)
 }
 \arguments{
-    \item{case_study_name}{
+    \item{schema_name}{
         The name of your case study. Your Postgres database can be used to
         store any number of case studies, by storing them in separate
         \emph{schemas}. This parameter defines the schema to connect to,

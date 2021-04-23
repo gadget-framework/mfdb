@@ -1,5 +1,5 @@
 # Init mfdb object and open connection to database
-mfdb <- function(case_study_name = "",
+mfdb <- function(schema_name = "",
                  db_params = list(),
                  destroy_schema = FALSE,
                  check_db_available = FALSE,
@@ -78,7 +78,7 @@ mfdb <- function(case_study_name = "",
             logger = logger,
             save_temp_tables = save_temp_tables,
             state = new.env(),
-            schema = if (nzchar(case_study_name)) gsub('\\W', '_', tolower(case_study_name)) else "public",
+            schema = if (nzchar(schema_name)) gsub('\\W', '_', tolower(schema_name)) else "public",
             db_args = db_combined,
             db = db_connection), class = "mfdb")
     if (mfdb_is_postgres(mdb)) {
@@ -87,13 +87,13 @@ mfdb <- function(case_study_name = "",
             " FROM pg_catalog.pg_namespace",
             " WHERE nspname IN ", sql_quote(mdb$schema, always_bracket = TRUE))[, c(1)]
 
-        if (!nzchar(case_study_name)) {
+        if (!nzchar(schema_name)) {
             names <- mfdb_fetch(mdb,
                 "SELECT table_schema",
                 " FROM information_schema.tables",
                 " WHERE table_schema != 'public' AND table_name = 'mfdb_schema'")
             names <- if (ncol(names) > 0) names[,1] else c()
-            stop("You must supply a schema name for case_study_name to use in the database. Available names:-\n", paste0("* ", names, collapse = "\n"))
+            stop("You must supply a schema name for schema_name to use in the database. Available names:-\n", paste0("* ", names, collapse = "\n"))
         }
 
         if (destroy_schema) {
@@ -107,7 +107,7 @@ mfdb <- function(case_study_name = "",
             return(invisible(NULL))
         }
 
-        if (case_study_name == 'public') {
+        if (schema_name == 'public') {
             stop("Can't connect to the public schema, since the database tables will be different. ",
                 "Instead, use the case study name and copy the data out of public")
         }
@@ -127,12 +127,12 @@ mfdb <- function(case_study_name = "",
                 res <- mfdb_fetch(mdb,
                     "SELECT case_study_id",
                     " FROM public.case_study",
-                    " WHERE name = ", sql_quote(case_study_name))
+                    " WHERE name = ", sql_quote(schema_name))
             } else {
                 res <- c()
             }
             if (length(res) > 0 && nrow(res) > 0) {
-                logger$info(paste0("Copying data from ", case_study_name))
+                logger$info(paste0("Copying data from ", schema_name))
                 # A case study exists by this ID
                 old_case_study_id <- res[1,1]
 
