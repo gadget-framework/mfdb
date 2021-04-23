@@ -1,5 +1,4 @@
 inttest-aggregate		Exercise mfdb_aggregate_* functions
-inttest-aggregatefunctions	Exercise postgresql aggregate functions
 inttest-gadgetdirectory		Demonstrate importing data and writing to GADGET directory
 inttest-countryquery		Demonstrate querying for an entire country as well as individual institutes
 inttest-dataimport		Exercise data loading
