@@ -30,6 +30,7 @@ mfdb_db_backend <- function(mdb) {
     if (class(mdb$db) == 'dbNull') return('dbnull')
 
     drv_package <- attr(class(mdb$db_args$drv), 'package')
+    if (length(drv_package) == 0) return ('dbnull')
     if (drv_package %in% c('RPostgres', 'RPostgreSQL')) return('pg')
     if (drv_package %in% c('RSQLite')) return('sqlite')
     return('unknown')
