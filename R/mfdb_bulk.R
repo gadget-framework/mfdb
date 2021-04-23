@@ -114,7 +114,7 @@ mfdb_cs_restore <- function(mdb, in_location) {
             })
 
             # Update sequence with new maximum
-            mfdb_fetch(mdb,
+            if (mfdb_is_postgres(mdb)) mfdb_fetch(mdb,
                 "SELECT pg_catalog.setval(",
                 "pg_get_serial_sequence(", sql_quote(table_name), ",", sql_quote(id_col),"),",
                 "MAX(", id_col, ")) FROM ", table_name)
