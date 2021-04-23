@@ -198,8 +198,11 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
         dbWriteTable(mdb$db, temp_tbl, data_in, row.names = FALSE,
             field.types = structure(cols[names(data_in)], names = names(data_in)))
     }, finally = {
-        if (mfdb_is_postgres(mdb)) mfdb_send(mdb, "SET CLIENT_ENCODING TO 'UTF8'")
-        if (mfdb_is_postgres(mdb)) mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
+        # These will fail if a transaction is aborted, but in that case it'll roll back anyway
+        mfdb_ignore_failed_transction(mdb, {
+            if (mfdb_is_postgres(mdb)) mfdb_send(mdb, "SET CLIENT_ENCODING TO 'UTF8'")
+            if (mfdb_is_postgres(mdb)) mfdb_send(mdb, "SET search_path TO ", paste(mdb$schema, 'pg_temp', sep =","))
+        })
     })
     if (mfdb_is_postgres(mdb)) temp_tbl <- paste(c('pg_temp', temp_tbl), collapse = ".")
 
@@ -251,11 +254,14 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
         }
         code_block
     }, finally = {
-        for(i in seq_len(nrow(constraints))) {
-            mfdb_send(mdb,
-                "ALTER TABLE ", mdb$schema, ".", constraints[i, "table_name"],
-                " ADD CONSTRAINT ", constraints[i, "name"], " ", constraints[i, "definition"])
-        }
+        # These will fail if a transaction is aborted, but in that case it'll roll back anyway
+        mfdb_ignore_failed_transction(mdb, {
+            for(i in seq_len(nrow(constraints))) {
+                mfdb_send(mdb,
+                    "ALTER TABLE ", mdb$schema, ".", constraints[i, "table_name"],
+                    " ADD CONSTRAINT ", constraints[i, "name"], " ", constraints[i, "definition"])
+            }
+        })
     })
 }
 
@@ -409,4 +415,11 @@ mfdb_transaction <- function(mdb, transaction) {
     mdb$logger$debug("Committing transaction...")
     dbCommit(mdb$db)
     invisible(TRUE)
+}
+
+# Execute code block, ignore errors from a failed transaction
+mfdb_ignore_failed_transction <- function(mdb, code_block) {
+    tryCatch(code_block, error = function (e) {
+        if (!grepl("transaction.*aborted", e$message)) stop(e)
+    })
 }

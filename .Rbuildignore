@@ -6,6 +6,7 @@
 ^do-release\.sh$
 ^cran-comments$
 ^docs$
+^inttest$
 
 ^examples$
 ^example-datras-data$

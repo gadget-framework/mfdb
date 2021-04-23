@@ -265,7 +265,7 @@ mfdb_sample_totalweight <- function (mdb, cols, params, measurements = c('overal
         core_table = "sample",
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            paste0("SUM(CASE WHEN count IS NULL THEN ", col_sql, " ELSE ", col_sql, " * count END) AS ", col_totallabel),
+            paste0("SUM(CAST(CASE WHEN count IS NULL THEN ", col_sql, " ELSE ", col_sql, " * count END AS DOUBLE PRECISION)) AS ", col_totallabel),
             NULL),
         params = params)
     out

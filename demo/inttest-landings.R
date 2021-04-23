@@ -218,3 +218,13 @@ ok_group("weight and weight_total isn't allowed", {
             weight_total = c(1110,1510,1310,1110,1310,1410, 1610,1610,1310,1310,1310,1210),
             stringsAsFactors = TRUE)), "weight.*weight_total"), "Can't specify both weight and weight_total")
 })
+
+ok_group("Preserve weight precision", {
+    data_in <- data.frame(year = 2010, month = 1, areacell = '45G01', weight_total = rnorm(1e5, 100, 10))
+    mfdb_import_survey(mdb, data_in)
+    out_mfdb <- mfdb_sample_totalweight(mdb = mdb, cols = NULL, params = list(year = 2010))
+    ok(ut_cmp_equal(
+        out_mfdb[[1]]$total_weight,
+        sum(data_in$weight_total),
+        tolerance = 1e-7), "Total weight through MFDB matches R")
+})

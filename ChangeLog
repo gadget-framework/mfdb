@@ -3,6 +3,7 @@
 
     Schema changes:
     * Remove taxonomy name restrictions
+    * Change prey.count from INT to DOUBLE
 
 2021-02-23: Jamie Lentin <lentinj@shuttlethread.com>
 
@@ -26,6 +27,7 @@
 
 (unreleased)  Jamie Lentin  <lentinj@shuttlethread.com>
 
+    * Preserve precision when calculating total weight
     * Inline small mfdb_groups to queries, improving performance
     * Rewrite Rpath support to use Rpath::create.rpath.params
     * Rollback transactions after user interrupts
