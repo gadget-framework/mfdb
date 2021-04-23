@@ -18,7 +18,18 @@
 }
 \arguments{
     \item{schema_name}{
-        The name of your case study. Your Postgres database can be used to
+        This can be one of:
+
+        \enumerate{
+            \item Postgresql schema name
+            \item "\code{:memory:}" to connect to a SQLite in-memory database
+            \item A file path ending with "\code{.sqlite}" to connect to a SQLite file database
+        }
+
+        If connecting to a SQLite database, \var{db_params} should remain empty (
+        \var{schema_name} will be used as a \code{dbname}).
+
+        If connecting to a Postgres database, it can be used to
         store any number of case studies, by storing them in separate
         \emph{schemas}. This parameter defines the schema to connect to,
         and can contain any lower case characters or underscore.
@@ -28,6 +39,10 @@
         search for a "mf" database locally, but you can override any of the parameters,
         in particular \code{host}, \code{dbname}, \code{user}, \code{password}.
         See \code{?RPostgres::Postgres} for more information.
+
+        If \code{dbname} looks like a SQLite database filename, or "\code{:memory:}",
+        then MFDB will use the \code{RSQLite} driver. Otherwise, \code{RPostgres} will
+        be used.
 
         \var{db_params} can also be supplied by environment variable, for example
         if a \code{MFDB_DBNAME} environment variable is set then it will be used

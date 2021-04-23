@@ -36,7 +36,8 @@ examples: install
 	Rscript -e 'devtools::run_examples(run_donttest = TRUE, run_dontrun = TRUE, document = FALSE)'
 
 inttest: install test examples build-docs
-	for f in demo/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME=mf_inttest Rscript $$f || exit 1; done
+	for f in demo/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME="mf_inttest" Rscript $$f || exit 1; done
+	for f in demo/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME=":memory:" Rscript $$f || exit 1; done
 
 build-docs:
 	[ -d docs ] && rm -r docs || true

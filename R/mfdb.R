@@ -5,10 +5,11 @@ mfdb <- function(schema_name = "",
                  check_db_available = FALSE,
                  save_temp_tables = FALSE) {
     logger <- logging::getLogger('mfdb')
+    is_sqlite_dbname <- function (x) grepl(":memory:|\\.sqlite3?$", x)
 
     # Try a selection of host strings until we connect to something
     db_params <- as.list(db_params)
-    db_defaults <- list(dbname = "mf", drv = RPostgres::Postgres())
+    db_defaults <- list(dbname = "mf")
     db_guesses <- list(
         list(host = "/tmp"),
         list(host = "/var/tmp"),
@@ -16,6 +17,11 @@ mfdb <- function(schema_name = "",
         list(host = "localhost"),
         list(host = "localhost", user = "mf", password = "mf"),
         list(host = "/tmp/pg_mfdb"))
+
+    # If schema_name is sql-ite-ish and no other parameters given, use it as dbname
+    if (length(db_params) == 0 && is_sqlite_dbname(schema_name)) {
+        db_params <- list(dbname = schema_name)
+    }
 
     # Override db_params with MFDB_USER / MFDB_PORT / .. env vars if available
     for (p in c('user', 'host', 'port', 'password', 'dbname')) {
@@ -41,6 +47,15 @@ mfdb <- function(schema_name = "",
     for (guess in db_guesses) {
         db_combined <- c(db_params, guess, db_defaults)
         db_combined <- db_combined[!duplicated(names(db_combined))]
+
+        # If no driver yet, guess from dbname
+        if (!('drv' %in% db_combined)) {
+            if (is_sqlite_dbname(db_combined$dbname)) {
+                db_combined$drv <- RSQLite::SQLite()
+            } else {
+                db_combined$drv <- RPostgres::Postgres()
+            }
+        }
 
         # SSL mode is actually added to dbname
         if (isTRUE(nzchar(db_combined$sslmode))) {
@@ -189,9 +204,9 @@ mfdb <- function(schema_name = "",
 
         # A sqlite database doesn't have separate schema
         if (destroy_schema) {
-            if (mdb$db_args$dbname != ':memory:') stop('TODO: Delete all tables')
-            mdb$logger$info(paste0("Schema ", mdb$schema, " removed, connect again to repopulate DB."))
             dbDisconnect(mdb$db)
+            if (mdb$db_args$dbname != ':memory:') unlink(mdb$db_args$dbname)
+            mdb$logger$info(paste0("DB ", mdb$db_args$dbname, " removed, connect again to repopulate DB."))
             return(invisible(NULL))
         }
     }
