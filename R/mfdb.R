@@ -144,6 +144,7 @@ mfdb <- function(case_study_name = "",
                     schema = "public",
                     db_args = db_combined,
                     db = mdb$db), class = "mfdb")
+                mfdb_send(mdb_public, "SET search_path TO ", paste('public', 'pg_temp', sep =","))
                 mfdb_update_schema(mdb_public, target_version = 4)
 
                 # Create new schema, to known state
