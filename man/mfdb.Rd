@@ -71,12 +71,18 @@
 \value{A 'mfdb' object representing the DB connection}
 
 \examples{
+# Connect to an in-memory SQLite database
+mdb <- mfdb(':memory:')
+mfdb_disconnect(mdb)
+
+# Connect to a SQLite database file
+mdb <- mfdb(tempfile(fileext = '.sqlite'))
+mfdb_disconnect(mdb)
+
 \dontrun{# NB: Requires a PostgreSQL installation, see README
 
 # Connect to local DB, as the "examples" case study
 mdb <- mfdb('examples')
-
-# Disconnect from database
 mfdb_disconnect(mdb)
 
 # Connect to remote server, will prompt for username/password
