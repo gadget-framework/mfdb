@@ -82,7 +82,7 @@ mfdb_cs_restore <- function(mdb, in_location) {
         }
 
         for (table_name in c(mfdb_taxonomy_tables, mfdb_measurement_tables)) {
-            mdb$logger$debug(paste0("Restoring table ", table_name))
+            mdb$logger$info(paste0("Restoring table ", table_name))
             data_in <- read_data(table_name)
             id_col <- paste0(table_name, '_id')
             if (nrow(data_in) == 0) next
