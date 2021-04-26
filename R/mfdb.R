@@ -203,6 +203,12 @@ mfdb <- function(schema_name = "",
     } else if (mfdb_is_sqlite(mdb)) {
         RSQLite::initRegExp(mdb$db)
         mfdb_send(mdb, "PRAGMA foreign_keys = ON;")
+        # https://phiresky.github.io/blog/2020/sqlite-performance-tuning/
+        mfdb_send(mdb, "PRAGMA journal_mode = WAL;")
+        mfdb_send(mdb, "PRAGMA synchronous = normal;")
+        mfdb_send(mdb, "PRAGMA temp_store = memory;")
+        mfdb_send(mdb, "PRAGMA mmap_size = 30000000000;")
+        mfdb_send(mdb, "PRAGMA optimize;")
 
         # A sqlite database doesn't have separate schema
         if (destroy_schema) {
