@@ -17,6 +17,9 @@ if (exists("mdb")) mfdb_disconnect(mdb)
 mfdb(schema_name, db_params = db_params, destroy_schema = TRUE)
 mdb <- mfdb(schema_name, db_params = db_params)
 
+# Doesn't make sense without postgresql
+if (mdb$db_args$dbname == ':memory:') quit()
+
 mfdb_import_area(mdb, data.frame(
     name = c('45G01', '45G02', '45G03'),
     division = c('divA', 'divA', 'divB'),
