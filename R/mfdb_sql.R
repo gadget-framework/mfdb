@@ -70,9 +70,10 @@ mfdb_send <- function(mdb, ..., result = "") {
     if (isTRUE(mdb$explain_plan) && result == 'rows') {
         writeLines("-----------------------------")
         writeLines(query)
-        res <- dbSendQuery(mdb$db, paste("EXPLAIN ANALYSE", query))
+        res <- dbSendQuery(mdb$db, paste((if (mfdb_is_postgres(mdb)) "EXPLAIN ANALYZE " else "EXPLAIN QUERY PLAN"), query))
         while (!DBI::dbHasCompleted(res)) {
-            writeLines(DBI::dbFetch(res)[[1]])
+            x <- DBI::dbFetch(res)
+            if (mfdb_is_postgres(mdb)) writeLines(x[[1]]) else print(x)
         }
         writeLines("-----------------------------")
         dbClearResult(res)
