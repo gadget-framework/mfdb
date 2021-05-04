@@ -159,7 +159,7 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
 
         # Insert predator data, returning all IDs
         mfdb_bulk_copy(mdb, 'predator', predator_data, function (temp_predator) {
-            mfdb_fetch(mdb,
+            mfdb_send(mdb,
                 "INSERT INTO predator",
                 " (", paste(names(predator_data), collapse=","), ", data_source_id)",
                 " SELECT ", paste(names(predator_data), collapse=","), ", ", sql_quote(data_source_id),
