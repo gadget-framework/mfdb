@@ -248,15 +248,10 @@ mfdb_create_taxonomy_table <- function(mdb, table_name) {
     key_col <- paste0(table_name, "_id")
     key_type <- ifelse(table_name == "data_source", "SERIAL", ifelse(table_name == "species", "BIGINT", "INT"))
     mfdb_create_table(mdb, table_name, "", cols = c(
-        key_col, key_type, "Numeric ID for this entry",
-        "name", "VARCHAR(1024) NOT NULL", "Short name used in data files / output data (in ltree notation)",
-        "t_group", paste0("VARCHAR(1024) NULL"), "Value grouping (short name)",
+        key_col, paste0(key_type, " PRIMARY KEY"), "Numeric ID for this entry",
+        "name", "VARCHAR(1024) UNIQUE NOT NULL", "Short name used in data files / output data (in ltree notation)",
+        "t_group", paste0("VARCHAR(1024) NULL REFERENCES ", table_name, "(name)"), "Value grouping (short name)",
         mfdb_get_taxonomy_extra_cols(table_name, create_detail = TRUE),
-        NULL
-    ), keys = c(
-        paste0(c("PRIMARY KEY(", key_col, ")"), collapse = ""),
-        paste0("UNIQUE(name)"),
-        paste0("FOREIGN KEY (t_group) REFERENCES ", table_name, "(name)"),
         NULL
     ))
 }
