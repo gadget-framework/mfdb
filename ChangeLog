@@ -1,4 +1,4 @@
-    * SQLite support. Specify either mfdb('db_filename.sqlite') or mfdb(':memory:')
+    * SQLite support. Specify mfdb('db_filename.sqlite')
     * Use bulk_copy to speed up large taxonomy imports
 
     Schema changes:

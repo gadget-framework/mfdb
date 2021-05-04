@@ -18,7 +18,7 @@ mfdb(schema_name, db_params = db_params, destroy_schema = TRUE)
 mdb <- mfdb(schema_name, db_params = db_params)
 
 # Doesn't make sense without postgresql
-if (mdb$db_args$dbname == ':memory:') quit()
+if (!mfdb:::mfdb_is_postgres(mdb)) quit()
 
 mfdb_import_area(mdb, data.frame(
     name = c('45G01', '45G02', '45G03'),

@@ -22,7 +22,6 @@
 
         \enumerate{
             \item Postgresql schema name
-            \item "\code{:memory:}" to connect to a SQLite in-memory database
             \item A file path ending with "\code{.sqlite}" to connect to a SQLite file database
         }
 
@@ -40,7 +39,7 @@
         in particular \code{host}, \code{dbname}, \code{user}, \code{password}.
         See \code{?RPostgres::Postgres} for more information.
 
-        If \code{dbname} looks like a SQLite database filename, or "\code{:memory:}",
+        If \code{dbname} looks like a SQLite database filename,
         then MFDB will use the \code{RSQLite} driver. Otherwise, \code{RPostgres} will
         be used.
 
@@ -71,10 +70,6 @@
 \value{A 'mfdb' object representing the DB connection}
 
 \examples{
-# Connect to an in-memory SQLite database
-mdb <- mfdb(':memory:')
-mfdb_disconnect(mdb)
-
 # Connect to a SQLite database file
 mdb <- mfdb(tempfile(fileext = '.sqlite'))
 mfdb_disconnect(mdb)

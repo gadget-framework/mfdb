@@ -5,7 +5,7 @@ mfdb <- function(schema_name = "",
                  check_db_available = FALSE,
                  save_temp_tables = FALSE) {
     logger <- logging::getLogger('mfdb')
-    is_sqlite_dbname <- function (x) grepl(":memory:|\\.sqlite3?$", x)
+    is_sqlite_dbname <- function (x) grepl("\\.sqlite3?$", x)
 
     # Try a selection of host strings until we connect to something
     db_params <- as.list(db_params)
