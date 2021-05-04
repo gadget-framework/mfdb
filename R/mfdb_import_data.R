@@ -271,6 +271,12 @@ get_data_source_id <- function(mdb, data_source) {
     # Doesn't exist yet, create
     res <- mfdb_insert(mdb, 'data_source', c(
         name = data_source,
-        NULL), returning = "data_source_id")
-    return(res$data_source_id)
+        NULL))
+    res <- mfdb_fetch(mdb, "SELECT data_source_id FROM data_source",
+        " WHERE name = ", sql_quote(data_source),
+        NULL)
+    if (nrow(res) > 0) {
+        return(res[1,1])
+    }
+    stop("Couldn't create data_source")
 }
