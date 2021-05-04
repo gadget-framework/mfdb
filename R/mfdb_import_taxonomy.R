@@ -40,11 +40,24 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
             ")", result = "rowcount")
         if (matching_rows >= nrow(data_in)) return(NULL)
 
-        # Update all rows where names match, remove
-        mfdb_send(mdb, "UPDATE ", table_name, " AS cur",
-            " SET ", paste0(extra_cols, " = tmp.", extra_cols, collapse = ","),
-            " FROM ", temp_tbl, " AS tmp",
-            " WHERE cur.name = tmp.name")
+        if (mfdb_is_duckdb(mdb)) {
+            # DuckDB can't UPDATE & INSERT in the same transaction, save updates for later
+            mfdb_send(mdb, "DROP TABLE IF EXISTS ddb_updates_", table_name)
+            mfdb_send(mdb,
+                "CREATE TEMPORARY TABLE ddb_updates_", table_name, "  AS",
+                " SELECT cur.", id_col,
+                "      , cur.name",
+                "      , ", paste0("tmp.", extra_cols, collapse = ","),
+                "   FROM ", table_name, " AS cur",
+                "      , ", temp_tbl, " AS tmp",
+                "  WHERE cur.name = tmp.name")
+        } else {
+            # Update all rows where names match, remove
+            mfdb_send(mdb, "UPDATE ", table_name, " AS cur",
+                " SET ", paste0(extra_cols, " = tmp.", extra_cols, collapse = ","),
+                " FROM ", temp_tbl, " AS tmp",
+                " WHERE cur.name = tmp.name")
+        }
         mfdb_send(mdb, "DELETE FROM ", temp_tbl, " AS tmp WHERE tmp.name IN (SELECT name FROM ", table_name, ")")
 
         # Renumber remaining entries if there's an overlap
@@ -66,6 +79,16 @@ mfdb_import_taxonomy <- function (mdb, table_name, data_in, extra_cols = c('desc
             " FROM ", temp_tbl,
             NULL)
     }))
+
+    if (mfdb_is_duckdb(mdb)) mfdb_transaction(mdb, {
+        # Now do the updates
+        mfdb_send(mdb,
+            "UPDATE ", table_name, " AS cur",
+            "   SET ", paste0(extra_cols, " = tmp.", extra_cols, collapse = ","),
+            "  FROM  ddb_updates_", table_name, " AS tmp",
+            " WHERE cur.", id_col, " = tmp.", id_col)
+        mfdb_send(mdb, "DROP TABLE ddb_updates_", table_name)
+    })
 
     invisible(NULL)
 }

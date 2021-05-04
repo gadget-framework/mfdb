@@ -38,13 +38,16 @@ examples: install
 inttest-sqlite: install 
 	for f in */inttest-*.R; do echo "=== $$f (sqlite) ============="; INTTEST_SCHEMA="/tmp/mf-inttest.sqlite" Rscript $$f || exit 1; done
 
+inttest-duckdb: install
+	for f in */inttest-*.R; do echo "=== $$f (duckdb) ============="; INTTEST_SCHEMA="/tmp/mf-inttest.duckdb" Rscript $$f || exit 1; done
+
 inttest-postgres: install
 	for f in */inttest-*.R; do echo "=== $$f (pg) ============="; INTTEST_SCHEMA="inttest" Rscript $$f || exit 1; done
 
-inttest: test examples build-docs inttest-sqlite inttest-postgres
+inttest: test examples build-docs inttest-sqlite inttest-duckdb inttest-postgres
 
 build-docs:
 	[ -d docs ] && rm -r docs || true
 	echo 'pkgdown::build_site()' | R --vanilla
 
-.PHONY: all install build check check-as-cran wincheck examples inttest-sqlite inttest-postgres inttest build-docs
+.PHONY: all install build check check-as-cran wincheck examples inttest-sqlite inttest-duckdb inttest-postgres inttest build-docs

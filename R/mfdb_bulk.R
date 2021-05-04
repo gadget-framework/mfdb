@@ -68,16 +68,28 @@ mfdb_cs_restore <- function(mdb, in_location) {
             })
     }
 
-    mfdb_transaction(mdb, mfdb_disable_constraints(mdb, mfdb_measurement_tables, {
-        # Prey is indirectly linked to case_study, so need to do this first
-        mfdb_send(mdb, "DELETE FROM prey")
+    # Delete from everything else
+    all_tables <- c(
+        mfdb_taxonomy_tables,
+        grep("prey", mfdb_measurement_tables, value = TRUE, fixed = TRUE, invert = TRUE),
+        "prey")  # NB: Prey is indirectly linked to case_study, so need to do this first
 
-        # Delete from everything else
-        for (table_name in rev(c(mfdb_taxonomy_tables, mfdb_measurement_tables))) {
+    if (mfdb_is_duckdb(mdb)) mfdb_transaction(mdb, {
+        # DuckDB can't delete and re-insert in a transaction. Recreate separately
+        # NB: https://github.com/duckdb/duckdb/issues/1625
+        for (table_name in rev(all_tables)) {
             mdb$logger$debug(paste0("Emptying ", table_name))
-            if (table_name != 'prey') {
-                mfdb_send(mdb, "DELETE FROM ", table_name,
-                    NULL)
+            mfdb_send(mdb, "ALTER TABLE ", table_name, " RENAME TO ", table_name, "_bulk_old")
+            mfdb_send(mdb, "CREATE TABLE ", table_name, " AS SELECT * FROM ", table_name, "_bulk_old WHERE 1 = 0")
+            mfdb_send(mdb, "DROP TABLE ", table_name, "_bulk_old")
+        }
+    })
+
+    mfdb_transaction(mdb, mfdb_disable_constraints(mdb, mfdb_measurement_tables, {
+        if (!mfdb_is_duckdb(mdb)) {
+            for (table_name in rev(all_tables)) {
+                mdb$logger$debug(paste0("Emptying ", table_name))
+                mfdb_send(mdb, "DELETE FROM ", table_name)
             }
         }
 

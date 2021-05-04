@@ -23,7 +23,7 @@ mfdb_import_area(mdb, data.frame(
     size = c(10,200,400)))
 
 # NB: SQLite won't fail, columns are dynamically typed
-if (!mfdb:::mfdb_is_sqlite(mdb)) ok(ut_cmp_error(mfdb_import_stomach(
+if (!mfdb:::mfdb_is_duckdb(mdb) && !mfdb:::mfdb_is_sqlite(mdb)) ok(ut_cmp_error(mfdb_import_stomach(
     mdb,
     predator_data = table_string("
 stomach_name	year	month	areacell	species	length	weight

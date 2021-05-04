@@ -6,6 +6,7 @@ mfdb <- function(schema_name = "",
                  save_temp_tables = FALSE) {
     logger <- logging::getLogger('mfdb')
     is_sqlite_dbname <- function (x) grepl("\\.sqlite3?$", x)
+    is_duckdb_dbdir <- function (x) grepl("\\.duckdb$", x)
 
     # Try a selection of host strings until we connect to something
     db_params <- as.list(db_params)
@@ -23,8 +24,14 @@ mfdb <- function(schema_name = "",
         db_params <- list(dbname = schema_name)
     }
 
+    # If schema_name is duckdb-ish and no other parameters given, use it as dbdir
+    if (length(db_params) == 0 && is_duckdb_dbdir(schema_name)) {
+        db_params <- list(dbdir = schema_name)
+        schema_name <- 'main'
+    }
+
     # Override db_params with MFDB_USER / MFDB_PORT / .. env vars if available
-    for (p in c('user', 'host', 'port', 'password', 'dbname')) {
+    for (p in c('user', 'host', 'port', 'password', 'dbname', 'dbdir')) {
         env_name <- paste0("MFDB_", toupper(p))
         if (nzchar(Sys.getenv(env_name))) {
             db_params[[p]] <- Sys.getenv(env_name)
@@ -50,7 +57,9 @@ mfdb <- function(schema_name = "",
 
         # If no driver yet, guess from dbname
         if (!('drv' %in% db_combined)) {
-            if (is_sqlite_dbname(db_combined$dbname)) {
+            if (!is.null(db_combined$dbdir) && is_duckdb_dbdir(db_combined$dbdir)) {
+                db_combined$drv <- duckdb::duckdb()
+            } else if (is_sqlite_dbname(db_combined$dbname)) {
                 db_combined$drv <- RSQLite::SQLite()
             } else {
                 db_combined$drv <- RPostgres::Postgres()
@@ -214,6 +223,13 @@ mfdb <- function(schema_name = "",
         if (destroy_schema) {
             dbDisconnect(mdb$db)
             if (mdb$db_args$dbname != ':memory:') unlink(mdb$db_args$dbname)
+            mdb$logger$info(paste0("DB ", mdb$db_args$dbname, " removed, connect again to repopulate DB."))
+            return(invisible(NULL))
+        }
+    } else if (mfdb_is_duckdb(mdb)) {
+        if (destroy_schema) {
+            dbDisconnect(mdb$db, shutdown = TRUE)
+            if (mdb$db_args$dbdir != '') unlink(paste0(mdb$db_args$dbdir, '*'), recursive = TRUE)
             mdb$logger$info(paste0("DB ", mdb$db_args$dbname, " removed, connect again to repopulate DB."))
             return(invisible(NULL))
         }

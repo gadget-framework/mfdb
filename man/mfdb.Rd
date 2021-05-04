@@ -23,9 +23,10 @@
         \enumerate{
             \item Postgresql schema name
             \item A file path ending with "\code{.sqlite}" to connect to a SQLite file database
+            \item A file path ending with "\code{.duckdb}" to connect to a DuckDB file database
         }
 
-        If connecting to a SQLite database, \var{db_params} should remain empty (
+        If connecting to a SQLite/DuckDB database, \var{db_params} should remain empty (
         \var{schema_name} will be used as a \code{dbname}).
 
         If connecting to a Postgres database, it can be used to
@@ -40,7 +41,8 @@
         See \code{?RPostgres::Postgres} for more information.
 
         If \code{dbname} looks like a SQLite database filename,
-        then MFDB will use the \code{RSQLite} driver. Otherwise, \code{RPostgres} will
+        then MFDB will use the \code{RSQLite} driver. If \code{dbdir} is set, then
+        MFDB will use the \code{duckdb} driver. Otherwise, \code{RPostgres} will
         be used.
 
         \var{db_params} can also be supplied by environment variable, for example

@@ -1,3 +1,4 @@
+    * DuckDB support. Specify mfdb('db_filename.duckdb')
     * SQLite support. Specify mfdb('db_filename.sqlite')
     * Use bulk_copy to speed up large taxonomy imports
 

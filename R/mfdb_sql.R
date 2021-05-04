@@ -33,10 +33,12 @@ mfdb_db_backend <- function(mdb) {
     if (length(drv_package) == 0) return ('dbnull')
     if (drv_package %in% c('RPostgres', 'RPostgreSQL')) return('pg')
     if (drv_package %in% c('RSQLite')) return('sqlite')
+    if (drv_package %in% c('duckdb')) return('duckdb')
     return('unknown')
 }
 mfdb_is_postgres <- function (mdb) mfdb_db_backend(mdb) == 'pg'
 mfdb_is_sqlite <- function (mdb) mfdb_db_backend(mdb) == 'sqlite'
+mfdb_is_duckdb <- function (mdb) mfdb_db_backend(mdb) == 'duckdb'
 
 # Concatenate queries together and send to database
 mfdb_send <- function(mdb, ..., result = "") {
@@ -180,7 +182,7 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
             NULL)
         if (nrow(cols) == 0) stop("Didn't find table ", target_table)
         cols <- structure(cols$data_type, names = cols$column_name)
-    } else if (mfdb_is_sqlite(mdb)) {
+    } else if (mfdb_is_sqlite(mdb) || mfdb_is_duckdb(mdb)) {
         cols <- mfdb_fetch(mdb, "PRAGMA table_info(", target_table, ")")
         cols <- structure(cols$type, names = cols$name)
     } else stop("Unknown DB type")
@@ -214,6 +216,11 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
     if (mfdb_is_sqlite(mdb)) {
         mfdb_send(mdb, "PRAGMA ignore_check_constraints = 1")
         on.exit(mfdb_send(mdb, "PRAGMA ignore_check_constraints = 0"), add = TRUE)
+        return(code_block)
+    }
+
+    if (mfdb_is_duckdb(mdb)) {
+        # No FOREIGN KEYs, so nothing to disable
         return(code_block)
     }
 
@@ -270,6 +277,11 @@ mfdb_table_exists <- function(mdb, table_name, schema_name = mdb$schema) {
         " WHERE (table_schema IN ", sql_quote(schema_name, always_bracket = TRUE),
         " OR table_schema = (SELECT nspname FROM pg_namespace WHERE oid = pg_my_temp_schema()))",
         " AND table_name IN ", sql_quote(table_name, always_bracket = TRUE))[, c(1)] > 0)
+    if (mfdb_is_duckdb(mdb)) return(mfdb_fetch(mdb,
+        "SELECT COUNT(*)",
+        " FROM information_schema.tables",
+        " WHERE (table_schema = 'main' OR table_schema = 'temp')",
+        " AND table_name IN ", sql_quote(table_name, always_bracket = TRUE))[, c(1)] > 0)
     if (mfdb_is_sqlite(mdb)) {
         if(mfdb_fetch(mdb, "
             SELECT COUNT(*)
@@ -289,10 +301,25 @@ mfdb_table_exists <- function(mdb, table_name, schema_name = mdb$schema) {
 }
 
 mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
-    fix_autoinc_col <- function (s) {
+    fix_col_datatypes <- function (s) {
         # Autoinc cols are SERIAL in postgres, INTEGER PRIMARY KEY in SQLite
-        if (!mfdb_is_sqlite(mdb)) return(s)
-        gsub("SERIAL", "INTEGER", s)
+        if (mfdb_is_sqlite(mdb)) s <- gsub("SERIAL", "INTEGER", s)
+
+        if (mfdb_is_duckdb(mdb)) {
+            if (grepl("SERIAL", s)) {
+                # We need to explicitly define the sequence
+                seq_name <- paste0("seq_pk_", name)
+                mfdb_send(mdb, "CREATE SEQUENCE ", seq_name)
+                s <- gsub("SERIAL", paste0("INTEGER DEFAULT NEXTVAL(", sql_quote(seq_name), ")"), s)
+            }
+
+            # TIMESTAMP WITH TIMEZONE not supported
+            s <- gsub("TIMESTAMP WITH TIME ZONE", "TIMESTAMP", s)
+
+            # Foreign keys aren't supported
+            s <- gsub("REFERENCES.*", "", s)
+        }
+        return(s)
     }
 
     items <- matrix(c(
@@ -303,7 +330,7 @@ mfdb_create_table <- function(mdb, name, desc, cols = c(), keys = c()) {
     row_to_string <- function (i) {
         paste0("    ",
             items[1,i],
-            (if (nzchar(items[2,i])) paste("\t", fix_autoinc_col(items[2,i]))),
+            (if (nzchar(items[2,i])) paste("\t", fix_col_datatypes(items[2,i]))),
             (if (i == ncol(items)) "" else ","),
             (if (nzchar(items[3,i])) paste("\t--", items[3,i])),
             "\n")
