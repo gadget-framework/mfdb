@@ -136,7 +136,7 @@
     <p>Create a class representing a connection to a MareFrame DB</p>
     </div>
 
-    <pre class="usage"><span class='fu'>mfdb</span><span class='op'>(</span><span class='va'>case_study_name</span>,
+    <pre class="usage"><span class='fu'>mfdb</span><span class='op'>(</span><span class='va'>schema_name</span>,
          db_params <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
          destroy_schema <span class='op'>=</span> <span class='cn'>FALSE</span>,
          check_db_available <span class='op'>=</span> <span class='cn'>FALSE</span>,
@@ -148,8 +148,17 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>case_study_name</th>
-      <td><p>The name of your case study. Your Postgres database can be used to
+      <th>schema_name</th>
+      <td><p>This can be one of:</p>
+<p></p><ol>
+<li><p>Postgresql schema name</p></li>
+<li><p>A file path ending with "<code>.sqlite</code>" to connect to a SQLite file database</p></li>
+<li><p>A file path ending with "<code>.duckdb</code>" to connect to a DuckDB file database</p></li>
+</ol>
+
+<p>If connecting to a SQLite/DuckDB database, <var>db_params</var> should remain empty (
+        <var>schema_name</var> will be used as a <code>dbname</code>).</p>
+<p>If connecting to a Postgres database, it can be used to
         store any number of case studies, by storing them in separate
         <em>schemas</em>. This parameter defines the schema to connect to,
         and can contain any lower case characters or underscore.</p></td>
@@ -160,6 +169,10 @@
         search for a "mf" database locally, but you can override any of the parameters,
         in particular <code>host</code>, <code>dbname</code>, <code>user</code>, <code>password</code>.
         See <code><a href='https://rpostgres.r-dbi.org/reference/Postgres.html'>?RPostgres::Postgres</a></code> for more information.</p>
+<p>If <code>dbname</code> looks like a SQLite database filename,
+        then MFDB will use the <code>RSQLite</code> driver. If <code>dbdir</code> is set, then
+        MFDB will use the <code>duckdb</code> driver. Otherwise, <code>RPostgres</code> will
+        be used.</p>
 <p><var>db_params</var> can also be supplied by environment variable, for example
         if a <code>MFDB_DBNAME</code> environment variable is set then it will be used
         instead of any <code>dbname</code> supplied here.</p></td>
@@ -193,14 +206,18 @@
     <p>A 'mfdb' object representing the DB connection</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='co'># NB: Requires a PostgreSQL installation, see README</span>
+    <pre class="examples"><div class='input'><span class='co'># Connect to a SQLite database file</span>
+<span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'>mfdb</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.sqlite'</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 2021-05-04 15:24:34 INFO:mfdb:Creating schema from scratch
+#&gt; 2021-05-04 15:24:34 INFO:mfdb:Taxonomy market_category no updates to make
+#&gt; 2021-05-04 15:24:34 INFO:mfdb:Schema up-to-date</div><div class='input'><span class='fu'>mfdb_disconnect</span><span class='op'>(</span><span class='va'>mdb</span><span class='op'>)</span>
+
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='co'># NB: Requires a PostgreSQL installation, see README</span>
 
 <span class='co'># Connect to local DB, as the "examples" case study</span>
 <span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'>mfdb</span><span class='op'>(</span><span class='st'>'examples'</span><span class='op'>)</span>
-
-<span class='co'># Disconnect from database</span>
 <span class='fu'>mfdb_disconnect</span><span class='op'>(</span><span class='va'>mdb</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in exists("index_created", where = mdb$state): object 'mdb' not found</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: Already disconnected</span></div><div class='input'>
 <span class='co'># Connect to remote server, will prompt for username/password</span>
 <span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/interactive.html'>interactive</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
     <span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'>mfdb</span><span class='op'>(</span><span class='st'>'examples'</span>, db_params <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>host <span class='op'>=</span> <span class='st'>"mfdb.rhi.hi.is"</span><span class='op'>)</span><span class='op'>)</span>
