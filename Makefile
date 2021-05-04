@@ -35,11 +35,13 @@ examples: install
 	Rscript -e 'library(mfdb) ; tryCatch(mfdb("examples-import-data", destroy_schema = TRUE), error = function (x) x)'
 	Rscript -e 'devtools::run_examples(run_donttest = TRUE, run_dontrun = TRUE, document = FALSE)'
 
-inttest: install test examples build-docs
-	for f in inttests/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME="mf_inttest" Rscript $$f || exit 1; done
-	for f in inttests/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME=":memory:" Rscript $$f || exit 1; done
-	for f in demo/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME="mf_inttest" Rscript $$f || exit 1; done
-	for f in demo/inttest-*.R; do echo "=== $$f ============="; MFDB_DBNAME=":memory:" Rscript $$f || exit 1; done
+inttest-sqlite: install 
+	for f in */inttest-*.R; do echo "=== $$f ============="; INTTEST_SCHEMA="/tmp/mf-inttest.sqlite" Rscript $$f || exit 1; done
+
+inttest-postgres: install
+	for f in */inttest-*.R; do echo "=== $$f ============="; INTTEST_SCHEMA="inttest" Rscript $$f || exit 1; done
+
+inttest: test examples build-docs inttest-sqlite inttest-postgres
 
 build-docs:
 	[ -d docs ] && rm -r docs || true

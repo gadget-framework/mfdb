@@ -13,11 +13,11 @@ source('tests/utils/inttest-helpers.R')
 
 # Empty database, so we start from scratch
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('inttest-gadgetdirectory', db_params = db_params, destroy_schema = TRUE)
+mfdb(gsub("inttest", "inttest-gadgetdirectory", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, destroy_schema = TRUE)
 
 # Open a connection to the DB for the Iceland case study, and open an output
 # directory to save files in
-mdb <- mfdb('inttest-gadgetdirectory', db_params = db_params, save_temp_tables = FALSE)
+mdb <- mfdb(gsub("inttest", "inttest-gadgetdirectory", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, save_temp_tables = FALSE)
 
 ok_group("Area File", {
     # 3 area cells 45G01--3, each of which are 5km^2, divide area up into 2 divisions

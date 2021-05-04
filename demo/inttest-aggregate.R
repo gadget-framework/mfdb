@@ -12,8 +12,8 @@ source('tests/utils/inttest-helpers.R')
 
 # Empty database & rebuild
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('inttest-aggregate', db_params = db_params, destroy_schema = TRUE)
-mdb <- mfdb('inttest-aggregate', db_params = db_params, save_temp_tables = TRUE) # TODO:
+mfdb(gsub("inttest", "inttest-aggregate", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, destroy_schema = TRUE)
+mdb <- mfdb(gsub("inttest", "inttest-aggregate", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, save_temp_tables = TRUE) # TODO:
 
 # Set-up areas/divisions
 mfdb_import_area(mdb, data.frame(

@@ -12,12 +12,12 @@ source('tests/utils/inttest-helpers.R')
 
 # Empty database
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('inttest-samples', db_params = db_params, destroy_schema = TRUE)
+mfdb(gsub("inttest", "inttest-samples", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, destroy_schema = TRUE)
 
 #TODO: Connecting to empty database without ability to populate fails
 
 # Rebuild database, taxonomy got populated
-mdb <- mfdb('inttest-samples', db_params = db_params, save_temp_tables = FALSE)
+mdb <- mfdb(gsub("inttest", "inttest-samples", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, save_temp_tables = FALSE)
 ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE species_id = 9999999999")[1,] == 
   mfdb::species[mfdb::species$name == 'TBX', c('name', 'description')]), "Entry for 9999999999 matches package")
 ok(cmp(as.integer(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM species")[1,1]), nrow(mfdb::species)), "Species has right number of entries")

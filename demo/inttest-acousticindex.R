@@ -16,8 +16,8 @@ avg <- function (...) {
 
 # Empty database
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('inttest-acousticindex', db_params = db_params, destroy_schema = TRUE)
-mdb <- mfdb('inttest-acousticindex', db_params = db_params, save_temp_tables = FALSE)
+mfdb(gsub("inttest", "inttest-acousticindex", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, destroy_schema = TRUE)
+mdb <- mfdb(gsub("inttest", "inttest-acousticindex", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, save_temp_tables = FALSE)
 
 # Gadget directory
 gd <- gadget_directory(tempfile())

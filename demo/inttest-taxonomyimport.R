@@ -12,8 +12,8 @@ source('tests/utils/inttest-helpers.R')
 
 # Rebuild database, taxonomy got populated
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('inttest-taxonomyimport', db_params = db_params, destroy_schema = TRUE)
-mdb <- mfdb('inttest-taxonomyimport', db_params = db_params, save_temp_tables = FALSE)
+mfdb(gsub("inttest", "inttest-taxonomyimport", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, destroy_schema = TRUE)
+mdb <- mfdb(gsub("inttest", "inttest-taxonomyimport", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, save_temp_tables = FALSE)
 
 ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE species_id = 9999999999")[1,] == 
   mfdb::species[mfdb::species$name == 'TBX', c('name', 'description')]), "Entry for 9999999999 matches package")
@@ -25,7 +25,7 @@ ok(all(mfdb:::mfdb_fetch(mdb, "SELECT species_id, description FROM species WHERE
   c(9999999999, 'Wormy Worms')), "Entry for 9999999999 was updated")
 
 # Connect as a different case study. should have it's own tables, not affected by the above
-mdb2 <- mfdb('inttest-taxonomyimport Baltic', db_params = db_params, save_temp_tables = FALSE)
+mdb2 <- mfdb(gsub("inttest", "inttest-taxonomyimport Baltic", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, save_temp_tables = FALSE)
 ok(cmp(
     mfdb:::mfdb_fetch(mdb2, "SELECT CAST(species_id AS TEXT) AS species_id, description FROM species WHERE name = 'TBX'")[1,],
     data.frame(

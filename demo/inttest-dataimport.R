@@ -13,10 +13,10 @@ source('tests/utils/inttest-helpers.R')
 
 # Empty database & connect
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('inttest-dataimport', db_params = db_params, destroy_schema = TRUE)
-mfdb('inttest-dataimport-Baltic', db_params = db_params, destroy_schema = TRUE)
-mdb <- mfdb('inttest-dataimport', db_params = db_params, save_temp_tables = FALSE)
-mdb2 <- mfdb('inttest-dataimport-Baltic', db_params = db_params, save_temp_tables = FALSE)
+mfdb(gsub("inttest", "inttest-dataimport", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, destroy_schema = TRUE)
+mfdb(gsub("inttest", "inttest-dataimport-Baltic", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, destroy_schema = TRUE)
+mdb <- mfdb(gsub("inttest", "inttest-dataimport", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, save_temp_tables = FALSE)
+mdb2 <- mfdb(gsub("inttest", "inttest-dataimport-Baltic", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, save_temp_tables = FALSE)
 
 ok_group("Areacell/divisions", {
     # Can't populate divisions yet, no areacells defined
@@ -186,8 +186,8 @@ ok_group("Temperature", {
 
 ok_group("Species", {
     mfdb_disconnect(mdb)
-    mfdb('inttest-dataimport', db_params = db_params, destroy_schema = TRUE)
-    mdb <- mfdb('inttest-dataimport', db_params = db_params, save_temp_tables = FALSE)
+    mfdb(gsub("inttest", "inttest-dataimport", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, destroy_schema = TRUE)
+    mdb <- mfdb(gsub("inttest", "inttest-dataimport", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, save_temp_tables = FALSE)
     mfdb_import_area(mdb, data.frame(id = c(1,2,3), name = c('45G01', '45G02', '45G03'), size = c(5.1, 5.2, 5.3)))
 
     # Can't empty taxonomy if we already have data

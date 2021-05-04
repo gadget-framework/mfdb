@@ -15,11 +15,12 @@ source('tests/utils/inttest-helpers.R')
 if (exists("mdb")) mfdb_disconnect(mdb)
 
 # Create a connection to gather DB args
-mdb <- mfdb('inttest-dbupgrade', db_params = db_params)
+mdb <- mfdb(gsub("inttest", "inttest-dbupgrade", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params)
 db_args <- mdb$db_args
+is_postgres <- mfdb:::mfdb_is_postgres(mdb)
 mfdb_disconnect(mdb)
 
-if (db_args$dbname != ':memory:') {
+if (is_postgres) {
     # Rebuild the version 2 schema
     mdb <- mfdb('Test', db_params = db_params, destroy_schema = TRUE)
     system(paste(
@@ -66,7 +67,7 @@ if (db_args$dbname != ':memory:') {
     mdb <- mfdb('public', db_params = db_params, destroy_schema = TRUE)
 }
 
-if (db_args$dbname != ':memory:') {
+if (is_postgres) {
     # Rebuild a version 5 schema and upgrade it
     system(paste(
         'echo "DROP SCHEMA test_5x CASCADE" | psql',

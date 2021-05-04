@@ -13,8 +13,8 @@ source('tests/utils/inttest-helpers.R')
 
 # Empty database
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('inttest-tibble', db_params = db_params, destroy_schema = TRUE)
-mdb <- mfdb('inttest-tibble', db_params = db_params, save_temp_tables = FALSE)
+mfdb(gsub("inttest", "inttest-tibble", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, destroy_schema = TRUE)
+mdb <- mfdb(gsub("inttest", "inttest-tibble", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, save_temp_tables = FALSE)
 
 ok_group("Import tibble", {
     # Set-up areas/divisions

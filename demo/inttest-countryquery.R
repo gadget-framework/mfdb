@@ -12,8 +12,8 @@ source('tests/utils/inttest-helpers.R')
 
 # Empty database & rebuild
 if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('inttest-countryquery', db_params = db_params, destroy_schema = TRUE)
-mdb <- mfdb('inttest-countryquery', db_params = db_params, save_temp_tables = FALSE)
+mfdb(gsub("inttest", "inttest-countryquery", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, destroy_schema = TRUE)
+mdb <- mfdb(gsub("inttest", "inttest-countryquery", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, save_temp_tables = FALSE)
 
 mfdb_import_area(mdb, data.frame(
     name = c('45G01', '45G02', '45G03'),
