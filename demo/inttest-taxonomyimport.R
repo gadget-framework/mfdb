@@ -15,16 +15,25 @@ if (exists("mdb")) mfdb_disconnect(mdb)
 mfdb(gsub("inttest", "inttest-taxonomyimport", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, destroy_schema = TRUE)
 mdb <- mfdb(gsub("inttest", "inttest-taxonomyimport", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, save_temp_tables = FALSE)
 
-ok(all(mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE species_id = 9999999999")[1,] == 
-  mfdb::species[mfdb::species$name == 'TBX', c('name', 'description')]), "Entry for 9999999999 matches package")
+ok(ut_cmp_identical(
+    mfdb:::mfdb_fetch(mdb, "SELECT name, description FROM species WHERE name = 'TBX'"),
+    data.frame(
+        name = 'TBX',
+        description = as.character(mfdb::species[mfdb::species$name == 'TBX', 'description']),
+        stringsAsFactors = FALSE)), "Entry for 9999999999 matches package")
 ok(cmp(as.integer(mfdb:::mfdb_fetch(mdb, "SELECT count(*) FROM species")[1,1]), nrow(mfdb::species)), "Species has right number of entries")
 
 # Fiddle about with entry
 mfdb:::mfdb_import_taxonomy(mdb, 'species', data.frame(id = c(1), name = c('TBX'), description = c('Wormy Worms')))
-ok(all(mfdb:::mfdb_fetch(mdb, "SELECT species_id, description FROM species WHERE name = 'TBX'")[1,] == 
-  c(9999999999, 'Wormy Worms')), "Entry for 9999999999 was updated")
+ok(ut_cmp_equal(  # NB: Not identical since 9999999999 is too big to be integer
+    mfdb:::mfdb_fetch(mdb, "SELECT species_id, description FROM species WHERE name = 'TBX'"),
+    data.frame(
+        species_id = 9999999999,
+        description = 'Wormy Worms',
+        stringsAsFactors = FALSE)), "Entry for 9999999999 was updated")
 
 # Connect as a different case study. should have it's own tables, not affected by the above
+mfdb(gsub("inttest", "inttest-taxonomyimport Baltic", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, destroy_schema = TRUE)
 mdb2 <- mfdb(gsub("inttest", "inttest-taxonomyimport Baltic", Sys.getenv('INTTEST_SCHEMA', 'inttest')), db_params = db_params, save_temp_tables = FALSE)
 ok(cmp(
     mfdb:::mfdb_fetch(mdb2, "SELECT CAST(species_id AS TEXT) AS species_id, description FROM species WHERE name = 'TBX'")[1,],
