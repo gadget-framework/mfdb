@@ -113,7 +113,7 @@ abundance_survey_index_table <- function (mdb, scale_index) {
             " AND sam.areacell_id = si.areacell_id",
             " AND sam.year = si.year",
             " AND sam.month = si.month",
-            " GROUP BY 1",
+            " GROUP BY ", paste(seq_len(length(mfdb:::mfdb_measurement_table_defs$survey_index$cols) / 3), collapse = ","),
             ")"), "c.abundance"))
     }
 }
@@ -190,7 +190,7 @@ abundance_core_table <- function (mdb, scale_index) {
             " AND sam.areacell_id = si.areacell_id",
             " AND sam.year = si.year",
             " AND sam.month = si.month",
-            " GROUP BY 1",
+            " GROUP BY ", paste(seq_len(length(mfdb:::mfdb_measurement_table_defs$sample$cols) / 3), collapse = ","),
             ")"), "c.count * c.abundance"))
     }
 }
