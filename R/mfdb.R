@@ -271,5 +271,9 @@ mfdb_finish_import <- function(mdb) {
 # Stop it and tidy up
 mfdb_disconnect <- function(mdb) {
     mfdb_finish_import(mdb) # Might have just been an import session
-    dbDisconnect(mdb$db)
+    if (mfdb_is_duckdb(mdb)) {
+        dbDisconnect(mdb$db, shutdown = TRUE)
+    } else {
+        dbDisconnect(mdb$db)
+    }
 }
