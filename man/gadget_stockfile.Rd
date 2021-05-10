@@ -57,9 +57,22 @@ to the filesystem with \code{gadget_dir_write}.
 }
 
 \examples{
-\dontrun{  # NB: Requires a PostgreSQL installation, see README
 
-mdb <- mfdb('examples')
+mdb <- mfdb(tempfile(fileext = '.duckdb'))
+
+# Define 2 areacells of equal size
+mfdb_import_area(mdb, data.frame(name=c("divA", "divB"), size=1))
+
+# Make up some samples
+samples <- expand.grid(
+    year = '1998',
+    month = c(1:12),
+    areacell = c("divA", "divB"),
+    species = 'COD',
+    age = c(1:5),
+    length = c(0,40,80))
+samples$count <- runif(nrow(samples), 20, 90)
+mfdb_import_survey(mdb, data_source = "x", samples)
 
 imm_data <- mfdb_sample_meanweight(mdb, c('age', 'length'), list(
     age = NULL, # The age column will say 'all', but will know the min/max
@@ -74,4 +87,6 @@ component <- gadget_stockfile_refweight('cod.imm', imm_data[[1]])
 component
 
 gadget_dir_write(gadget_directory(tempfile()), component)
-}}
+
+mfdb_disconnect(mdb)
+}

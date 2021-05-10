@@ -33,14 +33,23 @@ GADGET areafile.
 }
 
 \examples{
-\dontrun{# NB: Requires a PostgreSQL installation, see README
 
-# Any example could be added to a file with the following:-
-mdb <- mfdb('examples')
+# Open a temporary database connection
+mdb <- mfdb(tempfile(fileext = '.duckdb'))
+
+# Define 2 areacells of equal size
+mfdb_import_area(mdb, data.frame(name=c("divA", "divB"), size=1))
+
+# We want to have 3 area groups, 2 for original cells, one aggregating across the lot
 area_group <- mfdb_group(
     divA = c("divA"),
     divB = c("divB"),
     divAB = c("divA", "divB"))
+
+# Make up temperature data
+temps <- expand.grid(year=c(1998,2000), month=c(1:12), areacell=c("divA", "divB"))
+temps$temperature <- runif(nrow(temps), 5, 10)
+mfdb_import_temperature(mdb, temps)
 
 # Create an areafile from 2 mfdb queries
 areafile <- gadget_areafile(
@@ -54,5 +63,23 @@ areafile
 
 # Write this to a gadget_directory
 gadget_dir_write(gadget_directory(tempfile()), areafile)
-}
+
+# Check data in file matches input data
+stopifnot(identical(
+    areafile$size,
+    c(divA=1, divB=1, divAB=2)))
+stopifnot(all.equal(
+    mean(areafile$temperature[areafile$temperature$area == 1, 'mean']),
+    mean(temps[temps$areacell == 'divA', 'temperature']),
+    tolerance = 1e-2))
+stopifnot(all.equal(
+    mean(areafile$temperature[areafile$temperature$area == 2, 'mean']),
+    mean(temps[temps$areacell == 'divB', 'temperature']),
+    tolerance = 1e-2))
+stopifnot(all.equal(
+    mean(areafile$temperature[areafile$temperature$area == 3, 'mean']),
+    mean(temps[,'temperature']),
+    tolerance = 1e-2))
+
+mfdb_disconnect(mdb)
 }

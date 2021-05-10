@@ -131,9 +131,7 @@ The \code{prey_data} should be a data.frame with the following columns:
 \value{NULL}
 
 \examples{
-\dontrun{  # NB: Requires a PostgreSQL installation, see README
-
-mdb <- mfdb('examples-import-data')
+mdb <- mfdb(tempfile(fileext = '.duckdb'))
 
 # We need to set-up vocabularies first
 mfdb_import_area(mdb, data.frame(
@@ -160,4 +158,6 @@ data_in$gear <- 'GIL'
 data_in$vessel <- '1.RSH'
 data_in$sampling_type <- 'RES'
 mfdb_import_survey(mdb, data_in, data_source = 'cod-1998')
-}}
+
+mfdb_disconnect(mdb)
+}

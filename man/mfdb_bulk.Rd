@@ -38,13 +38,14 @@ content of \code{in_location}, a directory or tarball.
 \value{NULL}
 
 \examples{
-\dontrun{  # NB: Requires a PostgreSQL installation, see README
-
-# Copy case study data from one case study to another
-mdb_out <- mfdb('examples')
-mdb_in <- mfdb('examples-copy')
+# Copy data from one database to another, note they don't have to be the same type
+mdb_out <- mfdb(tempfile(fileext = '.sqlite'))
+mdb_in <- mfdb(tempfile(fileext = '.duckdb'))
 
 dump_path <- tempfile(fileext='.tar.gz')
 mfdb_cs_dump(mdb_out, dump_path)
 mfdb_cs_restore(mdb_in, dump_path)
-}}
+
+mfdb_disconnect(mdb_in)
+mfdb_disconnect(mdb_out)
+}

@@ -66,10 +66,28 @@ A gadget_fleet_component object that can them be added to a fleetfile with
 }
 
 \examples{
-\dontrun{  # NB: Requires a PostgreSQL installation, see README
-
-    mdb <- mfdb('examples')
+    mdb <- mfdb(tempfile(fileext = '.duckdb'))
     gd <- gadget_directory(tempfile())
+
+    # Define 2 areacells of equal size
+    mfdb_import_area(mdb, data.frame(name=c("divA", "divB"), size=1))
+
+    # Define 2 vessels
+    mfdb_import_vessel_taxonomy(mdb, data.frame(
+        name = c('1.RSH', '2.COM'),
+        full_name = c('Research', 'Commercial'),
+        stringsAsFactors = FALSE))
+
+    # Make up some samples
+    samples <- expand.grid(
+        year = '1998',
+        month = 5,
+        areacell = c("divA", "divB"),
+        species = 'COD',
+        vessel = c('1.RSH', '2.COM'),
+        length = c(0,40,80))
+    samples$count <- runif(nrow(samples), 20, 90)
+    mfdb_import_survey(mdb, data_source = "x", samples)
 
     # Make a 'totalfleet' component
     fc <- gadget_fleet_component(
@@ -112,4 +130,6 @@ A gadget_fleet_component object that can them be added to a fleetfile with
             area = mfdb_group(x = 'divA', y = 'divB'),
             year = 1998,
             step = mfdb_timestep_yearly))[[1]])
-}}
+
+    mfdb_disconnect(mdb)
+}

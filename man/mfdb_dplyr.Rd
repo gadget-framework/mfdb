@@ -40,13 +40,13 @@ A dplyr table object, for you to do as you please.
 }
 
 \examples{
-\dontrun{  # NB: Requires a PostgreSQL installation, see README
-
-mdb <- mfdb('examples')
+mdb <- mfdb(tempfile(fileext = '.duckdb'))
 
 # Include as many columns as possible
 mfdb_dplyr_sample(mdb)
 
 # Only include 'data_source' and 'species' columns, as well as measurements
 mfdb_dplyr_sample(mdb, c('data_source', 'species'))
-}}
+
+mfdb_disconnect(mdb)
+}

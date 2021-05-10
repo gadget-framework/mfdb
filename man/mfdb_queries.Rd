@@ -193,9 +193,21 @@ to scale counts by the tow length.
 }
 
 \examples{
-\dontrun{  # NB: Requires a PostgreSQL installation, see README
+mdb <- mfdb(tempfile(fileext = '.duckdb'))
 
-mdb <- mfdb('examples')
+# Define 2 areacells of equal size
+mfdb_import_area(mdb, data.frame(name=c("divA", "divB"), size=1))
+
+# Make up some samples
+samples <- expand.grid(
+    year = '1998',
+    month = c(1:12),
+    areacell = c("divA", "divB"),
+    species = 'COD',
+    age = c(1:5),
+    length = c(0,40,80))
+samples$count <- runif(nrow(samples), 20, 90)
+mfdb_import_survey(mdb, data_source = "x", samples)
 
 # Query numbers by age and length
 agg_data <- mfdb_sample_count(mdb, c('age', 'length'), list(
@@ -211,4 +223,6 @@ gadget_dir_write(gadget_directory(tempfile()), gadget_likelihood_component("catc
         data = agg_data[[1]],
         area = attr(agg_data[[1]], "area"),
         age = attr(agg_data[[1]], "age")))
-}}
+
+mfdb_disconnect(mdb)
+}
