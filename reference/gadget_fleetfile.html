@@ -204,10 +204,30 @@
 <code>gadget_dir_write</code></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span>   <span class='co'># NB: Requires a PostgreSQL installation, see README</span>
+    <pre class="examples"><div class='input'>    <span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.duckdb'</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 2021-05-10 10:44:15 INFO:mfdb:Creating schema from scratch
+#&gt; 2021-05-10 10:44:15 INFO:mfdb:Taxonomy market_category no updates to make
+#&gt; 2021-05-10 10:44:15 INFO:mfdb:Schema up-to-date</div><div class='input'>    <span class='va'>gd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='gadget_directory.html'>gadget_directory</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 
-    <span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='st'>'examples'</span><span class='op'>)</span>
-    <span class='va'>gd</span> <span class='op'>&lt;-</span> <span class='fu'><a href='gadget_directory.html'>gadget_directory</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+    <span class='co'># Define 2 areacells of equal size</span>
+    <span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_area</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>name<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span>, <span class='st'>"divB"</span><span class='op'>)</span>, size<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
+
+    <span class='co'># Define 2 vessels</span>
+    <span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_vessel_taxonomy</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
+        name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'1.RSH'</span>, <span class='st'>'2.COM'</span><span class='op'>)</span>,
+        full_name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'Research'</span>, <span class='st'>'Commercial'</span><span class='op'>)</span>,
+        stringsAsFactors <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span><span class='op'>)</span>
+
+    <span class='co'># Make up some samples</span>
+    <span class='va'>samples</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>
+        year <span class='op'>=</span> <span class='st'>'1998'</span>,
+        month <span class='op'>=</span> <span class='fl'>5</span>,
+        areacell <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span>, <span class='st'>"divB"</span><span class='op'>)</span>,
+        species <span class='op'>=</span> <span class='st'>'COD'</span>,
+        vessel <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'1.RSH'</span>, <span class='st'>'2.COM'</span><span class='op'>)</span>,
+        length <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>40</span>,<span class='fl'>80</span><span class='op'>)</span><span class='op'>)</span>
+    <span class='va'>samples</span><span class='op'>$</span><span class='va'>count</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>samples</span><span class='op'>)</span>, <span class='fl'>20</span>, <span class='fl'>90</span><span class='op'>)</span>
+    <span class='fu'><a href='mfdb_import_data.html'>mfdb_import_survey</a></span><span class='op'>(</span><span class='va'>mdb</span>, data_source <span class='op'>=</span> <span class='st'>"x"</span>, <span class='va'>samples</span><span class='op'>)</span>
 
     <span class='co'># Make a 'totalfleet' component</span>
     <span class='va'>fc</span> <span class='op'>&lt;-</span> <span class='fu'>gadget_fleet_component</span><span class='op'>(</span>
@@ -218,11 +238,34 @@
             area <span class='op'>=</span> <span class='fu'><a href='mfdb_aggregate_group.html'>mfdb_group</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>'divA'</span>, y <span class='op'>=</span> <span class='st'>'divB'</span><span class='op'>)</span>,
             year <span class='op'>=</span> <span class='fl'>1998</span>,
             step <span class='op'>=</span> <span class='va'>mfdb_timestep_yearly</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in exists("index_created", where = mdb$state): object 'mdb' not found</span></div><div class='input'>    <span class='va'>fc</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'fc' not found</span></div><div class='input'>
+    <span class='va'>fc</span>
+</div><div class='output co'>#&gt; $totalfleet
+#&gt; [1] "research"
+#&gt; 
+#&gt; $livesonareas
+#&gt; x y 
+#&gt; 1 2 
+#&gt; 
+#&gt; $multiplicative
+#&gt; [1] 1
+#&gt; 
+#&gt; $suitability
+#&gt; NULL
+#&gt; 
+#&gt; $amount
+#&gt; ; Generated by mfdb 7.0.99
+#&gt; ; -- data --
+#&gt; ; year	step	area	fleetname	number
+#&gt; 1998	1	1	research	189.260857796762
+#&gt; 1998	1	2	research	193.151461165398
+#&gt; 
+#&gt; attr(,"fleetfile")
+#&gt; [1] "fleet"
+#&gt; attr(,"class")
+#&gt; [1] "gadget_totalfleet_component" "gadget_fleet_component"     </div><div class='input'>
     <span class='co'># Write out to a directory</span>
     <span class='fu'><a href='gadget_directory.html'>gadget_dir_write</a></span><span class='op'>(</span><span class='va'>gd</span>, <span class='va'>fc</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in gadget_dir_write(gd, fc): object 'fc' not found</span></div><div class='input'>
+
     <span class='fu'>gadget_fleet_component</span><span class='op'>(</span>
         <span class='st'>'effortfleet'</span>,
         name <span class='op'>=</span> <span class='st'>'commercial'</span>,
@@ -236,7 +279,39 @@
             area <span class='op'>=</span> <span class='fu'><a href='mfdb_aggregate_group.html'>mfdb_group</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>'divA'</span>, y <span class='op'>=</span> <span class='st'>'divB'</span><span class='op'>)</span>,
             year <span class='op'>=</span> <span class='fl'>1998</span>,
             step <span class='op'>=</span> <span class='va'>mfdb_timestep_yearly</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in exists("index_created", where = mdb$state): object 'mdb' not found</span></div><div class='input'>
+</div><div class='output co'>#&gt; $effortfleet
+#&gt; [1] "commercial"
+#&gt; 
+#&gt; $livesonareas
+#&gt; x y 
+#&gt; 1 2 
+#&gt; 
+#&gt; $multiplicative
+#&gt; [1] 1
+#&gt; 
+#&gt; $suitability
+#&gt; [1] "function constant 4;"
+#&gt; 
+#&gt; $catchability
+#&gt; NULL
+#&gt; 
+#&gt; $stockA
+#&gt; [1] 4
+#&gt; 
+#&gt; $stockB
+#&gt; [1] 5
+#&gt; 
+#&gt; $amount
+#&gt; ; Generated by mfdb 7.0.99
+#&gt; ; -- data --
+#&gt; ; year	step	area	fleetname	number
+#&gt; 1998	1	1	commercial	199.638675681781
+#&gt; 1998	1	2	commercial	137.274690638296
+#&gt; 
+#&gt; attr(,"fleetfile")
+#&gt; [1] "fleet"
+#&gt; attr(,"class")
+#&gt; [1] "gadget_effortfleet_component" "gadget_fleet_component"      </div><div class='input'>
     <span class='fu'>gadget_fleet_component</span><span class='op'>(</span>
         <span class='st'>'quotafleet'</span>,
         name <span class='op'>=</span> <span class='st'>'commercial'</span>,
@@ -250,7 +325,41 @@
             area <span class='op'>=</span> <span class='fu'><a href='mfdb_aggregate_group.html'>mfdb_group</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>'divA'</span>, y <span class='op'>=</span> <span class='st'>'divB'</span><span class='op'>)</span>,
             year <span class='op'>=</span> <span class='fl'>1998</span>,
             step <span class='op'>=</span> <span class='va'>mfdb_timestep_yearly</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in exists("index_created", where = mdb$state): object 'mdb' not found</span></div></pre>
+</div><div class='output co'>#&gt; $quotafleet
+#&gt; [1] "commercial"
+#&gt; 
+#&gt; $livesonareas
+#&gt; x y 
+#&gt; 1 2 
+#&gt; 
+#&gt; $multiplicative
+#&gt; [1] 1
+#&gt; 
+#&gt; $suitability
+#&gt; [1] "function constant 4;"
+#&gt; 
+#&gt; $quotafunction
+#&gt; [1] "simple"
+#&gt; 
+#&gt; $biomasslevel
+#&gt; [1] 1000 2000
+#&gt; 
+#&gt; $quotalevel
+#&gt; [1] 0.1 0.4 0.9
+#&gt; 
+#&gt; $amount
+#&gt; ; Generated by mfdb 7.0.99
+#&gt; ; -- data --
+#&gt; ; year	step	area	fleetname	number
+#&gt; 1998	1	1	commercial	199.638675681781
+#&gt; 1998	1	2	commercial	137.274690638296
+#&gt; 
+#&gt; attr(,"fleetfile")
+#&gt; [1] "fleet"
+#&gt; attr(,"class")
+#&gt; [1] "gadget_quotafleet_component" "gadget_fleet_component"     </div><div class='input'>
+    <span class='fu'><a href='mfdb.html'>mfdb_disconnect</a></span><span class='op'>(</span><span class='va'>mdb</span><span class='op'>)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

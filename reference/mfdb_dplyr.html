@@ -169,16 +169,34 @@ not require the data, in which case specify the columns requred with
     <p>A dplyr table object, for you to do as you please.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span>   <span class='co'># NB: Requires a PostgreSQL installation, see README</span>
-
-<span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='st'>'examples'</span><span class='op'>)</span>
-
+    <pre class="examples"><div class='input'><span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.duckdb'</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 2021-05-10 10:44:23 INFO:mfdb:Creating schema from scratch
+#&gt; 2021-05-10 10:44:23 INFO:mfdb:Taxonomy market_category no updates to make
+#&gt; 2021-05-10 10:44:23 INFO:mfdb:Schema up-to-date</div><div class='input'>
 <span class='co'># Include as many columns as possible</span>
 <span class='fu'>mfdb_dplyr_sample</span><span class='op'>(</span><span class='va'>mdb</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in dplyr::tbl(mdb$db, tbl_name): object 'mdb' not found</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># Source:   lazy query [?? x 30]</span><span>
+#&gt; </span><span style='color: #949494;'># Database: duckdb_connection</span><span>
+#&gt; </span><span style='color: #949494;'># … with 30 variables: sample_id &lt;int&gt;, year &lt;int&gt;, month &lt;int&gt;, age &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   length &lt;dbl&gt;, length_var &lt;dbl&gt;, length_min &lt;int&gt;, weight &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   weight_var &lt;dbl&gt;, liver_weight &lt;dbl&gt;, liver_weight_var &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   gonad_weight &lt;dbl&gt;, gonad_weight_var &lt;dbl&gt;, stomach_weight &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   stomach_weight_var &lt;dbl&gt;, gutted_weight &lt;dbl&gt;, gutted_weight_var &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   count &lt;dbl&gt;, institute &lt;chr&gt;, gear &lt;chr&gt;, sex &lt;chr&gt;, maturity_stage &lt;chr&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   species &lt;chr&gt;, areacell &lt;chr&gt;, sampling_type &lt;chr&gt;, population &lt;chr&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   data_source &lt;chr&gt;, trip &lt;chr&gt;, tow &lt;chr&gt;, vessel &lt;chr&gt;</span><span></div><div class='input'>
 <span class='co'># Only include 'data_source' and 'species' columns, as well as measurements</span>
 <span class='fu'>mfdb_dplyr_sample</span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'data_source'</span>, <span class='st'>'species'</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in dplyr::tbl(mdb$db, tbl_name): object 'mdb' not found</span></div></pre>
+</div><div class='output co'>#&gt; </span><span style='color: #949494;'># Source:   lazy query [?? x 20]</span><span>
+#&gt; </span><span style='color: #949494;'># Database: duckdb_connection</span><span>
+#&gt; </span><span style='color: #949494;'># … with 20 variables: sample_id &lt;int&gt;, year &lt;int&gt;, month &lt;int&gt;, age &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   length &lt;dbl&gt;, length_var &lt;dbl&gt;, length_min &lt;int&gt;, weight &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   weight_var &lt;dbl&gt;, liver_weight &lt;dbl&gt;, liver_weight_var &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   gonad_weight &lt;dbl&gt;, gonad_weight_var &lt;dbl&gt;, stomach_weight &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   stomach_weight_var &lt;dbl&gt;, gutted_weight &lt;dbl&gt;, gutted_weight_var &lt;dbl&gt;,</span><span>
+#&gt; </span><span style='color: #949494;'>#   count &lt;dbl&gt;, species &lt;chr&gt;, data_source &lt;chr&gt;</span><span></div><div class='input'>
+<span class='fu'><a href='mfdb.html'>mfdb_disconnect</a></span><span class='op'>(</span><span class='va'>mdb</span><span class='op'>)</span>
+</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

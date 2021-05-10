@@ -262,23 +262,23 @@ If a prey has a stomach name that doesn't match a predator, then an error will b
     <p>NULL</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span>   <span class='co'># NB: Requires a PostgreSQL installation, see README</span>
-
-<span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='st'>'examples-import-data'</span><span class='op'>)</span>
-
+    <pre class="examples"><div class='input'><span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.duckdb'</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 2021-05-10 10:44:25 INFO:mfdb:Creating schema from scratch
+#&gt; 2021-05-10 10:44:25 INFO:mfdb:Taxonomy market_category no updates to make
+#&gt; 2021-05-10 10:44:26 INFO:mfdb:Schema up-to-date</div><div class='input'>
 <span class='co'># We need to set-up vocabularies first</span>
 <span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_area</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
     id <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span>,<span class='fl'>3</span><span class='op'>)</span>,
     name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'35F1'</span>, <span class='st'>'35F2'</span>, <span class='st'>'35F3'</span><span class='op'>)</span>,
     size <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in mfdb_db_backend(mdb): object 'mdb' not found</span></div><div class='input'><span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_vessel_taxonomy</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
+<span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_vessel_taxonomy</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
     name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'1.RSH'</span>, <span class='st'>'2.COM'</span><span class='op'>)</span>,
     stringsAsFactors <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in mfdb_db_backend(mdb): object 'mdb' not found</span></div><div class='input'><span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_sampling_type</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
+<span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_sampling_type</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
     name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"RES"</span>, <span class='st'>"LND"</span><span class='op'>)</span>,
     description <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Research"</span>, <span class='st'>"Landings"</span><span class='op'>)</span>,
     stringsAsFactors <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in mfdb_db_backend(mdb): object 'mdb' not found</span></div><div class='input'>
+
 <span class='va'>data_in</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>'
 year,month,areacell,species,age,sex,length
 1998,1,35F1,COD,3,M,140
@@ -291,7 +291,9 @@ year,month,areacell,species,age,sex,length
 <span class='va'>data_in</span><span class='op'>$</span><span class='va'>vessel</span> <span class='op'>&lt;-</span> <span class='st'>'1.RSH'</span>
 <span class='va'>data_in</span><span class='op'>$</span><span class='va'>sampling_type</span> <span class='op'>&lt;-</span> <span class='st'>'RES'</span>
 <span class='fu'>mfdb_import_survey</span><span class='op'>(</span><span class='va'>mdb</span>, <span class='va'>data_in</span>, data_source <span class='op'>=</span> <span class='st'>'cod-1998'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in mfdb_send(mdb, ..., result = "rows"): object 'mdb' not found</span></div></pre>
+
+<span class='fu'><a href='mfdb.html'>mfdb_disconnect</a></span><span class='op'>(</span><span class='va'>mdb</span><span class='op'>)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
