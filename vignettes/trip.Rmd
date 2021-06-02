@@ -13,6 +13,8 @@ vignette: >
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 logging::setLevel('WARN')
 library(unittest)
+# Redirect ok() output to stderr
+ok <- function(...) capture.output(unittest::ok(...), file = stderr())
 library(mfdb)
 
 # Empty database & rebuild
@@ -160,12 +162,12 @@ agg_data <- mfdb_sample_count(mdb, c('trip_start_date', 'length'), list(
 agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
-stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area trip_start_date length number
  all  all  all      2019-01-21     10    598
  all  all  all      2019-01-21     20    598
  all  all  all      2019-01-21     30    284
-    ')))
+    ')), "trip_start_date = '2019-01-21'")
 ```
 
 Note that we've summed T1a and T1b, since their start date matches.
@@ -180,7 +182,7 @@ agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 # Translated trip_start_port in and out of attributes
-stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area trip_start_port length number
  all  all  all             KEF     10   1202
  all  all  all             KEF     20    842
@@ -188,5 +190,5 @@ year step area trip_start_port length number
  all  all  all           other     10   1372
  all  all  all           other     20   1023
  all  all  all           other     30    925
-    ')))
+    ')), "trip_start_port = mfdb_group(...)")
 ```

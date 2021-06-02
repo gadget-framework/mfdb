@@ -12,6 +12,11 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+```{r, message=FALSE, echo=FALSE}
+library(unittest)
+# Redirect ok() output to stderr
+ok <- function(...) capture.output(unittest::ok(...), file = stderr())
+```
 ```{r, message=FALSE}
 library(mfdb)
 ```
@@ -181,7 +186,7 @@ dat
 ```
 
 ```{r, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
-stopifnot(all.equal(dat, read.table(blank.lines.skip = TRUE, header = TRUE, stringsAsFactors = FALSE, text = '
+ok(all.equal(dat, read.table(blank.lines.skip = TRUE, header = TRUE, stringsAsFactors = FALSE, text = '
 year step area     mean
 2018    1   a1 5.131353
 2018    1   a2 5.286022
@@ -191,5 +196,5 @@ year step area     mean
 2018    3   a2 6.609906
 2018    4   a1 6.144197
 2018    4   a2 6.020029
-', colClasses = c(NA, 'character', NA, NA)), tolerance = 1e-7))
+', colClasses = c(NA, 'character', NA, NA)), tolerance = 1e-7), "extract mean bottom temperature by quarter and area")
 ```

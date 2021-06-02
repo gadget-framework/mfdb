@@ -12,6 +12,8 @@ vignette: >
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 logging::setLevel('WARN')
 library(unittest)
+# Redirect ok() output to stderr
+ok <- function(...) capture.output(unittest::ok(...), file = stderr())
 library(mfdb)
 
 # Empty database & rebuild
@@ -195,7 +197,7 @@ agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 # Test expected output
-stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
+ok(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
     year = c('all'),
     step = c('1'),
     area = c('all'),
@@ -206,7 +208,7 @@ stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
         mean(c(28, 34, 24, 12, 44, 14)),
         mean(c(21, 34, 34)),
     NULL),
-    stringsAsFactors = FALSE)))
+    stringsAsFactors = FALSE)), 'Grouping / filtering by tow_depth')
 ```
 
 Any of the other tow attributes are available with a "tow_" prefix. For
@@ -226,7 +228,7 @@ agg_data <- mfdb_sample_meanlength(mdb, c('tow', 'tow_latitude', 'tow_longitude'
 agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
-stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
+ok(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
     year = c('all'),
     step = c('1'),
     area = c('divB'),
@@ -237,7 +239,7 @@ stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
     tow_length = c(10, 10, 20, 20),
     number = c(1, 1, 1, 1),
     mean = c(34, 54, 24, 14),
-    stringsAsFactors = FALSE)))
+    stringsAsFactors = FALSE)), "Unaggregated tow data")
 ```
 
 As well as using tow attributes to group/filter, we can use the tow to scale
@@ -252,7 +254,7 @@ agg_data <- mfdb_sample_meanlength(mdb, c('tow'), list(
 agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
-stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
+ok(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
     year = c('all'),
     step = c('1'),
     area = c('all'),
@@ -280,7 +282,7 @@ stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
         weighted.mean(c(13, 15, 52), c(1/12, 1/12, 1/12)),
         weighted.mean(c(85, 94, 71), c(1/13, 1/13, 1/13)),
         NULL),
-    stringsAsFactors = FALSE), tolerance = 1e-5))
+    stringsAsFactors = FALSE), tolerance = 1e-5), "Using scale_index = 'tow_length'")
 ```
 
 ...or scale by tow length whilst grouping by depth:
@@ -293,7 +295,7 @@ agg_data <- mfdb_sample_scaled(mdb, c('tow_depth'), list(
 agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
-stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
+ok(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
     year = c('all'),
     step = c('1'),
     area = c('all'),
@@ -308,7 +310,7 @@ stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), data.frame(
         mean(c(28, 34, 24, 12, 44, 14)) / sum(20, 20, 20, 20, 20, 20), # C+D
         mean(c(21, 34, 34)) / sum(10, 10, 10),  # A
     NULL),
-    stringsAsFactors = FALSE)))
+    stringsAsFactors = FALSE)), "scale = 'tow_length', grouping by tow_depth")
 ```
 
 An example of grouping by ``tow_bait_type``:
@@ -319,13 +321,13 @@ agg_data <- mfdb_sample_count(mdb, c('tow_bait_type'), list(
 agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
-stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area tow_bait_type number
  all  all  all            b1      3
  all  all  all            b2      3
  all  all  all            b3      3
  all  all  all            NA     21
-    ')))
+    ')), "Group by tow_bait_type")
 ```
 
 And finally ``tow_net_type``:
@@ -336,11 +338,11 @@ agg_data <- mfdb_sample_count(mdb, c('tow_net_type'), list(
 agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
-stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area tow_net_type number
  all  all  all        black      3
  all  all  all       orange      3
  all  all  all        white      3
  all  all  all           NA     21
-    ')))
+    ')), "Unaggregated tow_net_type")
 ```

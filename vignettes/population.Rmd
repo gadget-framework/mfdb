@@ -12,6 +12,8 @@ vignette: >
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 logging::setLevel('WARN')
 library(unittest)
+# Redirect ok() output to stderr
+ok <- function(...) capture.output(unittest::ok(...), file = stderr())
 library(mfdb)
 
 # Empty database & rebuild
@@ -104,11 +106,11 @@ agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 # Can get aggregate ns group as well as ns_s
-stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area population length number
 all  all  all         ns     10    777
 all  all  all         ns     20    847
 all  all  all       ns_s     10    285
 all  all  all       ns_s     20    273
-    ')))
+    ')), "Group/filter by populations")
 ```

@@ -12,6 +12,8 @@ vignette: >
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
 logging::setLevel('WARN')
 library(unittest)
+# Redirect ok() output to stderr
+ok <- function(...) capture.output(unittest::ok(...), file = stderr())
 library(mfdb)
 
 # Empty database & rebuild
@@ -77,12 +79,12 @@ agg_data <- mfdb_sample_totalweight(mdb, c('age'), list(
 agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
-stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area age total_weight total_liver_weight total_gonad_weight total_stomach_weight
  all  all  all   2          210                 93                 82                   72
  all  all  all   3          220                 28                 93                   99
  all  all  all   4          230                 93                 85                   72
-    ')))
+    ')), "measurements = c('overall', 'liver', 'gonad', 'stomach')")
 ```
 
 Single measurements are also possible:
@@ -94,12 +96,12 @@ agg_data <- mfdb_sample_totalweight(mdb, c('age'), list(
 agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
-stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area age total_stomach_weight
  all  all  all   2                   72
  all  all  all   3                   99
  all  all  all   4                   72
-    ')))
+    ')), "measurements = c('stomach')")
 ```
 
 We can also use ``mfdb_sample_meanweight`` to aggregate:
@@ -110,10 +112,10 @@ agg_data <- mfdb_sample_meanweight(mdb, c('age'), list(
 agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
-stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area age number mean_liver_weight mean_stomach_weight
  all  all  all all      3          71.33333                  81
-    '), tolerance = 1e-7))
+    '), tolerance = 1e-7), "measurements = c('liver', 'stomach')")
 ```
 
 As well as ``mfdb_sample_meanweight_stddev``:
@@ -124,7 +126,7 @@ agg_data <- mfdb_sample_meanweight_stddev(mdb, c('age'), list(
 agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
-stopifnot(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
+ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area age number mean mean_gonad_weight stddev stddev_gonad_weight
  all  all  all all      3  220          86.66667     10            5.686241
-    '), tolerance = 1e-7))
+    '), tolerance = 1e-7), "measurements = c('overall', 'gonad')")
