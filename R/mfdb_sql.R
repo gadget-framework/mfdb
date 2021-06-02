@@ -72,7 +72,14 @@ mfdb_send <- function(mdb, ..., result = "") {
     if (isTRUE(mdb$explain_plan) && result == 'rows') {
         writeLines("-----------------------------")
         writeLines(query)
-        res <- dbSendQuery(mdb$db, paste((if (mfdb_is_postgres(mdb)) "EXPLAIN ANALYZE " else "EXPLAIN QUERY PLAN"), query))
+        res <- dbSendQuery(mdb$db, paste(c(
+            pg = "EXPLAIN ANALYZE",
+            sqlite = "EXPLAIN QUERY PLAN",
+            # TODO: This isn't working yet, there are no results
+            duckdb = "EXPLAIN",
+            dbnull = "EXPLAIN",
+            unknown = "EXPLAIN")[[mfdb_db_backend(mdb)]], query))
+        if (DBI::dbHasCompleted(res)) writeLines("No plan.")
         while (!DBI::dbHasCompleted(res)) {
             x <- DBI::dbFetch(res)
             if (mfdb_is_postgres(mdb)) writeLines(x[[1]]) else print(x)
