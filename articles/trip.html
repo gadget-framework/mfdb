@@ -190,6 +190,37 @@ V2  "Vessel 2"
 ## 4  all  all  all           other     10   1372
 ## 5  all  all  all           other     20   1023
 ## 6  all  all  all           other     30    925</code></pre>
+<p>We can also use <code>mfdb_dplyr_sample</code> to re-extract data, joining with port metadata:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_dplyr.html">mfdb_dplyr_sample</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'trip_start_port'</span>, <span class="st">'trip_end_port'</span>, <span class="st">'trip_start_port_latitude'</span><span class="op">)</span><span class="op">)</span> |&gt;
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="st">'year'</span>, <span class="st">'month'</span>, <span class="st">'trip_start_port'</span>, <span class="st">'trip_end_port'</span>, <span class="st">'trip_start_port_latitude'</span>, <span class="st">'count'</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code>##    year month trip_start_port trip_end_port trip_start_port_latitude count
+## 1  2019     1           ISKEF         ISREK                    64.00   358
+## 2  2019     1           ISKEF         ISREK                    64.00   320
+## 3  2019     1           ISKEF         ISREK                    64.00   162
+## 4  2019     1           ISKEF         ISREK                    64.00   240
+## 5  2019     1           ISKEF         ISREK                    64.00   278
+## 6  2019     1           ISKEF         ISREK                    64.00   122
+## 7  2019     2           ISKEF         ISSEJ                    64.00   255
+## 8  2019     2           ISKEF         ISSEJ                    64.00   138
+## 9  2019     2           ISKEF         ISSEJ                    64.00   168
+## 10 2019     2           ISKEF         ISSEJ                    64.00   349
+## 11 2019     2           ISKEF         ISSEJ                    64.00   106
+## 12 2019     2           ISKEF         ISSEJ                    64.00   262
+## 13 2019     4           ISREK         ISKEF                    64.09   395
+## 14 2019     4           ISREK         ISKEF                    64.09   214
+## 15 2019     4           ISREK         ISKEF                    64.09   195
+## 16 2019     4           ISREK         ISKEF                    64.09   396
+## 17 2019     4           ISREK         ISKEF                    64.09   325
+## 18 2019     4           ISREK         ISKEF                    64.09   269
+## 19 2019     5           ISSEJ         ISKEF                    65.15   239
+## 20 2019     5           ISSEJ         ISKEF                    65.15   309
+## 21 2019     5           ISSEJ         ISKEF                    65.15   162
+## 22 2019     5           ISSEJ         ISKEF                    65.15   342
+## 23 2019     5           ISSEJ         ISKEF                    65.15   175
+## 24 2019     5           ISSEJ         ISKEF                    65.15   299</code></pre>
+<p>ok(ut_cmp_equal( mfdb_sample_count( mdb, c(‘month’, ‘areacell’, ‘tow’, ‘length’, ‘trip_start_port’, ‘trip_end_port’), list( month=mfdb_unaggregated(), areacell=mfdb_unaggregated(), tow=mfdb_unaggregated(), trip_start_port=mfdb_unaggregated(), trip_end_port=mfdb_unaggregated(), length = mfdb_unaggregated(), null = NULL))[[1]]<span class="math inline">\(number,  as.data.frame(mfdb_dplyr_sample(  mdb,  c('trip_start_port', 'trip_end_port', 'trip_start_port_latitude')))\)</span>count), “dplyr and sample_count produce same results”)</p>
 </div>
   </div>
 

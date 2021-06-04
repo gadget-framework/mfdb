@@ -170,68 +170,68 @@ content of <code>in_location</code>, a directory or tarball.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Copy data from one database to another, note they don't have to be the same type</span>
 <span class='va'>mdb_out</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.sqlite'</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-05-10 10:44:20 INFO:mfdb:Creating schema from scratch
-#&gt; 2021-05-10 10:44:20 INFO:mfdb:Taxonomy market_category no updates to make
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Schema up-to-date</div><div class='input'><span class='va'>mdb_in</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.duckdb'</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-05-10 10:44:21 INFO:mfdb:Creating schema from scratch
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Taxonomy market_category no updates to make
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Schema up-to-date</div><div class='input'>
+</div><div class='output co'>#&gt; 2021-06-04 12:39:30 INFO:mfdb:Creating schema from scratch
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Taxonomy market_category no updates to make
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Schema up-to-date</div><div class='input'><span class='va'>mdb_in</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.duckdb'</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 2021-06-04 12:39:30 INFO:mfdb:Creating schema from scratch
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Taxonomy market_category no updates to make
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Schema up-to-date</div><div class='input'>
 <span class='va'>dump_path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext<span class='op'>=</span><span class='st'>'.tar.gz'</span><span class='op'>)</span>
 <span class='fu'>mfdb_cs_dump</span><span class='op'>(</span><span class='va'>mdb_out</span>, <span class='va'>dump_path</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table institute
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table bait_type
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table net_type
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table gear
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table vessel_type
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table vessel_owner
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table market_category
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table sex
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table maturity_stage
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table species
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table areacell
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table stomach_state
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table digestion_stage
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table sampling_type
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table population
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table data_source
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table index_type
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table port
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table trip
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table tow
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table vessel
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table case_study
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table survey_index
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table division
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table sample
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table predator
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Dumping table prey</div><div class='input'><span class='fu'>mfdb_cs_restore</span><span class='op'>(</span><span class='va'>mdb_in</span>, <span class='va'>dump_path</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-05-10 10:44:21 INFO:mfdb:Restoring table institute
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Restoring table bait_type
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Restoring table net_type
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Restoring table gear
-#&gt; 2021-05-10 10:44:21 INFO:mfdb:Restoring table vessel_type
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table vessel_owner
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table market_category
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table sex
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table maturity_stage
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table species
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table areacell
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table stomach_state
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table digestion_stage
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table sampling_type
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table population
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table data_source
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table index_type
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table port
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table trip
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table tow
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table vessel
-#&gt; 2021-05-10 10:44:22 INFO:mfdb:Restoring table case_study
-#&gt; 2021-05-10 10:44:23 INFO:mfdb:Restoring table survey_index
-#&gt; 2021-05-10 10:44:23 INFO:mfdb:Restoring table division
-#&gt; 2021-05-10 10:44:23 INFO:mfdb:Restoring table sample
-#&gt; 2021-05-10 10:44:23 INFO:mfdb:Restoring table predator
-#&gt; 2021-05-10 10:44:23 INFO:mfdb:Restoring table prey</div><div class='input'>
+</div><div class='output co'>#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table institute
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table bait_type
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table net_type
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table gear
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table vessel_type
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table vessel_owner
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table market_category
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table sex
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table maturity_stage
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table species
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table areacell
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table stomach_state
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table digestion_stage
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table sampling_type
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table population
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table data_source
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table index_type
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table port
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table trip
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table tow
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table vessel
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table case_study
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table survey_index
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table division
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table sample
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table predator
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Dumping table prey</div><div class='input'><span class='fu'>mfdb_cs_restore</span><span class='op'>(</span><span class='va'>mdb_in</span>, <span class='va'>dump_path</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 2021-06-04 12:39:30 INFO:mfdb:Restoring table institute
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Restoring table bait_type
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Restoring table net_type
+#&gt; 2021-06-04 12:39:30 INFO:mfdb:Restoring table gear
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table vessel_type
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table vessel_owner
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table market_category
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table sex
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table maturity_stage
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table species
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table areacell
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table stomach_state
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table digestion_stage
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table sampling_type
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table population
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table data_source
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table index_type
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table port
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table trip
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table tow
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table vessel
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table case_study
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table survey_index
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table division
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table sample
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table predator
+#&gt; 2021-06-04 12:39:31 INFO:mfdb:Restoring table prey</div><div class='input'>
 <span class='fu'><a href='mfdb.html'>mfdb_disconnect</a></span><span class='op'>(</span><span class='va'>mdb_in</span><span class='op'>)</span>
 <span class='fu'><a href='mfdb.html'>mfdb_disconnect</a></span><span class='op'>(</span><span class='va'>mdb_out</span><span class='op'>)</span>
 </div></pre>
