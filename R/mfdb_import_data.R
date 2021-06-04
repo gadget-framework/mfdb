@@ -157,7 +157,7 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
         # If there's no data, leave at this point
         if (nrow(predator_data) == 0 || nrow(prey_data) == 0) return()
 
-        # Insert predator data, returning all IDs
+        # Insert predator data, in process assigning stomach IDs
         mfdb_bulk_copy(mdb, 'predator', predator_data, function (temp_predator) {
             mfdb_send(mdb,
                 "INSERT INTO predator",
