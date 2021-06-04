@@ -194,3 +194,28 @@ year step area trip_start_port length number
  all  all  all           other     30    925
     ')), "trip_start_port = mfdb_group(...)")
 ```
+
+We can also use ``mfdb_dplyr_sample`` to re-extract data, joining with port
+metadata:
+
+```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+mfdb_dplyr_sample(mdb, c('trip_start_port', 'trip_end_port', 'trip_start_port_latitude')) |>
+    dplyr::select('year', 'month', 'trip_start_port', 'trip_end_port', 'trip_start_port_latitude', 'count') |>
+    as.data.frame()
+```
+
+ok(ut_cmp_equal(
+    mfdb_sample_count(
+        mdb,
+        c('month', 'areacell', 'tow', 'length', 'trip_start_port', 'trip_end_port'),
+        list(
+            month=mfdb_unaggregated(),
+            areacell=mfdb_unaggregated(),
+            tow=mfdb_unaggregated(),
+            trip_start_port=mfdb_unaggregated(),
+            trip_end_port=mfdb_unaggregated(),
+            length = mfdb_unaggregated(),
+            null = NULL))[[1]]$number,
+    as.data.frame(mfdb_dplyr_sample(
+        mdb,
+        c('trip_start_port', 'trip_end_port', 'trip_start_port_latitude')))$count), "dplyr and sample_count produce same results")

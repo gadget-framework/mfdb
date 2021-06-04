@@ -1,3 +1,4 @@
+    * mfdb_dplyr_* now supports nested taxonomy columns, e.g. trip_start_port_latitude
     * DuckDB support. Specify mfdb('db_filename.duckdb')
     * SQLite support. Specify mfdb('db_filename.sqlite')
     * Use bulk_copy to speed up large taxonomy imports

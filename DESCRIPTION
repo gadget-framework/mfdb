@@ -22,7 +22,7 @@ Imports:
     RSQLite
 Suggests:
     dplyr (>= 0.8.3),
-    dbplyr (>= 1.0.0),
+    dbplyr (>= 2.0.0),
     knitr,
     rmarkdown,
     unittest (>= 1.4)
