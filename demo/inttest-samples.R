@@ -648,3 +648,5 @@ ok_group("Removing an import", {
         data.frame()),
        "Data removed again")
 })
+
+mfdb_disconnect(mdb)

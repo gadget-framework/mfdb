@@ -80,3 +80,5 @@ ok(cmp(mfdb:::mfdb_fetch(mdb, "SELECT tow_id, name FROM tow ORDER BY name"), dat
     tow_id = as.integer(c(1:4, 1:24 + 4)),  # NB: All IDs incremented
     name = c(paste0("ta", 1:4), sprintf("tb%02d", 1:24)),
     stringsAsFactors = FALSE)), "Imported 2 tow taxonomies")
+
+mfdb_disconnect(mdb)

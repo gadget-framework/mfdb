@@ -143,3 +143,5 @@ year step area vessel_owner number     mean
  all    1  all         MFRI      6 43.00000
         ', colClasses = c(NA, "character", NA, NA, "numeric", NA))), "Vessels grouped by owner")
 })
+
+mfdb_disconnect(mdb)

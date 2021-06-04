@@ -67,3 +67,5 @@ ok_group("Import tibble", {
             generator = "mfdb_sample_meanlength"))),
        "Aggregated length data")
 })
+
+mfdb_disconnect(mdb)

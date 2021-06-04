@@ -219,3 +219,5 @@ ok_group("Can remove survey_index", {
             mean(c(15:13))),
         stringsAsFactors = FALSE)), "acoustic_index1 no longer there")
 })
+
+mfdb_disconnect(mdb)

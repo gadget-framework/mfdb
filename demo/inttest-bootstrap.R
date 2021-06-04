@@ -258,3 +258,5 @@ ok_group("Bootstrapped empty results", {
         "0.0.0", "0.0.1", "0.0.2", "0.0.3", "0.0.4",
         NULL)), "Still got 5 data.frames")
 })
+
+mfdb_disconnect(mdb)

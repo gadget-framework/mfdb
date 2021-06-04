@@ -146,3 +146,5 @@ ok(cmp(
 ok(cmp(
     mfdb_stomach_presenceratio(mdb, c(), params = list(prey_species = 'CLL'))[[1]][,'ratio'],
     2 / 6), "Stomach rows all intact (after tar import)")
+
+mfdb_disconnect(mdb)

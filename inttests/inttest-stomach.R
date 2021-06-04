@@ -36,3 +36,5 @@ stomach_name	species	digestion_stage	length	weight	count
 A		CAP		1	1	10	parp
 C		CLL		2	3.5	9.5	4
     ")), "parp"), "Invalid data reported (wasn't lost in transactions)")
+
+mfdb_disconnect(mdb)

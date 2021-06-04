@@ -117,3 +117,5 @@ ok(cmp(
             NULL),
         stringsAsFactors = FALSE
     )), "Can also group together both countries and institutes")
+
+mfdb_disconnect(mdb)

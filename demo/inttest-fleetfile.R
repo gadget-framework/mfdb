@@ -103,3 +103,5 @@ ok_group("Deprecated usages---don't do this", {
         "2000\t1\t2\t2.COM\t2",
         NULL), "Areas in data have become numeric")
 })
+
+mfdb_disconnect(mdb)

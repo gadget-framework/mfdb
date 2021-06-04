@@ -452,3 +452,5 @@ AA		CAP		1			1	10	5
              prey_species = 'CAP'))[['0.0.0.0']]),
          data.frame()), "cod2000 data removed")
 })
+
+mfdb_disconnect(mdb)

@@ -228,3 +228,5 @@ ok_group("Preserve weight precision", {
         sum(data_in$weight_total),
         tolerance = 1e-7), "Total weight through MFDB matches R")
 })
+
+mfdb_disconnect(mdb)

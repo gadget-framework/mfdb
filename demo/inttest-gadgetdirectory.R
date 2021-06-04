@@ -282,3 +282,5 @@ ok_group("Samples with NULL groupings", {
         "all\t7\t15",
         NULL), "age aggregation file autodiscovered min and max")
 })
+
+mfdb_disconnect(mdb)

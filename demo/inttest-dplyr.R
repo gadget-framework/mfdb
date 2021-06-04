@@ -122,3 +122,5 @@ year    month   areacell        species sampling_type length  age     weight
         "vessel_power", "vessel_tonnage", "vessel_vessel_owner_full_name",
         NULL)), "All available, rest of column names match")
 })
+
+mfdb_disconnect(mdb)

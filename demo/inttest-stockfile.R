@@ -314,3 +314,5 @@ ok_group("Stockfile updates don't wreck existing files", {
         "lots\tyes-is-tasty",
         NULL), "iseaten still at end, only doesrenew changed")
 })
+
+mfdb_disconnect(mdb)

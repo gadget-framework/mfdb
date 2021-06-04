@@ -209,3 +209,5 @@ year    month   areacell        species length  count
             241126.0718 + 127828.4487),
         stringsAsFactors = FALSE)), "We can group by non-integer groups (interval)")
 })
+
+mfdb_disconnect(mdb)

@@ -335,3 +335,5 @@ ok_group("Importing unknown indices", {
         stringsAsFactors = FALSE
     )), "index_type"), "Noticed we used a made-up index")
 })
+
+mfdb_disconnect(mdb)
