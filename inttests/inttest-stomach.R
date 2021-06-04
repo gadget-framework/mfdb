@@ -37,4 +37,32 @@ A		CAP		1	1	10	parp
 C		CLL		2	3.5	9.5	4
     ")), "parp"), "Invalid data reported (wasn't lost in transactions)")
 
+predator_data <- expand.grid(
+    year = 2000:3000,
+    month = 1:12,
+    areacell = '45G01',
+    species = 'COD',
+    length = c(10, 20, 30),
+    stringsAsFactors = TRUE)
+predator_data$stomach_name <- paste0('s-', seq_len(nrow(predator_data)))
+predator_data$weight <- runif(nrow(predator_data), 100, 300)
+prey_data <- expand.grid(
+    stomach_name = predator_data$stomach_name,
+    species = c('CAP', 'CLL'),
+    digestion_stage = c(1,2),
+    length = c(1,3,5),
+    stringsAsFactors = TRUE)
+prey_data$weight <- runif(nrow(prey_data), 1, 20)
+prey_data$count <- runif(nrow(prey_data), 1, 20)
+mfdb_import_stomach(mdb, predator_data, prey_data)
+
+agg_data <- mfdb_stomach_preymeanweight(mdb, c('predator_species'), list())
+ok(ut_cmp_equal(
+    agg_data[[1]]$predator_count,
+    nrow(predator_data)), "Total aggregate matches predator_data")
+ok(ut_cmp_equal(
+    agg_data[[1]]$mean_weight,
+    sum(prey_data$weight * prey_data$count) / nrow(predator_data),
+    tolerance = 1e-3), "Mean weight matches predator_data/prey_data")
+
 mfdb_disconnect(mdb)
