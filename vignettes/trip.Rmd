@@ -162,11 +162,13 @@ agg_data <- mfdb_sample_count(mdb, c('trip_start_date', 'length'), list(
 agg_data
 ```
 ```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
+# Convert date to char to avoid timezone complications
+agg_data[[1]]$trip_start_date <- as.character(agg_data[[1]]$trip_start_date)
 ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area trip_start_date length number
- all  all  all      2019-01-21     10    598
- all  all  all      2019-01-21     20    598
- all  all  all      2019-01-21     30    284
+ all  all  all 2019-01-21     10    598
+ all  all  all 2019-01-21     20    598
+ all  all  all 2019-01-21     30    284
     ')), "trip_start_date = '2019-01-21'")
 ```
 
