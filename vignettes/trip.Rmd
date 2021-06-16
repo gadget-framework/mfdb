@@ -10,16 +10,12 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r, message=FALSE, echo=FALSE}
 logging::setLevel('WARN')
 library(unittest)
 # Redirect ok() output to stderr
 ok <- function(...) capture.output(unittest::ok(...), file = stderr())
 library(mfdb)
-
-# Empty database & rebuild
-if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('vignette-trip', destroy_schema = TRUE)
 
 # Remove our attributes from a dataframe - only used for testing
 unattr <- function (obj) {
@@ -34,7 +30,7 @@ socioeconomic data into MFDB.
 The following examples use the following table_string helper to succintly
 define tables:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 # Convert a string into a data.frame
 table_string <- function (text, ...) read.table(
     text = text,
@@ -46,8 +42,8 @@ table_string <- function (text, ...) read.table(
 
 Then connect to a database and set up some areas/divisions:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
-mdb <- mfdb('vignette-trip')
+```{r}
+mdb <- mfdb(tempfile(fileext = '.duckdb'))
 mfdb_import_area(mdb, table_string('
 name  division size
 45G01     divA   10
@@ -61,7 +57,7 @@ name  division size
 Trips can have a *start_port* and *end_port* associated with them, before we
 can do this we need to define any ports we use. We do this with ``mfdb_import_port_taxonomy``:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 mfdb_import_port_taxonomy(mdb, table_string('
 name 	description 	institute 	latitude longitude
 ISHFF 	Hafnarfjordur 	ISL 		64.04	21.57
@@ -75,7 +71,7 @@ ISKJF 	Skerjafjordur 	ISL 		64.07	21.54
 
 We can now define trips that use these ports:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 mfdb_import_trip_taxonomy(mdb, table_string('
 name 	start_date	end_date	crew	oil_consumption	start_port	end_port
 T1	2019-01-21	2019-02-11	4	3000		ISKEF		ISREK
@@ -88,7 +84,7 @@ T4	2019-04-24	2019-05-14	5	9000		ISSEJ		ISKEF
 There is no formal link between trips and tows, so you can link a sample to a
 tow without recording trips. But we can create tows and vessels to use:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 mfdb_import_tow_taxonomy(mdb, table_string('
 name latitude longitude  depth length
  T1a     64.1    -23.15  98.82     10
@@ -102,7 +98,7 @@ name latitude longitude  depth length
 '))
 ```
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 mfdb_import_vessel_taxonomy(mdb, table_string('
 name full_name
 V1	"Vessel 1"
@@ -112,7 +108,7 @@ V2	"Vessel 2"
 
 And finally import data that is associated to a vessel/trip/tow:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 mfdb_import_survey(mdb, data_source = "cod2000",
 table_string("
 year    month   areacell   species vessel trip tow  length  count
@@ -155,13 +151,13 @@ again.
 We can group and filter by any of the trip attributes. For instance, to
 group/filter by ``trip_start_date``:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 agg_data <- mfdb_sample_count(mdb, c('trip_start_date', 'length'), list(
     trip_start_date = '2019-01-21',
     length = mfdb_unaggregated()))
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r, message=FALSE, echo=FALSE}
 # Convert date to char to avoid timezone complications
 agg_data[[1]]$trip_start_date <- as.character(agg_data[[1]]$trip_start_date)
 ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
@@ -176,13 +172,13 @@ Note that we've summed T1a and T1b, since their start date matches.
 
 We can use ``mfdb_group``() to aggregate several ports, for instance:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 agg_data <- mfdb_sample_count(mdb, c('trip_start_port', 'length'), list(
     trip_start_port = mfdb_group(KEF = 'ISKEF', other = c('ISREK', 'ISSEJ')),
     length = mfdb_unaggregated()))
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r, message=FALSE, echo=FALSE}
 # Translated trip_start_port in and out of attributes
 ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area trip_start_port length number
@@ -198,12 +194,13 @@ year step area trip_start_port length number
 We can also use ``mfdb_dplyr_sample`` to re-extract data, joining with port
 metadata:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 mfdb_dplyr_sample(mdb, c('trip_start_port', 'trip_end_port', 'trip_start_port_latitude')) |>
     dplyr::select('year', 'month', 'trip_start_port', 'trip_end_port', 'trip_start_port_latitude', 'count') |>
     as.data.frame()
 ```
 
+```{r, message=FALSE, echo=FALSE}
 ok(ut_cmp_equal(
     mfdb_sample_count(
         mdb,
@@ -219,3 +216,8 @@ ok(ut_cmp_equal(
     as.data.frame(mfdb_dplyr_sample(
         mdb,
         c('trip_start_port', 'trip_end_port', 'trip_start_port_latitude')))$count), "dplyr and sample_count produce same results")
+```
+
+```{r}
+mfdb_disconnect(mdb)
+```

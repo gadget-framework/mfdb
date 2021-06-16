@@ -9,16 +9,12 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r, message=FALSE, echo=FALSE}
 logging::setLevel('WARN')
 library(unittest)
 # Redirect ok() output to stderr
 ok <- function(...) capture.output(unittest::ok(...), file = stderr())
 library(mfdb)
-
-# Empty database & rebuild
-if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('vignette-weightmeasurements', destroy_schema = TRUE)
 
 # Remove our attributes from a dataframe - only used for testing
 unattr <- function (obj) {
@@ -42,8 +38,8 @@ table_string <- function (text, ...) read.table(
 
 Firstly, connect to a database and set up some areas/divisions:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
-mdb <- mfdb('vignette-weightmeasurements')
+```{r}
+mdb <- mfdb(tempfile(fileext = '.duckdb'))
 mfdb_import_area(mdb, table_string('
 name  division size
 45G01     divA   10
@@ -57,7 +53,7 @@ name  division size
 Normally when using ``mfdb_import_survey`` you supply ``count``, ``length``,
 ``weight`` columns. But other lenghts can also be supplied:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 mfdb_import_survey(mdb, data_source = "x",
     table_string('
 year    month   areacell        species length  age     weight	liver_weight	gonad_weight	stomach_weight
@@ -72,13 +68,13 @@ year    month   areacell        species length  age     weight	liver_weight	gona
 To get any additional weights back when querying, you need to supply
 measurements, for example:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 agg_data <- mfdb_sample_totalweight(mdb, c('age'), list(
     age = mfdb_unaggregated(),
     null = NULL), measurements = c('overall', 'liver', 'gonad', 'stomach'))
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r, message=FALSE, echo=FALSE}
 ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area age total_weight total_liver_weight total_gonad_weight total_stomach_weight
  all  all  all   2          210                 93                 82                   72
@@ -89,13 +85,13 @@ year step area age total_weight total_liver_weight total_gonad_weight total_stom
 
 Single measurements are also possible:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 agg_data <- mfdb_sample_totalweight(mdb, c('age'), list(
     age = mfdb_unaggregated(),
     null = NULL), measurements = c('stomach'))
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r, message=FALSE, echo=FALSE}
 ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area age total_stomach_weight
  all  all  all   2                   72
@@ -106,12 +102,12 @@ year step area age total_stomach_weight
 
 We can also use ``mfdb_sample_meanweight`` to aggregate:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 agg_data <- mfdb_sample_meanweight(mdb, c('age'), list(
     null = NULL), measurements = c('liver', 'stomach'))
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r, message=FALSE, echo=FALSE}
 ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area age number mean_liver_weight mean_stomach_weight
  all  all  all all      3          71.33333                  81
@@ -120,13 +116,17 @@ year step area age number mean_liver_weight mean_stomach_weight
 
 As well as ``mfdb_sample_meanweight_stddev``:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 agg_data <- mfdb_sample_meanweight_stddev(mdb, c('age'), list(
     null = NULL), measurements = c('overall', 'gonad'))
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r, message=FALSE, echo=FALSE}
 ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area age number mean mean_gonad_weight stddev stddev_gonad_weight
  all  all  all all      3  220          86.66667     10            5.686241
     '), tolerance = 1e-7), "measurements = c('overall', 'gonad')")
+
+```{r}
+mfdb_disconnect(mdb)
+```

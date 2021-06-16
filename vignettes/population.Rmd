@@ -9,16 +9,12 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r, message=FALSE, echo=FALSE}
 logging::setLevel('WARN')
 library(unittest)
 # Redirect ok() output to stderr
 ok <- function(...) capture.output(unittest::ok(...), file = stderr())
 library(mfdb)
-
-# Empty database & rebuild
-if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('vignette-population', destroy_schema = TRUE)
 
 # Remove our attributes from a dataframe - only used for testing
 unattr <- function (obj) {
@@ -42,8 +38,8 @@ table_string <- function (text, ...) read.table(
 
 Firstly, connect to a database and set up some areas/divisions:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
-mdb <- mfdb('vignette-population')
+```{r}
+mdb <- mfdb(tempfile(fileext = '.duckdb'))
 mfdb_import_area(mdb, table_string('
 name  division size
 45G01     divA   10
@@ -59,7 +55,7 @@ derived from other MFDB data.
 
 As with other metadata, we have to import valid values before using:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 mfdb_import_population_taxonomy(mdb, table_string('
 name 	description 				t_group
 ns	"Northern Shrimp"			ns
@@ -77,7 +73,7 @@ samples from ``ns``, ``ns_s`, ``ns_a``, ``ns_i``.
 
 Now we can import data that uses these groupings:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 mfdb_import_survey(mdb, data_source = "x",
 table_string("
 year    month   areacell   species population length  count
@@ -98,13 +94,13 @@ We can now use the ``mfdb_sample_*`` functions to select this data back out
 again. We can group and filter by any of the tow attributes. We can query for
 individual fjords as well as the whole group:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r}
 agg_data <- mfdb_sample_count(mdb, c('population', 'length'), list(
         population = mfdb_group(ns_s = 'ns_s', ns = 'ns'),
         length = mfdb_unaggregated()))
 agg_data
 ```
-```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r, message=FALSE, echo=FALSE}
 # Can get aggregate ns group as well as ns_s
 ok(ut_cmp_equal(unattr(agg_data[[1]]), table_string('
 year step area population length number
@@ -113,4 +109,8 @@ all  all  all         ns     20    847
 all  all  all       ns_s     10    285
 all  all  all       ns_s     20    273
     ')), "Group/filter by populations")
+```
+
+```{r}
+mfdb_disconnect(mdb)
 ```

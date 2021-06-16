@@ -21,13 +21,9 @@ ok <- function(...) capture.output(unittest::ok(...), file = stderr())
 library(mfdb)
 ```
 
-```{r, message=FALSE, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r, message=FALSE, echo=FALSE}
 # Don't show chatty MFDB messages
 logging::setLevel('WARN')
-
-# Empty database & rebuild
-if (exists("mdb")) mfdb_disconnect(mdb)
-mfdb('vignette-population', destroy_schema = TRUE)
 ```
 
 Hydrographic products are available from numerous sources. Here, we provide a working example where outputs from a hydrographic model are:
@@ -140,8 +136,8 @@ write.table(sf::st_drop_geometry(hydroVar), file = 'hydroVar.txt')
 
 Import ICES rectangles and import the hydrographic data as a survey index. Then we can retrieve the hydrographic data as a weighted mean using ICES rectangle as a weighting variable:
 
-```{r, eval=mfdb::mfdb(check_db_available = TRUE)}
-mdb <- mfdb('vignette-hydro-cmems')
+```{r}
+mdb <- mfdb(tempfile(fileext = '.duckdb'))
 
 ices.rect.sea <- read.table('ices.rect.sea.txt')
 hydroVar <- read.table('hydroVar.txt')
@@ -185,16 +181,20 @@ dat <- dat[,c('year', 'step', 'area', 'mean')]
 dat
 ```
 
-```{r, echo=FALSE, eval=mfdb::mfdb(check_db_available = TRUE)}
+```{r, echo=FALSE}
 ok(all.equal(dat, read.table(blank.lines.skip = TRUE, header = TRUE, stringsAsFactors = FALSE, text = '
 year step area     mean
-2018    1   a1 5.131353
-2018    1   a2 5.286022
-2018    2   a1 5.772876
-2018    2   a2 5.787779
-2018    3   a1 7.259381
-2018    3   a2 6.609906
-2018    4   a1 6.144197
-2018    4   a2 6.020029
+2018    1   a1 5.130875
+2018    1   a2 5.285476
+2018    2   a1 5.772546
+2018    2   a2 5.787375
+2018    3   a1 7.258872
+2018    3   a2 6.609387
+2018    4   a1 6.143770
+2018    4   a2 6.019377
 ', colClasses = c(NA, 'character', NA, NA)), tolerance = 1e-7), "extract mean bottom temperature by quarter and area")
+```
+
+```{r}
+mfdb_disconnect(mdb)
 ```
