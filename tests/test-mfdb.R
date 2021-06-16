@@ -73,12 +73,5 @@ ok_group("mfdb", {
         ok(cmp(attempts, list(
             list(host = "mfdb.rhi.hi.is", user = "polly", password = "ppwd", dbname = "dbname=mf sslmode=require", drv = pq_driver)
         )), "Used special mfdb server parameters")
-
-        old_force <- Sys.getenv('MFDB_FORCE_AVAILABLE')
-        Sys.setenv(MFDB_FORCE_AVAILABLE = "")
-        ok(cmp(mfdb(check_db_available = T), FALSE), "Didn't error with check_db_available, just return FALSE")
-        Sys.setenv(MFDB_FORCE_AVAILABLE = "T")
-        ok(cmp(mfdb(check_db_available = T), TRUE), "MFDB_FORCE_AVAILABLE on, returned TRUE anyway")
-        Sys.setenv(MFDB_FORCE_AVAILABLE = old_force)
     })
 })

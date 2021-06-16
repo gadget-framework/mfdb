@@ -16,10 +16,10 @@ build:
 	R CMD build .
 
 check: build
-	LANGUAGE="en" MFDB_FORCE_AVAILABLE="y" R --vanilla --slave CMD check "$(TARBALL)"
+	LANGUAGE="en" R --vanilla --slave CMD check "$(TARBALL)"
 
 check-as-cran: build
-	MFDB_FORCE_AVAILABLE="y" R --vanilla --slave CMD check --as-cran "$(TARBALL)"
+	R --vanilla --slave CMD check --as-cran "$(TARBALL)"
 
 wincheck: build
 	# See https://win-builder.r-project.org/ for more information

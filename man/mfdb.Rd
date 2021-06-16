@@ -11,7 +11,6 @@
     mfdb(schema_name,
          db_params = list(),
          destroy_schema = FALSE,
-         check_db_available = FALSE,
          save_temp_tables = FALSE)
 
     mfdb_disconnect(mdb)
@@ -59,10 +58,6 @@
     \item{save_temp_tables}{
         Optional boolean. If true, any temporary tables will be made permanent
         for later inspection.
-    }
-    \item{check_db_available}{
-        Optionabl boolean. If true, we will only check that the datbase
-        connection could be made. Mostly for use in examples.
     }
     \item{mdb}{
         Database connection created by \code{mfdb()}.
