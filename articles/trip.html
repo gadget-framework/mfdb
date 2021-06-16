@@ -106,7 +106,7 @@
     <span class="va">...</span><span class="op">)</span></code></pre></div>
 <p>Then connect to a database and set up some areas/divisions:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="st">'vignette-trip'</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
 name  division size
 45G01     divA   10
@@ -220,7 +220,8 @@ V2  "Vessel 2"
 ## 22 2019     5           ISSEJ         ISKEF                    65.15   342
 ## 23 2019     5           ISSEJ         ISKEF                    65.15   175
 ## 24 2019     5           ISSEJ         ISKEF                    65.15   299</code></pre>
-<p>ok(ut_cmp_equal( mfdb_sample_count( mdb, c(‘month’, ‘areacell’, ‘tow’, ‘length’, ‘trip_start_port’, ‘trip_end_port’), list( month=mfdb_unaggregated(), areacell=mfdb_unaggregated(), tow=mfdb_unaggregated(), trip_start_port=mfdb_unaggregated(), trip_end_port=mfdb_unaggregated(), length = mfdb_unaggregated(), null = NULL))[[1]]<span class="math inline">\(number,  as.data.frame(mfdb_dplyr_sample(  mdb,  c('trip_start_port', 'trip_end_port', 'trip_start_port_latitude')))\)</span>count), “dplyr and sample_count produce same results”)</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></code></pre></div>
 </div>
   </div>
 

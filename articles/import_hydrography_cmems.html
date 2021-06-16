@@ -205,7 +205,7 @@
 <a href="#import-bottom-temperature-into-mfdb" class="anchor"></a>Import bottom temperature into mfdb</h1>
 <p>Import ICES rectangles and import the hydrographic data as a survey index. Then we can retrieve the hydrographic data as a weighted mean using ICES rectangle as a weighting variable:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="st">'vignette-hydro-cmems'</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">ices.rect.sea</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span><span class="op">(</span><span class="st">'ices.rect.sea.txt'</span><span class="op">)</span>
 <span class="va">hydroVar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span><span class="op">(</span><span class="st">'hydroVar.txt'</span><span class="op">)</span>
@@ -248,14 +248,16 @@
 <span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'year'</span>, <span class="st">'step'</span>, <span class="st">'area'</span>, <span class="st">'mean'</span><span class="op">)</span><span class="op">]</span>
 <span class="va">dat</span></code></pre></div>
 <pre><code>##   year step area     mean
-## 1 2018    1   a1 5.131354
-## 2 2018    1   a2 5.286023
-## 3 2018    2   a1 5.772876
-## 4 2018    2   a2 5.787779
-## 5 2018    3   a1 7.259381
-## 6 2018    3   a2 6.609906
-## 7 2018    4   a1 6.144197
-## 8 2018    4   a2 6.020029</code></pre>
+## 1 2018    1   a1 5.130875
+## 2 2018    1   a2 5.285476
+## 3 2018    2   a1 5.772546
+## 4 2018    2   a2 5.787375
+## 5 2018    3   a1 7.258872
+## 6 2018    3   a2 6.609387
+## 7 2018    4   a1 6.143770
+## 8 2018    4   a2 6.019377</code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></code></pre></div>
 </div>
   </div>
 
