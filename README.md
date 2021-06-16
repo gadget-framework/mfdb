@@ -111,7 +111,7 @@ Using
 -----
 
 For an introduction to the package, read the ``package?mfdb`` help file in R.
-[This is also available online](https://gadget-framework.github.io/mfdb).
+[This is also available online](https://gadget-framework.github.io/mfdb/).
 
 There are a selection of example scripts in the ``demo/`` folder. The
 ``example-*`` scripts show the full process of importing data from specified
@@ -120,7 +120,7 @@ model files. The ``inttest-*`` scripts demonstrate other aspects, and also
 function as tests to ensure that the library works correctly (thus the ``ok()``
 function calls).
 
-Finally, there is [documentation on the database schema](https://gadget-framework.github.io/mfdb/schema).
+Finally, there is [documentation on the database schema](https://gadget-framework.github.io/mfdb/schema/).
 
 Development
 -----------

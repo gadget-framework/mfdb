@@ -8,8 +8,8 @@ Authors@R: c(person("Jamie", "Lentin", email="lentinj@shuttlethread.com",role = 
              person("Bjarki Thor", "Elvarsson", email="bjarki.elvarsson@hafogvatn.is",role = c("aut")))
 Maintainer: Jamie Lentin <lentinj@shuttlethread.com>
 Description: Creates and manages a PostgreSQL database suitable for storing fisheries data
-             and aggregating ready for use within a Gadget <https://hafro.github.io/gadget> model.
-             See <https://mareframe.github.io/mfdb> for more information.
+             and aggregating ready for use within a Gadget <https://gadget-framework.github.io/gadget2/> model.
+             See <https://mareframe.github.io/mfdb/> for more information.
 License: GPL-3
 Depends: R (>= 3.1.1)
 Imports:
