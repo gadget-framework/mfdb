@@ -44,7 +44,8 @@ predator_data <- expand.grid(
     species = 'COD',
     length = c(10, 20, 30),
     stringsAsFactors = TRUE)
-predator_data$stomach_name <- paste0('s-', seq_len(nrow(predator_data)))
+# NB: Use a numeric ID, conversion shouldn't be a problem.
+predator_data$stomach_name <- seq_len(nrow(predator_data)) * 1000 - 10000
 predator_data$weight <- runif(nrow(predator_data), 100, 300)
 prey_data <- expand.grid(
     stomach_name = predator_data$stomach_name,

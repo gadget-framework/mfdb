@@ -120,7 +120,8 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
         month = sanitise_col(mdb, predator_data, 'month', test = function (x) x %in% 1:12),
         areacell_id = sanitise_col(mdb, predator_data, 'areacell', lookup = 'areacell'),
 
-        stomach_name = sanitise_col(mdb, predator_data, 'stomach_name'),
+        # NB: DuckDB seemingly won't convert this for us
+        stomach_name = as.character(sanitise_col(mdb, predator_data, 'stomach_name')),
         species_id = sanitise_col(mdb, predator_data, 'species', lookup = 'species', default = c(NA)),
         age = sanitise_col(mdb, predator_data, 'age', default = c(NA)),
         sex_id = sanitise_col(mdb, predator_data, 'sex', lookup = 'sex', default = c(NA)),
