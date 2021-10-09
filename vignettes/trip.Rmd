@@ -195,9 +195,10 @@ We can also use ``mfdb_dplyr_sample`` to re-extract data, joining with port
 metadata:
 
 ```{r}
-mfdb_dplyr_sample(mdb, c('trip_start_port', 'trip_end_port', 'trip_start_port_latitude')) |>
-    dplyr::select('year', 'month', 'trip_start_port', 'trip_end_port', 'trip_start_port_latitude', 'count') |>
-    as.data.frame()
+# TODO: Use native pipe syntax once available
+x <- mfdb_dplyr_sample(mdb, c('trip_start_port', 'trip_end_port', 'trip_start_port_latitude'))
+x <- dplyr::select(x, 'year', 'month', 'trip_start_port', 'trip_end_port', 'trip_start_port_latitude', 'count')
+as.data.frame(x)
 ```
 
 ```{r, message=FALSE, echo=FALSE}
