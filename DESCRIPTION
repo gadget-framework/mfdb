@@ -2,7 +2,7 @@ Package: mfdb
 Type: Package
 Title: MareFrame DB Querying Library
 Encoding: UTF-8
-Version: 7.1-1
+Version: 7.1-99
 Date: 2021-10-09
 Authors@R: c(person("Jamie", "Lentin", email="lentinj@shuttlethread.com",role = c("aut", "cre", "cph")),
              person("Bjarki Thor", "Elvarsson", email="bjarki.elvarsson@hafogvatn.is",role = c("aut")))
