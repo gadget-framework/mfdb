@@ -66,10 +66,15 @@ mfdb_dplyr_table <- function (mdb, table_name, include_cols, prefix = c()) {
     # Select all requested columns
     dp_tbl <- dplyr::tbl(mdb$db, table_name)
     dp_tbl <- dplyr::select(dp_tbl, dplyr::any_of(select_cols))
-    dp_tbl <- dplyr::rename_with(dp_tbl, function (names) vapply(names, function (n) {
-        # Add prefix to all columns, Rename name -> (prefix)
-        ifelse(n == 'name', prefix, prefix_join(prefix, n))
-    }, character(1)))
+    dp_tbl <- dplyr::rename_with(dp_tbl, function (names) {
+        vapply(names, function (n) {
+            # Add prefix to all columns, Rename name -> (prefix)
+            ifelse(
+                n == 'name',
+                if (is.null(prefix)) table_name else prefix,
+                prefix_join(prefix, n))
+        }, character(1))
+    })
 
     # Do the joins now the initial selection is done
     for (j in ls(join_tables)) {

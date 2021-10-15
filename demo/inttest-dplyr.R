@@ -121,6 +121,14 @@ year    month   areacell        species sampling_type length  age     weight
         "trip_start_port_institute", "vessel", "vessel_full_name", "vessel_length",
         "vessel_power", "vessel_tonnage", "vessel_vessel_owner_full_name",
         NULL)), "All available, rest of column names match")
+
+    ok(ut_cmp_identical(
+        as.data.frame(mfdb:::mfdb_dplyr_table(mdb, 'sampling_type', mfdb:::all_cols)),
+        data.frame(
+            sampling_type = c('comm', 'res'),
+            t_group = as.character(NA),
+            description = as.character(NA),
+            stringsAsFactors = FALSE)), "Can select sampling_type table too")
 })
 
 mfdb_disconnect(mdb)
