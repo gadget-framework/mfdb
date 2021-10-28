@@ -168,9 +168,9 @@ GADGET areafile.</p>
     <pre class="examples"><div class='input'>
 <span class='co'># Open a temporary database connection</span>
 <span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.duckdb'</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-10-15 14:03:30 INFO:mfdb:Creating schema from scratch
-#&gt; 2021-10-15 14:03:30 INFO:mfdb:Taxonomy market_category no updates to make
-#&gt; 2021-10-15 14:03:30 INFO:mfdb:Schema up-to-date</div><div class='input'>
+</div><div class='output co'>#&gt; 2021-10-28 17:53:38 INFO:mfdb:Creating schema from scratch
+#&gt; 2021-10-28 17:53:38 INFO:mfdb:Taxonomy market_category no updates to make
+#&gt; 2021-10-28 17:53:38 INFO:mfdb:Schema up-to-date</div><div class='input'>
 <span class='co'># Define 2 areacells of equal size</span>
 <span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_area</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>name<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span>, <span class='st'>"divB"</span><span class='op'>)</span>, size<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
 

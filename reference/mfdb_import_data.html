@@ -263,9 +263,9 @@ If a prey has a stomach name that doesn't match a predator, then an error will b
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.duckdb'</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-10-15 14:03:41 INFO:mfdb:Creating schema from scratch
-#&gt; 2021-10-15 14:03:41 INFO:mfdb:Taxonomy market_category no updates to make
-#&gt; 2021-10-15 14:03:42 INFO:mfdb:Schema up-to-date</div><div class='input'>
+</div><div class='output co'>#&gt; 2021-10-28 17:53:47 INFO:mfdb:Creating schema from scratch
+#&gt; 2021-10-28 17:53:47 INFO:mfdb:Taxonomy market_category no updates to make
+#&gt; 2021-10-28 17:53:47 INFO:mfdb:Schema up-to-date</div><div class='input'>
 <span class='co'># We need to set-up vocabularies first</span>
 <span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_area</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
     id <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span>,<span class='fl'>3</span><span class='op'>)</span>,
