@@ -123,7 +123,7 @@ year    month   areacell        species sampling_type length  age     weight
         NULL)), "All available, rest of column names match")
 
     ok(ut_cmp_identical(
-        as.data.frame(mfdb:::mfdb_dplyr_table(mdb, 'sampling_type', mfdb:::all_cols)),
+        as.data.frame(mfdb_dplyr_table(mdb, 'sampling_type')),
         data.frame(
             sampling_type = c('comm', 'res'),
             t_group = as.character(NA),

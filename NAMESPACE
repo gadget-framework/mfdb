@@ -31,6 +31,7 @@ export(mfdb)
 export(mfdb_disconnect)
 
 # mfdb_dplyr.R
+export(mfdb_dplyr_table)
 export(mfdb_dplyr_survey_index)
 export(mfdb_dplyr_division)
 export(mfdb_dplyr_sample)

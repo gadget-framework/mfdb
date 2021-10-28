@@ -2,7 +2,7 @@
 all_cols <- c("$ALL")
 
 # Fetch a dplyr version of any measurement table
-mfdb_dplyr_table <- function (mdb, table_name, include_cols, prefix = c()) {
+mfdb_dplyr_table_inner <- function (mdb, table_name, include_cols = all_cols, prefix = c()) {
     # Join prefixes together without extra _
     prefix_join <- function (...) paste(c(...), collapse = "_")
 
@@ -44,7 +44,7 @@ mfdb_dplyr_table <- function (mdb, table_name, include_cols, prefix = c()) {
                 # Make sure we have the foreign key to join with
                 select_cols <- c(select_cols, col_defs[i, 1])
                 # Get the sub-table so we can join it later
-                join_tables[[prefix_join(prefix, sub_prefix)]] <- mfdb_dplyr_table(
+                join_tables[[prefix_join(prefix, sub_prefix)]] <- mfdb_dplyr_table_inner(
                     mdb,
                     fk$table,
                     sub_include_cols,
@@ -90,11 +90,9 @@ mfdb_dplyr_table <- function (mdb, table_name, include_cols, prefix = c()) {
 }
 
 # Define one shortcut for each measurement table
-mfdb_dplyr_survey_index <- function (mdb, include_cols = all_cols) mfdb_dplyr_table(mdb, 'survey_index', include_cols)
-mfdb_dplyr_division     <- function (mdb, include_cols = all_cols) mfdb_dplyr_table(mdb, 'division', include_cols)
-mfdb_dplyr_sample       <- function (mdb, include_cols = all_cols) mfdb_dplyr_table(mdb, 'sample', include_cols)
-mfdb_dplyr_predator     <- function (mdb, include_cols = all_cols) mfdb_dplyr_table(mdb, 'predator', include_cols)
-mfdb_dplyr_prey         <- function (mdb, include_cols = all_cols) mfdb_dplyr_table(mdb, 'prey', include_cols)
-
-# TODO: Tests
-#mfdb_dplyr_sample(mdb, c('data_source', 'species'))
+mfdb_dplyr_table <- function (mdb, table_name, include_cols = all_cols) mfdb_dplyr_table_inner(mdb, table_name, include_cols)
+mfdb_dplyr_survey_index <- function (mdb, include_cols = all_cols) mfdb_dplyr_table_inner(mdb, 'survey_index', include_cols)
+mfdb_dplyr_division     <- function (mdb, include_cols = all_cols) mfdb_dplyr_table_inner(mdb, 'division', include_cols)
+mfdb_dplyr_sample       <- function (mdb, include_cols = all_cols) mfdb_dplyr_table_inner(mdb, 'sample', include_cols)
+mfdb_dplyr_predator     <- function (mdb, include_cols = all_cols) mfdb_dplyr_table_inner(mdb, 'predator', include_cols)
+mfdb_dplyr_prey         <- function (mdb, include_cols = all_cols) mfdb_dplyr_table_inner(mdb, 'prey', include_cols)
