@@ -130,7 +130,7 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
 
         length = sanitise_col(mdb, predator_data, 'length', default = c(NA)),
         weight = sanitise_col(mdb, predator_data, 'weight', default = c(NA)),
-        stringsAsFactors = TRUE)
+        stringsAsFactors = FALSE)
     prey_data <- data.frame(
         predator_id = as.factor(sanitise_col(mdb, prey_data, 'stomach_name')),
         species_id = sanitise_col(mdb, prey_data, 'species', lookup = 'species', default = c(NA)),
@@ -139,7 +139,7 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
         length = sanitise_col(mdb, prey_data, 'length', default = c(NA)),
         weight = sanitise_col(mdb, prey_data, prey_weight_col, default = c(NA)),
         count = sanitise_col(mdb, prey_data, 'count', default = c(NA)),
-        stringsAsFactors = TRUE)
+        stringsAsFactors = FALSE)
 
     # NB: Postgresql has transactional DDL, so this is fine.
     mfdb_transaction(mdb, mfdb_disable_constraints(mdb, 'prey', mfdb_disable_constraints(mdb, 'predator', {
@@ -183,6 +183,7 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
                 paste(levels(prey_data$predator_id)[is.na(new_levels)], collapse = ","))
         }
         levels(prey_data$predator_id) <- new_levels
+        prey_data$predator_id <- as.character(prey_data$predator_id)
 
         # Insert prey data
         mfdb_bulk_copy(mdb, 'prey', prey_data, function (temp_prey) {
