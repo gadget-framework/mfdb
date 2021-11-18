@@ -200,8 +200,15 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
         if (mfdb_is_postgres(mdb)) mfdb_send(mdb, "SET search_path TO pg_temp")
         if (mfdb_table_exists(mdb, temp_tbl)) mfdb_send(mdb, "DROP TABLE ", temp_tbl)
 
+        field.types <- structure(cols[names(data_in)], names = names(data_in))
+        if (mfdb_is_duckdb(mdb) && utils::packageVersion('duckdb') == '0.3.1') {
+            # DuckDB 0.3.1 doesn't escape field.type column names when converting inserted data, bodge.
+            warning("Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622")
+            field.types <- field.types[!(names(field.types) %in% c('name', 'year', 'month', 'value', 'start'))]
+        }
+
         dbWriteTable(mdb$db, temp_tbl, data_in, row.names = FALSE,
-            field.types = structure(cols[names(data_in)], names = names(data_in)))
+            field.types = field.types)
     }, finally = {
         # These will fail if a transaction is aborted, but in that case it'll roll back anyway
         mfdb_ignore_failed_transction(mdb, {
