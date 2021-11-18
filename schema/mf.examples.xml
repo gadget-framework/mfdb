@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<database name="mf" schema="examples" type="PostgreSQL - 14.0 (Debian 14.0-1.pgdg110+1)">
+<database name="mf" schema="examples" type="PostgreSQL - 14.1 (Debian 14.1-1.pgdg110+1)">
    <sequences>
       <sequence increment="1" name="data_source_data_source_id_seq" startValue="1"/>
       <sequence increment="1" name="division_division_id_seq" startValue="1"/>

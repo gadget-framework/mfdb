@@ -105,19 +105,51 @@
     <span class="va">...</span><span class="op">)</span></code></pre></div>
 <p>Firstly, connect to a database and set up some areas/divisions:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
+<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
 name  division size
 45G01     divA   10
 45G02     divA  200
 45G03     divB  400
 '</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
 <div id="importing-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#importing-data" class="anchor"></a>Importing data</h2>
 <p>Populations are arbitrary groupings for defining logical stocks that can’t be derived from other MFDB data.</p>
 <p>As with other metadata, we have to import valid values before using:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_population_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
 name    description                 t_group
 ns  "Northern Shrimp"           ns
@@ -127,9 +159,11 @@ ns_i    "Northern Shrimp in Isafjardardjup" ns
 as  "Aesop Shrimp"              as
 as_s    "Aesop Shrimp in Skjalfandi"        as
 '</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
 <p>Notice that we have used the <code>t_group</code> column to define groupings of within our population groups. This means that the <code>ns</code> group will include all samples from <code>ns</code>, <code>ns_s`,</code>ns_a<code>,</code>ns_i``.</p>
 <p>Now we can import data that uses these groupings:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey</a></span><span class="op">(</span><span class="va">mdb</span>, data_source <span class="op">=</span> <span class="st">"x"</span>,
 <span class="fu">table_string</span><span class="op">(</span><span class="st">"
 year    month   areacell   species population length  count
@@ -142,12 +176,14 @@ year    month   areacell   species population length  count
 2019    1       45G01      PRA     ns_i     10      193
 2019    1       45G01      PRA     ns_i     20      322
 "</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
 </div>
 <div id="querying-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#querying-data" class="anchor"></a>Querying data</h2>
 <p>We can now use the <code>mfdb_sample_*</code> functions to select this data back out again. We can group and filter by any of the tow attributes. We can query for individual fjords as well as the whole group:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'population'</span>, <span class="st">'length'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
         population <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_group.html">mfdb_group</a></span><span class="op">(</span>ns_s <span class="op">=</span> <span class="st">'ns_s'</span>, ns <span class="op">=</span> <span class="st">'ns'</span><span class="op">)</span>,
         length <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -158,7 +194,7 @@ year    month   areacell   species population length  count
 ## 2  all  all  all         ns     20    847
 ## 3  all  all  all       ns_s     10    285
 ## 4  all  all  all       ns_s     20    273</code></pre>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></code></pre></div>
 </div>
   </div>

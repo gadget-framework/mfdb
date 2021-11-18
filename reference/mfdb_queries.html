@@ -273,49 +273,63 @@ to scale counts by the tow length.</p>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.duckdb'</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-10-28 17:53:48 INFO:mfdb:Creating schema from scratch
-#&gt; 2021-10-28 17:53:48 INFO:mfdb:Taxonomy market_category no updates to make
-#&gt; 2021-10-28 17:53:48 INFO:mfdb:Schema up-to-date</div><div class='input'>
-<span class='co'># Define 2 areacells of equal size</span>
-<span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_area</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>name<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span>, <span class='st'>"divB"</span><span class='op'>)</span>, size<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='co'># Make up some samples</span>
-<span class='va'>samples</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>
-    year <span class='op'>=</span> <span class='st'>'1998'</span>,
-    month <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>12</span><span class='op'>)</span>,
-    areacell <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span>, <span class='st'>"divB"</span><span class='op'>)</span>,
-    species <span class='op'>=</span> <span class='st'>'COD'</span>,
-    age <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span><span class='op'>)</span>,
-    length <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>40</span>,<span class='fl'>80</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>samples</span><span class='op'>$</span><span class='va'>count</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>samples</span><span class='op'>)</span>, <span class='fl'>20</span>, <span class='fl'>90</span><span class='op'>)</span>
-<span class='fu'><a href='mfdb_import_data.html'>mfdb_import_survey</a></span><span class='op'>(</span><span class='va'>mdb</span>, data_source <span class='op'>=</span> <span class='st'>"x"</span>, <span class='va'>samples</span><span class='op'>)</span>
-
-<span class='co'># Query numbers by age and length</span>
-<span class='va'>agg_data</span> <span class='op'>&lt;-</span> <span class='fu'>mfdb_sample_count</span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'age'</span>, <span class='st'>'length'</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-    length <span class='op'>=</span> <span class='fu'><a href='mfdb_aggregate_interval.html'>mfdb_interval</a></span><span class='op'>(</span><span class='st'>"len"</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>500</span>, by <span class='op'>=</span> <span class='fl'>30</span><span class='op'>)</span><span class='op'>)</span>,
-    age <span class='op'>=</span> <span class='fu'><a href='mfdb_aggregate_group.html'>mfdb_group</a></span><span class='op'>(</span><span class='st'>'young'</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span>, old <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>,
-    year <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1998</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>agg_data</span>
-</div><div class='output co'>#&gt; $`0.0.0.0.0`
-#&gt;   year step area   age length   number
-#&gt; 1 1998  all  all   old   len0 1371.121
-#&gt; 2 1998  all  all   old  len30 1126.712
-#&gt; 3 1998  all  all   old  len60 1210.575
-#&gt; 4 1998  all  all young   len0 2571.768
-#&gt; 5 1998  all  all young  len30 2592.901
-#&gt; 6 1998  all  all young  len60 2570.965
-#&gt; </div><div class='input'>
-<span class='co'># Use in a catchdistribution likelihood component</span>
-<span class='fu'><a href='gadget_directory.html'>gadget_dir_write</a></span><span class='op'>(</span><span class='fu'><a href='gadget_directory.html'>gadget_directory</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>, <span class='fu'><a href='gadget_likelihood_component.html'>gadget_likelihood_component</a></span><span class='op'>(</span><span class='st'>"catchdistribution"</span>,
-        name <span class='op'>=</span> <span class='st'>"cdist"</span>,
-        weight <span class='op'>=</span> <span class='fl'>0.9</span>,
-        data <span class='op'>=</span> <span class='va'>agg_data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>,
-        area <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>agg_data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, <span class='st'>"area"</span><span class='op'>)</span>,
-        age <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>agg_data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, <span class='st'>"age"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='fu'><a href='mfdb.html'>mfdb_disconnect</a></span><span class='op'>(</span><span class='va'>mdb</span><span class='op'>)</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.duckdb'</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-18 14:57:34 INFO:mfdb:Creating schema from scratch</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-18 14:57:35 INFO:mfdb:Taxonomy market_category no updates to make</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-18 14:57:35 INFO:mfdb:Schema up-to-date</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Define 2 areacells of equal size</span></span>
+<span class='r-in'><span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_area</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>name<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span>, <span class='st'>"divB"</span><span class='op'>)</span>, size<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Make up some samples</span></span>
+<span class='r-in'><span class='va'>samples</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span></span>
+<span class='r-in'>    year <span class='op'>=</span> <span class='fl'>1998</span>,</span>
+<span class='r-in'>    month <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>12</span><span class='op'>)</span>,</span>
+<span class='r-in'>    areacell <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span>, <span class='st'>"divB"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    species <span class='op'>=</span> <span class='st'>'COD'</span>,</span>
+<span class='r-in'>    age <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span><span class='op'>)</span>,</span>
+<span class='r-in'>    length <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>40</span>,<span class='fl'>80</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>samples</span><span class='op'>$</span><span class='va'>count</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>samples</span><span class='op'>)</span>, <span class='fl'>20</span>, <span class='fl'>90</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='mfdb_import_data.html'>mfdb_import_survey</a></span><span class='op'>(</span><span class='va'>mdb</span>, data_source <span class='op'>=</span> <span class='st'>"x"</span>, <span class='va'>samples</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Query numbers by age and length</span></span>
+<span class='r-in'><span class='va'>agg_data</span> <span class='op'>&lt;-</span> <span class='fu'>mfdb_sample_count</span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'age'</span>, <span class='st'>'length'</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span></span>
+<span class='r-in'>    length <span class='op'>=</span> <span class='fu'><a href='mfdb_aggregate_interval.html'>mfdb_interval</a></span><span class='op'>(</span><span class='st'>"len"</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>500</span>, by <span class='op'>=</span> <span class='fl'>30</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>    age <span class='op'>=</span> <span class='fu'><a href='mfdb_aggregate_group.html'>mfdb_group</a></span><span class='op'>(</span><span class='st'>'young'</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span>, old <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>,</span>
+<span class='r-in'>    year <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1998</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>agg_data</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`0.0.0.0.0`</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   year step area   age length   number</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1 1998  all  all   old   len0 1371.121</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2 1998  all  all   old  len30 1126.712</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3 1998  all  all   old  len60 1210.575</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4 1998  all  all young   len0 2571.768</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5 1998  all  all young  len30 2592.901</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6 1998  all  all young  len60 2570.965</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Use in a catchdistribution likelihood component</span></span>
+<span class='r-in'><span class='fu'><a href='gadget_directory.html'>gadget_dir_write</a></span><span class='op'>(</span><span class='fu'><a href='gadget_directory.html'>gadget_directory</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>, <span class='fu'><a href='gadget_likelihood_component.html'>gadget_likelihood_component</a></span><span class='op'>(</span><span class='st'>"catchdistribution"</span>,</span>
+<span class='r-in'>        name <span class='op'>=</span> <span class='st'>"cdist"</span>,</span>
+<span class='r-in'>        weight <span class='op'>=</span> <span class='fl'>0.9</span>,</span>
+<span class='r-in'>        data <span class='op'>=</span> <span class='va'>agg_data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>,</span>
+<span class='r-in'>        area <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>agg_data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, <span class='st'>"area"</span><span class='op'>)</span>,</span>
+<span class='r-in'>        age <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>agg_data</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, <span class='st'>"age"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'><a href='mfdb.html'>mfdb_disconnect</a></span><span class='op'>(</span><span class='va'>mdb</span><span class='op'>)</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

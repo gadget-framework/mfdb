@@ -160,48 +160,50 @@
 <code>partial_name</code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>mfdb_find_species</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gad mor"</span>, <span class='st'>"tube worms"</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;             gad mor              tube worms              
-#&gt; id          8791030402           1e+10                   
-#&gt; name        "COD"                "TBX"                   
-#&gt; description "Cod (Gadus Morhua)" "Tube Worms (Tubeworms)"</div><div class='input'><span class='co'>#             gad mor              tube worms              </span>
-<span class='co'># id          8791030402           1e+10                   </span>
-<span class='co'># name        "COD"                "TBX"                   </span>
-<span class='co'># description "Cod (Gadus Morhua)" "Tube Worms (Tubeworms)"</span>
-
-<span class='co'># Can also generate a map to help insert a data.frame of foreign data</span>
-<span class='va'>stomachs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>'
-stomach_name,species,digestion_stage,length,weight,count
-A,Palaemon Elegans,1,1,10,5
-A,Palaemon Elegans,1,4,40,1
-B,Palaemon Elegans,1,1,10,5
-B,Palaemon Elegans,4,1,10,5
-B,Palaemon Elegans,5,1,10,NA
-B,Palaemon Elegans,5,1,10,NA
-C,Crangon Crangon,2,3.5,9.5,3
-D,Palaemon Elegans,1,1.4,10,1
-D,Crangon Crangon,5,4,40,1
-E,Worms,1,1.4,10,1
-'</span>, stringsAsFactors <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-
-<span class='co'># Work out a map from all Prey_Species_Name values to MFDB species codes</span>
-<span class='va'>species_map</span> <span class='op'>&lt;-</span> <span class='fu'>mfdb_find_species</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>stomachs</span><span class='op'>$</span><span class='va'>species</span><span class='op'>)</span>, single_matches_only <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>[</span><span class='st'>'name'</span>,<span class='op'>]</span>
-
-<span class='co'># Put the new levels back onto the species column</span>
-<span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>stomachs</span><span class='op'>$</span><span class='va'>species</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/unlist.html'>unlist</a></span><span class='op'>(</span><span class='va'>species_map</span><span class='op'>)</span>
-
-<span class='va'>stomachs</span>
-</div><div class='output co'>#&gt;    stomach_name species digestion_stage length weight count
-#&gt; 1             A     PSQ               1    1.0   10.0     5
-#&gt; 2             A     PSQ               1    4.0   40.0     1
-#&gt; 3             B     PSQ               1    1.0   10.0     5
-#&gt; 4             B     PSQ               4    1.0   10.0     5
-#&gt; 5             B     PSQ               5    1.0   10.0    NA
-#&gt; 6             B     PSQ               5    1.0   10.0    NA
-#&gt; 7             C     CSH               2    3.5    9.5     3
-#&gt; 8             D     PSQ               1    1.4   10.0     1
-#&gt; 9             D     CSH               5    4.0   40.0     1
-#&gt; 10            E    &lt;NA&gt;               1    1.4   10.0     1</div></pre>
+    <pre class="examples"><span class='r-in'><span class='fu'>mfdb_find_species</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gad mor"</span>, <span class='st'>"tube worms"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             gad mor              tube worms              </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> id          8791030402           1e+10                   </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> name        "COD"                "TBX"                   </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> description "Cod (Gadus Morhua)" "Tube Worms (Tubeworms)"</span>
+<span class='r-in'><span class='co'>#             gad mor              tube worms              </span></span>
+<span class='r-in'><span class='co'># id          8791030402           1e+10                   </span></span>
+<span class='r-in'><span class='co'># name        "COD"                "TBX"                   </span></span>
+<span class='r-in'><span class='co'># description "Cod (Gadus Morhua)" "Tube Worms (Tubeworms)"</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Can also generate a map to help insert a data.frame of foreign data</span></span>
+<span class='r-in'><span class='va'>stomachs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>'</span>
+<span class='r-in'>stomach_name,species,digestion_stage,length,weight,count</span>
+<span class='r-in'>A,Palaemon Elegans,1,1,10,5</span>
+<span class='r-in'>A,Palaemon Elegans,1,4,40,1</span>
+<span class='r-in'>B,Palaemon Elegans,1,1,10,5</span>
+<span class='r-in'>B,Palaemon Elegans,4,1,10,5</span>
+<span class='r-in'>B,Palaemon Elegans,5,1,10,NA</span>
+<span class='r-in'>B,Palaemon Elegans,5,1,10,NA</span>
+<span class='r-in'>C,Crangon Crangon,2,3.5,9.5,3</span>
+<span class='r-in'>D,Palaemon Elegans,1,1.4,10,1</span>
+<span class='r-in'>D,Crangon Crangon,5,4,40,1</span>
+<span class='r-in'>E,Worms,1,1.4,10,1</span>
+<span class='r-in'>'</span>, stringsAsFactors <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Work out a map from all Prey_Species_Name values to MFDB species codes</span></span>
+<span class='r-in'><span class='va'>species_map</span> <span class='op'>&lt;-</span> <span class='fu'>mfdb_find_species</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>stomachs</span><span class='op'>$</span><span class='va'>species</span><span class='op'>)</span>, single_matches_only <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>[</span><span class='st'>'name'</span>,<span class='op'>]</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Put the new levels back onto the species column</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>stomachs</span><span class='op'>$</span><span class='va'>species</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/unlist.html'>unlist</a></span><span class='op'>(</span><span class='va'>species_map</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>stomachs</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    stomach_name species digestion_stage length weight count</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1             A     PSQ               1    1.0   10.0     5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2             A     PSQ               1    4.0   40.0     1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3             B     PSQ               1    1.0   10.0     5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4             B     PSQ               4    1.0   10.0     5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5             B     PSQ               5    1.0   10.0    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6             B     PSQ               5    1.0   10.0    NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7             C     CSH               2    3.5    9.5     3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 8             D     PSQ               1    1.4   10.0     1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 9             D     CSH               5    4.0   40.0     1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10            E    &lt;NA&gt;               1    1.4   10.0     1</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -106,18 +106,50 @@
     <span class="va">...</span><span class="op">)</span></code></pre></div>
 <p>Then connect to a database and set up some areas/divisions:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
+<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
 name  division size
 45G01     divA   10
 45G02     divA  200
 45G03     divB  400
 '</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
 <div id="importing-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#importing-data" class="anchor"></a>Importing data</h2>
 <p>Trips can have a <em>start_port</em> and <em>end_port</em> associated with them, before we can do this we need to define any ports we use. We do this with <code>mfdb_import_port_taxonomy</code>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_port_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
 name    description     institute   latitude longitude
 ISHFF   Hafnarfjordur   ISL         64.04   21.57
@@ -127,8 +159,10 @@ ISREK   Reykjavik   ISL         64.09   21.55
 ISSEJ   Seydisfjordur   ISL         65.15   13.55
 ISKJF   Skerjafjordur   ISL         64.07   21.54
 '</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
 <p>We can now define trips that use these ports:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_trip_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
 name    start_date  end_date    crew    oil_consumption start_port  end_port
 T1  2019-01-21  2019-02-11  4   3000        ISKEF       ISREK
@@ -136,8 +170,10 @@ T2  2019-01-24  2019-02-14  5   9000        ISKEF       ISSEJ
 T3  2019-04-21  2019-05-11  4   3000        ISREK       ISKEF
 T4  2019-04-24  2019-05-14  5   9000        ISSEJ       ISKEF
 '</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
 <p>There is no formal link between trips and tows, so you can link a sample to a tow without recording trips. But we can create tows and vessels to use:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_tow_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
 name latitude longitude  depth length
  T1a     64.1    -23.15  98.82     10
@@ -149,23 +185,29 @@ name latitude longitude  depth length
  T4a     64.1    -23.15  98.82     10
  T4b     64.1    -23.15  98.82     10
 '</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_vessel_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
 name full_name
 V1  "Vessel 1"
 V2  "Vessel 2"
 '</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
 <p>And finally import data that is associated to a vessel/trip/tow:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey</a></span><span class="op">(</span><span class="va">mdb</span>, data_source <span class="op">=</span> <span class="st">"cod2000"</span>,
 <span class="fu">table_string</span><span class="op">(</span><span class="st">[1654 chars quoted with '"']</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
 </div>
 <div id="querying-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#querying-data" class="anchor"></a>Querying data</h2>
 <p>We can now use the <code>mfdb_sample_*</code> functions to select this data back out again.</p>
 <p>We can group and filter by any of the trip attributes. For instance, to group/filter by <code>trip_start_date</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'trip_start_date'</span>, <span class="st">'length'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
     trip_start_date <span class="op">=</span> <span class="st">'2019-01-21'</span>,
     length <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -177,7 +219,7 @@ V2  "Vessel 2"
 ## 3  all  all  all      2019-01-21     30    284</code></pre>
 <p>Note that we’ve summed T1a and T1b, since their start date matches.</p>
 <p>We can use <code>mfdb_group</code>() to aggregate several ports, for instance:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'trip_start_port'</span>, <span class="st">'length'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
     trip_start_port <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_group.html">mfdb_group</a></span><span class="op">(</span>KEF <span class="op">=</span> <span class="st">'ISKEF'</span>, other <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'ISREK'</span>, <span class="st">'ISSEJ'</span><span class="op">)</span><span class="op">)</span>,
     length <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -191,7 +233,7 @@ V2  "Vessel 2"
 ## 5  all  all  all           other     20   1023
 ## 6  all  all  all           other     30    925</code></pre>
 <p>We can also use <code>mfdb_dplyr_sample</code> to re-extract data, joining with port metadata:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># TODO: Use native pipe syntax once available</span>
 <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_dplyr.html">mfdb_dplyr_sample</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'trip_start_port'</span>, <span class="st">'trip_end_port'</span>, <span class="st">'trip_start_port_latitude'</span><span class="op">)</span><span class="op">)</span>
 <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'year'</span>, <span class="st">'month'</span>, <span class="st">'trip_start_port'</span>, <span class="st">'trip_end_port'</span>, <span class="st">'trip_start_port_latitude'</span>, <span class="st">'count'</span><span class="op">)</span>
@@ -221,7 +263,7 @@ V2  "Vessel 2"
 ## 22 2019     5           ISSEJ         ISKEF                    65.15   342
 ## 23 2019     5           ISSEJ         ISKEF                    65.15   175
 ## 24 2019     5           ISSEJ         ISKEF                    65.15   299</code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></code></pre></div>
 </div>
   </div>

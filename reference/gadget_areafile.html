@@ -165,96 +165,110 @@ GADGET areafile.</p>
     <p>List of class 'gadget_areafile' that represents the area file contents.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='co'># Open a temporary database connection</span>
-<span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.duckdb'</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-10-28 17:53:38 INFO:mfdb:Creating schema from scratch
-#&gt; 2021-10-28 17:53:38 INFO:mfdb:Taxonomy market_category no updates to make
-#&gt; 2021-10-28 17:53:38 INFO:mfdb:Schema up-to-date</div><div class='input'>
-<span class='co'># Define 2 areacells of equal size</span>
-<span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_area</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>name<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span>, <span class='st'>"divB"</span><span class='op'>)</span>, size<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='co'># We want to have 3 area groups, 2 for original cells, one aggregating across the lot</span>
-<span class='va'>area_group</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb_aggregate_group.html'>mfdb_group</a></span><span class='op'>(</span>
-    divA <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span><span class='op'>)</span>,
-    divB <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divB"</span><span class='op'>)</span>,
-    divAB <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span>, <span class='st'>"divB"</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='co'># Make up temperature data</span>
-<span class='va'>temps</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1998</span>,<span class='fl'>2000</span><span class='op'>)</span>, month<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>12</span><span class='op'>)</span>, areacell<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span>, <span class='st'>"divB"</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>temps</span><span class='op'>$</span><span class='va'>temperature</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>temps</span><span class='op'>)</span>, <span class='fl'>5</span>, <span class='fl'>10</span><span class='op'>)</span>
-<span class='fu'><a href='mfdb_import_data.html'>mfdb_import_temperature</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='va'>temps</span><span class='op'>)</span>
-
-<span class='co'># Create an areafile from 2 mfdb queries</span>
-<span class='va'>areafile</span> <span class='op'>&lt;-</span> <span class='fu'>gadget_areafile</span><span class='op'>(</span>
-    <span class='fu'><a href='mfdb_queries.html'>mfdb_area_size</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-        area <span class='op'>=</span> <span class='va'>area_group</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>,
-    <span class='fu'><a href='mfdb_queries.html'>mfdb_temperature</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-        year <span class='op'>=</span> <span class='fl'>1998</span><span class='op'>:</span><span class='fl'>2000</span>,
-        timestep <span class='op'>=</span> <span class='va'>mfdb_timestep_quarterly</span>,
-        area <span class='op'>=</span> <span class='va'>area_group</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
-<span class='va'>areafile</span>
-</div><div class='output co'>#&gt; $labels
-#&gt; [1] "divA"  "divB"  "divAB"
-#&gt; 
-#&gt; $areas
-#&gt; [1] 1 2 3
-#&gt; 
-#&gt; $size
-#&gt;  divA  divB divAB 
-#&gt;     1     1     2 
-#&gt; 
-#&gt; $temperature
-#&gt;    year step area mean
-#&gt; 1  1998    1    1  7.1
-#&gt; 2  1998    1    3  8.0
-#&gt; 3  1998    1    2  8.9
-#&gt; 4  1998    2    1  7.7
-#&gt; 5  1998    2    3  7.8
-#&gt; 6  1998    2    2  8.0
-#&gt; 7  1998    3    1  8.7
-#&gt; 8  1998    3    3  7.9
-#&gt; 9  1998    3    2  7.2
-#&gt; 10 1998    4    1  7.9
-#&gt; 11 1998    4    3  7.9
-#&gt; 12 1998    4    2  7.8
-#&gt; 13 2000    1    1  7.9
-#&gt; 14 2000    1    3  8.4
-#&gt; 15 2000    1    2  8.9
-#&gt; 16 2000    2    1  7.0
-#&gt; 17 2000    2    3  7.6
-#&gt; 18 2000    2    2  8.2
-#&gt; 19 2000    3    1  7.1
-#&gt; 20 2000    3    3  7.7
-#&gt; 21 2000    3    2  8.2
-#&gt; 22 2000    4    1  6.3
-#&gt; 23 2000    4    3  6.7
-#&gt; 24 2000    4    2  7.1
-#&gt; 
-#&gt; attr(,"class")
-#&gt; [1] "gadget_areafile"</div><div class='input'>
-<span class='co'># Write this to a gadget_directory</span>
-<span class='fu'><a href='gadget_directory.html'>gadget_dir_write</a></span><span class='op'>(</span><span class='fu'><a href='gadget_directory.html'>gadget_directory</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>, <span class='va'>areafile</span><span class='op'>)</span>
-
-<span class='co'># Check data in file matches input data</span>
-<span class='fu'><a href='https://rdrr.io/r/base/stopifnot.html'>stopifnot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/identical.html'>identical</a></span><span class='op'>(</span>
-    <span class='va'>areafile</span><span class='op'>$</span><span class='va'>size</span>,
-    <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>divA<span class='op'>=</span><span class='fl'>1</span>, divB<span class='op'>=</span><span class='fl'>1</span>, divAB<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/stopifnot.html'>stopifnot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></span><span class='op'>(</span>
-    <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>areafile</span><span class='op'>$</span><span class='va'>temperature</span><span class='op'>[</span><span class='va'>areafile</span><span class='op'>$</span><span class='va'>temperature</span><span class='op'>$</span><span class='va'>area</span> <span class='op'>==</span> <span class='fl'>1</span>, <span class='st'>'mean'</span><span class='op'>]</span><span class='op'>)</span>,
-    <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>temps</span><span class='op'>[</span><span class='va'>temps</span><span class='op'>$</span><span class='va'>areacell</span> <span class='op'>==</span> <span class='st'>'divA'</span>, <span class='st'>'temperature'</span><span class='op'>]</span><span class='op'>)</span>,
-    tolerance <span class='op'>=</span> <span class='fl'>1e-2</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/stopifnot.html'>stopifnot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></span><span class='op'>(</span>
-    <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>areafile</span><span class='op'>$</span><span class='va'>temperature</span><span class='op'>[</span><span class='va'>areafile</span><span class='op'>$</span><span class='va'>temperature</span><span class='op'>$</span><span class='va'>area</span> <span class='op'>==</span> <span class='fl'>2</span>, <span class='st'>'mean'</span><span class='op'>]</span><span class='op'>)</span>,
-    <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>temps</span><span class='op'>[</span><span class='va'>temps</span><span class='op'>$</span><span class='va'>areacell</span> <span class='op'>==</span> <span class='st'>'divB'</span>, <span class='st'>'temperature'</span><span class='op'>]</span><span class='op'>)</span>,
-    tolerance <span class='op'>=</span> <span class='fl'>1e-2</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/stopifnot.html'>stopifnot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></span><span class='op'>(</span>
-    <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>areafile</span><span class='op'>$</span><span class='va'>temperature</span><span class='op'>[</span><span class='va'>areafile</span><span class='op'>$</span><span class='va'>temperature</span><span class='op'>$</span><span class='va'>area</span> <span class='op'>==</span> <span class='fl'>3</span>, <span class='st'>'mean'</span><span class='op'>]</span><span class='op'>)</span>,
-    <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>temps</span><span class='op'>[</span>,<span class='st'>'temperature'</span><span class='op'>]</span><span class='op'>)</span>,
-    tolerance <span class='op'>=</span> <span class='fl'>1e-2</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='fu'><a href='mfdb.html'>mfdb_disconnect</a></span><span class='op'>(</span><span class='va'>mdb</span><span class='op'>)</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'></span>
+<span class='r-in'><span class='co'># Open a temporary database connection</span></span>
+<span class='r-in'><span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.duckdb'</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-18 14:57:24 INFO:mfdb:Creating schema from scratch</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-18 14:57:24 INFO:mfdb:Taxonomy market_category no updates to make</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-18 14:57:25 INFO:mfdb:Schema up-to-date</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Define 2 areacells of equal size</span></span>
+<span class='r-in'><span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_area</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>name<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span>, <span class='st'>"divB"</span><span class='op'>)</span>, size<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># We want to have 3 area groups, 2 for original cells, one aggregating across the lot</span></span>
+<span class='r-in'><span class='va'>area_group</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb_aggregate_group.html'>mfdb_group</a></span><span class='op'>(</span></span>
+<span class='r-in'>    divA <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    divB <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divB"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    divAB <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span>, <span class='st'>"divB"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Make up temperature data</span></span>
+<span class='r-in'><span class='va'>temps</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1998</span>,<span class='fl'>2000</span><span class='op'>)</span>, month<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>12</span><span class='op'>)</span>, areacell<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"divA"</span>, <span class='st'>"divB"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>temps</span><span class='op'>$</span><span class='va'>temperature</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>temps</span><span class='op'>)</span>, <span class='fl'>5</span>, <span class='fl'>10</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='mfdb_import_data.html'>mfdb_import_temperature</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='va'>temps</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Create an areafile from 2 mfdb queries</span></span>
+<span class='r-in'><span class='va'>areafile</span> <span class='op'>&lt;-</span> <span class='fu'>gadget_areafile</span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'><a href='mfdb_queries.html'>mfdb_area_size</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span></span>
+<span class='r-in'>        area <span class='op'>=</span> <span class='va'>area_group</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>,</span>
+<span class='r-in'>    <span class='fu'><a href='mfdb_queries.html'>mfdb_temperature</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span></span>
+<span class='r-in'>        year <span class='op'>=</span> <span class='fl'>1998</span><span class='op'>:</span><span class='fl'>2000</span>,</span>
+<span class='r-in'>        timestep <span class='op'>=</span> <span class='va'>mfdb_timestep_quarterly</span>,</span>
+<span class='r-in'>        area <span class='op'>=</span> <span class='va'>area_group</span><span class='op'>)</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>areafile</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $labels</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "divA"  "divB"  "divAB"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $areas</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 1 2 3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $size</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  divA  divB divAB </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     1     1     2 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $temperature</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    year step area mean</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1  1998    1    1  7.1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2  1998    1    3  8.0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3  1998    1    2  8.9</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4  1998    2    1  7.7</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5  1998    2    3  7.8</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6  1998    2    2  8.0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7  1998    3    1  8.7</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 8  1998    3    3  7.9</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 9  1998    3    2  7.2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10 1998    4    1  7.9</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11 1998    4    3  7.9</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12 1998    4    2  7.8</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13 2000    1    1  7.9</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14 2000    1    3  8.4</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15 2000    1    2  8.9</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16 2000    2    1  7.0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17 2000    2    3  7.6</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18 2000    2    2  8.2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19 2000    3    1  7.1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20 2000    3    3  7.7</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21 2000    3    2  8.2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22 2000    4    1  6.3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23 2000    4    3  6.7</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24 2000    4    2  7.1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> attr(,"class")</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "gadget_areafile"</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Write this to a gadget_directory</span></span>
+<span class='r-in'><span class='fu'><a href='gadget_directory.html'>gadget_dir_write</a></span><span class='op'>(</span><span class='fu'><a href='gadget_directory.html'>gadget_directory</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>, <span class='va'>areafile</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Check data in file matches input data</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/stopifnot.html'>stopifnot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/identical.html'>identical</a></span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='va'>areafile</span><span class='op'>$</span><span class='va'>size</span>,</span>
+<span class='r-in'>    <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>divA<span class='op'>=</span><span class='fl'>1</span>, divB<span class='op'>=</span><span class='fl'>1</span>, divAB<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/stopifnot.html'>stopifnot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>areafile</span><span class='op'>$</span><span class='va'>temperature</span><span class='op'>[</span><span class='va'>areafile</span><span class='op'>$</span><span class='va'>temperature</span><span class='op'>$</span><span class='va'>area</span> <span class='op'>==</span> <span class='fl'>1</span>, <span class='st'>'mean'</span><span class='op'>]</span><span class='op'>)</span>,</span>
+<span class='r-in'>    <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>temps</span><span class='op'>[</span><span class='va'>temps</span><span class='op'>$</span><span class='va'>areacell</span> <span class='op'>==</span> <span class='st'>'divA'</span>, <span class='st'>'temperature'</span><span class='op'>]</span><span class='op'>)</span>,</span>
+<span class='r-in'>    tolerance <span class='op'>=</span> <span class='fl'>1e-2</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/stopifnot.html'>stopifnot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>areafile</span><span class='op'>$</span><span class='va'>temperature</span><span class='op'>[</span><span class='va'>areafile</span><span class='op'>$</span><span class='va'>temperature</span><span class='op'>$</span><span class='va'>area</span> <span class='op'>==</span> <span class='fl'>2</span>, <span class='st'>'mean'</span><span class='op'>]</span><span class='op'>)</span>,</span>
+<span class='r-in'>    <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>temps</span><span class='op'>[</span><span class='va'>temps</span><span class='op'>$</span><span class='va'>areacell</span> <span class='op'>==</span> <span class='st'>'divB'</span>, <span class='st'>'temperature'</span><span class='op'>]</span><span class='op'>)</span>,</span>
+<span class='r-in'>    tolerance <span class='op'>=</span> <span class='fl'>1e-2</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/stopifnot.html'>stopifnot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>areafile</span><span class='op'>$</span><span class='va'>temperature</span><span class='op'>[</span><span class='va'>areafile</span><span class='op'>$</span><span class='va'>temperature</span><span class='op'>$</span><span class='va'>area</span> <span class='op'>==</span> <span class='fl'>3</span>, <span class='st'>'mean'</span><span class='op'>]</span><span class='op'>)</span>,</span>
+<span class='r-in'>    <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>temps</span><span class='op'>[</span>,<span class='st'>'temperature'</span><span class='op'>]</span><span class='op'>)</span>,</span>
+<span class='r-in'>    tolerance <span class='op'>=</span> <span class='fl'>1e-2</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'><a href='mfdb.html'>mfdb_disconnect</a></span><span class='op'>(</span><span class='va'>mdb</span><span class='op'>)</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

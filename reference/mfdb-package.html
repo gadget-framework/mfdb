@@ -175,17 +175,17 @@ script needs to do are:</p>
   <dt>division</dt><dd><p>Collections of areacells, e.g. ICES subdivisions, or whatever is appropriate.</p></dd>
 
 </dl><p>Finally, when querying, divisions are grouped together into named collections,
-for instance <code><a href='mfdb_aggregate_group.html'>mfdb_group(north = 1:3, south = 4:6)</a></code> will put anything in
+for instance <code>mfdb_group(north = 1:3, south = 4:6)</code> will put anything in
 divisions 1--3 under an area named "north", 4--5 under an area named "south".</p>
 <p>Before you can upload any measurements, you have to define the areacells
 that they will use. You do this using the <a href='mfdb_import_taxonomy.html'>mfdb_import_area</a>() function. This
 allows you to import tables of area/division information, such as:</p>
-<p><code><a href='mfdb_import_taxonomy.html'>
+<p><code>
 mfdb_import_area(mdb, data.frame(
     area = c('101', '102', '103', '401','402', '403'),
     division = c('1', '1', '1', '4', '4', '4'),
     ))
-</a></code></p>
+</code></p>
 <p>If you want areas to be part of multiple divisions, then you can use
 <a href='mfdb_import_taxonomy.html'>mfdb_import_division</a>() to import extra revisions.</p>
 
@@ -219,7 +219,7 @@ for predators and prey measurements are assigned to the correct stomach.</p>
 and pg_restore commands. You can dump/restore indvidual schemas (i.e. the 
 case study you give to the mfdb() command), to list all the schemas installed
 run <code>SELECT DISTINCT(table_schema) FROM information_schema.tables</code> from
-psql. Note that if you use <code><a href='mfdb.html'>mfdb('Baltic')</a></code>, the Postgres schema name will
+psql. Note that if you use <code>mfdb('Baltic')</code>, the Postgres schema name will
 be lower-cased.</p>
 <p>Create a dump of your chosen schema with the following command:</p>
 <pre>

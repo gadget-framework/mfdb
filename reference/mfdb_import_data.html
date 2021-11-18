@@ -167,8 +167,8 @@ in which case then only existing data with the same <code>data_source</code> wil
 areacells. The <code>data_in</code> should be a data.frame with the following columns:</p>
 <dl>
     <dt>id</dt><dd><p>A numeric ID for this areacell (will be combined with the case study number internally)</p></dd>
-    <dt>year</dt><dd><p>Required. Year each sample was taken, e.g. <code><a href='https://rdrr.io/r/base/c.html'>c(2000,2001)</a></code></p></dd>
-    <dt>month</dt><dd><p>Required. Month (1--12) each sample was taken, e.g. <code><a href='https://rdrr.io/r/base/c.html'>c(1,12)</a></code></p></dd>
+    <dt>year</dt><dd><p>Required. Year each sample was taken, e.g. <code>c(2000,2001)</code></p></dd>
+    <dt>month</dt><dd><p>Required. Month (1--12) each sample was taken, e.g. <code>c(1,12)</code></p></dd>
     <dt>areacell</dt><dd><p>Required. Areacell sample was taken within</p></dd>
     <dt>temperature</dt><dd><p>The temperature at given location/time</p></dd>
 
@@ -179,28 +179,28 @@ areacells. The <code>data_in</code> should be a data.frame with the following co
 <dl>
     <dt>institute</dt><dd><p>Optional. An institute name, see mfdb::institute for possible values</p></dd>
     <dt>gear</dt><dd><p>Optional. Gear name, see mfdb::gear for possible values</p></dd>
-    <dt>vessel</dt><dd><p>Optional. Vessel defined previously with <code><a href='mfdb_import_taxonomy.html'>mfdb_import_vessel_taxonomy(...)</a></code></p></dd>
-    <dt>tow</dt><dd><p>Optional. Tow defined previously with <code><a href='mfdb_import_taxonomy.html'>mfdb_import_tow_taxonomy(...)</a></code></p></dd>
+    <dt>vessel</dt><dd><p>Optional. Vessel defined previously with <code>mfdb_import_vessel_taxonomy(...)</code></p></dd>
+    <dt>tow</dt><dd><p>Optional. Tow defined previously with <code>mfdb_import_tow_taxonomy(...)</code></p></dd>
     <dt>sampling_type</dt><dd><p>Optional. A sampling_type, see mfdb::sampling_type for possible values</p></dd>
-    <dt>year</dt><dd><p>Required. Year each sample was taken, e.g. <code><a href='https://rdrr.io/r/base/c.html'>c(2000,2001)</a></code></p></dd>
-    <dt>month</dt><dd><p>Required. Month (1--12) each sample was taken, e.g. <code><a href='https://rdrr.io/r/base/c.html'>c(1,12)</a></code></p></dd>
+    <dt>year</dt><dd><p>Required. Year each sample was taken, e.g. <code>c(2000,2001)</code></p></dd>
+    <dt>month</dt><dd><p>Required. Month (1--12) each sample was taken, e.g. <code>c(1,12)</code></p></dd>
     <dt>areacell</dt><dd><p>Required. Areacell sample was taken within</p></dd>
-    <dt>species</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Species of sample, see mfdb::species for possible values</p></dd>
-    <dt>age</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Age of sample, or mean age</p></dd>
-    <dt>sex</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Sex of sample, see mfdb::sex for possible values</p></dd>
-    <dt>length</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Length of sample / mean length of all samples</p></dd>
-    <dt>length_var</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Sample variance, if data is already aggregated</p></dd>
-    <dt>length_min</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Minimum theoretical length, if data is already aggregated</p></dd>
-    <dt>weight</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Weight of sample / mean weight of all samples</p></dd>
-    <dt>weight_var</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Sample variance, if data is already aggregated</p></dd>
-    <dt>weight_total</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Total weight of all samples, can be used with count = NA to represent an unknown number of samples</p></dd>
-    <dt>liver_weight</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Weight of sample / mean liver weight of all samples</p></dd>
-    <dt>liver_weight_var</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Sample variance, if data is already aggregated</p></dd>
-    <dt>gonad_weight</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Weight of sample / mean gonad weight of all samples</p></dd>
-    <dt>gonad_weight_var</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Sample variance, if data is already aggregated</p></dd>
-    <dt>stomach_weight</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Weight of sample / mean stomach weight of all samples</p></dd>
-    <dt>stomach_weight_var</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Sample variance, if data is already aggregated</p></dd>
-    <dt>count</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(1)</a></code>. Number of samples this row represents (i.e. if the data is aggregated)</p></dd>
+    <dt>species</dt><dd><p>Optional, default <code>c(NA)</code>. Species of sample, see mfdb::species for possible values</p></dd>
+    <dt>age</dt><dd><p>Optional, default <code>c(NA)</code>. Age of sample, or mean age</p></dd>
+    <dt>sex</dt><dd><p>Optional, default <code>c(NA)</code>. Sex of sample, see mfdb::sex for possible values</p></dd>
+    <dt>length</dt><dd><p>Optional, default <code>c(NA)</code>. Length of sample / mean length of all samples</p></dd>
+    <dt>length_var</dt><dd><p>Optional, default <code>c(NA)</code>. Sample variance, if data is already aggregated</p></dd>
+    <dt>length_min</dt><dd><p>Optional, default <code>c(NA)</code>. Minimum theoretical length, if data is already aggregated</p></dd>
+    <dt>weight</dt><dd><p>Optional, default <code>c(NA)</code>. Weight of sample / mean weight of all samples</p></dd>
+    <dt>weight_var</dt><dd><p>Optional, default <code>c(NA)</code>. Sample variance, if data is already aggregated</p></dd>
+    <dt>weight_total</dt><dd><p>Optional, default <code>c(NA)</code>. Total weight of all samples, can be used with count = NA to represent an unknown number of samples</p></dd>
+    <dt>liver_weight</dt><dd><p>Optional, default <code>c(NA)</code>. Weight of sample / mean liver weight of all samples</p></dd>
+    <dt>liver_weight_var</dt><dd><p>Optional, default <code>c(NA)</code>. Sample variance, if data is already aggregated</p></dd>
+    <dt>gonad_weight</dt><dd><p>Optional, default <code>c(NA)</code>. Weight of sample / mean gonad weight of all samples</p></dd>
+    <dt>gonad_weight_var</dt><dd><p>Optional, default <code>c(NA)</code>. Sample variance, if data is already aggregated</p></dd>
+    <dt>stomach_weight</dt><dd><p>Optional, default <code>c(NA)</code>. Weight of sample / mean stomach weight of all samples</p></dd>
+    <dt>stomach_weight_var</dt><dd><p>Optional, default <code>c(NA)</code>. Sample variance, if data is already aggregated</p></dd>
+    <dt>count</dt><dd><p>Optional, default <code>c(1)</code>. Number of samples this row represents (i.e. if the data is aggregated)</p></dd>
 
 </dl>
 
@@ -210,8 +210,8 @@ exists by using <a href='mfdb_import_taxonomy.html'>mfdb_import_cs_taxonomy</a>.
 following columns:</p>
 <dl>
     <dt>index_type</dt><dd><p>Required. the name of the index data you are storing, e.g. 'acoustic'</p></dd>
-    <dt>year</dt><dd><p>Required. Year each sample was taken, e.g. <code><a href='https://rdrr.io/r/base/c.html'>c(2000,2001)</a></code></p></dd>
-    <dt>month</dt><dd><p>Required. Month (1--12) each sample was taken, e.g. <code><a href='https://rdrr.io/r/base/c.html'>c(1,12)</a></code></p></dd>
+    <dt>year</dt><dd><p>Required. Year each sample was taken, e.g. <code>c(2000,2001)</code></p></dd>
+    <dt>month</dt><dd><p>Required. Month (1--12) each sample was taken, e.g. <code>c(1,12)</code></p></dd>
     <dt>areacell</dt><dd><p>Required. Areacell sample was taken within</p></dd>
     <dt>value</dt><dd><p>Value of the index at this point in space/time</p></dd>
 
@@ -225,34 +225,34 @@ If a prey has a stomach name that doesn't match a predator, then an error will b
 
     <dt>institute</dt><dd><p>Optional. An institute name, see mfdb::institute for possible values</p></dd>
     <dt>gear</dt><dd><p>Optional. Gear name, see mfdb::gear for possible values</p></dd>
-    <dt>vessel</dt><dd><p>Optional. Vessel defined previously with <code><a href='mfdb_import_taxonomy.html'>mfdb_import_vessel_taxonomy(mdb, ...)</a></code></p></dd>
-    <dt>tow</dt><dd><p>Optional. Tow defined previously with <code><a href='mfdb_import_taxonomy.html'>mfdb_import_tow_taxonomy(...)</a></code></p></dd>
+    <dt>vessel</dt><dd><p>Optional. Vessel defined previously with <code>mfdb_import_vessel_taxonomy(mdb, ...)</code></p></dd>
+    <dt>tow</dt><dd><p>Optional. Tow defined previously with <code>mfdb_import_tow_taxonomy(...)</code></p></dd>
     <dt>sampling_type</dt><dd><p>Optional. A sampling_type, see mfdb::sampling_type for possible values</p></dd>
 
-    <dt>year</dt><dd><p>Required. Year each sample was taken, e.g. <code><a href='https://rdrr.io/r/base/c.html'>c(2000,2001)</a></code></p></dd>
-    <dt>month</dt><dd><p>Required. Month (1--12) each sample was taken, e.g. <code><a href='https://rdrr.io/r/base/c.html'>c(1,12)</a></code></p></dd>
+    <dt>year</dt><dd><p>Required. Year each sample was taken, e.g. <code>c(2000,2001)</code></p></dd>
+    <dt>month</dt><dd><p>Required. Month (1--12) each sample was taken, e.g. <code>c(1,12)</code></p></dd>
     <dt>areacell</dt><dd><p>Required. Areacell sample was taken within</p></dd>
 
-    <dt>species</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Species of sample, see mfdb::species for possible values</p></dd>
-    <dt>age</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Age of sample, or mean age</p></dd>
-    <dt>sex</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Sex of sample, see mfdb::sex for possible values</p></dd>
-    <dt>maturity_stage</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Maturity stage of sample, see mfdb::maturity_stage for possible values</p></dd>
-    <dt>stomach_state</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Stomach state of sample, see mfdb::stomach_state for possible values</p></dd>
+    <dt>species</dt><dd><p>Optional, default <code>c(NA)</code>. Species of sample, see mfdb::species for possible values</p></dd>
+    <dt>age</dt><dd><p>Optional, default <code>c(NA)</code>. Age of sample, or mean age</p></dd>
+    <dt>sex</dt><dd><p>Optional, default <code>c(NA)</code>. Sex of sample, see mfdb::sex for possible values</p></dd>
+    <dt>maturity_stage</dt><dd><p>Optional, default <code>c(NA)</code>. Maturity stage of sample, see mfdb::maturity_stage for possible values</p></dd>
+    <dt>stomach_state</dt><dd><p>Optional, default <code>c(NA)</code>. Stomach state of sample, see mfdb::stomach_state for possible values</p></dd>
 
-    <dt>length</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Length of sample</p></dd>
-    <dt>weight</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Weight of sample</p></dd>
+    <dt>length</dt><dd><p>Optional, default <code>c(NA)</code>. Length of sample</p></dd>
+    <dt>weight</dt><dd><p>Optional, default <code>c(NA)</code>. Weight of sample</p></dd>
 
 </dl>
 
 <p>The <code>prey_data</code> should be a data.frame with the following columns:</p><dl>
     <dt>stomach_name</dt><dd><p>Required. The stomach name of the predator this was found in</p></dd>
-    <dt>species</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Species of sample, see mfdb::species for possible values</p></dd>
-    <dt>digestion_stage</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Stage of digestion of the sample, see mfdb::digestion_stage for possible values</p></dd>
+    <dt>species</dt><dd><p>Optional, default <code>c(NA)</code>. Species of sample, see mfdb::species for possible values</p></dd>
+    <dt>digestion_stage</dt><dd><p>Optional, default <code>c(NA)</code>. Stage of digestion of the sample, see mfdb::digestion_stage for possible values</p></dd>
 
-    <dt>length</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Length of sample / mean length of all samples</p></dd>
-    <dt>weight</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Weight of sample / mean weight of all samples</p></dd>
-    <dt>weight_total</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Total weight of all samples</p></dd>
-    <dt>count</dt><dd><p>Optional, default <code><a href='https://rdrr.io/r/base/c.html'>c(NA)</a></code>. Number of samples this row represents (i.e. if the data is aggregated), count = NA represents an unknown number of samples</p></dd>
+    <dt>length</dt><dd><p>Optional, default <code>c(NA)</code>. Length of sample / mean length of all samples</p></dd>
+    <dt>weight</dt><dd><p>Optional, default <code>c(NA)</code>. Weight of sample / mean weight of all samples</p></dd>
+    <dt>weight_total</dt><dd><p>Optional, default <code>c(NA)</code>. Total weight of all samples</p></dd>
+    <dt>count</dt><dd><p>Optional, default <code>c(NA)</code>. Number of samples this row represents (i.e. if the data is aggregated), count = NA represents an unknown number of samples</p></dd>
 
 </dl>
 
@@ -262,38 +262,53 @@ If a prey has a stomach name that doesn't match a predator, then an error will b
     <p>NULL</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.duckdb'</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 2021-10-28 17:53:47 INFO:mfdb:Creating schema from scratch
-#&gt; 2021-10-28 17:53:47 INFO:mfdb:Taxonomy market_category no updates to make
-#&gt; 2021-10-28 17:53:47 INFO:mfdb:Schema up-to-date</div><div class='input'>
-<span class='co'># We need to set-up vocabularies first</span>
-<span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_area</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
-    id <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span>,<span class='fl'>3</span><span class='op'>)</span>,
-    name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'35F1'</span>, <span class='st'>'35F2'</span>, <span class='st'>'35F3'</span><span class='op'>)</span>,
-    size <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_vessel_taxonomy</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
-    name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'1.RSH'</span>, <span class='st'>'2.COM'</span><span class='op'>)</span>,
-    stringsAsFactors <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_sampling_type</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
-    name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"RES"</span>, <span class='st'>"LND"</span><span class='op'>)</span>,
-    description <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Research"</span>, <span class='st'>"Landings"</span><span class='op'>)</span>,
-    stringsAsFactors <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='va'>data_in</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>'
-year,month,areacell,species,age,sex,length
-1998,1,35F1,COD,3,M,140
-1998,1,35F1,COD,3,M,150
-1998,1,35F1,COD,3,F,150
-'</span><span class='op'>)</span>
-
-<span class='va'>data_in</span><span class='op'>$</span><span class='va'>institute</span> <span class='op'>&lt;-</span> <span class='st'>'MRI'</span>
-<span class='va'>data_in</span><span class='op'>$</span><span class='va'>gear</span> <span class='op'>&lt;-</span> <span class='st'>'GIL'</span>
-<span class='va'>data_in</span><span class='op'>$</span><span class='va'>vessel</span> <span class='op'>&lt;-</span> <span class='st'>'1.RSH'</span>
-<span class='va'>data_in</span><span class='op'>$</span><span class='va'>sampling_type</span> <span class='op'>&lt;-</span> <span class='st'>'RES'</span>
-<span class='fu'>mfdb_import_survey</span><span class='op'>(</span><span class='va'>mdb</span>, <span class='va'>data_in</span>, data_source <span class='op'>=</span> <span class='st'>'cod-1998'</span><span class='op'>)</span>
-
-<span class='fu'><a href='mfdb.html'>mfdb_disconnect</a></span><span class='op'>(</span><span class='va'>mdb</span><span class='op'>)</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>mdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mfdb.html'>mfdb</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>'.duckdb'</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-18 14:57:33 INFO:mfdb:Creating schema from scratch</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-18 14:57:34 INFO:mfdb:Taxonomy market_category no updates to make</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2021-11-18 14:57:34 INFO:mfdb:Schema up-to-date</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># We need to set-up vocabularies first</span></span>
+<span class='r-in'><span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_area</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span></span>
+<span class='r-in'>    id <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span>,<span class='fl'>3</span><span class='op'>)</span>,</span>
+<span class='r-in'>    name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'35F1'</span>, <span class='st'>'35F2'</span>, <span class='st'>'35F3'</span><span class='op'>)</span>,</span>
+<span class='r-in'>    size <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-in'><span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_vessel_taxonomy</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span></span>
+<span class='r-in'>    name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'1.RSH'</span>, <span class='st'>'2.COM'</span><span class='op'>)</span>,</span>
+<span class='r-in'>    stringsAsFactors <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-in'><span class='fu'><a href='mfdb_import_taxonomy.html'>mfdb_import_sampling_type</a></span><span class='op'>(</span><span class='va'>mdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span></span>
+<span class='r-in'>    name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"RES"</span>, <span class='st'>"LND"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    description <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Research"</span>, <span class='st'>"Landings"</span><span class='op'>)</span>,</span>
+<span class='r-in'>    stringsAsFactors <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>data_in</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span>text <span class='op'>=</span> <span class='st'>'</span>
+<span class='r-in'>year,month,areacell,species,age,sex,length</span>
+<span class='r-in'>1998,1,35F1,COD,3,M,140</span>
+<span class='r-in'>1998,1,35F1,COD,3,M,150</span>
+<span class='r-in'>1998,1,35F1,COD,3,F,150</span>
+<span class='r-in'>'</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>data_in</span><span class='op'>$</span><span class='va'>institute</span> <span class='op'>&lt;-</span> <span class='st'>'MRI'</span></span>
+<span class='r-in'><span class='va'>data_in</span><span class='op'>$</span><span class='va'>gear</span> <span class='op'>&lt;-</span> <span class='st'>'GIL'</span></span>
+<span class='r-in'><span class='va'>data_in</span><span class='op'>$</span><span class='va'>vessel</span> <span class='op'>&lt;-</span> <span class='st'>'1.RSH'</span></span>
+<span class='r-in'><span class='va'>data_in</span><span class='op'>$</span><span class='va'>sampling_type</span> <span class='op'>&lt;-</span> <span class='st'>'RES'</span></span>
+<span class='r-in'><span class='fu'>mfdb_import_survey</span><span class='op'>(</span><span class='va'>mdb</span>, <span class='va'>data_in</span>, data_source <span class='op'>=</span> <span class='st'>'cod-1998'</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Please upgrade from DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'><a href='mfdb.html'>mfdb_disconnect</a></span><span class='op'>(</span><span class='va'>mdb</span><span class='op'>)</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -150,12 +150,12 @@
 <h1 class="hasAnchor">
 <a href="#aggregate-hydrographic-data-by-ices-rectangles" class="anchor"></a>Aggregate hydrographic data by ICES rectangles</h1>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">sf</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">raster</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tidyverse</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">rnaturalearth</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">lwgeom</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">ggplot2</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/raster">raster</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ropenscilabs/rnaturalearth">rnaturalearth</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/lwgeom/">lwgeom</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 
 <span class="va">y</span> <span class="op">&lt;-</span> <span class="fl">2018</span> <span class="co"># year of interest</span>
 
@@ -179,7 +179,7 @@
 
 <span class="va">land</span> <span class="op">&lt;-</span> <span class="fu">rnaturalearth</span><span class="fu">::</span><span class="fu">ne_countries</span><span class="op">(</span>returnclass <span class="op">=</span> <span class="st">"sf"</span>, continent<span class="op">=</span><span class="st">"Europe"</span>, scale<span class="op">=</span><span class="st">"large"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">st_union</span><span class="op">(</span><span class="op">)</span>
-<span class="va">ices.rect.sea</span> <span class="op">&lt;-</span> <span class="va">ices.rect</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">ICESNAME</span> <span class="op">%in%</span> <span class="va">hydroVar</span><span class="op">$</span><span class="va">rect</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">ices.rect.sea</span> <span class="op">&lt;-</span> <span class="va">ices.rect</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">ICESNAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">hydroVar</span><span class="op">$</span><span class="va">rect</span><span class="op">)</span> <span class="op">%&gt;%</span>
          <span class="fu">st_difference</span><span class="op">(</span><span class="va">land</span><span class="op">)</span>
 <span class="va">ices.rect.sea</span><span class="op">$</span><span class="va">areaSea_km2</span> <span class="op">&lt;-</span> <span class="fu">st_area</span><span class="op">(</span><span class="va">ices.rect.sea</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">units</span><span class="fu">::</span><span class="fu">set_units</span><span class="op">(</span><span class="va">km</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>
 
@@ -205,27 +205,63 @@
 <a href="#import-bottom-temperature-into-mfdb" class="anchor"></a>Import bottom temperature into mfdb</h1>
 <p>Import ICES rectangles and import the hydrographic data as a survey index. Then we can retrieve the hydrographic data as a weighted mean using ICES rectangle as a weighting variable:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
 
-<span class="va">ices.rect.sea</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span><span class="op">(</span><span class="st">'ices.rect.sea.txt'</span><span class="op">)</span>
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
+
+## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ices.rect.sea</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span><span class="op">(</span><span class="st">'ices.rect.sea.txt'</span><span class="op">)</span>
 <span class="va">hydroVar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span><span class="op">(</span><span class="st">'hydroVar.txt'</span><span class="op">)</span>
 
 <span class="co"># import ICES rectangles</span>
 <span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
     name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">ices.rect.sea</span><span class="op">$</span><span class="va">ICESNAME</span><span class="op">)</span>,
-    size <span class="op">=</span> <span class="va">ices.rect.sea</span><span class="op">$</span><span class="va">areaSea_km2</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co"># import area size as index for later use</span>
-<span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_cs_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="st">"index_type"</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>name<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ices_rect"</span>, <span class="st">"bottom_temp"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey_index</a></span><span class="op">(</span><span class="va">mdb</span>,
+    size <span class="op">=</span> <span class="va">ices.rect.sea</span><span class="op">$</span><span class="va">areaSea_km2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># import area size as index for later use</span>
+<span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_cs_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="st">"index_type"</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>name<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ices_rect"</span>, <span class="st">"bottom_temp"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey_index</a></span><span class="op">(</span><span class="va">mdb</span>,
                          data_source<span class="op">=</span><span class="st">"area_ices_rect"</span>,
                          <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>index_type <span class="op">=</span> <span class="st">"ices_rect"</span>,
                                         year       <span class="op">=</span> <span class="va">hydroVar</span><span class="op">$</span><span class="va">year</span>,
                                         month      <span class="op">=</span> <span class="va">hydroVar</span><span class="op">$</span><span class="va">month</span>,
                                         areacell   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">hydroVar</span><span class="op">$</span><span class="va">rect</span><span class="op">)</span>,
-                                        value      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">hydroVar</span><span class="op">$</span><span class="va">areaSea_km2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co"># import avg bottom temperature by month and ICES rect (under the 'length' field)</span>
+                                        value      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">hydroVar</span><span class="op">$</span><span class="va">areaSea_km2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># import avg bottom temperature by month and ICES rect (under the 'length' field)</span>
 <span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey_index</a></span><span class="op">(</span><span class="va">mdb</span>,
                    data_source<span class="op">=</span><span class="st">"bottom_temp_CMEMS"</span>,
                    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>year       <span class="op">=</span> <span class="va">hydroVar</span><span class="op">$</span><span class="va">year</span>,
@@ -233,9 +269,11 @@
                               areacell   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">hydroVar</span><span class="op">$</span><span class="va">rect</span><span class="op">)</span>,
                               value     <span class="op">=</span> <span class="va">hydroVar</span><span class="op">$</span><span class="va">sob</span>,
                               index_type <span class="op">=</span> <span class="st">"bottom_temp"</span>,
-                              stringsAsFactors <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co"># extract mean bottom temperature by quarter and area (weighted mean using rectangle area)</span>
+                              stringsAsFactors <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
+## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># extract mean bottom temperature by quarter and area (weighted mean using rectangle area)</span>
 <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_survey_index_mean</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
                                        <span class="co">## area = mfdb_unaggregated(),</span>
                                        area <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_group.html">mfdb_group</a></span><span class="op">(</span><span class="st">'a1'</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'42G7'</span>,<span class="st">'42G8'</span>,<span class="st">'42G9'</span>,<span class="st">'43G7'</span>,<span class="st">'43G8'</span>,<span class="st">'43G9'</span><span class="op">)</span>,
@@ -256,7 +294,7 @@
 ## 6 2018    3   a2 6.609387
 ## 7 2018    4   a1 6.143770
 ## 8 2018    4   a2 6.019377</code></pre>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></code></pre></div>
 </div>
   </div>
