@@ -38,7 +38,7 @@ mfdb_import_vessel_taxonomy(mdb, data.frame(
 mfdb_import_survey(mdb,
     data_source = 'landings1',
     data.frame(
-        year = c('2000'),
+        year = c(2000),
         month = c(1:12),
         areacell = c('45G01'),
         species = c('COD'),
@@ -49,7 +49,7 @@ mfdb_import_survey(mdb,
 mfdb_import_survey(mdb,
     data_source = 'landings2',
     data.frame(
-        year = c('2000'),
+        year = c(2000),
         month = c(1:12),
         areacell = c('45G01'),
         species = c('COD'),
@@ -170,7 +170,7 @@ ok_group("Can import counts too, but doesn't affect result", {
     mfdb_import_survey(mdb,
         data_source = 'landings1',
         data.frame(
-            year = c('2000'),
+            year = c(2000),
             month = c(1:12),
             areacell = c('45G01'),
             species = c('COD'),
@@ -208,7 +208,7 @@ ok_group("weight and weight_total isn't allowed", {
     ok(cmp_error(mfdb_import_survey(mdb,
         data_source = 'landings1',
         data.frame(
-            year = c('2000'),
+            year = c(2000),
             month = c(1:12),
             areacell = c('45G01'),
             species = c('COD'),

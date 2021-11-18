@@ -80,7 +80,7 @@ A gadget_fleet_component object that can them be added to a fleetfile with
 
     # Make up some samples
     samples <- expand.grid(
-        year = '1998',
+        year = 1998,
         month = 5,
         areacell = c("divA", "divB"),
         species = 'COD',

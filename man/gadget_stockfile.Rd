@@ -65,7 +65,7 @@ mfdb_import_area(mdb, data.frame(name=c("divA", "divB"), size=1))
 
 # Make up some samples
 samples <- expand.grid(
-    year = '1998',
+    year = 1998,
     month = c(1:12),
     areacell = c("divA", "divB"),
     species = 'COD',
