@@ -1,6 +1,10 @@
 MFDB: Data management for fisheries model creation
 ==================================================
 
+[![CRAN version badge](https://img.shields.io/cran/v/mfdb.svg)](https://cran.r-project.org/package=mfdb)
+[![CRAN Checks](https://cranchecks.info/badges/summary/mfdb)](https://cran.r-project.org/web/checks/check_results_mfdb.html)
+[![CRAN RStudio mirror total downloads badge](https://cranlogs.r-pkg.org/badges/grand-total/mfdb?color=001577)](https://cran.r-project.org/package=mfdb)
+[![CRAN RStudio mirror monthly downloads badge](https://cranlogs.r-pkg.org/badges/mfdb?color=001577)](https://cran.r-project.org/package=mfdb)
 [![R-CMD-check](https://github.com/gadget-framework/mfdb/workflows/R-CMD-check/badge.svg)](https://github.com/gadget-framework/mfdb/actions)
 
 This package enables automated processing of fisheries data into suitable forms
