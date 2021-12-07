@@ -21,6 +21,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -33,18 +35,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">mfdb</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">7.2-99</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">7.2-99</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -85,11 +81,11 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="mfdb-data-management-for-fisheries-model-creation" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#mfdb-data-management-for-fisheries-model-creation" class="anchor"></a>MFDB: Data management for fisheries model creation</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="mfdb-data-management-for-fisheries-model-creation">MFDB: Data management for fisheries model creation<a class="anchor" aria-label="anchor" href="#mfdb-data-management-for-fisheries-model-creation"></a>
+</h1></div>
 
-<p>This package enables automated processing of fisheries data into suitable forms for running ecosystem models against it, e.g. <a href="http://www.hafro.is/gadget/">GADGET</a>.</p>
+<p>This package enables automated processing of fisheries data into suitable forms for running ecosystem models against it, e.g. <a href="http://www.hafro.is/gadget/" class="external-link">GADGET</a>.</p>
 <p>This package contains several distinct sets of functions:</p>
 <ul>
 <li>Create and connect to a PostgreSQL database schema (<code>mfdb</code> function)</li>
@@ -98,26 +94,26 @@
 <li>Manage GADGET model directories and export data into them (<code>gadget_*</code> functions)</li>
 </ul>
 <p>Using this, you can install PostgreSQL locally and have a script automating the process of:</p>
-<ol>
+<ol style="list-style-type: decimal">
 <li>Importing data from your sources</li>
 <li>Uploading into your local MFDB database</li>
 <li>Sampling / grouping this data</li>
 <li>Producing set of GADGET model files ready to be run by GADGET</li>
 </ol>
 <p>Also, this libary can be used to connect to a remote database and generate model files from that data.</p>
-<p>This work is based on it’s predecessor, <a href="http://www.hafro.is/dst2/">DST^2</a>.</p>
-<div id="prerequisites" class="section level2">
-<h2 class="hasAnchor">
-<a href="#prerequisites" class="anchor"></a>Prerequisites</h2>
+<p>This work is based on it’s predecessor, <a href="http://www.hafro.is/dst2/" class="external-link">DST^2</a>.</p>
+<div class="section level2">
+<h2 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
+</h2>
 <p>Besides R, you will also need RPostgres set up to access the database, and PostgreSQL installed if you want to run the database locally too.</p>
-<div id="linux-debian--ubuntu" class="section level3">
-<h3 class="hasAnchor">
-<a href="#linux-debian--ubuntu" class="anchor"></a>Linux (Debian / Ubuntu)</h3>
+<div class="section level3">
+<h3 id="linux-debian--ubuntu">Linux (Debian / Ubuntu)<a class="anchor" aria-label="anchor" href="#linux-debian--ubuntu"></a>
+</h3>
 <p>Installation of RPostgres will happen automatically, however you need some PostgreSQL libraries before it will work:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>apt<span class="op">-</span>get install libpq<span class="op">-</span>dev</span></code></pre></div>
 <p>Also, you can install the <code>postgresql</code> package using:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>apt<span class="op">-</span>get install postgresql</span></code></pre></div>
-<p>Some additional instructions are available here: <a href="https://wiki.debian.org/PostgreSql" class="uri">https://wiki.debian.org/PostgreSql</a></p>
+<p>Some additional instructions are available here: <a href="https://wiki.debian.org/PostgreSql" class="external-link uri">https://wiki.debian.org/PostgreSql</a></p>
 <p>Now, create an <code>mf</code> database that the user on your computer owns:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">$</span><span class="st"> </span>echo <span class="op">$</span>USER  <span class="co"># Check to see who you are, I'm lentinj</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a>lentinj</span>
@@ -127,14 +123,14 @@
 <span id="cb3-6"><a href="#cb3-6"></a>postgres=<span class="co"># CREATE USER lentinj;</span></span>
 <span id="cb3-7"><a href="#cb3-7"></a>postgres=<span class="co"># CREATE DATABASE mf OWNER lentinj;</span></span></code></pre></div>
 </div>
-<div id="linux-redhat--fedora" class="section level3">
-<h3 class="hasAnchor">
-<a href="#linux-redhat--fedora" class="anchor"></a>Linux (Redhat / Fedora)</h3>
+<div class="section level3">
+<h3 id="linux-redhat--fedora">Linux (Redhat / Fedora)<a class="anchor" aria-label="anchor" href="#linux-redhat--fedora"></a>
+</h3>
 <p>Installation of RPostgres will happen automatically, however you need some PostgreSQL libraries before it will work:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>yum install postgresql<span class="op">-</span>devel</span></code></pre></div>
 <p>Also, you can install the <code>postgresql</code> package using:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>yum install postgresql<span class="op">-</span>server</span></code></pre></div>
-<p>Some additional instructions are available here: <a href="https://fedoraproject.org/wiki/PostgreSQL" class="uri">https://fedoraproject.org/wiki/PostgreSQL</a> and some tips when troubleshooting CentOS installations can be found at: <a href="http://stackoverflow.com/questions/17633422/psql-fatal-database-user-does-not-exist" class="uri">http://stackoverflow.com/questions/17633422/psql-fatal-database-user-does-not-exist</a></p>
+<p>Some additional instructions are available here: <a href="https://fedoraproject.org/wiki/PostgreSQL" class="external-link uri">https://fedoraproject.org/wiki/PostgreSQL</a> and some tips when troubleshooting CentOS installations can be found at: <a href="http://stackoverflow.com/questions/17633422/psql-fatal-database-user-does-not-exist" class="external-link uri">http://stackoverflow.com/questions/17633422/psql-fatal-database-user-does-not-exist</a></p>
 <p>Now, create an <code>mf</code> database that the user on your computer owns:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="op">$</span><span class="st"> </span>echo <span class="op">$</span>USER  <span class="co"># Check to see who you are, I'm lentinj</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a>lentinj</span>
@@ -144,58 +140,58 @@
 <span id="cb6-6"><a href="#cb6-6"></a>postgres=<span class="co"># CREATE USER lentinj</span></span>
 <span id="cb6-7"><a href="#cb6-7"></a>postgres=<span class="co"># CREATE DATABASE mf OWNER lentinj;</span></span></code></pre></div>
 </div>
-<div id="microsoft-windows" class="section level3">
-<h3 class="hasAnchor">
-<a href="#microsoft-windows" class="anchor"></a>Microsoft Windows</h3>
+<div class="section level3">
+<h3 id="microsoft-windows">Microsoft Windows<a class="anchor" aria-label="anchor" href="#microsoft-windows"></a>
+</h3>
 <p>To install PostgreSQL, download version 9.5 of the database installer from here:</p>
-<p><a href="https://www.enterprisedb.com/downloads/postgres-postgresql-downloads" class="uri">https://www.enterprisedb.com/downloads/postgres-postgresql-downloads</a></p>
+<p><a href="https://www.enterprisedb.com/downloads/postgres-postgresql-downloads" class="external-link uri">https://www.enterprisedb.com/downloads/postgres-postgresql-downloads</a></p>
 <p>Find the psql shell (SQL shell) in the start menu, and create both an <code>mf</code> database and user:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>postgres=<span class="co"># CREATE USER mf PASSWORD 'mf';</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a>postgres=<span class="co"># CREATE DATABASE mf OWNER mf;</span></span></code></pre></div>
 </div>
-<div id="apple-os-x" class="section level3">
-<h3 class="hasAnchor">
-<a href="#apple-os-x" class="anchor"></a>Apple OS X</h3>
-<p>Install using <a href="http://postgresapp.com/" class="uri">http://postgresapp.com/</a></p>
+<div class="section level3">
+<h3 id="apple-os-x">Apple OS X<a class="anchor" aria-label="anchor" href="#apple-os-x"></a>
+</h3>
+<p>Install using <a href="http://postgresapp.com/" class="external-link uri">http://postgresapp.com/</a></p>
 <p>Create a database called <code>mf</code>.</p>
 </div>
 </div>
-<div id="installing" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installing" class="anchor"></a>Installing</h2>
+<div class="section level2">
+<h2 id="installing">Installing<a class="anchor" aria-label="anchor" href="#installing"></a>
+</h2>
 <p>You can install from CRAN:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">install.packages</span>(<span class="st">'mfdb'</span>)</span></code></pre></div>
-<p>Or use <a href="https://cran.r-project.org/package=remotes">remotes</a> to install this directly:</p>
+<p>Or use <a href="https://cran.r-project.org/package=remotes" class="external-link">remotes</a> to install this directly:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># install.packages("remotes")</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">"gadget-framework/mfdb"</span>)</span></code></pre></div>
 </div>
-<div id="using" class="section level2">
-<h2 class="hasAnchor">
-<a href="#using" class="anchor"></a>Using</h2>
-<p>For an introduction to the package, read the <code><a href="reference/mfdb-package.html">package?mfdb</a></code> help file in R. <a href="https://gadget-framework.github.io/mfdb/">This is also available online</a>.</p>
+<div class="section level2">
+<h2 id="using">Using<a class="anchor" aria-label="anchor" href="#using"></a>
+</h2>
+<p>For an introduction to the package, read the <code><a href="reference/mfdb-package.html">package?mfdb</a></code> help file in R. <a href="https://gadget-framework.github.io/mfdb/" class="external-link">This is also available online</a>.</p>
 <p>There are a selection of example scripts in the <code>demo/</code> folder. The <code>example-*</code> scripts show the full process of importing data from specified sources into the database, then querying this to aggregate into various gadget model files. The <code>inttest-*</code> scripts demonstrate other aspects, and also function as tests to ensure that the library works correctly (thus the <code>ok()</code> function calls).</p>
-<p>Finally, there is <a href="https://gadget-framework.github.io/mfdb/schema/">documentation on the database schema</a>.</p>
+<p>Finally, there is <a href="https://gadget-framework.github.io/mfdb/schema/" class="external-link">documentation on the database schema</a>.</p>
 </div>
-<div id="development" class="section level2">
-<h2 class="hasAnchor">
-<a href="#development" class="anchor"></a>Development</h2>
-<div id="running-integration-tests" class="section level3">
-<h3 class="hasAnchor">
-<a href="#running-integration-tests" class="anchor"></a>Running integration tests</h3>
+<div class="section level2">
+<h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>
+</h2>
+<div class="section level3">
+<h3 id="running-integration-tests">Running integration tests<a class="anchor" aria-label="anchor" href="#running-integration-tests"></a>
+</h3>
 <p>Given the database is setup as above, integration tests and all package examples can be run with <code>make inttest</code>.</p>
 <p>To run all tests (unit tests, integration, examples and check-as-cran), use <code>make</code>.</p>
 </div>
 </div>
-<div id="models-using-mfdb" class="section level2">
-<h2 class="hasAnchor">
-<a href="#models-using-mfdb" class="anchor"></a>Models using MFDB</h2>
+<div class="section level2">
+<h2 id="models-using-mfdb">Models using MFDB<a class="anchor" aria-label="anchor" href="#models-using-mfdb"></a>
+</h2>
 <ul>
-<li><a href="https://github.com/gadget-framework/gadget-models" class="uri">https://github.com/gadget-framework/gadget-models</a></li>
+<li><a href="https://github.com/gadget-framework/gadget-models" class="external-link uri">https://github.com/gadget-framework/gadget-models</a></li>
 </ul>
 </div>
-<div id="acknowledgements" class="section level2">
-<h2 class="hasAnchor">
-<a href="#acknowledgements" class="anchor"></a>Acknowledgements</h2>
+<div class="section level2">
+<h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
+</h2>
 <p>This project has received funding from the European Union’s Seventh Framework Programme for research, technological development and demonstration under grant agreement no.613571.</p>
 </div>
 </div>
@@ -203,42 +199,58 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=mfdb">https://​cloud.r-project.org/​package=mfdb</a>
-</li>
+<li><a href="https://cloud.r-project.org/package=mfdb" class="external-link">View on CRAN</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></li>
+<li><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing mfdb</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Jamie Lentin <br><small class="roles"> Author, maintainer, copyright holder </small>  </li>
 <li>Bjarki Thor Elvarsson <br><small class="roles"> Author </small>  </li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/gadget-framework/mfdb/actions"><img src="https://github.com/gadget-framework/mfdb/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://cran.r-project.org/package=mfdb" class="external-link"><img src="https://img.shields.io/cran/v/mfdb.svg" alt="CRAN version badge"></a></li>
+<li><a href="https://cran.r-project.org/web/checks/check_results_mfdb.html" class="external-link"><img src="https://cranchecks.info/badges/summary/mfdb" alt="CRAN Checks"></a></li>
+<li><a href="https://cran.r-project.org/package=mfdb" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/mfdb?color=001577" alt="CRAN RStudio mirror total downloads badge"></a></li>
+<li><a href="https://cran.r-project.org/package=mfdb" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/mfdb?color=001577" alt="CRAN RStudio mirror monthly downloads badge"></a></li>
+<li><a href="https://github.com/gadget-framework/mfdb/actions" class="external-link"><img src="https://github.com/gadget-framework/mfdb/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
 </ul>
 </div>
-</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Jamie Lentin, Bjarki Thor Elvarsson.</p>
+  <p></p>
+<p>Developed by Jamie Lentin, Bjarki Thor Elvarsson.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -246,6 +258,8 @@
 
   
 
+
+  
 
   </body>
 </html>

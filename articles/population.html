@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mfdb</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">7.2-99</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">7.2-99</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -97,7 +93,7 @@
 <p>The following examples use the following table_string helper to succintly define tables:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Convert a string into a data.frame</span>
-<span class="va">table_string</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">text</span>, <span class="va">...</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span><span class="op">(</span>
+<span class="va">table_string</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">text</span>, <span class="va">...</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span>
     text <span class="op">=</span> <span class="va">text</span>,
     blank.lines.skip <span class="op">=</span> <span class="cn">TRUE</span>,
     header <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -105,51 +101,19 @@
     <span class="va">...</span><span class="op">)</span></code></pre></div>
 <p>Firstly, connect to a database and set up some areas/divisions:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
-## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
-
-## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
-## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
-
-## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
-## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
-
-## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
-## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
-
-## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
-## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
-
-## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
-## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
-
-## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
-## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
-
-## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
-## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
-
-## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
-## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622
-
-## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
-## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
+<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
 name  division size
 45G01     divA   10
 45G02     divA  200
 45G03     divB  400
 '</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
-## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
-<div id="importing-data" class="section level2">
-<h2 class="hasAnchor">
-<a href="#importing-data" class="anchor"></a>Importing data</h2>
+<div class="section level2">
+<h2 id="importing-data">Importing data<a class="anchor" aria-label="anchor" href="#importing-data"></a>
+</h2>
 <p>Populations are arbitrary groupings for defining logical stocks that can’t be derived from other MFDB data.</p>
 <p>As with other metadata, we have to import valid values before using:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_population_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
 name    description                 t_group
 ns  "Northern Shrimp"           ns
@@ -159,11 +123,9 @@ ns_i    "Northern Shrimp in Isafjardardjup" ns
 as  "Aesop Shrimp"              as
 as_s    "Aesop Shrimp in Skjalfandi"        as
 '</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
-## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
 <p>Notice that we have used the <code>t_group</code> column to define groupings of within our population groups. This means that the <code>ns</code> group will include all samples from <code>ns</code>, <code>ns_s`,</code>ns_a<code>,</code>ns_i``.</p>
 <p>Now we can import data that uses these groupings:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey</a></span><span class="op">(</span><span class="va">mdb</span>, data_source <span class="op">=</span> <span class="st">"x"</span>,
 <span class="fu">table_string</span><span class="op">(</span><span class="st">"
 year    month   areacell   species population length  count
@@ -176,25 +138,23 @@ year    month   areacell   species population length  count
 2019    1       45G01      PRA     ns_i     10      193
 2019    1       45G01      PRA     ns_i     20      322
 "</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in tryCatchList(expr, classes, parentenv, handlers): Please upgrade from
-## DuckDB 0.3.1: https://github.com/duckdb/duckdb/issues/2622</code></pre>
 </div>
-<div id="querying-data" class="section level2">
-<h2 class="hasAnchor">
-<a href="#querying-data" class="anchor"></a>Querying data</h2>
+<div class="section level2">
+<h2 id="querying-data">Querying data<a class="anchor" aria-label="anchor" href="#querying-data"></a>
+</h2>
 <p>We can now use the <code>mfdb_sample_*</code> functions to select this data back out again. We can group and filter by any of the tow attributes. We can query for individual fjords as well as the whole group:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'population'</span>, <span class="st">'length'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'population'</span>, <span class="st">'length'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
         population <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_group.html">mfdb_group</a></span><span class="op">(</span>ns_s <span class="op">=</span> <span class="st">'ns_s'</span>, ns <span class="op">=</span> <span class="st">'ns'</span><span class="op">)</span>,
         length <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="va">agg_data</span></code></pre></div>
-<pre><code>## $`0.0.0.0.0`
-##   year step area population length number
-## 1  all  all  all         ns     10    777
-## 2  all  all  all         ns     20    847
-## 3  all  all  all       ns_s     10    285
-## 4  all  all  all       ns_s     20    273</code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<pre><code><span class="co">## $`0.0.0.0.0`</span>
+<span class="co">##   year step area population length number</span>
+<span class="co">## 1  all  all  all         ns     10    777</span>
+<span class="co">## 2  all  all  all         ns     20    847</span>
+<span class="co">## 3  all  all  all       ns_s     10    285</span>
+<span class="co">## 4  all  all  all       ns_s     20    273</span></code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></code></pre></div>
 </div>
   </div>
@@ -210,11 +170,13 @@ year    month   areacell   species population length  count
 
 
       <footer><div class="copyright">
-  <p>Developed by Jamie Lentin, Bjarki Thor Elvarsson.</p>
+  <p></p>
+<p>Developed by Jamie Lentin, Bjarki Thor Elvarsson.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -222,6 +184,8 @@ year    month   areacell   species population length  count
 
   
 
+
+  
 
   </body>
 </html>
