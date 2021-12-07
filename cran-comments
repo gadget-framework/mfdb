@@ -1,5 +1,54 @@
 # https://cran.r-project.org/submit.html
 
+==== 7.2.0
+
+* Fixes to support DuckDB 0.3.1 (Bugs in dbWriteTable type casting)
+* Add mfdb_dplyr_table(), for querying any table
+* Fix selecting from taxonomy tables via. dplyr
+
+Tested on R-release Win/MacOS/Ubuntu and R-devel Ubuntu.
+
+The source to build the package can be found here, along with the README:
+    
+  https://github.com/mareframe/mfdb/tree/v7.2-0
+
+Full history can be found in the ChangeLog:
+
+  https://github.com/gadget-framework/mfdb/blob/v7.1-1/ChangeLog
+
+Differences since the previous submission:
+
+  https://github.com/mareframe/mfdb/compare/v7.1-1...v7.2-0
+
+Built documentation can be found here:
+
+  http://gadget-framework.github.io/mfdb/
+
+CI test reports can be found here:
+
+  https://github.com/gadget-framework/mfdb/actions/runs/1486760389
+
+== \dontrun{} usages:
+
+* \dontrun{# NB: Requires a PostgreSQL installation, see README
+
+The MFDB package manages a PostgreSQL schema, whilst most examples use a
+temporary-file DuckDB database, this isn't possible for all examples. These
+examples should be disabled on CRAN testing hosts.
+
+* \dontrun{# NB: Requires a PostgreSQL installation, and creation of extra users
+
+In addition, these examples require an additional user, to demonstrate
+permission-setting. These examples should be disabled on CRAN testing hosts.
+
+On 2020-04-09 18:01, Uwe Ligges wrote:
+> CRAN does not have PostgreSQL installed everywhere. Winbuilder has.
+> 
+> So we can go for \dontrun here.
+> 
+> Best,
+> Uwe Ligges
+
 ==== 7.1-1
 
 Bugfix submission:
