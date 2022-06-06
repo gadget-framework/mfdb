@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -111,9 +111,9 @@ to the filesystem with <code>gadget_dir_write</code>.</p>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
 <span class="r-in"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2021-12-07 11:28:31 INFO:mfdb:Creating schema from scratch</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2021-12-07 11:28:31 INFO:mfdb:Taxonomy market_category no updates to make</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2021-12-07 11:28:31 INFO:mfdb:Schema up-to-date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-06 15:16:23 INFO:mfdb:Creating schema from scratch</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-06 15:16:24 INFO:mfdb:Taxonomy market_category no updates to make</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-06 15:16:24 INFO:mfdb:Schema up-to-date</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Define 2 areacells of equal size</span></span>
 <span class="r-in"><span class="fu"><a href="mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>name<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"divA"</span>, <span class="st">"divB"</span><span class="op">)</span>, size<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
@@ -196,7 +196,7 @@ to the filesystem with <code>gadget_dir_write</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>

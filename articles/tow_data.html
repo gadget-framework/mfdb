@@ -43,7 +43,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -288,10 +288,10 @@ year    month   areacell        species tow  length age weight
 <span class="va">agg_data</span></code></pre></div>
 <pre><code><span class="co">## $`0.0.0.0`</span>
 <span class="co">##   year step area tow_bait_type number</span>
-<span class="co">## 1  all  all  all            b1      3</span>
-<span class="co">## 2  all  all  all            b2      3</span>
-<span class="co">## 3  all  all  all            b3      3</span>
-<span class="co">## 4  all  all  all          &lt;NA&gt;     21</span></code></pre>
+<span class="co">## 1  all  all  all          &lt;NA&gt;     21</span>
+<span class="co">## 2  all  all  all            b1      3</span>
+<span class="co">## 3  all  all  all            b2      3</span>
+<span class="co">## 4  all  all  all            b3      3</span></code></pre>
 <p>And finally <code>tow_net_type</code>:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tow_net_type'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
@@ -299,10 +299,10 @@ year    month   areacell        species tow  length age weight
 <span class="va">agg_data</span></code></pre></div>
 <pre><code><span class="co">## $`0.0.0.0`</span>
 <span class="co">##   year step area tow_net_type number</span>
-<span class="co">## 1  all  all  all        black      3</span>
-<span class="co">## 2  all  all  all       orange      3</span>
-<span class="co">## 3  all  all  all        white      3</span>
-<span class="co">## 4  all  all  all         &lt;NA&gt;     21</span></code></pre>
+<span class="co">## 1  all  all  all         &lt;NA&gt;     21</span>
+<span class="co">## 2  all  all  all        black      3</span>
+<span class="co">## 3  all  all  all       orange      3</span>
+<span class="co">## 4  all  all  all        white      3</span></code></pre>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></code></pre></div>
 </div>
@@ -325,7 +325,7 @@ year    month   areacell        species tow  length age weight
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>

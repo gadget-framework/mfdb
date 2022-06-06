@@ -43,7 +43,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -99,9 +99,9 @@
 <li>aggregated over ICES rectangles</li>
 <li>imported into MFDB</li>
 </ul>
-<div class="section level1">
-<h1 id="download-monthly-hydrographic-data">Download monthly hydrographic data<a class="anchor" aria-label="anchor" href="#download-monthly-hydrographic-data"></a>
-</h1>
+<div class="section level2">
+<h2 id="download-monthly-hydrographic-data">Download monthly hydrographic data<a class="anchor" aria-label="anchor" href="#download-monthly-hydrographic-data"></a>
+</h2>
 <p>CMEMS Baltic Sea Physical Reanalysis product provides a physical reanalysis for the whole Baltic Sea area from January 1993 and up to minus 1-1.5 year compared to real time. The product is produced by using the ice-ocean model NEMO-Nordic (based on NEMO-3.6, Nucleus for European Modelling of the Ocean) together with a LSEIK data assimilation scheme, <a href="https://resources.marine.copernicus.eu/?option=com_csw&amp;view=details&amp;product_id=BALTICSEA_REANALYSIS_PHY_003_011" class="external-link uri">https://resources.marine.copernicus.eu/?option=com_csw&amp;view=details&amp;product_id=BALTICSEA_REANALYSIS_PHY_003_011</a>. As a demonstration we retrieve one year of already processed monthly means of bottom temperature (bottomT), but hydrographic products are also available for separate depth layers and at higher spatiotemporal resolution, and can be aggregated before import according to the needs. Note that an account has to be created to download data from Copernicus Marine Service using the script below.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">RCMEMS</span><span class="op">)</span>
@@ -133,18 +133,18 @@
                    out.path<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"data_provided/CMEMS_BAL_PHY_reanalysis_monthlymeans_"</span>,<span class="va">y</span>,<span class="st">".nc"</span>,sep<span class="op">=</span><span class="st">""</span><span class="op">)</span>,
                debug<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="download-ices-rectangles">Download ICES rectangles<a class="anchor" aria-label="anchor" href="#download-ices-rectangles"></a>
-</h1>
+<div class="section level2">
+<h2 id="download-ices-rectangles">Download ICES rectangles<a class="anchor" aria-label="anchor" href="#download-ices-rectangles"></a>
+</h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">temp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url<span class="op">=</span><span class="st">"https://gis.ices.dk/shapefiles/ICES_StatRec_mapto_ICES_Areas.zip"</span>, <span class="va">temp</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/unzip.html" class="external-link">unzip</a></span><span class="op">(</span><span class="va">temp</span>, exdir<span class="op">=</span><span class="st">"data_provided/ices_rect"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">temp</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="aggregate-hydrographic-data-by-ices-rectangles">Aggregate hydrographic data by ICES rectangles<a class="anchor" aria-label="anchor" href="#aggregate-hydrographic-data-by-ices-rectangles"></a>
-</h1>
+<div class="section level2">
+<h2 id="aggregate-hydrographic-data-by-ices-rectangles">Aggregate hydrographic data by ICES rectangles<a class="anchor" aria-label="anchor" href="#aggregate-hydrographic-data-by-ices-rectangles"></a>
+</h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/raster" class="external-link">raster</a></span><span class="op">)</span>
@@ -196,9 +196,9 @@
 <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu">st_drop_geometry</span><span class="op">(</span><span class="va">ices.rect.sea</span><span class="op">)</span>, file <span class="op">=</span> <span class="st">'ices.rect.sea.txt'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu">st_drop_geometry</span><span class="op">(</span><span class="va">hydroVar</span><span class="op">)</span>, file <span class="op">=</span> <span class="st">'hydroVar.txt'</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="import-bottom-temperature-into-mfdb">Import bottom temperature into mfdb<a class="anchor" aria-label="anchor" href="#import-bottom-temperature-into-mfdb"></a>
-</h1>
+<div class="section level2">
+<h2 id="import-bottom-temperature-into-mfdb">Import bottom temperature into mfdb<a class="anchor" aria-label="anchor" href="#import-bottom-temperature-into-mfdb"></a>
+</h2>
 <p>Import ICES rectangles and import the hydrographic data as a survey index. Then we can retrieve the hydrographic data as a weighted mean using ICES rectangle as a weighting variable:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span>
@@ -274,7 +274,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
