@@ -317,8 +317,13 @@ agg_data <- mfdb_sample_count(mdb, c('tow_bait_type'), list(
 agg_data
 ```
 ```{r, message=FALSE, echo=FALSE}
-# NB: DuckDB 0.2.9 -> 0.3.0 switches ORDER BY default to NULLS LAST, hide difference
-ok(ut_cmp_equal(unattr(agg_data[[1]][order(agg_data[[1]]$tow_bait_type),]), table_string('
+reorder_by_col <- function (df, col_name) {
+  # NB: DuckDB 0.3.0--0.3.3 switches ORDER BY default to NULLS LAST, hide difference
+  df <- df[order(df[[col_name]]),]  # Re-order by column
+  rownames(df) <- NULL  # Strip rownames, which will reveal previous order
+  return(df)
+}
+ok(ut_cmp_equal(reorder_by_col(unattr(agg_data[[1]]), 'tow_bait_type'), table_string('
 year step area tow_bait_type number
  all  all  all            b1      3
  all  all  all            b2      3
@@ -335,8 +340,7 @@ agg_data <- mfdb_sample_count(mdb, c('tow_net_type'), list(
 agg_data
 ```
 ```{r, message=FALSE, echo=FALSE}
-# NB: DuckDB 0.2.9 -> 0.3.0 switches ORDER BY default to NULLS LAST, hide difference
-ok(ut_cmp_equal(unattr(agg_data[[1]][order(agg_data[[1]]$tow_net_type),]), table_string('
+ok(ut_cmp_equal(reorder_by_col(unattr(agg_data[[1]]), 'tow_net_type'), table_string('
 year step area tow_net_type number
  all  all  all        black      3
  all  all  all       orange      3

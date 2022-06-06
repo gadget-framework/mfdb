@@ -1,3 +1,4 @@
+    * Support DuckDB 0.3.4 (unit tests weren't order agnostic)
 
 2021-11-21: Jamie Lentin <lentinj@shuttlethread.com>
 
