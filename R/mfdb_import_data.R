@@ -200,6 +200,22 @@ mfdb_import_stomach <- function(mdb, predator_data, prey_data, data_source = "de
 
 # Check column content, optionally resolving lookup
 sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL, test = NULL) {
+    # If we know what the taxonomy population command is, generate a hint to use it.
+    vocab_lookup_hint <- function (l) {
+        if (l == 'areacell') {
+            fn_name <- 'mfdb_import_area'
+        } else if (l == 'sampling_type') {
+            fn_name <- 'mfdb_import_sampling_type'
+        } else {
+            fn_name <- paste0('mfdb_import_', l, '_taxonomy')
+            if (!(fn_name %in% ls("package:mfdb"))) fn_name <- ""
+        }
+        if (nzchar(fn_name)) return(paste0(" (have you forgotten to use ", fn_name, "() to add valid values first?)"))
+
+        if (lookup %in% ls("package:mfdb")) return(paste0(" (check mfdb::", lookup, " for valid values)"))
+        return("")
+    }
+
     if (nrow(data_in) == 0) {
         # No data of any form, so return nothing
         return (c())
@@ -239,14 +255,14 @@ sanitise_col <- function (mdb, data_in, col_name, default = NULL, lookup = NULL,
             (if (length(levels(col)) < 100) paste0(" WHERE name IN ", sql_quote(levels(col), always_bracket = TRUE)) else ""),
             "")
         if(nrow(new_levels) == 0) {
-            stop("None of the input data matches ", lookup, " vocabulary")
+            stop("None of the input data matches ", lookup, " vocabulary", vocab_lookup_hint(lookup))
         }
         row.names(new_levels) <- new_levels$name
 
         new_levels <- new_levels[levels(col), paste0(lookup, '_id')]
         if (any(is.na(new_levels))) {
             mismatches <- levels(col)[is.na(new_levels)]
-            stop("Input data has items that don't match ", lookup, " vocabulary: ",
+            stop("Input data has items that don't match ", lookup, " vocabulary", vocab_lookup_hint(lookup), ": ",
                 paste(head(mismatches, n = 50), collapse = ","),
                 ifelse(length(mismatches) > 50, ', ...', ''),
                 NULL)
