@@ -2,8 +2,8 @@ Package: mfdb
 Type: Package
 Title: MareFrame DB Querying Library
 Encoding: UTF-8
-Version: 7.2-99
-Date: 2021-11-21
+Version: 7.3-0
+Date: 2022-06-07
 Authors@R: c(person("Jamie", "Lentin", email="lentinj@shuttlethread.com",role = c("aut", "cre", "cph")),
              person("Bjarki Thor", "Elvarsson", email="bjarki.elvarsson@hafogvatn.is",role = c("aut")))
 Maintainer: Jamie Lentin <lentinj@shuttlethread.com>
