@@ -99,7 +99,7 @@ will be able to change table structure (i.e. upgrade MFDB versions).</p>
 <span class="r-in"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="mfdb.html">mfdb</a></span><span class="op">(</span><span class="st">'examples'</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">mfdb_share_with</span><span class="op">(</span><span class="va">mdb</span>, <span class="st">'gelda'</span><span class="op">)</span> <span class="co"># Allow DB user gelda to query the 'examples' case study data</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in mfdb_transaction(mdb, {    for (u in user_or_role) {        mfdb_send(mdb, ifelse(query || import, "GRANT", "REVOKE"),             " USAGE ON SCHEMA ", mdb$schema, ifelse(query ||                 import, " TO ", " FROM "), u)        mfdb_perms(mdb, u, "TABLES", c(SELECT = query || import,             INSERT = import, UPDATE = import, DELETE = import,             REFERENCES = import))        mfdb_perms(mdb, u, "SEQUENCES", c(SELECT = query || import,             USAGE = import, UPDATE = import))        mfdb_perms(mdb, u, "FUNCTIONS", c(EXECUTE = query ||             import))    }}):</span> object 'mdb' not found</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in mfdb_db_backend(mdb):</span> object 'mdb' not found</span>
 </code></pre></div>
     </div>
   </div>
