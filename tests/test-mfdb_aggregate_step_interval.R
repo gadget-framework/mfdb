@@ -3,7 +3,7 @@ library(unittest, quietly = TRUE)
 helpers <- c('utils/helpers.R', 'tests/utils/helpers.R') ; source(helpers[file.exists(helpers)])
 
 g <- NULL
-mdb <- NULL
+mdb <- fake_mdb()
 
 ok_group("Can generate objects", {
     expect_equal(

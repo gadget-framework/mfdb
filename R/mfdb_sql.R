@@ -25,17 +25,20 @@ sql_create_index <- function(table, cols) {
    paste0(c("CREATE INDEX ", index_name, " ON ", table, " (", paste0(cols, collapse = ","), ")"), collapse = "")
 }
 
-# Return dbnull / pg / sqlite or unknown
+# Return DB driver connection type, one of: dbnull / pg / duckdb / sqlite
 mfdb_db_backend <- function(mdb) {
-    if (class(mdb$db) == 'dbNull') return('dbnull')
-
-    drv_package <- attr(class(mdb$db_args$drv), 'package')
-    if (length(drv_package) == 0) return ('dbnull')
-    if (drv_package %in% c('RPostgres', 'RPostgreSQL')) return('pg')
-    if (drv_package %in% c('RSQLite')) return('sqlite')
-    if (drv_package %in% c('duckdb')) return('duckdb')
-    return('unknown')
+    driver_classes <- c(
+        dbnull = 'dbNull',
+        pg = 'PqConnection',  # RPostgres
+        pg = 'PostgreSQLConnection',  # RPostgreSQL
+        duckdb = 'duckdb_connection',
+        sqlite = 'SQLiteConnection',
+        NULL)
+    out <- driver_classes[as.logical(inherits(mdb$db, driver_classes, which = TRUE))]
+    if (length(out) != 1) stop("Unkown DB driver connection class: ", class(mdb$db))
+    names(out)
 }
+mfdb_is_dbnull <- function (mdb) mfdb_db_backend(mdb) == 'dbnull'
 mfdb_is_postgres <- function (mdb) mfdb_db_backend(mdb) == 'pg'
 mfdb_is_sqlite <- function (mdb) mfdb_db_backend(mdb) == 'sqlite'
 mfdb_is_duckdb <- function (mdb) mfdb_db_backend(mdb) == 'duckdb'
@@ -44,7 +47,7 @@ mfdb_is_duckdb <- function (mdb) mfdb_db_backend(mdb) == 'duckdb'
 mfdb_send <- function(mdb, ..., result = "") {
     query <- paste0(c(...), collapse = "")
 
-    if (class(mdb$db) == 'dbNull') {
+    if (mfdb_is_dbnull(mdb)) {
         if (is.list(mdb$ret_rows) && !is.data.frame(mdb$ret_rows)) {
             # Find the first of ret_rows where the regex name matches query
             ret_rows <- mdb$ret_rows[vapply(names(mdb$ret_rows), function (x) grepl(x, query), FALSE)]
@@ -114,7 +117,7 @@ mfdb_fetch <- function(mdb, ...) mfdb_send(mdb, ..., result = "rows")
 # Insert a vector row or data.frame of rows into table_name
 mfdb_insert <- function(mdb, table_name, data_in, extra = c()) {
     insert_row <- function (r) {
-        if (class(mdb$db) == 'dbNull') mdb$ret_rowcount <- mdb$ret_rows <- if (is.null(nrow(r))) 1 else nrow(r)
+        if (mfdb_is_dbnull(mdb)) mdb$ret_rowcount <- mdb$ret_rows <- if (is.null(nrow(r))) 1 else nrow(r)
         mfdb_send(mdb, "INSERT INTO ", paste(table_name, collapse = ""),
             " (", paste(c(names(r), names(extra)), collapse=","), ") VALUES ",
             if (is.null(nrow(r)))
@@ -143,7 +146,7 @@ mfdb_update <- function(mdb, table_name, data_in, extra = c(), where = list()) {
     id_col <- paste0(table_name, '_id')
 
     update_row <- function (r) {
-        if (class(mdb$db) == 'dbNull') mdb$ret_rowcount <- mdb$ret_rows <- if (is.null(nrow(r))) 1 else nrow(r)
+        if (mfdb_is_dbnull(mdb)) mdb$ret_rowcount <- mdb$ret_rows <- if (is.null(nrow(r))) 1 else nrow(r)
         out <- mfdb_send(mdb,
             "UPDATE ", table_name,
             " SET ",
@@ -181,7 +184,7 @@ mfdb_bulk_copy <- function(mdb, target_table, data_in, fn) {
     }
 
     # Fetch table definition from DB, so we can recreate for temporary table
-    if (mfdb_is_postgres(mdb) || class(mdb$db) == 'dbNull') {
+    if (mfdb_is_postgres(mdb) || mfdb_is_dbnull(mdb)) {
         cols <- mfdb_fetch(mdb, "SELECT column_name, data_type",
             " FROM information_schema.columns",
             " WHERE table_schema = ", sql_quote(mdb$schema),
@@ -285,7 +288,7 @@ mfdb_disable_constraints <- function(mdb, table_name, code_block) {
 
 # Do the given tables already exist?
 mfdb_table_exists <- function(mdb, table_name, schema_name = mdb$schema) {
-    if (mfdb_is_postgres(mdb) || class(mdb$db) == 'dbNull') return(mfdb_fetch(mdb,
+    if (mfdb_is_postgres(mdb) || mfdb_is_dbnull(mdb)) return(mfdb_fetch(mdb,
         "SELECT COUNT(*)",
         " FROM information_schema.tables",
         " WHERE (table_schema IN ", sql_quote(schema_name, always_bracket = TRUE),
@@ -419,7 +422,7 @@ mfdb_create_aggregate <- function(mdb, func_name, accum_body, final_body,
 
 # Execute code block within a DB transaction, roll back on error, commit otherwise
 mfdb_transaction <- function(mdb, transaction) {
-    if (class(mdb$db) == 'dbNull') {
+    if (mfdb_is_dbnull(mdb)) {
         # Short-circuit when in tests
         transaction
         return(invisible(TRUE))
