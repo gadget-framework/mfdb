@@ -29,8 +29,8 @@ sql_create_index <- function(table, cols) {
 mfdb_db_backend <- function(mdb) {
     driver_classes <- c(
         dbnull = 'dbNull',
-        pg = 'PqConnection',  # RPostgres
-        pg = 'PostgreSQLConnection',  # RPostgreSQL
+        postgres = 'PqConnection',  # RPostgres
+        postgres = 'PostgreSQLConnection',  # RPostgreSQL
         duckdb = 'duckdb_connection',
         sqlite = 'SQLiteConnection',
         NULL)
@@ -39,7 +39,7 @@ mfdb_db_backend <- function(mdb) {
     names(out)
 }
 mfdb_is_dbnull <- function (mdb) mfdb_db_backend(mdb) == 'dbnull'
-mfdb_is_postgres <- function (mdb) mfdb_db_backend(mdb) == 'pg'
+mfdb_is_postgres <- function (mdb) mfdb_db_backend(mdb) == 'postgres'
 mfdb_is_sqlite <- function (mdb) mfdb_db_backend(mdb) == 'sqlite'
 mfdb_is_duckdb <- function (mdb) mfdb_db_backend(mdb) == 'duckdb'
 
@@ -76,7 +76,7 @@ mfdb_send <- function(mdb, ..., result = "") {
         writeLines("-----------------------------")
         writeLines(query)
         res <- dbSendQuery(mdb$db, paste(c(
-            pg = "EXPLAIN ANALYZE",
+            postgres = "EXPLAIN ANALYZE",
             sqlite = "EXPLAIN QUERY PLAN",
             # TODO: This isn't working yet, there are no results
             duckdb = "EXPLAIN",
