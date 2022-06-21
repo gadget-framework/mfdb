@@ -76,10 +76,13 @@
     <h2>Arguments</h2>
     <dl><dt>mdb</dt>
 <dd><p>Database connection created by <code><a href="mfdb.html">mfdb()</a></code>.</p></dd>
-<dt>data_in, predator_data, prey_data</dt>
+
+    <dt>data_in, predator_data, prey_data</dt>
 <dd><p>A <code>data.frame</code> of survey data to import, see details.</p></dd>
-<dt>data_source</dt>
+
+    <dt>data_source</dt>
 <dd><p>A name for this data, e.g. the filename it came from. Used so you can replace it later without disturbing other data.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -287,9 +290,9 @@ If a prey has a stomach name that doesn't match a predator, then an error will b
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-07 11:19:22 INFO:mfdb:Creating schema from scratch</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-07 11:19:23 INFO:mfdb:Taxonomy market_category no updates to make</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-07 11:19:23 INFO:mfdb:Schema up-to-date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-21 10:42:43 INFO:mfdb:Creating schema from scratch</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-21 10:42:43 INFO:mfdb:Taxonomy market_category no updates to make</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-21 10:42:43 INFO:mfdb:Schema up-to-date</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># We need to set-up vocabularies first</span></span>
 <span class="r-in"><span class="fu"><a href="mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -332,7 +335,7 @@ If a prey has a stomach name that doesn't match a predator, then an error will b
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

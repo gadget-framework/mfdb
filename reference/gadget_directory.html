@@ -75,21 +75,28 @@
     <h2>Arguments</h2>
     <dl><dt>dir</dt>
 <dd><p>Name of directory, will be created if it doesn't exist.</p></dd>
-<dt>mainfile</dt>
+
+    <dt>mainfile</dt>
 <dd><p>Name of the GADGET mainfile to use.</p></dd>
-<dt>gd</dt>
+
+    <dt>gd</dt>
 <dd><p>A <code>gadget_directory</code> object.</p></dd>
-<dt>obj</dt>
+
+    <dt>obj</dt>
 <dd><p>The <code>gadget_file</code>, or <code>gadget_likelihood_component</code> to write.</p></dd>
-<dt>file_name</dt>
+
+    <dt>file_name</dt>
 <dd><p>File to read out of the directory and turn into a <code>gadget_file</code>.</p></dd>
-<dt>missing_okay</dt>
+
+    <dt>missing_okay</dt>
 <dd><p>If true, return an empty file instead of complaining that the given
         file does not exist.</p></dd>
-<dt>file_type</dt>
+
+    <dt>file_type</dt>
 <dd><p>A character vector that alters how the file is parsed. Currently either
         NULL or "bare_component", which implies we write "something" instead of
         "[something]".</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -103,10 +110,18 @@ out based on what you are writing out.</p>
     </div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>gadget_directory</code> returns a list of class 'gadget_directory',
-containing the location of the mainfile that the gadget configuration will use.
-<code>gadget_dir_write</code> returns NULL
-<code>gadget_dir_read</code> returns a gadget_file object from <code>read.gadget_file</code></p>
+    
+
+<p><code>gadget_directory</code> returns a list of class 'gadget_directory',
+containing the location of the mainfile that the gadget configuration will use.</p>
+
+
+<p><code>gadget_dir_write</code> returns NULL</p>
+
+
+<p><code>gadget_dir_read</code> returns a gadget_file object from <code>read.gadget_file</code></p>
+
+
     </div>
 
     <div id="ref-examples">
@@ -137,7 +152,7 @@ containing the location of the mainfile that the gadget configuration will use.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>
