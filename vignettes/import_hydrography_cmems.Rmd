@@ -195,7 +195,7 @@ year step area     mean
 2018    3   a2 6.609905
 2018    4   a1 6.144196
 2018    4   a2 6.020029
-', colClasses = c(NA, 'character', NA, NA)), tolerance = 1e-7), "extract mean bottom temperature by quarter and area")
+', colClasses = c(NA, 'character', NA, NA)), tolerance = 1e-5), "extract mean bottom temperature by quarter and area")
 ```
 
 ```{r}
