@@ -182,16 +182,19 @@ dat
 ```
 
 ```{r, echo=FALSE}
-ok(all.equal(dat, read.table(blank.lines.skip = TRUE, header = TRUE, stringsAsFactors = FALSE, text = '
+# NB: Calculated with:
+# raw <- hydroVar[hydroVar$year == 2018 & hydroVar$rect %in% c('44G7','44G8','44G9','45G7','45G8','45G9') & hydroVar$month %in% c(1,2,3),]
+# sum(raw$sob * raw$areaSea_km2) / sum(raw$areaSea_km2)
+ok(ut_cmp_equal(dat, read.table(blank.lines.skip = TRUE, header = TRUE, stringsAsFactors = FALSE, text = '
 year step area     mean
-2018    1   a1 5.130875
-2018    1   a2 5.285476
-2018    2   a1 5.772546
-2018    2   a2 5.787375
-2018    3   a1 7.258872
-2018    3   a2 6.609387
-2018    4   a1 6.143770
-2018    4   a2 6.019377
+2018    1   a1 5.131353
+2018    1   a2 5.286023
+2018    2   a1 5.772875
+2018    2   a2 5.787779
+2018    3   a1 7.259383
+2018    3   a2 6.609905
+2018    4   a1 6.144196
+2018    4   a2 6.020029
 ', colClasses = c(NA, 'character', NA, NA)), tolerance = 1e-7), "extract mean bottom temperature by quarter and area")
 ```
 

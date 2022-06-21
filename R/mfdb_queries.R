@@ -79,8 +79,8 @@ mfdb_area_size_depth <- function (mdb, params) {
         group_cols = c("area"),
         calc_cols = c(
             "SUM(c.size) AS size",
-            paste0("SUM(CAST(c.depth AS numeric) * CAST(c.size AS numeric)) AS mean_depth__sum"),
-            paste0("SUM(CAST(c.size AS numeric)) AS mean_depth__count"),
+            paste0("SUM(c.depth * c.size) AS mean_depth__sum"),
+            paste0("SUM(c.size) AS mean_depth__count"),
             NULL),
         core_table = "areacell",
         col_defs = list(area = "c.areacell_id"),
@@ -130,8 +130,8 @@ mfdb_survey_index_mean <- function (mdb, cols, params, scale_index = NULL) {
             if (abundance[[2]] == 1)
                 paste0("AVG(c.value) AS mean")
             else c(
-                paste0("SUM(CAST(c.value AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS mean__sum"),
-                paste0("SUM(CAST(", abundance[[2]], " AS numeric)) AS mean__count"))),
+                paste0("SUM(c.value * ", abundance[[2]], ") AS mean__sum"),
+                paste0("SUM(", abundance[[2]], ") AS mean__count"))),
         col_defs = list(
             data_source = 'c.data_source_id',
             index_type = "c.index_type_id",
@@ -215,8 +215,8 @@ mfdb_sample_meanlength <- function (mdb, cols, params, scale_index = NULL) {
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("SUM(CAST(c.length AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS mean__sum"),
-            paste0("SUM(CAST(", abundance[[2]], " AS numeric)) AS mean__count"),
+            paste0("SUM(c.length * ", abundance[[2]], ") AS mean__sum"),
+            paste0("SUM(", abundance[[2]], ") AS mean__count"),
             NULL),
         params = params)
     out
@@ -231,9 +231,9 @@ mfdb_sample_meanlength_stddev <- function (mdb, cols, params, scale_index = NULL
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("SUM(CAST(c.length AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS mean__sum"),
-            paste0("SUM(CAST(", abundance[[2]], " AS numeric)) AS mean__count"),
-            paste0("SUM(CAST(c.length AS numeric) * CAST(c.length AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS mean__sqsum"),   # TODO: Should take length_var into account
+            paste0("SUM(c.length * ", abundance[[2]], ") AS mean__sum"),
+            paste0("SUM(", abundance[[2]], ") AS mean__count"),
+            paste0("SUM(c.length * c.length * ", abundance[[2]], ") AS mean__sqsum"),   # TODO: Should take length_var into account
             NULL),
         params = params)
     out
@@ -282,8 +282,8 @@ mfdb_sample_meanweight <- function (mdb, cols, params, scale_index = NULL, measu
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("SUM(CAST(c.", col_sql, " AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel, "__sum"),
-            paste0("SUM(CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel, "__count"),
+            paste0("SUM(c.", col_sql, " * ", abundance[[2]], ") AS ", col_meanlabel, "__sum"),
+            paste0("SUM(", abundance[[2]], ") AS ", col_meanlabel, "__count"),
             NULL),
         params = params)
     out
@@ -300,9 +300,9 @@ mfdb_sample_meanweight_stddev <- function (mdb, cols, params, scale_index = NULL
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") AS number"),
-            paste0("SUM(CAST(c.", col_sql, " AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel, "__sum"),
-            paste0("SUM(CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel, "__count"),
-            paste0("SUM(CAST(c.", col_sql, " AS numeric) * CAST(c.", col_sql, " AS numeric) * CAST(", abundance[[2]], " AS numeric)) AS ", col_meanlabel, "__sqsum"),
+            paste0("SUM(c.", col_sql, " * ", abundance[[2]], ") AS ", col_meanlabel, "__sum"),
+            paste0("SUM(", abundance[[2]], ") AS ", col_meanlabel, "__count"),
+            paste0("SUM(c.", col_sql, " * c.", col_sql, " * ", abundance[[2]], ") AS ", col_meanlabel, "__sqsum"),
             # TODO: Should take length_var into account
             NULL),
         params = params)
@@ -339,8 +339,8 @@ mfdb_sample_scaled <- function (mdb, cols, params, abundance_scale = NULL, scale
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(", abundance[[2]], ") * ", scale_fn, " AS number"),
-            paste0("SUM(CAST(c.length AS numeric) * CAST(", abundance[[2]], " AS numeric)) * ", scale_fn, " AS mean_weight__sum"),
-            paste0("SUM(CAST(", abundance[[2]], " AS numeric)) AS mean_weight__count"),
+            paste0("SUM(c.length * ", abundance[[2]], ") * ", scale_fn, " AS mean_weight__sum"),
+            paste0("SUM(", abundance[[2]], ") AS mean_weight__count"),
             NULL),
         params = params)
 }
@@ -397,8 +397,8 @@ mfdb_stomach_preymeanlength <- function (mdb, cols, params) {
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
             paste0("SUM(COALESCE(prey.count, 0)) AS number"),
-            paste0("SUM(CAST(prey.length AS numeric) * CAST(COALESCE(prey.count, 0) AS numeric)) AS mean_length__sum"),
-            paste0("SUM(CAST(COALESCE(prey.count, 0) AS numeric)) AS mean_length__count"),
+            paste0("SUM(prey.length * COALESCE(prey.count, 0)) AS mean_length__sum"),
+            paste0("SUM(COALESCE(prey.count, 0)) AS mean_length__count"),
             NULL),
         params = params)
 }
@@ -433,7 +433,7 @@ mfdb_stomach_preymeanweight <- function (mdb, cols, params) {
         col_defs = as.list(c(pred_col_defs, prey_col_defs)),
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            paste0("SUM(CAST(prey.weight AS numeric) * COALESCE(prey.count, 1)) AS weight_total"),
+            paste0("SUM(prey.weight * COALESCE(prey.count, 1)) AS weight_total"),
             NULL),
         params = params)
 
@@ -466,7 +466,7 @@ mfdb_stomach_preyweightratio <- function (mdb, cols, params) {
         col_defs = as.list(c(pred_col_defs)),
         group_cols = c("year", "timestep", "area", intersect(cols, names(pred_col_defs))),
         calc_cols = c(
-            "SUM(CAST(prey.weight AS numeric) * COALESCE(prey.count, 1)) AS weight_total",
+            "SUM(prey.weight * COALESCE(prey.count, 1)) AS weight_total",
             NULL),
         params = params)
 
@@ -479,7 +479,7 @@ mfdb_stomach_preyweightratio <- function (mdb, cols, params) {
         col_defs = as.list(c(pred_col_defs, prey_col_defs)),
         group_cols = c("year", "timestep", "area", cols),
         calc_cols = c(
-            "SUM(CAST(prey.weight AS numeric) * COALESCE(prey.count, 1)) AS weight_present",
+            "SUM(prey.weight * COALESCE(prey.count, 1)) AS weight_present",
             NULL),
         params = params)
 
