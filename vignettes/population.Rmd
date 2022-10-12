@@ -13,7 +13,7 @@ vignette: >
 logging::setLevel('WARN')
 library(unittest)
 # Redirect ok() output to stderr
-ok <- function(...) capture.output(unittest::ok(...), file = stderr())
+options(unittest.output = stderr())
 library(mfdb)
 
 # Remove our attributes from a dataframe - only used for testing
@@ -113,4 +113,5 @@ all  all  all       ns_s     20    273
 
 ```{r}
 mfdb_disconnect(mdb)
+options(unittest.output = NULL)
 ```

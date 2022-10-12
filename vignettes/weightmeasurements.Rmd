@@ -13,7 +13,7 @@ vignette: >
 logging::setLevel('WARN')
 library(unittest)
 # Redirect ok() output to stderr
-ok <- function(...) capture.output(unittest::ok(...), file = stderr())
+options(unittest.output = stderr())
 library(mfdb)
 
 # Remove our attributes from a dataframe - only used for testing
@@ -129,4 +129,5 @@ year step area age number mean mean_gonad_weight stddev stddev_gonad_weight
 
 ```{r}
 mfdb_disconnect(mdb)
+options(unittest.output = NULL)
 ```

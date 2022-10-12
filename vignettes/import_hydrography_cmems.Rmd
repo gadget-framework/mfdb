@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, message=FALSE, echo=FALSE}
 library(unittest)
 # Redirect ok() output to stderr
-ok <- function(...) capture.output(unittest::ok(...), file = stderr())
+options(unittest.output = stderr())
 ```
 ```{r, message=FALSE}
 library(mfdb)
@@ -200,4 +200,5 @@ year step area     mean
 
 ```{r}
 mfdb_disconnect(mdb)
+options(unittest.output = NULL)
 ```

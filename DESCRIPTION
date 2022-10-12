@@ -25,6 +25,6 @@ Suggests:
     dbplyr (>= 2.0.0),
     knitr,
     rmarkdown,
-    unittest (>= 1.4)
+    unittest (>= 1.5-0)
 VignetteBuilder: knitr
 LazyData: true
