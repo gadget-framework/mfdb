@@ -92,53 +92,53 @@
     
 <p>The following examples use the following table_string helper to succintly define tables:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Convert a string into a data.frame</span>
-<span class="va">table_string</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">text</span>, <span class="va">...</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span>
-    text <span class="op">=</span> <span class="va">text</span>,
-    blank.lines.skip <span class="op">=</span> <span class="cn">TRUE</span>,
-    header <span class="op">=</span> <span class="cn">TRUE</span>,
-    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>,
-    <span class="va">...</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Convert a string into a data.frame</span></span>
+<span><span class="va">table_string</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">text</span>, <span class="va">...</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span></span>
+<span>    text <span class="op">=</span> <span class="va">text</span>,</span>
+<span>    blank.lines.skip <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    header <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    <span class="va">...</span><span class="op">)</span></span></code></pre></div>
 <p>Firstly, connect to a database and set up some areas/divisions:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-name  division size
-45G01     divA   10
-45G02     divA  200
-45G03     divB  400
-'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">name  division size</span></span>
+<span><span class="st">45G01     divA   10</span></span>
+<span><span class="st">45G02     divA  200</span></span>
+<span><span class="st">45G03     divB  400</span></span>
+<span><span class="st">'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="importing-data">Importing Data<a class="anchor" aria-label="anchor" href="#importing-data"></a>
 </h2>
 <p>Before any measurements assoicated with a tow can be imported, we need to define the tows that they will be associated with, and attributes such as length:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_tow_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-name latitude longitude  depth length
-   A     64.1    -23.15  98.82     10
-   B     63.4    -20.18  44.90     10
-   C     64.9    -13.55 140.91     20
-   D     66.2    -18.55 122.61     20
-'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_tow_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">name latitude longitude  depth length</span></span>
+<span><span class="st">   A     64.1    -23.15  98.82     10</span></span>
+<span><span class="st">   B     63.4    -20.18  44.90     10</span></span>
+<span><span class="st">   C     64.9    -13.55 140.91     20</span></span>
+<span><span class="st">   D     66.2    -18.55 122.61     20</span></span>
+<span><span class="st">'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>For other possible columns, see <code><a href="../reference/mfdb_import_taxonomy.html">?mfdb_import_tow_taxonomy</a></code>.</p>
 <p>Now tows are defined, we can import data that uses these definitions:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey</a></span><span class="op">(</span><span class="va">mdb</span>, data_source <span class="op">=</span> <span class="st">"tow_example_a"</span>,
-    <span class="fu">table_string</span><span class="op">(</span><span class="st">"
-year    month   areacell        species tow  length  age     weight
-2000    1       45G01           COD     A    21      2       210
-2000    1       45G02           COD     A    34      3       220
-2000    1       45G03           COD     A    34      3       230
-2000    1       45G01           COD     B    62      1       320
-2000    1       45G02           COD     B    53      1       330
-2000    1       45G03           COD     B    54      2       430
-2000    1       45G01           COD     C    28      2       210
-2000    1       45G02           COD     C    34      3       220
-2000    1       45G03           COD     C    24      3       230
-2000    1       45G01           COD     D    12      1       320
-2000    1       45G02           COD     D    44      1       330
-2000    1       45G03           COD     D    14      2       430
-    "</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey</a></span><span class="op">(</span><span class="va">mdb</span>, data_source <span class="op">=</span> <span class="st">"tow_example_a"</span>,</span>
+<span>    <span class="fu">table_string</span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">year    month   areacell        species tow  length  age     weight</span></span>
+<span><span class="st">2000    1       45G01           COD     A    21      2       210</span></span>
+<span><span class="st">2000    1       45G02           COD     A    34      3       220</span></span>
+<span><span class="st">2000    1       45G03           COD     A    34      3       230</span></span>
+<span><span class="st">2000    1       45G01           COD     B    62      1       320</span></span>
+<span><span class="st">2000    1       45G02           COD     B    53      1       330</span></span>
+<span><span class="st">2000    1       45G03           COD     B    54      2       430</span></span>
+<span><span class="st">2000    1       45G01           COD     C    28      2       210</span></span>
+<span><span class="st">2000    1       45G02           COD     C    34      3       220</span></span>
+<span><span class="st">2000    1       45G03           COD     C    24      3       230</span></span>
+<span><span class="st">2000    1       45G01           COD     D    12      1       320</span></span>
+<span><span class="st">2000    1       45G02           COD     D    44      1       330</span></span>
+<span><span class="st">2000    1       45G03           COD     D    14      2       430</span></span>
+<span><span class="st">    "</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="importing-data-longlines">Importing Data: Longlines<a class="anchor" aria-label="anchor" href="#importing-data-longlines"></a>
@@ -146,34 +146,34 @@ year    month   areacell        species tow  length  age     weight
 <p><code>mfdb_import_tow_taxonomy</code> also allows us to import <em>bait_type</em> and <em>hook_count</em>, useful when importing data from longline fisheries.</p>
 <p>As with other taxonomy tables, we have to first define bait types before we can use them:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_bait_type_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-name    description
-b1  "Bait type 1"
-b2  "Bait type 2"
-b3  "Bait type 3"
-'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_bait_type_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">name    description</span></span>
+<span><span class="st">b1  "Bait type 1"</span></span>
+<span><span class="st">b2  "Bait type 2"</span></span>
+<span><span class="st">b3  "Bait type 3"</span></span>
+<span><span class="st">'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>…and then use <code>mfdb_import_tow_taxonomy</code> as before. Since the names don’t overlap with the previous call, the old tow definitions won’t be removed:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_tow_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-name latitude longitude  length hook_count bait_type
- llA     63.4    -20.18      11         30       b1
- llB     63.4    -20.18      12         30       b2
- llC     63.4    -20.18      13         30       b3
-'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_tow_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">name latitude longitude  length hook_count bait_type</span></span>
+<span><span class="st"> llA     63.4    -20.18      11         30       b1</span></span>
+<span><span class="st"> llB     63.4    -20.18      12         30       b2</span></span>
+<span><span class="st"> llC     63.4    -20.18      13         30       b3</span></span>
+<span><span class="st">'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, import some data using these definitions:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey</a></span><span class="op">(</span><span class="va">mdb</span>, data_source <span class="op">=</span> <span class="st">'longline'</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-year    month   areacell        species tow  length age weight
-2000    1   45G01       COD llA 12  15  236
-2000    1   45G01       COD llA 47  6   243
-2000    1   45G01       COD llA 92  11  118
-2000    1   45G01       COD llB 13  14  392
-2000    1   45G01       COD llB 15  4   169
-2000    1   45G01       COD llB 52  3   272
-2000    1   45G01       COD llC 85  10  132
-2000    1   45G01       COD llC 94  9   342
-2000    1   45G01       COD llC 71  12  375
-    '</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey</a></span><span class="op">(</span><span class="va">mdb</span>, data_source <span class="op">=</span> <span class="st">'longline'</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">year    month   areacell        species tow  length age weight</span></span>
+<span><span class="st">2000    1   45G01       COD llA 12  15  236</span></span>
+<span><span class="st">2000    1   45G01       COD llA 47  6   243</span></span>
+<span><span class="st">2000    1   45G01       COD llA 92  11  118</span></span>
+<span><span class="st">2000    1   45G01       COD llB 13  14  392</span></span>
+<span><span class="st">2000    1   45G01       COD llB 15  4   169</span></span>
+<span><span class="st">2000    1   45G01       COD llB 52  3   272</span></span>
+<span><span class="st">2000    1   45G01       COD llC 85  10  132</span></span>
+<span><span class="st">2000    1   45G01       COD llC 94  9   342</span></span>
+<span><span class="st">2000    1   45G01       COD llC 71  12  375</span></span>
+<span><span class="st">    '</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="importing-data-gillnets">Importing Data: Gillnets<a class="anchor" aria-label="anchor" href="#importing-data-gillnets"></a>
@@ -181,130 +181,131 @@ year    month   areacell        species tow  length age weight
 <p><code>mfdb_import_tow_taxonomy</code> also allows us to import <em>net_count</em>, <em>net_type</em> and <em>mesh_size</em>, useful when importing data from Gillnet fisheries.</p>
 <p>Again, we need to define net types first:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_net_type_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-name    description
-black   Black
-orange  Orange
-white   White
-'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_net_type_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">name    description</span></span>
+<span><span class="st">black   Black</span></span>
+<span><span class="st">orange  Orange</span></span>
+<span><span class="st">white   White</span></span>
+<span><span class="st">'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>…define the tows:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Add more detailed information for gillnets</span>
-<span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_tow_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-name latitude longitude  length net_count net_type mesh_size
- gnA     63.4    -20.18      21         2  black         6
- gnB     63.4    -20.18      22         2  orange        7
- gnC     63.4    -20.18      23         2  white         8
-'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Add more detailed information for gillnets</span></span>
+<span><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_tow_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">name latitude longitude  length net_count net_type mesh_size</span></span>
+<span><span class="st"> gnA     63.4    -20.18      21         2  black         6</span></span>
+<span><span class="st"> gnB     63.4    -20.18      22         2  orange        7</span></span>
+<span><span class="st"> gnC     63.4    -20.18      23         2  white         8</span></span>
+<span><span class="st">'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>…and import some data using these definitions:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey</a></span><span class="op">(</span><span class="va">mdb</span>, data_source <span class="op">=</span> <span class="st">'gillnet'</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-year    month   areacell        species tow  length age weight
-2000    1   45G01       COD gnA 34  10  314
-2000    1   45G01       COD gnA 45  14  255
-2000    1   45G01       COD gnA 48  5   322
-2000    1   45G01       COD gnB 24  8   170
-2000    1   45G01       COD gnB 83  7   122
-2000    1   45G01       COD gnB 15  4   152
-2000    1   45G01       COD gnC 33  14  311
-2000    1   45G01       COD gnC 79  6   373
-2000    1   45G01       COD gnC 57  5   186
-    '</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey</a></span><span class="op">(</span><span class="va">mdb</span>, data_source <span class="op">=</span> <span class="st">'gillnet'</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">year    month   areacell        species tow  length age weight</span></span>
+<span><span class="st">2000    1   45G01       COD gnA 34  10  314</span></span>
+<span><span class="st">2000    1   45G01       COD gnA 45  14  255</span></span>
+<span><span class="st">2000    1   45G01       COD gnA 48  5   322</span></span>
+<span><span class="st">2000    1   45G01       COD gnB 24  8   170</span></span>
+<span><span class="st">2000    1   45G01       COD gnB 83  7   122</span></span>
+<span><span class="st">2000    1   45G01       COD gnB 15  4   152</span></span>
+<span><span class="st">2000    1   45G01       COD gnC 33  14  311</span></span>
+<span><span class="st">2000    1   45G01       COD gnC 79  6   373</span></span>
+<span><span class="st">2000    1   45G01       COD gnC 57  5   186</span></span>
+<span><span class="st">    '</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="querying-data">Querying data<a class="anchor" aria-label="anchor" href="#querying-data"></a>
 </h2>
 <p>We can now use the <code>mfdb_sample_*</code> functions to select this data back out again. We can group and filter by any of the tow attributes. For instance, to group/filter by <code>tow_depth</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_meanlength</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tow_depth'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    step <span class="op">=</span> <span class="va">mfdb_timestep_yearly</span>,
-    tow_depth <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_interval.html">mfdb_interval</a></span><span class="op">(</span><span class="st">'depth'</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span>,
-    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span><span class="op">)</span>
-<span class="va">agg_data</span></code></pre></div>
-<pre><code><span class="co">## $`0.0.0.0`</span>
-<span class="co">##   year step area tow_depth number     mean</span>
-<span class="co">## 1  all    1  all    depth0      3 56.33333</span>
-<span class="co">## 2  all    1  all  depth100      6 26.00000</span>
-<span class="co">## 3  all    1  all   depth50      3 29.66667</span></code></pre>
+<code class="sourceCode R"><span><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_meanlength</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tow_depth'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    step <span class="op">=</span> <span class="va">mfdb_timestep_yearly</span>,</span>
+<span>    tow_depth <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_interval.html">mfdb_interval</a></span><span class="op">(</span><span class="st">'depth'</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">agg_data</span></span></code></pre></div>
+<pre><code><span><span class="co">## $`0.0.0.0`</span></span>
+<span><span class="co">##   year step area tow_depth number     mean</span></span>
+<span><span class="co">## 1  all    1  all    depth0      3 56.33333</span></span>
+<span><span class="co">## 2  all    1  all  depth100      6 26.00000</span></span>
+<span><span class="co">## 3  all    1  all   depth50      3 29.66667</span></span></code></pre>
 <p>Any of the other tow attributes are available with a “tow_” prefix. For example, we can show metadata per tow by using <code>mfdb_unaggregated</code>:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Show all tow data unaggregated</span>
-<span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_meanlength</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tow'</span>, <span class="st">'tow_latitude'</span>, <span class="st">'tow_longitude'</span>, <span class="st">'tow_depth'</span>, <span class="st">'tow_length'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    step <span class="op">=</span> <span class="va">mfdb_timestep_yearly</span>,
-    area <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_group.html">mfdb_group</a></span><span class="op">(</span>divB <span class="op">=</span> <span class="st">'divB'</span><span class="op">)</span>,
-    tow <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,
-    tow_latitude <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,
-    tow_longitude <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,
-    tow_depth <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,
-    tow_length <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,
-    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span><span class="op">)</span>
-<span class="va">agg_data</span></code></pre></div>
-<pre><code><span class="co">## $`0.0.0.0.0.0.0.0`</span>
-<span class="co">##   year step area tow tow_latitude tow_longitude tow_depth tow_length number</span>
-<span class="co">## 1  all    1 divB   A         64.1        -23.15     98.82         10      1</span>
-<span class="co">## 2  all    1 divB   B         63.4        -20.18     44.90         10      1</span>
-<span class="co">## 3  all    1 divB   C         64.9        -13.55    140.91         20      1</span>
-<span class="co">## 4  all    1 divB   D         66.2        -18.55    122.61         20      1</span>
-<span class="co">##   mean</span>
-<span class="co">## 1   34</span>
-<span class="co">## 2   54</span>
-<span class="co">## 3   24</span>
-<span class="co">## 4   14</span></code></pre>
+<code class="sourceCode R"><span><span class="co"># Show all tow data unaggregated</span></span>
+<span><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_meanlength</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tow'</span>, <span class="st">'tow_latitude'</span>, <span class="st">'tow_longitude'</span>, <span class="st">'tow_depth'</span>, <span class="st">'tow_length'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    step <span class="op">=</span> <span class="va">mfdb_timestep_yearly</span>,</span>
+<span>    area <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_group.html">mfdb_group</a></span><span class="op">(</span>divB <span class="op">=</span> <span class="st">'divB'</span><span class="op">)</span>,</span>
+<span>    tow <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    tow_latitude <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    tow_longitude <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    tow_depth <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    tow_length <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">agg_data</span></span></code></pre></div>
+<pre><code><span><span class="co">## $`0.0.0.0.0.0.0.0`</span></span>
+<span><span class="co">##   year step area tow tow_latitude tow_longitude tow_depth tow_length number</span></span>
+<span><span class="co">## 1  all    1 divB   A         64.1        -23.15     98.82         10      1</span></span>
+<span><span class="co">## 2  all    1 divB   B         63.4        -20.18     44.90         10      1</span></span>
+<span><span class="co">## 3  all    1 divB   C         64.9        -13.55    140.91         20      1</span></span>
+<span><span class="co">## 4  all    1 divB   D         66.2        -18.55    122.61         20      1</span></span>
+<span><span class="co">##   mean</span></span>
+<span><span class="co">## 1   34</span></span>
+<span><span class="co">## 2   54</span></span>
+<span><span class="co">## 3   24</span></span>
+<span><span class="co">## 4   14</span></span></code></pre>
 <p>As well as using tow attributes to group/filter, we can use the tow to scale the output of the query. For example, the following scales mean length by tow length, for each tow:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_meanlength</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tow'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    step <span class="op">=</span> <span class="va">mfdb_timestep_yearly</span>,
-    tow <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,
-    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, scale_index <span class="op">=</span> <span class="st">'tow_length'</span><span class="op">)</span>
-<span class="va">agg_data</span></code></pre></div>
-<pre><code><span class="co">## $`0.0.0.0`</span>
-<span class="co">##    year step area tow    number     mean</span>
-<span class="co">## 1   all    1  all   A 0.3000000 29.66667</span>
-<span class="co">## 2   all    1  all   B 0.3000000 56.33333</span>
-<span class="co">## 3   all    1  all   C 0.1500000 28.66667</span>
-<span class="co">## 4   all    1  all   D 0.1500000 23.33333</span>
-<span class="co">## 5   all    1  all gnA 0.1428571 42.33333</span>
-<span class="co">## 6   all    1  all gnB 0.1363636 40.66667</span>
-<span class="co">## 7   all    1  all gnC 0.1304348 56.33333</span>
-<span class="co">## 8   all    1  all llA 0.2727273 50.33333</span>
-<span class="co">## 9   all    1  all llB 0.2500000 26.66667</span>
-<span class="co">## 10  all    1  all llC 0.2307692 83.33333</span></code></pre>
+<code class="sourceCode R"><span><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_meanlength</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tow'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    step <span class="op">=</span> <span class="va">mfdb_timestep_yearly</span>,</span>
+<span>    tow <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, scale_index <span class="op">=</span> <span class="st">'tow_length'</span><span class="op">)</span></span>
+<span><span class="va">agg_data</span></span></code></pre></div>
+<pre><code><span><span class="co">## $`0.0.0.0`</span></span>
+<span><span class="co">##    year step area tow    number     mean</span></span>
+<span><span class="co">## 1   all    1  all   A 0.3000000 29.66667</span></span>
+<span><span class="co">## 2   all    1  all   B 0.3000000 56.33333</span></span>
+<span><span class="co">## 3   all    1  all   C 0.1500000 28.66667</span></span>
+<span><span class="co">## 4   all    1  all   D 0.1500000 23.33333</span></span>
+<span><span class="co">## 5   all    1  all gnA 0.1428571 42.33333</span></span>
+<span><span class="co">## 6   all    1  all gnB 0.1363636 40.66667</span></span>
+<span><span class="co">## 7   all    1  all gnC 0.1304348 56.33333</span></span>
+<span><span class="co">## 8   all    1  all llA 0.2727273 50.33333</span></span>
+<span><span class="co">## 9   all    1  all llB 0.2500000 26.66667</span></span>
+<span><span class="co">## 10  all    1  all llC 0.2307692 83.33333</span></span></code></pre>
 <p>…or scale by tow length whilst grouping by depth:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_scaled</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tow_depth'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    step <span class="op">=</span> <span class="va">mfdb_timestep_yearly</span>,
-    tow_depth <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_interval.html">mfdb_interval</a></span><span class="op">(</span><span class="st">'depth'</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span>,
-    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, scale <span class="op">=</span> <span class="st">'tow_length'</span><span class="op">)</span>
-<span class="va">agg_data</span></code></pre></div>
-<pre><code><span class="co">## $`0.0.0.0`</span>
-<span class="co">##   year step area tow_depth number mean_weight</span>
-<span class="co">## 1  all    1  all    depth0   0.10   1.8777778</span>
-<span class="co">## 2  all    1  all  depth100   0.05   0.2166667</span>
-<span class="co">## 3  all    1  all   depth50   0.10   0.9888889</span></code></pre>
+<code class="sourceCode R"><span><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_scaled</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tow_depth'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    step <span class="op">=</span> <span class="va">mfdb_timestep_yearly</span>,</span>
+<span>    tow_depth <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_interval.html">mfdb_interval</a></span><span class="op">(</span><span class="st">'depth'</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, scale <span class="op">=</span> <span class="st">'tow_length'</span><span class="op">)</span></span>
+<span><span class="va">agg_data</span></span></code></pre></div>
+<pre><code><span><span class="co">## $`0.0.0.0`</span></span>
+<span><span class="co">##   year step area tow_depth number mean_weight</span></span>
+<span><span class="co">## 1  all    1  all    depth0   0.10   1.8777778</span></span>
+<span><span class="co">## 2  all    1  all  depth100   0.05   0.2166667</span></span>
+<span><span class="co">## 3  all    1  all   depth50   0.10   0.9888889</span></span></code></pre>
 <p>An example of grouping by <code>tow_bait_type</code>:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tow_bait_type'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    tow_bait_type <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">agg_data</span></code></pre></div>
-<pre><code><span class="co">## $`0.0.0.0`</span>
-<span class="co">##   year step area tow_bait_type number</span>
-<span class="co">## 1  all  all  all          &lt;NA&gt;     21</span>
-<span class="co">## 2  all  all  all            b1      3</span>
-<span class="co">## 3  all  all  all            b2      3</span>
-<span class="co">## 4  all  all  all            b3      3</span></code></pre>
+<code class="sourceCode R"><span><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tow_bait_type'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    tow_bait_type <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">agg_data</span></span></code></pre></div>
+<pre><code><span><span class="co">## $`0.0.0.0`</span></span>
+<span><span class="co">##   year step area tow_bait_type number</span></span>
+<span><span class="co">## 1  all  all  all          &lt;NA&gt;     21</span></span>
+<span><span class="co">## 2  all  all  all            b1      3</span></span>
+<span><span class="co">## 3  all  all  all            b2      3</span></span>
+<span><span class="co">## 4  all  all  all            b3      3</span></span></code></pre>
 <p>And finally <code>tow_net_type</code>:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tow_net_type'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    tow_net_type <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">agg_data</span></code></pre></div>
-<pre><code><span class="co">## $`0.0.0.0`</span>
-<span class="co">##   year step area tow_net_type number</span>
-<span class="co">## 1  all  all  all         &lt;NA&gt;     21</span>
-<span class="co">## 2  all  all  all        black      3</span>
-<span class="co">## 3  all  all  all       orange      3</span>
-<span class="co">## 4  all  all  all        white      3</span></code></pre>
+<code class="sourceCode R"><span><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tow_net_type'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    tow_net_type <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">agg_data</span></span></code></pre></div>
+<pre><code><span><span class="co">## $`0.0.0.0`</span></span>
+<span><span class="co">##   year step area tow_net_type number</span></span>
+<span><span class="co">## 1  all  all  all         &lt;NA&gt;     21</span></span>
+<span><span class="co">## 2  all  all  all        black      3</span></span>
+<span><span class="co">## 3  all  all  all       orange      3</span></span>
+<span><span class="co">## 4  all  all  all        white      3</span></span></code></pre>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>unittest.output <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 </div>
   </div>
 
@@ -325,7 +326,7 @@ year    month   areacell        species tow  length age weight
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

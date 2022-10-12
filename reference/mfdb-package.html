@@ -197,11 +197,12 @@ grouping works, e.g. <code>maturity_stage = mfdb_group(imm = 1, mat = 2:5)</code
 will result in the maturity_stage column having either 'imm' or 'mat'.
 These will also be used to generate GADGET aggregation files later.</p>
 <p>For example, the following queries the temperature table:</p>
-<div class="sourceCode"><pre><code><span class="va">defaults</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    area <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_group.html">mfdb_group</a></span><span class="op">(</span><span class="st">"101"</span> <span class="op">=</span> <span class="op">)</span>,
-    timestep <span class="op">=</span> <span class="va">mfdb_timestep_quarterly</span>, <span class="co"># Group months to create 2 timesteps for each year</span>
-    year <span class="op">=</span> <span class="fl">1996</span><span class="op">:</span><span class="fl">2005</span><span class="op">)</span>
-<span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_temperature</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="va">defaults</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="va">defaults</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    area <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_group.html">mfdb_group</a></span><span class="op">(</span><span class="st">"101"</span> <span class="op">=</span> <span class="op">)</span>,</span>
+<span>    timestep <span class="op">=</span> <span class="va">mfdb_timestep_quarterly</span>, <span class="co"># Group months to create 2 timesteps for each year</span></span>
+<span>    year <span class="op">=</span> <span class="fl">1996</span><span class="op">:</span><span class="fl">2005</span><span class="op">)</span></span>
+<span><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_temperature</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="va">defaults</span><span class="op">)</span></span></code></pre></div>
 
 <p>All functions will result in a list of data.frame result tables (generally
 only one, unless you requested bootstrapping). Each are suitable for
@@ -218,9 +219,10 @@ directory.</p>
 <p>Generally, the result of an mfdb query will be enough to create a
 corresponding GADGET file, for instance, the following will create a GADGET
 area file in your gadget directory:</p>
-<div class="sourceCode"><pre><code><span class="fu"><a href="../reference/gadget_directory.html">gadget_dir_write</a></span><span class="op">(</span><span class="va">gd</span>,<span class="fu"><a href="../reference/gadget_areafile.html">gadget_areafile</a></span><span class="op">(</span>
-    size <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_area_size</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="va">defaults</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,
-    temperature <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_temperature</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="va">defaults</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="fu"><a href="../reference/gadget_directory.html">gadget_dir_write</a></span><span class="op">(</span><span class="va">gd</span>,<span class="fu"><a href="../reference/gadget_areafile.html">gadget_areafile</a></span><span class="op">(</span></span>
+<span>    size <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_area_size</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="va">defaults</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    temperature <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_temperature</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="va">defaults</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 
 <p>See <a href="gadget_areafile.html">gadget_areafile</a> or <a href="gadget_likelihood_component.html">gadget_likelihood_component</a> for more
 information or <a href="../demo">the demo directory</a> for concrete examples.</p>
@@ -272,7 +274,7 @@ agreement no.613571.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

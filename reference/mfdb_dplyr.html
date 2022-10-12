@@ -66,12 +66,12 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">mfdb_dplyr_table</span><span class="op">(</span><span class="va">mdb</span>, <span class="va">table_name</span>, include_cols <span class="op">=</span> <span class="va">all_cols</span><span class="op">)</span>
-<span class="fu">mfdb_dplyr_survey_index</span><span class="op">(</span><span class="va">mdb</span>, include_cols <span class="op">=</span> <span class="va">all_cols</span><span class="op">)</span>
-<span class="fu">mfdb_dplyr_division</span><span class="op">(</span><span class="va">mdb</span>, include_cols <span class="op">=</span> <span class="va">all_cols</span><span class="op">)</span>
-<span class="fu">mfdb_dplyr_sample</span><span class="op">(</span><span class="va">mdb</span>, include_cols <span class="op">=</span> <span class="va">all_cols</span><span class="op">)</span>
-<span class="fu">mfdb_dplyr_predator</span><span class="op">(</span><span class="va">mdb</span>, include_cols <span class="op">=</span> <span class="va">all_cols</span><span class="op">)</span>
-<span class="fu">mfdb_dplyr_prey</span><span class="op">(</span><span class="va">mdb</span>, include_cols <span class="op">=</span> <span class="va">all_cols</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mfdb_dplyr_table</span><span class="op">(</span><span class="va">mdb</span>, <span class="va">table_name</span>, include_cols <span class="op">=</span> <span class="va">all_cols</span><span class="op">)</span></span>
+<span><span class="fu">mfdb_dplyr_survey_index</span><span class="op">(</span><span class="va">mdb</span>, include_cols <span class="op">=</span> <span class="va">all_cols</span><span class="op">)</span></span>
+<span><span class="fu">mfdb_dplyr_division</span><span class="op">(</span><span class="va">mdb</span>, include_cols <span class="op">=</span> <span class="va">all_cols</span><span class="op">)</span></span>
+<span><span class="fu">mfdb_dplyr_sample</span><span class="op">(</span><span class="va">mdb</span>, include_cols <span class="op">=</span> <span class="va">all_cols</span><span class="op">)</span></span>
+<span><span class="fu">mfdb_dplyr_predator</span><span class="op">(</span><span class="va">mdb</span>, include_cols <span class="op">=</span> <span class="va">all_cols</span><span class="op">)</span></span>
+<span><span class="fu">mfdb_dplyr_prey</span><span class="op">(</span><span class="va">mdb</span>, include_cols <span class="op">=</span> <span class="va">all_cols</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -107,15 +107,15 @@ See <code>mfdb::mfdb_taxonomy_tables</code> for possible values for <var>table_n
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-21 14:54:47 INFO:mfdb:Creating schema from scratch</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-21 14:54:47 INFO:mfdb:Taxonomy market_category no updates to make</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-21 14:54:47 INFO:mfdb:Schema up-to-date</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Include as many columns as possible</span></span>
-<span class="r-in"><span class="fu">mfdb_dplyr_sample</span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-10-12 17:36:47 INFO:mfdb:Creating schema from scratch</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-10-12 17:36:47 INFO:mfdb:Taxonomy market_category no updates to make</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-10-12 17:36:47 INFO:mfdb:Schema up-to-date</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Include as many columns as possible</span></span></span>
+<span class="r-in"><span><span class="fu">mfdb_dplyr_sample</span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   SQL [0 x 64]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.3.5-dev1410 [unknown@Linux 5.13.0-1029-azure:R 4.2.0//tmp/RtmpAl9Mlk/filea6a92e4d2161.duckdb]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.5.1 [unknown@Linux 5.15.0-1020-azure:R 4.2.1//tmp/RtmpPdb339/filef63557b757df.duckdb]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 64 variables: year &lt;int&gt;, month &lt;int&gt;, age &lt;dbl&gt;, length &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   length_var &lt;dbl&gt;, length_min &lt;int&gt;, weight &lt;dbl&gt;, weight_var &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   liver_weight &lt;dbl&gt;, liver_weight_var &lt;dbl&gt;, gonad_weight &lt;dbl&gt;,</span></span>
@@ -123,25 +123,25 @@ See <code>mfdb::mfdb_taxonomy_tables</code> for possible values for <var>table_n
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   gutted_weight &lt;dbl&gt;, gutted_weight_var &lt;dbl&gt;, count &lt;dbl&gt;, areacell &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   areacell_size &lt;dbl&gt;, areacell_depth &lt;dbl&gt;, data_source &lt;chr&gt;, gear &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   gear_mesh_size &lt;dbl&gt;, gear_mesh_size_min &lt;dbl&gt;, gear_mesh_size_max &lt;dbl&gt;, …</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Only include 'data_source' and 'species' columns, as well as measurements</span></span>
-<span class="r-in"><span class="fu">mfdb_dplyr_sample</span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'data_source'</span>, <span class="st">'species'</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Only include 'data_source' and 'species' columns, as well as measurements</span></span></span>
+<span class="r-in"><span><span class="fu">mfdb_dplyr_sample</span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'data_source'</span>, <span class="st">'species'</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   SQL [0 x 19]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.3.5-dev1410 [unknown@Linux 5.13.0-1029-azure:R 4.2.0//tmp/RtmpAl9Mlk/filea6a92e4d2161.duckdb]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.5.1 [unknown@Linux 5.15.0-1020-azure:R 4.2.1//tmp/RtmpPdb339/filef63557b757df.duckdb]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 19 variables: year &lt;int&gt;, month &lt;int&gt;, age &lt;dbl&gt;, length &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   length_var &lt;dbl&gt;, length_min &lt;int&gt;, weight &lt;dbl&gt;, weight_var &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   liver_weight &lt;dbl&gt;, liver_weight_var &lt;dbl&gt;, gonad_weight &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   gonad_weight_var &lt;dbl&gt;, stomach_weight &lt;dbl&gt;, stomach_weight_var &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   gutted_weight &lt;dbl&gt;, gutted_weight_var &lt;dbl&gt;, count &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   data_source &lt;chr&gt;, species &lt;chr&gt;</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Query the sampling_type table</span></span>
-<span class="r-in"><span class="fu">mfdb_dplyr_table</span><span class="op">(</span><span class="va">mdb</span>, <span class="st">'sampling_type'</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Query the sampling_type table</span></span></span>
+<span class="r-in"><span><span class="fu">mfdb_dplyr_table</span><span class="op">(</span><span class="va">mdb</span>, <span class="st">'sampling_type'</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   SQL [0 x 3]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.3.5-dev1410 [unknown@Linux 5.13.0-1029-azure:R 4.2.0//tmp/RtmpAl9Mlk/filea6a92e4d2161.duckdb]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.5.1 [unknown@Linux 5.15.0-1020-azure:R 4.2.1//tmp/RtmpPdb339/filef63557b757df.duckdb]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 3 variables: sampling_type &lt;chr&gt;, t_group &lt;chr&gt;, description &lt;chr&gt;</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -156,7 +156,7 @@ See <code>mfdb::mfdb_taxonomy_tables</code> for possible values for <var>table_n
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

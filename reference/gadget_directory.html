@@ -66,9 +66,9 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">gadget_directory</span><span class="op">(</span><span class="va">dir</span>, mainfile <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span>
-<span class="fu">gadget_dir_write</span><span class="op">(</span><span class="va">gd</span>, <span class="va">obj</span><span class="op">)</span>
-<span class="fu">gadget_dir_read</span><span class="op">(</span><span class="va">gd</span>, <span class="va">file_name</span>, missing_okay <span class="op">=</span> <span class="cn">TRUE</span>, file_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gadget_directory</span><span class="op">(</span><span class="va">dir</span>, mainfile <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span></span>
+<span><span class="fu">gadget_dir_write</span><span class="op">(</span><span class="va">gd</span>, <span class="va">obj</span><span class="op">)</span></span>
+<span><span class="fu">gadget_dir_read</span><span class="op">(</span><span class="va">gd</span>, <span class="va">file_name</span>, missing_okay <span class="op">=</span> <span class="cn">TRUE</span>, file_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -126,18 +126,18 @@ containing the location of the mainfile that the gadget configuration will use.<
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Create a gadget directory</span></span>
-<span class="r-in"><span class="va">gd</span> <span class="op">&lt;-</span> <span class="fu">gadget_directory</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Read in the likelihood file</span></span>
-<span class="r-in"><span class="va">likelihood</span> <span class="op">&lt;-</span> <span class="fu">gadget_dir_read</span><span class="op">(</span><span class="va">gd</span>, <span class="st">'likelihood'</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Write out an area file to "(tempfile)/areas", replacing any existing file</span></span>
-<span class="r-in"><span class="fu">gadget_dir_write</span><span class="op">(</span><span class="va">gd</span>, <span class="fu"><a href="gadget_file.html">gadget_file</a></span><span class="op">(</span><span class="st">"areas"</span>, components <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>north <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, south <span class="op">=</span> <span class="fl">4</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Replace a likelihood component if one already exists with</span></span>
-<span class="r-in"><span class="co"># the same name/type or append it to the bottom</span></span>
-<span class="r-in"><span class="fu">gadget_dir_write</span><span class="op">(</span><span class="va">gd</span>, <span class="fu"><a href="gadget_likelihood_component.html">gadget_likelihood_component</a></span><span class="op">(</span><span class="st">"understocking"</span>, name <span class="op">=</span> <span class="st">"frank"</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create a gadget directory</span></span></span>
+<span class="r-in"><span><span class="va">gd</span> <span class="op">&lt;-</span> <span class="fu">gadget_directory</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Read in the likelihood file</span></span></span>
+<span class="r-in"><span><span class="va">likelihood</span> <span class="op">&lt;-</span> <span class="fu">gadget_dir_read</span><span class="op">(</span><span class="va">gd</span>, <span class="st">'likelihood'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Write out an area file to "(tempfile)/areas", replacing any existing file</span></span></span>
+<span class="r-in"><span><span class="fu">gadget_dir_write</span><span class="op">(</span><span class="va">gd</span>, <span class="fu"><a href="gadget_file.html">gadget_file</a></span><span class="op">(</span><span class="st">"areas"</span>, components <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>north <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, south <span class="op">=</span> <span class="fl">4</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Replace a likelihood component if one already exists with</span></span></span>
+<span class="r-in"><span><span class="co"># the same name/type or append it to the bottom</span></span></span>
+<span class="r-in"><span><span class="fu">gadget_dir_write</span><span class="op">(</span><span class="va">gd</span>, <span class="fu"><a href="gadget_likelihood_component.html">gadget_likelihood_component</a></span><span class="op">(</span><span class="st">"understocking"</span>, name <span class="op">=</span> <span class="st">"frank"</span><span class="op">)</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -152,7 +152,7 @@ containing the location of the mainfile that the gadget configuration will use.<
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

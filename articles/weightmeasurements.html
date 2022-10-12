@@ -92,82 +92,83 @@
     
 <p>The following examples use the following table_string helper to succintly define tables:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Convert a string into a data.frame</span>
-<span class="va">table_string</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">text</span>, <span class="va">...</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span>
-    text <span class="op">=</span> <span class="va">text</span>,
-    blank.lines.skip <span class="op">=</span> <span class="cn">TRUE</span>,
-    header <span class="op">=</span> <span class="cn">TRUE</span>,
-    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>,
-    <span class="va">...</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Convert a string into a data.frame</span></span>
+<span><span class="va">table_string</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">text</span>, <span class="va">...</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span></span>
+<span>    text <span class="op">=</span> <span class="va">text</span>,</span>
+<span>    blank.lines.skip <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    header <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    <span class="va">...</span><span class="op">)</span></span></code></pre></div>
 <p>Firstly, connect to a database and set up some areas/divisions:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-name  division size
-45G01     divA   10
-45G02     divA  200
-45G03     divB  400
-'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">name  division size</span></span>
+<span><span class="st">45G01     divA   10</span></span>
+<span><span class="st">45G02     divA  200</span></span>
+<span><span class="st">45G03     divB  400</span></span>
+<span><span class="st">'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="importing-data">Importing data<a class="anchor" aria-label="anchor" href="#importing-data"></a>
 </h2>
 <p>Normally when using <code>mfdb_import_survey</code> you supply <code>count</code>, <code>length</code>, <code>weight</code> columns. But other lenghts can also be supplied:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey</a></span><span class="op">(</span><span class="va">mdb</span>, data_source <span class="op">=</span> <span class="st">"x"</span>,
-    <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-year    month   areacell        species length  age     weight  liver_weight    gonad_weight    stomach_weight
-2000    1       45G01           COD     21      2       210 93      82      72
-2000    1       45G02           COD     34      3       220 28      93      99
-2000    1       45G03           COD     44      4       230 93      85      72
-    '</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey</a></span><span class="op">(</span><span class="va">mdb</span>, data_source <span class="op">=</span> <span class="st">"x"</span>,</span>
+<span>    <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">year    month   areacell        species length  age     weight  liver_weight    gonad_weight    stomach_weight</span></span>
+<span><span class="st">2000    1       45G01           COD     21      2       210 93      82      72</span></span>
+<span><span class="st">2000    1       45G02           COD     34      3       220 28      93      99</span></span>
+<span><span class="st">2000    1       45G03           COD     44      4       230 93      85      72</span></span>
+<span><span class="st">    '</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="querying-data">Querying data<a class="anchor" aria-label="anchor" href="#querying-data"></a>
 </h2>
 <p>To get any additional weights back when querying, you need to supply measurements, for example:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_totalweight</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'age'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    age <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,
-    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, measurements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'overall'</span>, <span class="st">'liver'</span>, <span class="st">'gonad'</span>, <span class="st">'stomach'</span><span class="op">)</span><span class="op">)</span>
-<span class="va">agg_data</span></code></pre></div>
-<pre><code><span class="co">## $`0.0.0.0`</span>
-<span class="co">##   year step area age total_weight total_liver_weight total_gonad_weight</span>
-<span class="co">## 1  all  all  all   2          210                 93                 82</span>
-<span class="co">## 2  all  all  all   3          220                 28                 93</span>
-<span class="co">## 3  all  all  all   4          230                 93                 85</span>
-<span class="co">##   total_stomach_weight</span>
-<span class="co">## 1                   72</span>
-<span class="co">## 2                   99</span>
-<span class="co">## 3                   72</span></code></pre>
+<code class="sourceCode R"><span><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_totalweight</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'age'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    age <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, measurements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'overall'</span>, <span class="st">'liver'</span>, <span class="st">'gonad'</span>, <span class="st">'stomach'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">agg_data</span></span></code></pre></div>
+<pre><code><span><span class="co">## $`0.0.0.0`</span></span>
+<span><span class="co">##   year step area age total_weight total_liver_weight total_gonad_weight</span></span>
+<span><span class="co">## 1  all  all  all   2          210                 93                 82</span></span>
+<span><span class="co">## 2  all  all  all   3          220                 28                 93</span></span>
+<span><span class="co">## 3  all  all  all   4          230                 93                 85</span></span>
+<span><span class="co">##   total_stomach_weight</span></span>
+<span><span class="co">## 1                   72</span></span>
+<span><span class="co">## 2                   99</span></span>
+<span><span class="co">## 3                   72</span></span></code></pre>
 <p>Single measurements are also possible:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_totalweight</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'age'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    age <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,
-    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, measurements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'stomach'</span><span class="op">)</span><span class="op">)</span>
-<span class="va">agg_data</span></code></pre></div>
-<pre><code><span class="co">## $`0.0.0.0`</span>
-<span class="co">##   year step area age total_stomach_weight</span>
-<span class="co">## 1  all  all  all   2                   72</span>
-<span class="co">## 2  all  all  all   3                   99</span>
-<span class="co">## 3  all  all  all   4                   72</span></code></pre>
+<code class="sourceCode R"><span><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_totalweight</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'age'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    age <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, measurements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'stomach'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">agg_data</span></span></code></pre></div>
+<pre><code><span><span class="co">## $`0.0.0.0`</span></span>
+<span><span class="co">##   year step area age total_stomach_weight</span></span>
+<span><span class="co">## 1  all  all  all   2                   72</span></span>
+<span><span class="co">## 2  all  all  all   3                   99</span></span>
+<span><span class="co">## 3  all  all  all   4                   72</span></span></code></pre>
 <p>We can also use <code>mfdb_sample_meanweight</code> to aggregate:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_meanweight</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'age'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, measurements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'liver'</span>, <span class="st">'stomach'</span><span class="op">)</span><span class="op">)</span>
-<span class="va">agg_data</span></code></pre></div>
-<pre><code><span class="co">## $`0.0.0.0`</span>
-<span class="co">##   year step area age number mean_liver_weight mean_stomach_weight</span>
-<span class="co">## 1  all  all  all all      3          71.33333                  81</span></code></pre>
+<code class="sourceCode R"><span><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_meanweight</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'age'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, measurements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'liver'</span>, <span class="st">'stomach'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">agg_data</span></span></code></pre></div>
+<pre><code><span><span class="co">## $`0.0.0.0`</span></span>
+<span><span class="co">##   year step area age number mean_liver_weight mean_stomach_weight</span></span>
+<span><span class="co">## 1  all  all  all all      3          71.33333                  81</span></span></code></pre>
 <p>As well as <code>mfdb_sample_meanweight_stddev</code>:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_meanweight_stddev</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'age'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, measurements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'overall'</span>, <span class="st">'gonad'</span><span class="op">)</span><span class="op">)</span>
-<span class="va">agg_data</span></code></pre></div>
-<pre><code><span class="co">## $`0.0.0.0`</span>
-<span class="co">##   year step area age number mean mean_gonad_weight stddev stddev_gonad_weight</span>
-<span class="co">## 1  all  all  all all      3  220          86.66667     10            5.686241</span></code></pre>
+<code class="sourceCode R"><span><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_meanweight_stddev</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'age'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    null <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, measurements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'overall'</span>, <span class="st">'gonad'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">agg_data</span></span></code></pre></div>
+<pre><code><span><span class="co">## $`0.0.0.0`</span></span>
+<span><span class="co">##   year step area age number mean mean_gonad_weight stddev stddev_gonad_weight</span></span>
+<span><span class="co">## 1  all  all  all all      3  220          86.66667     10            5.686241</span></span></code></pre>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>unittest.output <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 </div>
   </div>
 
@@ -188,7 +189,7 @@ year    month   areacell        species length  age     weight  liver_weight    
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

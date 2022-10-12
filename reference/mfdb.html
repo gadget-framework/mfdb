@@ -66,12 +66,12 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">mfdb</span><span class="op">(</span><span class="va">schema_name</span>,
-         db_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,
-         destroy_schema <span class="op">=</span> <span class="cn">FALSE</span>,
-         save_temp_tables <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-    <span class="fu">mfdb_disconnect</span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mfdb</span><span class="op">(</span><span class="va">schema_name</span>,</span>
+<span>         db_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>         destroy_schema <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>         save_temp_tables <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="fu">mfdb_disconnect</span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -123,26 +123,26 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Connect to a SQLite database file</span></span>
-<span class="r-in"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu">mfdb</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.sqlite'</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-21 14:54:41 INFO:mfdb:Creating schema from scratch</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-21 14:54:42 INFO:mfdb:Taxonomy market_category no updates to make</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-06-21 14:54:42 INFO:mfdb:Schema up-to-date</span>
-<span class="r-in"><span class="fu">mfdb_disconnect</span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="co"># NB: Requires a PostgreSQL installation, see README</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Connect to local DB, as the "examples" case study</span></span>
-<span class="r-in"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu">mfdb</span><span class="op">(</span><span class="st">'examples'</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">mfdb_disconnect</span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Connect to a SQLite database file</span></span></span>
+<span class="r-in"><span><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu">mfdb</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.sqlite'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-10-12 17:36:42 INFO:mfdb:Creating schema from scratch</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-10-12 17:36:42 INFO:mfdb:Taxonomy market_category no updates to make</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-10-12 17:36:42 INFO:mfdb:Schema up-to-date</span>
+<span class="r-in"><span><span class="fu">mfdb_disconnect</span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="co"># NB: Requires a PostgreSQL installation, see README</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Connect to local DB, as the "examples" case study</span></span></span>
+<span class="r-in"><span><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu">mfdb</span><span class="op">(</span><span class="st">'examples'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mfdb_disconnect</span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Already disconnected</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Connect to remote server, will prompt for username/password</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu">mfdb</span><span class="op">(</span><span class="st">'examples'</span>, db_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>host <span class="op">=</span> <span class="st">"mfdb.rhi.hi.is"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Connect to remote server, will prompt for username/password</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu">mfdb</span><span class="op">(</span><span class="st">'examples'</span>, db_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>host <span class="op">=</span> <span class="st">"mfdb.rhi.hi.is"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -157,7 +157,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

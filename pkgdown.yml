@@ -1,5 +1,5 @@
 pandoc: 2.7.3
-pkgdown: 2.0.4
+pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
   import_hydrography_cmems: import_hydrography_cmems.html
@@ -7,5 +7,5 @@ articles:
   tow_data: tow_data.html
   trip: trip.html
   weightmeasurements: weightmeasurements.html
-last_built: 2022-06-21T14:54Z
+last_built: 2022-10-12T17:36Z
 

@@ -93,68 +93,97 @@
 <p>Samples can be assigned to a <em>trip</em>, which provides a way of including socioeconomic data into MFDB.</p>
 <p>The following examples use the following table_string helper to succintly define tables:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Convert a string into a data.frame</span>
-<span class="va">table_string</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">text</span>, <span class="va">...</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span>
-    text <span class="op">=</span> <span class="va">text</span>,
-    blank.lines.skip <span class="op">=</span> <span class="cn">TRUE</span>,
-    header <span class="op">=</span> <span class="cn">TRUE</span>,
-    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>,
-    <span class="va">...</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Convert a string into a data.frame</span></span>
+<span><span class="va">table_string</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">text</span>, <span class="va">...</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span></span>
+<span>    text <span class="op">=</span> <span class="va">text</span>,</span>
+<span>    blank.lines.skip <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    header <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    <span class="va">...</span><span class="op">)</span></span></code></pre></div>
 <p>Then connect to a database and set up some areas/divisions:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-name  division size
-45G01     divA   10
-45G02     divA  200
-45G03     divB  400
-'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">name  division size</span></span>
+<span><span class="st">45G01     divA   10</span></span>
+<span><span class="st">45G02     divA  200</span></span>
+<span><span class="st">45G03     divB  400</span></span>
+<span><span class="st">'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="importing-data">Importing data<a class="anchor" aria-label="anchor" href="#importing-data"></a>
 </h2>
 <p>Trips can have a <em>start_port</em> and <em>end_port</em> associated with them, before we can do this we need to define any ports we use. We do this with <code>mfdb_import_port_taxonomy</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_port_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-name    description     institute   latitude longitude
-ISHFF   Hafnarfjordur   ISL         64.04   21.57
-NOHVJ   Hvalfjordur     ISL         64.21   21.45
-ISKEF   Keflavik    ISL         64.00   22.33
-ISREK   Reykjavik   ISL         64.09   21.55
-ISSEJ   Seydisfjordur   ISL         65.15   13.55
-ISKJF   Skerjafjordur   ISL         64.07   21.54
-'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_port_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">name    description     institute   latitude longitude</span></span>
+<span><span class="st">ISHFF   Hafnarfjordur   ISL         64.04   21.57</span></span>
+<span><span class="st">NOHVJ   Hvalfjordur     ISL         64.21   21.45</span></span>
+<span><span class="st">ISKEF   Keflavik    ISL         64.00   22.33</span></span>
+<span><span class="st">ISREK   Reykjavik   ISL         64.09   21.55</span></span>
+<span><span class="st">ISSEJ   Seydisfjordur   ISL         65.15   13.55</span></span>
+<span><span class="st">ISKJF   Skerjafjordur   ISL         64.07   21.54</span></span>
+<span><span class="st">'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>We can now define trips that use these ports:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_trip_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-name    start_date  end_date    crew    oil_consumption start_port  end_port
-T1  2019-01-21  2019-02-11  4   3000        ISKEF       ISREK
-T2  2019-01-24  2019-02-14  5   9000        ISKEF       ISSEJ
-T3  2019-04-21  2019-05-11  4   3000        ISREK       ISKEF
-T4  2019-04-24  2019-05-14  5   9000        ISSEJ       ISKEF
-'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_trip_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">name    start_date  end_date    crew    oil_consumption start_port  end_port</span></span>
+<span><span class="st">T1  2019-01-21  2019-02-11  4   3000        ISKEF       ISREK</span></span>
+<span><span class="st">T2  2019-01-24  2019-02-14  5   9000        ISKEF       ISSEJ</span></span>
+<span><span class="st">T3  2019-04-21  2019-05-11  4   3000        ISREK       ISKEF</span></span>
+<span><span class="st">T4  2019-04-24  2019-05-14  5   9000        ISSEJ       ISKEF</span></span>
+<span><span class="st">'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>There is no formal link between trips and tows, so you can link a sample to a tow without recording trips. But we can create tows and vessels to use:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_tow_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-name latitude longitude  depth length
- T1a     64.1    -23.15  98.82     10
- T1b     64.1    -23.15  98.82     10
- T2a     64.1    -23.15  98.82     10
- T2b     64.1    -23.15  98.82     10
- T3a     64.1    -23.15  98.82     10
- T3b     64.1    -23.15  98.82     10
- T4a     64.1    -23.15  98.82     10
- T4b     64.1    -23.15  98.82     10
-'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_tow_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">name latitude longitude  depth length</span></span>
+<span><span class="st"> T1a     64.1    -23.15  98.82     10</span></span>
+<span><span class="st"> T1b     64.1    -23.15  98.82     10</span></span>
+<span><span class="st"> T2a     64.1    -23.15  98.82     10</span></span>
+<span><span class="st"> T2b     64.1    -23.15  98.82     10</span></span>
+<span><span class="st"> T3a     64.1    -23.15  98.82     10</span></span>
+<span><span class="st"> T3b     64.1    -23.15  98.82     10</span></span>
+<span><span class="st"> T4a     64.1    -23.15  98.82     10</span></span>
+<span><span class="st"> T4b     64.1    -23.15  98.82     10</span></span>
+<span><span class="st">'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_vessel_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'
-name full_name
-V1  "Vessel 1"
-V2  "Vessel 2"
-'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb_import_taxonomy.html">mfdb_import_vessel_taxonomy</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu">table_string</span><span class="op">(</span><span class="st">'</span></span>
+<span><span class="st">name full_name</span></span>
+<span><span class="st">V1  "Vessel 1"</span></span>
+<span><span class="st">V2  "Vessel 2"</span></span>
+<span><span class="st">'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>And finally import data that is associated to a vessel/trip/tow:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey</a></span><span class="op">(</span><span class="va">mdb</span>, data_source <span class="op">=</span> <span class="st">"cod2000"</span>,
-<span class="fu">table_string</span><span class="op">(</span><span class="st">[1654 chars quoted with '"']</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb_import_data.html">mfdb_import_survey</a></span><span class="op">(</span><span class="va">mdb</span>, data_source <span class="op">=</span> <span class="st">"cod2000"</span>,</span>
+<span><span class="fu">table_string</span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">year    month   areacell   species vessel trip tow  length  count</span></span>
+<span><span class="st">2019    1       45G01      COD     V1     T1   T1a    10      358</span></span>
+<span><span class="st">2019    1       45G01      COD     V1     T1   T1a    20      320</span></span>
+<span><span class="st">2019    1       45G01      COD     V1     T1   T1a    30      162</span></span>
+<span><span class="st">2019    1       45G02      COD     V1     T1   T1b    10      240</span></span>
+<span><span class="st">2019    1       45G02      COD     V1     T1   T1b    20      278</span></span>
+<span><span class="st">2019    1       45G02      COD     V1     T1   T1b    30      122</span></span>
+<span><span class="st"></span></span>
+<span><span class="st">2019    2       45G01      COD     V2     T2   T2a    10      255</span></span>
+<span><span class="st">2019    2       45G01      COD     V2     T2   T2a    20      138</span></span>
+<span><span class="st">2019    2       45G01      COD     V2     T2   T2a    30      168</span></span>
+<span><span class="st">2019    2       45G02      COD     V2     T2   T2b    10      349</span></span>
+<span><span class="st">2019    2       45G02      COD     V2     T2   T2b    20      106</span></span>
+<span><span class="st">2019    2       45G02      COD     V2     T2   T2b    30      262</span></span>
+<span><span class="st"></span></span>
+<span><span class="st">2019    4       45G01      COD     V1     T3   T3a    10      395</span></span>
+<span><span class="st">2019    4       45G01      COD     V1     T3   T3a    20      214</span></span>
+<span><span class="st">2019    4       45G01      COD     V1     T3   T3a    30      195</span></span>
+<span><span class="st">2019    4       45G02      COD     V1     T3   T3b    10      396</span></span>
+<span><span class="st">2019    4       45G02      COD     V1     T3   T3b    20      325</span></span>
+<span><span class="st">2019    4       45G02      COD     V1     T3   T3b    30      269</span></span>
+<span><span class="st"></span></span>
+<span><span class="st">2019    5       45G01      COD     V2     T4   T4a    10      239</span></span>
+<span><span class="st">2019    5       45G01      COD     V2     T4   T4a    20      309</span></span>
+<span><span class="st">2019    5       45G01      COD     V2     T4   T4a    30      162</span></span>
+<span><span class="st">2019    5       45G02      COD     V2     T4   T4b    10      342</span></span>
+<span><span class="st">2019    5       45G02      COD     V2     T4   T4b    20      175</span></span>
+<span><span class="st">2019    5       45G02      COD     V2     T4   T4b    30      299</span></span>
+<span><span class="st">"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="querying-data">Querying data<a class="anchor" aria-label="anchor" href="#querying-data"></a>
@@ -162,63 +191,64 @@ V2  "Vessel 2"
 <p>We can now use the <code>mfdb_sample_*</code> functions to select this data back out again.</p>
 <p>We can group and filter by any of the trip attributes. For instance, to group/filter by <code>trip_start_date</code>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'trip_start_date'</span>, <span class="st">'length'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    trip_start_date <span class="op">=</span> <span class="st">'2019-01-21'</span>,
-    length <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">agg_data</span></code></pre></div>
-<pre><code><span class="co">## $`0.0.0.0.0`</span>
-<span class="co">##   year step area trip_start_date length number</span>
-<span class="co">## 1  all  all  all      2019-01-21     10    598</span>
-<span class="co">## 2  all  all  all      2019-01-21     20    598</span>
-<span class="co">## 3  all  all  all      2019-01-21     30    284</span></code></pre>
+<code class="sourceCode R"><span><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'trip_start_date'</span>, <span class="st">'length'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    trip_start_date <span class="op">=</span> <span class="st">'2019-01-21'</span>,</span>
+<span>    length <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">agg_data</span></span></code></pre></div>
+<pre><code><span><span class="co">## $`0.0.0.0.0`</span></span>
+<span><span class="co">##   year step area trip_start_date length number</span></span>
+<span><span class="co">## 1  all  all  all      2019-01-21     10    598</span></span>
+<span><span class="co">## 2  all  all  all      2019-01-21     20    598</span></span>
+<span><span class="co">## 3  all  all  all      2019-01-21     30    284</span></span></code></pre>
 <p>Note that we’ve summed T1a and T1b, since their start date matches.</p>
 <p>We can use <code>mfdb_group</code>() to aggregate several ports, for instance:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'trip_start_port'</span>, <span class="st">'length'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    trip_start_port <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_group.html">mfdb_group</a></span><span class="op">(</span>KEF <span class="op">=</span> <span class="st">'ISKEF'</span>, other <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'ISREK'</span>, <span class="st">'ISSEJ'</span><span class="op">)</span><span class="op">)</span>,
-    length <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">agg_data</span></code></pre></div>
-<pre><code><span class="co">## $`0.0.0.0.0`</span>
-<span class="co">##   year step area trip_start_port length number</span>
-<span class="co">## 1  all  all  all             KEF     10   1202</span>
-<span class="co">## 2  all  all  all             KEF     20    842</span>
-<span class="co">## 3  all  all  all             KEF     30    714</span>
-<span class="co">## 4  all  all  all           other     10   1372</span>
-<span class="co">## 5  all  all  all           other     20   1023</span>
-<span class="co">## 6  all  all  all           other     30    925</span></code></pre>
+<code class="sourceCode R"><span><span class="va">agg_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_queries.html">mfdb_sample_count</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'trip_start_port'</span>, <span class="st">'length'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    trip_start_port <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_group.html">mfdb_group</a></span><span class="op">(</span>KEF <span class="op">=</span> <span class="st">'ISKEF'</span>, other <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'ISREK'</span>, <span class="st">'ISSEJ'</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    length <span class="op">=</span> <span class="fu"><a href="../reference/mfdb_aggregate_unaggregated.html">mfdb_unaggregated</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">agg_data</span></span></code></pre></div>
+<pre><code><span><span class="co">## $`0.0.0.0.0`</span></span>
+<span><span class="co">##   year step area trip_start_port length number</span></span>
+<span><span class="co">## 1  all  all  all             KEF     10   1202</span></span>
+<span><span class="co">## 2  all  all  all             KEF     20    842</span></span>
+<span><span class="co">## 3  all  all  all             KEF     30    714</span></span>
+<span><span class="co">## 4  all  all  all           other     10   1372</span></span>
+<span><span class="co">## 5  all  all  all           other     20   1023</span></span>
+<span><span class="co">## 6  all  all  all           other     30    925</span></span></code></pre>
 <p>We can also use <code>mfdb_dplyr_sample</code> to re-extract data, joining with port metadata:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># TODO: Use native pipe syntax once available</span>
-<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_dplyr.html">mfdb_dplyr_sample</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'trip_start_port'</span>, <span class="st">'trip_end_port'</span>, <span class="st">'trip_start_port_latitude'</span><span class="op">)</span><span class="op">)</span>
-<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'year'</span>, <span class="st">'month'</span>, <span class="st">'trip_start_port'</span>, <span class="st">'trip_end_port'</span>, <span class="st">'trip_start_port_latitude'</span>, <span class="st">'count'</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##    year month trip_start_port trip_end_port trip_start_port_latitude count</span>
-<span class="co">## 1  2019     1           ISKEF         ISREK                    64.00   358</span>
-<span class="co">## 2  2019     1           ISKEF         ISREK                    64.00   320</span>
-<span class="co">## 3  2019     1           ISKEF         ISREK                    64.00   162</span>
-<span class="co">## 4  2019     1           ISKEF         ISREK                    64.00   240</span>
-<span class="co">## 5  2019     1           ISKEF         ISREK                    64.00   278</span>
-<span class="co">## 6  2019     1           ISKEF         ISREK                    64.00   122</span>
-<span class="co">## 7  2019     2           ISKEF         ISSEJ                    64.00   255</span>
-<span class="co">## 8  2019     2           ISKEF         ISSEJ                    64.00   138</span>
-<span class="co">## 9  2019     2           ISKEF         ISSEJ                    64.00   168</span>
-<span class="co">## 10 2019     2           ISKEF         ISSEJ                    64.00   349</span>
-<span class="co">## 11 2019     2           ISKEF         ISSEJ                    64.00   106</span>
-<span class="co">## 12 2019     2           ISKEF         ISSEJ                    64.00   262</span>
-<span class="co">## 13 2019     4           ISREK         ISKEF                    64.09   395</span>
-<span class="co">## 14 2019     4           ISREK         ISKEF                    64.09   214</span>
-<span class="co">## 15 2019     4           ISREK         ISKEF                    64.09   195</span>
-<span class="co">## 16 2019     4           ISREK         ISKEF                    64.09   396</span>
-<span class="co">## 17 2019     4           ISREK         ISKEF                    64.09   325</span>
-<span class="co">## 18 2019     4           ISREK         ISKEF                    64.09   269</span>
-<span class="co">## 19 2019     5           ISSEJ         ISKEF                    65.15   239</span>
-<span class="co">## 20 2019     5           ISSEJ         ISKEF                    65.15   309</span>
-<span class="co">## 21 2019     5           ISSEJ         ISKEF                    65.15   162</span>
-<span class="co">## 22 2019     5           ISSEJ         ISKEF                    65.15   342</span>
-<span class="co">## 23 2019     5           ISSEJ         ISKEF                    65.15   175</span>
-<span class="co">## 24 2019     5           ISSEJ         ISKEF                    65.15   299</span></code></pre>
+<code class="sourceCode R"><span><span class="co"># TODO: Use native pipe syntax once available</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mfdb_dplyr.html">mfdb_dplyr_sample</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'trip_start_port'</span>, <span class="st">'trip_end_port'</span>, <span class="st">'trip_start_port_latitude'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'year'</span>, <span class="st">'month'</span>, <span class="st">'trip_start_port'</span>, <span class="st">'trip_end_port'</span>, <span class="st">'trip_start_port_latitude'</span>, <span class="st">'count'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##    year month trip_start_port trip_end_port trip_start_port_latitude count</span></span>
+<span><span class="co">## 1  2019     1           ISKEF         ISREK                    64.00   358</span></span>
+<span><span class="co">## 2  2019     1           ISKEF         ISREK                    64.00   320</span></span>
+<span><span class="co">## 3  2019     1           ISKEF         ISREK                    64.00   162</span></span>
+<span><span class="co">## 4  2019     1           ISKEF         ISREK                    64.00   240</span></span>
+<span><span class="co">## 5  2019     1           ISKEF         ISREK                    64.00   278</span></span>
+<span><span class="co">## 6  2019     1           ISKEF         ISREK                    64.00   122</span></span>
+<span><span class="co">## 7  2019     2           ISKEF         ISSEJ                    64.00   255</span></span>
+<span><span class="co">## 8  2019     2           ISKEF         ISSEJ                    64.00   138</span></span>
+<span><span class="co">## 9  2019     2           ISKEF         ISSEJ                    64.00   168</span></span>
+<span><span class="co">## 10 2019     2           ISKEF         ISSEJ                    64.00   349</span></span>
+<span><span class="co">## 11 2019     2           ISKEF         ISSEJ                    64.00   106</span></span>
+<span><span class="co">## 12 2019     2           ISKEF         ISSEJ                    64.00   262</span></span>
+<span><span class="co">## 13 2019     4           ISREK         ISKEF                    64.09   395</span></span>
+<span><span class="co">## 14 2019     4           ISREK         ISKEF                    64.09   214</span></span>
+<span><span class="co">## 15 2019     4           ISREK         ISKEF                    64.09   195</span></span>
+<span><span class="co">## 16 2019     4           ISREK         ISKEF                    64.09   396</span></span>
+<span><span class="co">## 17 2019     4           ISREK         ISKEF                    64.09   325</span></span>
+<span><span class="co">## 18 2019     4           ISREK         ISKEF                    64.09   269</span></span>
+<span><span class="co">## 19 2019     5           ISSEJ         ISKEF                    65.15   239</span></span>
+<span><span class="co">## 20 2019     5           ISSEJ         ISKEF                    65.15   309</span></span>
+<span><span class="co">## 21 2019     5           ISSEJ         ISKEF                    65.15   162</span></span>
+<span><span class="co">## 22 2019     5           ISSEJ         ISKEF                    65.15   342</span></span>
+<span><span class="co">## 23 2019     5           ISSEJ         ISKEF                    65.15   175</span></span>
+<span><span class="co">## 24 2019     5           ISSEJ         ISKEF                    65.15   299</span></span></code></pre>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mfdb.html">mfdb_disconnect</a></span><span class="op">(</span><span class="va">mdb</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>unittest.output <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 </div>
   </div>
 
@@ -239,7 +269,7 @@ V2  "Vessel 2"
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
