@@ -53,4 +53,26 @@ inttest: install
 coverage:
 	R --vanilla -e 'covr::package_coverage(type = "all", line_exclusions = list())'
 
-.PHONY: all install full-install build check check-as-cran wincheck examples vignettes serve-docs test inttest coverage
+release: release-description release-news
+	git commit -m "Release version $(NEW_VERSION)" DESCRIPTION NEWS.md
+	git tag -am "Release version $(NEW_VERSION)" v$(NEW_VERSION)
+	#
+	R CMD build .
+	#
+	sed -i 's/^Version: .*/Version: '"$(NEW_VERSION)-999"'/' DESCRIPTION
+	git commit -m "Development version $(NEW_VERSION)-999" DESCRIPTION
+
+release-description:
+	[ -n "$(NEW_VERSION)" ]  # NEW_VERSION variable should be set
+	sed -i 's/^Version: .*/Version: $(NEW_VERSION)/' DESCRIPTION
+	sed -i "s/^Date: .*/Date: $$(date +%Y-%m-%d)/" DESCRIPTION
+	sed -i 's/^Depends: R .*/Depends: R (>= $(shell curl -s https://api.r-hub.io/rversions/r-oldrel/3 | grep -oiE '"version":"[0-9.]+"' | grep -oE '[0-9]+\.[0-9]+\.')0)/' DESCRIPTION
+
+release-news:
+	[ -n "$(NEW_VERSION)" ]  # NEW_VERSION variable should be set
+	mv NEWS.md NEWS.md.o
+	head -1 NEWS.md.o | grep -E '^\# $(PACKAGE) ' || /bin/echo -e "# $(PACKAGE) $(NEW_VERSION):\n" > NEWS.md
+	cat NEWS.md.o >> NEWS.md
+	rm NEWS.md.o
+
+.PHONY: all install full-install build check check-as-cran wincheck examples vignettes serve-docs test inttest coverage release release-description release-news
