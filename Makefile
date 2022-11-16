@@ -2,7 +2,12 @@ PACKAGE=$(shell awk '/^Package: / { print $$2 }' DESCRIPTION)
 VERSION=$(shell awk '/^Version: / { print $$2 }' DESCRIPTION)
 TARBALL=$(PACKAGE)_$(VERSION).tar.gz
 
-all: test inttest check-as-cran
+all:
+	make test
+	make inttest INTTEST_SCHEMA="/tmp/mf-inttest.sqlite"
+	make inttest INTTEST_SCHEMA="/tmp/mf-inttest.duckdb"
+	make inttest INTTEST_SCHEMA="inttest"
+	make check-as-cran
 
 install:
 	R CMD INSTALL --install-tests --html --example .
@@ -16,17 +21,14 @@ build:
 	R CMD build .
 
 check: build
-	LANGUAGE="en" R --vanilla --slave CMD check "$(TARBALL)"
+	R CMD check "$(TARBALL)"
 
 check-as-cran: build
-	R --vanilla --slave CMD check --as-cran "$(TARBALL)"
+	R CMD check --as-cran "$(TARBALL)"
 
 wincheck: build
 	# See https://win-builder.r-project.org/ for more information
 	curl --no-epsv -# -T "$(TARBALL)" ftp://win-builder.r-project.org/R-devel/
-
-test: install
-	for f in tests/test-*.R; do echo "=== $$f ============="; Rscript $$f || exit 1; done
 
 examples: install
 	# Destroy schemas first to have clear environment
@@ -38,19 +40,17 @@ examples: install
 vignettes: install
 	Rscript -e 'tools::buildVignettes(dir=".")'
 
-inttest-sqlite: install 
-	for f in */inttest-*.R; do echo "=== $$f (sqlite) ============="; INTTEST_SCHEMA="/tmp/mf-inttest.sqlite" Rscript $$f || exit 1; done
-
-inttest-duckdb: install
-	for f in */inttest-*.R; do echo "=== $$f (duckdb) ============="; INTTEST_SCHEMA="/tmp/mf-inttest.duckdb" Rscript $$f || exit 1; done
-
-inttest-postgres: install
-	for f in */inttest-*.R; do echo "=== $$f (pg) ============="; INTTEST_SCHEMA="inttest" Rscript $$f || exit 1; done
-
-inttest: test examples vignettes build-docs inttest-sqlite inttest-duckdb inttest-postgres
-
-build-docs:
+serve-docs:
 	[ -d docs ] && rm -r docs || true
-	echo 'pkgdown::build_site()' | R --vanilla
+	Rscript --vanilla -e "pkgdown::build_site() ; servr::httd(dir='docs', host='0.0.0.0', port='8000')"
 
-.PHONY: all install build check check-as-cran wincheck examples vignettes inttest-sqlite inttest-duckdb inttest-postgres inttest build-docs
+test: install
+	for f in tests/test-*.R; do echo "=== $$f ============="; Rscript $$f || exit 1; done
+
+inttest: install
+	for f in */inttest-*.R; do echo "=== $$f ============="; Rscript $$f || exit 1; done
+
+coverage:
+	R --vanilla -e 'covr::package_coverage(type = "all", line_exclusions = list())'
+
+.PHONY: all install full-install build check check-as-cran wincheck examples vignettes serve-docs test inttest coverage
