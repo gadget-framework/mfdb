@@ -17,14 +17,14 @@ Imports:
     DBI (>= 0.3.1),
     duckdb (>= 0.2.5),
     getPass (>= 0.1-1),
-    rlang (>= 0.4.0),
-    RPostgres (>= 1.3.0),
-    RSQLite
+    rlang (>= 0.4.0)
 Suggests:
     dplyr (>= 0.8.3),
     dbplyr (>= 2.0.0),
     knitr,
     rmarkdown,
+    RPostgres (>= 1.3.0),
+    RSQLite,
     unittest (>= 1.5-0)
 VignetteBuilder: knitr
 LazyData: true

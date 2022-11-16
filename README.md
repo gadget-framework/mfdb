@@ -12,13 +12,12 @@ for running ecosystem models against it, e.g. [GADGET](http://www.hafro.is/gadge
 
 This package contains several distinct sets of functions:
 
-* Create and connect to a PostgreSQL database schema (``mfdb`` function)
-* Import data into a PostgreSQL database (``mfdb_import_*`` functions)
+* Create and connect to a DuckDB / PostgreSQL database schema (``mfdb`` function)
+* Import data into a DuckDB / PostgreSQL database (``mfdb_import_*`` functions)
 * Sample / group data from database (other ``mfdb_*`` functions)
 * Manage GADGET model directories and export data into them (``gadget_*`` functions)
 
-Using this, you can install PostgreSQL locally and have a script automating the
-process of:
+Using this, you can install have a script automating the process of:
 
 1. Importing data from your sources
 2. Uploading into your local MFDB database
@@ -30,10 +29,22 @@ model files from that data.
 
 This work is based on it's predecessor, [DST^2](http://www.hafro.is/dst2/).
 
-Prerequisites
--------------
+Installing
+----------
 
-Besides R, you will also need RPostgres set up to access the database, and
+You can install from CRAN:
+
+    install.packages('mfdb')
+
+Or use [remotes](https://cran.r-project.org/package=remotes) to install the latest development version:
+
+    # install.packages("remotes")
+    remotes::install_github("gadget-framework/mfdb")
+
+PostgreSQL installation
+-----------------------
+
+If connecting to a PostgreSQL database, you will also need RPostgres, and
 PostgreSQL installed if you want to run the database locally too.
 
 ### Linux (Debian / Ubuntu)
@@ -98,18 +109,6 @@ Find the psql shell (SQL shell) in the start menu, and create both an ``mf`` dat
 Install using http://postgresapp.com/
 
 Create a database called ``mf``.
-
-Installing
-----------
-
-You can install from CRAN:
-
-    install.packages('mfdb')
-
-Or use [remotes](https://cran.r-project.org/package=remotes) to install this directly:
-
-    # install.packages("remotes")
-    remotes::install_github("gadget-framework/mfdb")
 
 Using
 -----

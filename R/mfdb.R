@@ -59,9 +59,17 @@ mfdb <- function(schema_name = "",
             if (!is.null(db_combined$dbdir) && is_duckdb_dbdir(db_combined$dbdir)) {
                 db_combined$drv <- duckdb::duckdb()
             } else if (is_sqlite_dbname(db_combined$dbname)) {
-                db_combined$drv <- RSQLite::SQLite()
+                if (requireNamespace("RSQLite", quietly=TRUE)) {
+                    db_combined$drv <- RSQLite::SQLite()
+                } else {
+                    stop("Run install.packages('RSQLite') before connecting to a .sqlite database")
+                }
             } else {
-                db_combined$drv <- RPostgres::Postgres()
+                if (requireNamespace("RPostgres", quietly=TRUE)) {
+                    db_combined$drv <- RPostgres::Postgres()
+                } else {
+                    stop("Run install.packages('RPostgres') before connecting to a PostgreSQL database")
+                }
             }
         }
 
