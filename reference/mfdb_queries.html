@@ -47,6 +47,9 @@
       <a href="../articles/weightmeasurements.html">Storing &amp; grouping other weight measurements</a>
     </li>
   </ul></li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -256,9 +259,9 @@ to scale counts by the tow length.</p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">mdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="mfdb.html">mfdb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">'.duckdb'</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-10-12 17:36:52 INFO:mfdb:Creating schema from scratch</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-10-12 17:36:52 INFO:mfdb:Taxonomy market_category no updates to make</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-10-12 17:36:52 INFO:mfdb:Schema up-to-date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-11-16 12:34:34 INFO:mfdb:Creating schema from scratch</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-11-16 12:34:34 INFO:mfdb:Taxonomy market_category no updates to make</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2022-11-16 12:34:34 INFO:mfdb:Schema up-to-date</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Define 2 areacells of equal size</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="mfdb_import_taxonomy.html">mfdb_import_area</a></span><span class="op">(</span><span class="va">mdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>name<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"divA"</span>, <span class="st">"divB"</span><span class="op">)</span>, size<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -282,12 +285,12 @@ to scale counts by the tow length.</p>
 <span class="r-in"><span><span class="va">agg_data</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`0.0.0.0.0`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   year step area   age length   number</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1998  all  all   old   len0 1364.823</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1998  all  all   old  len30 1223.321</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1998  all  all   old  len60 1108.241</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1998  all  all young   len0 2762.959</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1998  all  all young  len30 2590.422</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1998  all  all young  len60 2746.322</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1998  all  all   old   len0 1231.319</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1998  all  all   old  len30 1233.876</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1998  all  all   old  len60 1308.686</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1998  all  all young   len0 2560.562</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1998  all  all young  len30 2693.943</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1998  all  all young  len60 2297.988</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use in a catchdistribution likelihood component</span></span></span>

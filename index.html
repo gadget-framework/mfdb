@@ -68,6 +68,9 @@
     </li>
   </ul>
 </li>
+<li>
+  <a href="news/index.html">Changelog</a>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right"></ul>
 </div>
@@ -88,12 +91,12 @@
 <p>This package enables automated processing of fisheries data into suitable forms for running ecosystem models against it, e.g. <a href="http://www.hafro.is/gadget/" class="external-link">GADGET</a>.</p>
 <p>This package contains several distinct sets of functions:</p>
 <ul>
-<li>Create and connect to a PostgreSQL database schema (<code>mfdb</code> function)</li>
-<li>Import data into a PostgreSQL database (<code>mfdb_import_*</code> functions)</li>
+<li>Create and connect to a DuckDB / PostgreSQL database schema (<code>mfdb</code> function)</li>
+<li>Import data into a DuckDB / PostgreSQL database (<code>mfdb_import_*</code> functions)</li>
 <li>Sample / group data from database (other <code>mfdb_*</code> functions)</li>
 <li>Manage GADGET model directories and export data into them (<code>gadget_*</code> functions)</li>
 </ul>
-<p>Using this, you can install PostgreSQL locally and have a script automating the process of:</p>
+<p>Using this, you can install have a script automating the process of:</p>
 <ol style="list-style-type: decimal">
 <li>Importing data from your sources</li>
 <li>Uploading into your local MFDB database</li>
@@ -103,42 +106,51 @@
 <p>Also, this libary can be used to connect to a remote database and generate model files from that data.</p>
 <p>This work is based on it’s predecessor, <a href="http://www.hafro.is/dst2/" class="external-link">DST^2</a>.</p>
 <div class="section level2">
-<h2 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
+<h2 id="installing">Installing<a class="anchor" aria-label="anchor" href="#installing"></a>
 </h2>
-<p>Besides R, you will also need RPostgres set up to access the database, and PostgreSQL installed if you want to run the database locally too.</p>
+<p>You can install from CRAN:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">install.packages</span>(<span class="st">'mfdb'</span>)</span></code></pre></div>
+<p>Or use <a href="https://cran.r-project.org/package=remotes" class="external-link">remotes</a> to install the latest development version:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># install.packages("remotes")</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">"gadget-framework/mfdb"</span>)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="postgresql-installation">PostgreSQL installation<a class="anchor" aria-label="anchor" href="#postgresql-installation"></a>
+</h2>
+<p>If connecting to a PostgreSQL database, you will also need RPostgres, and PostgreSQL installed if you want to run the database locally too.</p>
 <div class="section level3">
 <h3 id="linux-debian--ubuntu">Linux (Debian / Ubuntu)<a class="anchor" aria-label="anchor" href="#linux-debian--ubuntu"></a>
 </h3>
 <p>Installation of RPostgres will happen automatically, however you need some PostgreSQL libraries before it will work:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>apt<span class="op">-</span>get install libpq<span class="op">-</span>dev</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>apt<span class="op">-</span>get install libpq<span class="op">-</span>dev</span></code></pre></div>
 <p>Also, you can install the <code>postgresql</code> package using:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>apt<span class="op">-</span>get install postgresql</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>apt<span class="op">-</span>get install postgresql</span></code></pre></div>
 <p>Some additional instructions are available here: <a href="https://wiki.debian.org/PostgreSql" class="external-link uri">https://wiki.debian.org/PostgreSql</a></p>
 <p>Now, create an <code>mf</code> database that the user on your computer owns:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">$</span><span class="st"> </span>echo <span class="op">$</span>USER  <span class="co"># Check to see who you are, I'm lentinj</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>lentinj</span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="op">$</span><span class="st"> </span>su</span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="co"># su - postgres</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="op">$</span><span class="st"> </span>psql</span>
-<span id="cb3-6"><a href="#cb3-6"></a>postgres=<span class="co"># CREATE USER lentinj;</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>postgres=<span class="co"># CREATE DATABASE mf OWNER lentinj;</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="op">$</span><span class="st"> </span>echo <span class="op">$</span>USER  <span class="co"># Check to see who you are, I'm lentinj</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>lentinj</span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="op">$</span><span class="st"> </span>su</span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co"># su - postgres</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="op">$</span><span class="st"> </span>psql</span>
+<span id="cb5-6"><a href="#cb5-6"></a>postgres=<span class="co"># CREATE USER lentinj;</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>postgres=<span class="co"># CREATE DATABASE mf OWNER lentinj;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="linux-redhat--fedora">Linux (Redhat / Fedora)<a class="anchor" aria-label="anchor" href="#linux-redhat--fedora"></a>
 </h3>
 <p>Installation of RPostgres will happen automatically, however you need some PostgreSQL libraries before it will work:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>yum install postgresql<span class="op">-</span>devel</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>yum install postgresql<span class="op">-</span>devel</span></code></pre></div>
 <p>Also, you can install the <code>postgresql</code> package using:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>yum install postgresql<span class="op">-</span>server</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>yum install postgresql<span class="op">-</span>server</span></code></pre></div>
 <p>Some additional instructions are available here: <a href="https://fedoraproject.org/wiki/PostgreSQL" class="external-link uri">https://fedoraproject.org/wiki/PostgreSQL</a> and some tips when troubleshooting CentOS installations can be found at: <a href="http://stackoverflow.com/questions/17633422/psql-fatal-database-user-does-not-exist" class="external-link uri">http://stackoverflow.com/questions/17633422/psql-fatal-database-user-does-not-exist</a></p>
 <p>Now, create an <code>mf</code> database that the user on your computer owns:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="op">$</span><span class="st"> </span>echo <span class="op">$</span>USER  <span class="co"># Check to see who you are, I'm lentinj</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a>lentinj</span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="op">$</span><span class="st"> </span>su</span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="co"># su - postgres</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="op">$</span><span class="st"> </span>psql</span>
-<span id="cb6-6"><a href="#cb6-6"></a>postgres=<span class="co"># CREATE USER lentinj</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a>postgres=<span class="co"># CREATE DATABASE mf OWNER lentinj;</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="op">$</span><span class="st"> </span>echo <span class="op">$</span>USER  <span class="co"># Check to see who you are, I'm lentinj</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>lentinj</span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="op">$</span><span class="st"> </span>su</span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co"># su - postgres</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="op">$</span><span class="st"> </span>psql</span>
+<span id="cb8-6"><a href="#cb8-6"></a>postgres=<span class="co"># CREATE USER lentinj</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a>postgres=<span class="co"># CREATE DATABASE mf OWNER lentinj;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="microsoft-windows">Microsoft Windows<a class="anchor" aria-label="anchor" href="#microsoft-windows"></a>
@@ -146,8 +158,8 @@
 <p>To install PostgreSQL, download version 9.5 of the database installer from here:</p>
 <p><a href="https://www.enterprisedb.com/downloads/postgres-postgresql-downloads" class="external-link uri">https://www.enterprisedb.com/downloads/postgres-postgresql-downloads</a></p>
 <p>Find the psql shell (SQL shell) in the start menu, and create both an <code>mf</code> database and user:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>postgres=<span class="co"># CREATE USER mf PASSWORD 'mf';</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a>postgres=<span class="co"># CREATE DATABASE mf OWNER mf;</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>postgres=<span class="co"># CREATE USER mf PASSWORD 'mf';</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>postgres=<span class="co"># CREATE DATABASE mf OWNER mf;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="apple-os-x">Apple OS X<a class="anchor" aria-label="anchor" href="#apple-os-x"></a>
@@ -155,15 +167,6 @@
 <p>Install using <a href="http://postgresapp.com/" class="external-link uri">http://postgresapp.com/</a></p>
 <p>Create a database called <code>mf</code>.</p>
 </div>
-</div>
-<div class="section level2">
-<h2 id="installing">Installing<a class="anchor" aria-label="anchor" href="#installing"></a>
-</h2>
-<p>You can install from CRAN:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">install.packages</span>(<span class="st">'mfdb'</span>)</span></code></pre></div>
-<p>Or use <a href="https://cran.r-project.org/package=remotes" class="external-link">remotes</a> to install this directly:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># install.packages("remotes")</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">"gadget-framework/mfdb"</span>)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="using">Using<a class="anchor" aria-label="anchor" href="#using"></a>
