@@ -8,7 +8,7 @@ Tested on R-release Win/MacOS/Ubuntu and R-devel Ubuntu.
 
 The source to build the package can be found here, along with the README:
     
-  https://github.com/mareframe/mfdb/tree/v7.3-1
+  https://github.com/gadget-framework/mfdb/tree/v7.3-1
 
 Full history can be found in the ChangeLog:
 
@@ -16,7 +16,7 @@ Full history can be found in the ChangeLog:
 
 Differences since the previous submission:
 
-  https://github.com/mareframe/mfdb/compare/v7.3-0...v7.3-1
+  https://github.com/gadget-framework/mfdb/compare/v7.3-0...v7.3-1
 
 Built documentation can be found here:
 
