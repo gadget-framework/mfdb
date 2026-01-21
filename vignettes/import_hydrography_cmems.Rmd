@@ -34,7 +34,9 @@ Hydrographic products are available from numerous sources. Here, we provide a wo
 
 
 # Download monthly hydrographic data
-CMEMS Baltic Sea Physical Reanalysis product provides a physical reanalysis for the whole Baltic Sea area from January 1993 and up to minus 1-1.5 year compared to real time. The product is produced by using the ice-ocean model NEMO-Nordic (based on NEMO-3.6, Nucleus for European Modelling of the Ocean) together with a LSEIK data assimilation scheme, https://resources.marine.copernicus.eu/?option=com_csw&view=details&product_id=BALTICSEA_REANALYSIS_PHY_003_011. As a demonstration we retrieve one year of already processed monthly means of bottom temperature (bottomT), but hydrographic products are also available for separate depth layers and at higher spatiotemporal resolution, and can be aggregated before import according to the needs. Note that an account has to be created to download data from Copernicus Marine Service using the script below.
+CMEMS Baltic Sea Physical Reanalysis product provides a physical reanalysis for the whole Baltic Sea area from January 1993 and up to minus 1-1.5 year compared to real time. The product is produced by using the ice-ocean model NEMO-Nordic (based on NEMO-3.6, Nucleus for European Modelling of the Ocean) together with a LSEIK data assimilation scheme,
+https://data.marine.copernicus.eu/?option=com_csw&view=details&product_id=BALTICSEA_REANALYSIS_PHY_003_011
+As a demonstration we retrieve one year of already processed monthly means of bottom temperature (bottomT), but hydrographic products are also available for separate depth layers and at higher spatiotemporal resolution, and can be aggregated before import according to the needs. Note that an account has to be created to download data from Copernicus Marine Service using the script below.
 
 
 ```{r eval=FALSE}
