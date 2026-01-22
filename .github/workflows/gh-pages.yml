@@ -102,5 +102,5 @@ jobs:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           external_repository: gadget-framework/gadget-framework.github.io
           publish_branch: master
-          publish_dir: ./docs/dev
+          publish_dir: ./docs
           destination_dir: ./mfdb/
