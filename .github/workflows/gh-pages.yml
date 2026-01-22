@@ -100,6 +100,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          # NB: We publish to gh-pages-7.x, on major upgrade change the gh-pages branch
-          publish_branch: gh-pages-${{ steps.current_branch.outputs.branch }}
-          publish_dir: ./docs
+          external_repository: gadget-framework/gadget-framework.github.io
+          publish_branch: master
+          publish_dir: ./docs/dev
+          destination_dir: ./mfdb/
