@@ -70,6 +70,10 @@ Now, create an ``mf`` database that the user on your computer owns:
     postgres=# CREATE USER lentinj;
     postgres=# CREATE DATABASE mf OWNER lentinj;
 
+Finally, install the ``RPostgres`` package in R:
+
+    install.packages("RPostgres")
+
 ### Linux (Redhat / Fedora)
 
 Installation of RPostgres will happen automatically, however you need some
@@ -93,6 +97,10 @@ Now, create an ``mf`` database that the user on your computer owns:
     postgres=# CREATE USER lentinj
     postgres=# CREATE DATABASE mf OWNER lentinj;
 
+Finally, install the ``RPostgres`` package in R:
+
+    install.packages("RPostgres")
+
 ### Microsoft Windows
 
 To install PostgreSQL, download version 9.5 of the database installer from here:
@@ -103,6 +111,10 @@ Find the psql shell (SQL shell) in the start menu, and create both an ``mf`` dat
 
     postgres=# CREATE USER mf PASSWORD 'mf';
     postgres=# CREATE DATABASE mf OWNER mf;
+
+Finally, install the ``RPostgres`` package in R:
+
+    install.packages("RPostgres")
 
 ### Apple OS X
 
