@@ -2,8 +2,8 @@ Package: mfdb
 Type: Package
 Title: MareFrame DB Querying Library
 Encoding: UTF-8
-Version: 7.3-99
-Date: 2022-06-21
+Version: 7.4-0
+Date: 2026-01-24
 Authors@R: c(person("Jamie", "Lentin", email="lentinj@shuttlethread.com",role = c("aut", "cre", "cph")),
              person("Bjarki Thor", "Elvarsson", email="bjarki.elvarsson@hafogvatn.is",role = c("aut")))
 Maintainer: Jamie Lentin <lentinj@shuttlethread.com>
@@ -11,7 +11,7 @@ Description: Creates and manages a PostgreSQL database suitable for storing fish
              and aggregating ready for use within a Gadget <https://gadget-framework.github.io/gadget2/> model.
              See <https://mareframe.github.io/mfdb/> for more information.
 License: GPL-3
-Depends: R (>= 3.1.1)
+Depends: R (>= 4.2.0)
 Imports:
     logging (>= 0.7-103),
     DBI (>= 0.3.1),
