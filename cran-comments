@@ -1,5 +1,32 @@
 # https://cran.r-project.org/submit.html
 
+==== 7.4-0
+
+New release to fix NOTEs
+
+> checking for unstated dependencies in ‘demo’ ... NOTE
+> 'library' or 'require' call not declared from: ‘tibble’
+
+The demo script has been moved out of the package; it isn't that useful for
+end-users, but a test to ensure compatibility with tibble objects as well as
+data.frames.
+
+Full history can be found in the ChangeLog:
+
+  https://github.com/gadget-framework/mfdb/blob/v7.4-0/ChangeLog
+
+Differences since the previous submission:
+
+  https://github.com/gadget-framework/mfdb/compare/v7.3-1...v7.4-0
+
+Built documentation can be found here:
+
+  http://gadget-framework.github.io/mfdb/
+
+CI test reports can be found here:
+
+  https://github.com/gadget-framework/mfdb/actions/runs/21314403801
+
 ==== 7.3-1
 
 * Fixes to support DuckDB 0.4.0 (Avoid CAST(AS NUMERIC) and associated accuracy loss)
