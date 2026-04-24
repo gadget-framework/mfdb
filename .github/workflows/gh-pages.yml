@@ -55,9 +55,11 @@ jobs:
         run: install.packages(c("pkgdown", "devtools"))
         shell: Rscript {0}
 
-      - name: Install package
-        run: devtools::install(dependencies = TRUE, upgrade = "always")
-        shell: Rscript {0}
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            local::.
+          needs: website
 
       - name: Run examples
         run: devtools::run_examples(run_donttest = TRUE, run_dontrun = TRUE, document = FALSE)
