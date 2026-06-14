@@ -3,5 +3,6 @@
 /.Rprofile
 /*_*.tar.gz
 /example-datras-data
+/data_provided/
 /docs
 /vignettes/*.html
