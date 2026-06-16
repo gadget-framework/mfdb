@@ -38,14 +38,14 @@ CMEMS Baltic Sea Physical Reanalysis product provides a physical reanalysis for 
 https://data.marine.copernicus.eu/?option=com_csw&view=details&product_id=BALTICSEA_REANALYSIS_PHY_003_011
 As a demonstration we retrieve one year of already processed monthly means of bottom temperature (bottomT), but hydrographic products are also available for separate depth layers and at higher spatiotemporal resolution, and can be aggregated before import according to the needs. Note that an account has to be created to download data from Copernicus Marine Service using the script below.
 
-
-```{r eval=FALSE}
+```{r eval=nchar(Sys.getenv("COPERNICUSMARINE_SERVICE_USERNAME")) > 0}
 stopifnot(requireNamespace("CFtime", quietly = TRUE)) # Needed to parse dates
 
-options(
-  CopernicusMarine_uid = "...",
-  CopernicusMarine_pwd = "..."
-)
+# NB: Before running, set
+# Sys.setenv(
+#   COPERNICUSMARINE_SERVICE_USERNAME="...",
+#   COPERNICUSMARINE_SERVICE_PASSWORD="...",
+# )
 
 y <- 2018 # year of interest
 dat <- CopernicusMarine::cms_download_subset(
@@ -53,51 +53,29 @@ dat <- CopernicusMarine::cms_download_subset(
   layer         = "cmems_mod_bal_phy_my_P1M-m",
   variable      = "bottomT",
   region        = c(17, 54, 30, 58.5),     # c(lon_min, lat_min, lon_max, lat_max)
-  timerange     = paste0(y, c("-01-01", "-12-31")),
-  verticalrange = c(0, 1)
+  timerange     = paste0(y, c("-01-01", "-12-31"))
 )
 ```
 
 # Download ICES rectangles
 
-```{r eval=FALSE}
+```{r eval=nchar(Sys.getenv("COPERNICUSMARINE_SERVICE_USERNAME")) > 0}
 temp <- tempfile()
 download.file(url="https://gis.ices.dk/shapefiles/ICES_StatRec_mapto_ICES_Areas.zip", temp)
 unzip(temp, exdir="data_provided/ices_rect")
 unlink(temp)
 ```
 
-# Aggregate hydrographic data by ICES rectangles
-
-```{r eval=FALSE}
-# load ICES rect
-ices.rect <- sf::st_read("data_provided/ices_rect/StatRec_map_Areas_Full_20170124.dbf", quiet = T)
-
-# Aggregate bottomT by ICES rect
-ar <- aggregate(dat, ices.rect$geometry, FUN = mean, na.rm = TRUE) |> dplyr::pull(bottomT)
-dimnames(ar) <- list(ICESNAME = ices.rect$ICESNAME, month = 1:12)
-hydroVar <-
-  as.data.frame.table(ar, responseName = "sob") |>
-  dplyr::filter(!is.na(sob)) |>
-  dplyr::mutate(
-    year = y,
-    month = as.numeric(month)
-  ) |>
-  dplyr::rename(
-    rect = ICESNAME,
-  )
-
-write.table(hydroVar, file = 'hydroVar.txt')
-```
-
 # Combine ICES rectangles with rnaturalearth::ne_countries() to get sea surface area
 
-```{r eval=FALSE}
+```{r eval=nchar(Sys.getenv("COPERNICUSMARINE_SERVICE_USERNAME")) > 0}
 ices.rect <- sf::st_read("data_provided/ices_rect/StatRec_map_Areas_Full_20170124.dbf", quiet = T)
+
+## subset ICES rectangles based on hydrographic data extent
+ices.rect <- sf::st_crop(ices.rect, dat)
 
 ices.rect.sea <-
   ices.rect |>
-  dplyr::filter(ICESNAME %in% hydroVar$rect) |>
   sf::st_difference(
     rnaturalearth::ne_countries(returnclass = "sf", continent="Europe", scale="large") |>
     sf::st_union()
@@ -110,25 +88,32 @@ ices.rect.sea <-
     areaSea_km2 = areaSea_km2
   ) |>
   sf::st_drop_geometry()
+```
 
-write.table(sf::st_drop_geometry(ices.rect.sea), file = 'ices.rect.sea.txt')
+# Aggregate hydrographic data by ICES rectangles
+
+```{r eval=nchar(Sys.getenv("COPERNICUSMARINE_SERVICE_USERNAME")) > 0}
+hydroVar <- aggregate(dat, ices.rect, FUN = mean, na.rm = TRUE) |>
+    sf::st_as_sf(long=T) |>
+    sf::st_intersection(ices.rect |>
+                    dplyr::select(rect=ICESNAME)) |>
+    na.omit() |>
+    dplyr::left_join(ices.rect.sea) |>
+    dplyr::mutate(year = as.numeric(substring(time,1,4)),
+                  month = as.numeric(substring(time,6,7)))
 ```
 
 # Import bottom temperature into mfdb
 
 Import ICES rectangles and import the hydrographic data as a survey index. Then we can retrieve the hydrographic data as a weighted mean using ICES rectangle as a weighting variable:
 
-```{r}
+```{r, eval=nchar(Sys.getenv("COPERNICUSMARINE_SERVICE_USERNAME")) > 0}
 mdb <- mfdb(tempfile(fileext = '.duckdb'))
-
-ices.rect.sea <- read.table('ices.rect.sea.txt')
-hydroVar <- read.table('hydroVar.txt') |>
-  dplyr::inner_join(ices.rect.sea, by = "rect")
 
 # import ICES rectangles
 mfdb_import_area(mdb, data.frame(
     name = as.character(ices.rect.sea$rect),
-    size = ices.rect.sea$areaSea_km2))
+    size = as.numeric(ices.rect.sea$areaSea_km2)))
 
 # import area size as index for later use
 mfdb_import_cs_taxonomy(mdb, "index_type", data.frame(name=c("ices_rect", "bottom_temp")))
@@ -146,7 +131,7 @@ mfdb_import_survey_index(mdb,
                    data.frame(year       = hydroVar$year,
                               month      = hydroVar$month,
                               areacell   = as.character(hydroVar$rect),
-                              value     = hydroVar$sob,
+                              value      = as.numeric(hydroVar$bottomT),
                               index_type = "bottom_temp",
                               stringsAsFactors = TRUE))
 
@@ -164,10 +149,10 @@ dat <- dat[,c('year', 'step', 'area', 'mean')]
 dat
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=nchar(Sys.getenv("COPERNICUSMARINE_SERVICE_USERNAME")) > 0}
 # NB: Calculated with:
 # raw <- hydroVar[hydroVar$year == 2018 & hydroVar$rect %in% c('44G7','44G8','44G9','45G7','45G8','45G9') & hydroVar$month %in% c(1,2,3),]
-# sum(raw$sob * raw$areaSea_km2) / sum(raw$areaSea_km2)
+# sum(raw$bottomT * raw$areaSea_km2) / sum(raw$areaSea_km2)
 ok(ut_cmp_equal(dat, read.table(blank.lines.skip = TRUE, header = TRUE, stringsAsFactors = FALSE, text = '
 year step area     mean
 2018    1   a1 5.065878
@@ -181,7 +166,7 @@ year step area     mean
 ', colClasses = c(NA, 'character', NA, NA)), tolerance = 1e-5), "extract mean bottom temperature by quarter and area")
 ```
 
-```{r}
+```{r, eval=nchar(Sys.getenv("COPERNICUSMARINE_SERVICE_USERNAME")) > 0}
 mfdb_disconnect(mdb)
 options(unittest.output = NULL)
 ```

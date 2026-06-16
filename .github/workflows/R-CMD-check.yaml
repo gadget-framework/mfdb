@@ -55,8 +55,14 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           cache-version: 2
+          # vignettes/import_hydrography_cmems dependencies
           extra-packages: |
             any::rcmdcheck
+            any::CopernicusMarine
+            any::CFtime
+            any::rnaturalearth
+            any::sf
+            any::units
 
       - name: Check
         env:
@@ -64,6 +70,13 @@ jobs:
           _R_CHECK_PACKAGES_USED_IN_DEMO_: true
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran", "--run-donttest"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
+
+      - name: Rebuild vignettes with CopernicusMarine
+        if: runner.os == 'Linux'
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_SERVICE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_SERVICE_PASSWORD }}
+        run: make vignettes
 
       - name: Upload check results
         if: ${{ !success() }}
